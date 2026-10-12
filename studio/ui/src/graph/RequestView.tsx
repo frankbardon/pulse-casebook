@@ -1,5 +1,15 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Background, Controls, ReactFlow, ViewportPortal, type NodeChange } from '@xyflow/react'
+import {
+  Background,
+  Controls,
+  ReactFlow,
+  ViewportPortal,
+  useStore,
+  useStoreApi,
+  type Dimensions,
+  type NodeChange,
+  type ReactFlowState,
+} from '@xyflow/react'
 import {
   inspectCohort,
   readFile,
@@ -70,6 +80,12 @@ function RequestGraphView({ path, catalog }: { path: string; catalog?: Catalog }
   const [saving, setSaving] = useState(false)
   const [saveError, setSaveError] = useState<string | null>(null)
   const [lay, setLay] = useState<LayoutDoc>(EMPTY_LAYOUT)
+  // Measured node sizes, fed back from React Flow's dimension changes.
+  // The nodes prop is controlled and rebuilt on every layout, selection or
+  // model change; a node handed back without measured is treated as
+  // unmeasured and stays hidden until its size changes, which may never
+  // happen.
+  const [measured, setMeasured] = useState<ReadonlyMap<string, Dimensions>>(new Map())
 
   useEffect(() => {
     const ctl = new AbortController()
@@ -129,10 +145,30 @@ function RequestGraphView({ path, catalog }: { path: string; catalog?: Catalog }
   // are simply never looked up.
   const nodes = useMemo((): GraphNode[] => {
     if (graph === null || typeof graph === 'string') return []
-    return graph.nodes.map((n) => ({ ...n, position: positionOf(lay.layout, n.id) ?? n.position, selected: n.id === selected }))
-  }, [graph, lay.layout, selected])
+    return graph.nodes.map((n) => ({
+      ...n,
+      position: positionOf(lay.layout, n.id) ?? n.position,
+      selected: n.id === selected,
+      measured: measured.get(n.id),
+    }))
+  }, [graph, lay.layout, selected, measured])
 
   const onNodesChange = useCallback((changes: NodeChange<GraphNode>[]) => {
+    const sizes = changes.filter((c) => c.type === 'dimensions' && c.dimensions)
+    if (sizes.length > 0) {
+      setMeasured((m) => {
+        const next = new Map(m)
+        let changed = false
+        for (const c of sizes) {
+          if (c.type !== 'dimensions' || !c.dimensions) continue
+          const was = m.get(c.id)
+          if (was && was.width === c.dimensions.width && was.height === c.dimensions.height) continue
+          next.set(c.id, c.dimensions)
+          changed = true
+        }
+        return changed ? next : m
+      })
+    }
     const moves = changes.filter((c) => c.type === 'position' && c.position)
     if (moves.length === 0) return
     setLay((l) => {
@@ -235,6 +271,7 @@ function RequestGraphView({ path, catalog }: { path: string; catalog?: Catalog }
           </ViewportPortal>
           <Background />
           <Controls showInteractive={false} />
+          <RemeasureUnready />
         </ReactFlow>
         {node && (
           <Inspector
@@ -247,6 +284,38 @@ function RequestGraphView({ path, catalog }: { path: string; catalog?: Catalog }
       </div>
     </div>
   )
+}
+
+// unreadyIds lists the visible nodes React Flow holds without a size or
+// handle bounds, newline-joined so the selector result compares by value.
+function unreadyIds(s: ReactFlowState): string {
+  const ids: string[] = []
+  for (const [id, n] of s.nodeLookup) {
+    if (!n.hidden && (!n.measured.width || !n.measured.height || !n.internals.handleBounds)) ids.push(id)
+  }
+  return ids.join('\n')
+}
+
+// RemeasureUnready measures nodes React Flow is left holding unmeasured.
+// Its node observer only re-measures when a node goes from measured to
+// unmeasured across renders; when a nodes rebuild (layout sidecar or
+// cohort fields arriving) lands in the same render as the first
+// measurement, the node stays hidden or edgeless for good. Measuring here
+// is a no-op for nodes that are already ready.
+function RemeasureUnready() {
+  const unready = useStore(unreadyIds)
+  const store = useStoreApi()
+  useEffect(() => {
+    if (unready === '') return
+    const { domNode, updateNodeInternals } = store.getState()
+    const updates = new Map<string, { id: string; nodeElement: HTMLDivElement }>()
+    for (const id of unready.split('\n')) {
+      const el = domNode?.querySelector<HTMLDivElement>(`.react-flow__node[data-id="${CSS.escape(id)}"]`)
+      if (el) updates.set(id, { id, nodeElement: el })
+    }
+    if (updates.size > 0) updateNodeInternals(updates)
+  }, [unready, store])
+  return null
 }
 
 function Empty({ title, body, testId }: { title: string; body: string; testId?: string }) {
