@@ -31,6 +31,7 @@ cd pulse-anatomy/films/build
 | 6. Aggregators in depth | `pulse-aggregators` |
 | 7. Windows in depth | `pulse-windows` |
 | 8. Tests and regressions in depth | `pulse-tests` |
+| 9. Matrices in depth | `pulse-matrices` |
 
 A full 1080p render takes a few minutes per film. To check something fast, render a short preview:
 
