@@ -10,12 +10,10 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/frankbardon/pulse"
-	"github.com/frankbardon/pulse/descriptor"
-	pulseerrors "github.com/frankbardon/pulse/errors"
-
 	"github.com/frankbardon/pulse-casebook/studio/internal/jsonfmt"
+	"github.com/frankbardon/pulse-casebook/studio/internal/preview"
 	"github.com/frankbardon/pulse-casebook/studio/internal/scope"
+	"github.com/frankbardon/pulse-casebook/studio/internal/validate"
 	"github.com/frankbardon/pulse-casebook/studio/internal/workspace"
 )
 
@@ -168,7 +166,7 @@ func (s *Server) handleCreateFile(w http.ResponseWriter, r *http.Request) {
 	engineDoc, err := newRequestDoc(kind, cohortRef{Filename: enginePath, DataDir: ""}, fields)
 	verdict := predictVerdict{}
 	if err == nil {
-		verdict = s.predictDoc(r, kind, engineDoc)
+		verdict = s.predictDoc(r, rel, kind, engineDoc)
 	}
 	gotKind, reason := workspace.Classify(rel, out)
 	WriteJSON(w, http.StatusCreated, createResponse{
@@ -341,59 +339,23 @@ func marshalOrdered(m map[string]any, keys ...string) (string, error) {
 	return b.String(), nil
 }
 
-// predictDoc runs the root's no-execute predict on doc.
-func (s *Server) predictDoc(r *http.Request, kind workspace.Kind, doc []byte) predictVerdict {
-	ctx := r.Context()
-	var (
-		valid = true
-		errs  []*descriptor.EnvelopeEntry
-		err   error
-	)
-	switch kind {
-	case workspace.KindCompose:
-		var req pulse.ComposedRequest
-		if err = json.Unmarshal(doc, &req); err == nil {
-			var env *descriptor.Envelope
-			if env, err = s.engine.PredictCompose(ctx, &req); err == nil {
-				errs = env.Errors
-			}
-		}
-	case workspace.KindFacet:
-		var req pulse.FacetRequest
-		if err = json.Unmarshal(doc, &req); err == nil {
-			var env *descriptor.Envelope
-			if env, err = s.engine.PredictFacet(ctx, &req); err == nil {
-				errs = env.Errors
-			}
-		}
-	case workspace.KindChain:
-		var req pulse.ChainRequest
-		if err = json.Unmarshal(doc, &req); err == nil {
-			var env *descriptor.Envelope
-			if env, err = s.engine.PredictChain(ctx, &req); err == nil {
-				errs = env.Errors
-			}
-		}
-	default:
-		var req pulse.Request
-		if err = json.Unmarshal(doc, &req); err == nil {
-			var res *descriptor.PredictResult
-			if res, err = s.engine.Predict(ctx, &req); err == nil {
-				valid = res.Valid
-			}
-		}
-	}
+// predictDoc runs the root's no-execute verdict on doc (cohort already
+// rewritten for the engine) for the request at requestPath, through the
+// same path as POST /api/predict (predictIssues), so a plain Request's
+// refusals (reported by Explain, not Predict) are included. Only
+// error-severity issues are returned.
+func (s *Server) predictDoc(r *http.Request, requestPath string, kind workspace.Kind, doc []byte) predictVerdict {
+	m, err := preview.DecodeDoc(doc)
 	if err != nil {
-		code := "PREDICT_FAILED"
-		var ce *pulseerrors.CodedError
-		if errors.As(err, &ce) {
-			code = string(ce.Code)
-		}
-		return predictVerdict{Errors: []predictIssue{{Code: code, Message: err.Error()}}}
+		return predictVerdict{Errors: []predictIssue{{Code: "PREDICT_FAILED", Message: err.Error()}}}
 	}
-	out := predictVerdict{Valid: valid && len(errs) == 0}
-	for _, e := range errs {
-		out.Errors = append(out.Errors, predictIssue{Code: e.Code, Message: e.Message})
+	out := predictVerdict{Valid: true}
+	for _, is := range s.predictIssues(r.Context(), s.engineFor(requestPath), kind, m, m) {
+		if is.Severity != validate.Error {
+			continue
+		}
+		out.Valid = false
+		out.Errors = append(out.Errors, predictIssue{Code: is.Code, Message: is.Message})
 	}
 	return out
 }

@@ -19,6 +19,10 @@ import (
 type Config struct {
 	PreviewTimeout  time.Duration
 	AutoPreviewRows int64
+
+	// NewEngine builds the engine for a case with a labels/ directory
+	// (see engineFor). Nil uses pulse.New with DataDir = the root.
+	NewEngine EngineFactory
 }
 
 // Server wires the scoped directory, the single Pulse engine and the UI.
@@ -34,6 +38,7 @@ type Server struct {
 	previewCat previewCatalog
 	sched      *preview.Scheduler
 	cohorts    cohortCounts
+	labels     labelEngines
 }
 
 // New returns a Server. ui is the UI asset tree; uiBuilt says whether it
@@ -41,7 +46,7 @@ type Server struct {
 func New(root *scope.Root, engine *pulse.Pulse, cfg Config, ui fs.FS, uiBuilt bool) *Server {
 	s := &Server{root: root, engine: engine, cfg: cfg, ui: ui, uiOK: uiBuilt, mux: http.NewServeMux()}
 	s.sched = preview.NewScheduler(func(ctx context.Context, plan *preview.Plan) (*preview.Result, error) {
-		return preview.Run(ctx, s.engine, plan)
+		return preview.Run(ctx, engineFrom(ctx, s.engine), plan)
 	}, preview.SchedulerOptions{Timeout: cfg.PreviewTimeout, AutoRows: cfg.AutoPreviewRows})
 	s.mux.HandleFunc("GET /api/health", s.handleHealth)
 	s.mux.HandleFunc("GET /api/files", s.handleFiles)

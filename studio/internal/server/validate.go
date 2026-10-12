@@ -2,6 +2,7 @@ package server
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"errors"
 	"io"
@@ -172,13 +173,24 @@ func (s *Server) handlePredict(w http.ResponseWriter, r *http.Request) {
 		WriteJSON(w, http.StatusOK, res)
 		return
 	}
+	res.Issues = s.predictIssues(r.Context(), s.engineFor(body.Path), kind, doc, edoc)
+	res.Valid = !hasError(res.Issues)
+	WriteJSON(w, http.StatusOK, res)
+}
+
+// predictIssues runs the root's Predict* on edoc (doc with cohorts
+// rewritten for the engine, see engineDoc) and maps every refusal,
+// warning and suggestion to a node path of doc. Plain Requests also ask
+// Explain, whose Refusals carry the errors Predict does not report.
+// Shared by POST /api/predict and POST /api/file/new.
+func (s *Server) predictIssues(ctx context.Context, eng *pulse.Pulse, kind workspace.Kind, doc, edoc map[string]any) []validate.Issue {
+	issues := []validate.Issue{}
 	data, err := json.Marshal(edoc)
 	if err != nil {
-		WriteError(w, http.StatusInternalServerError, "predict_failed", err.Error(), nil)
-		return
+		return []validate.Issue{{Path: "", Severity: validate.Error, Code: "PREDICT_FAILED", Message: err.Error()}}
 	}
 	decodeIssue := func(err error) {
-		res.Issues = append(res.Issues, validate.Issue{
+		issues = append(issues, validate.Issue{
 			Path: validate.DecodePath(doc, "", err), Severity: validate.Error,
 			Code: "invalid_request", Message: err.Error(),
 		})
@@ -189,7 +201,7 @@ func (s *Server) handlePredict(w http.ResponseWriter, r *http.Request) {
 		if errors.As(err, &ce) {
 			code = string(ce.Code)
 		}
-		res.Issues = append(res.Issues, validate.Issue{Path: "", Severity: validate.Error, Code: code, Message: err.Error()})
+		issues = append(issues, validate.Issue{Path: "", Severity: validate.Error, Code: code, Message: err.Error()})
 	}
 	located := func(entries []*descriptor.EnvelopeEntry, severity string) {
 		for _, e := range entries {
@@ -197,11 +209,10 @@ func (s *Server) handlePredict(w http.ResponseWriter, r *http.Request) {
 				continue
 			}
 			for _, p := range validate.Locate(doc, string(kind), e.Details) {
-				res.Issues = append(res.Issues, validate.Issue{Path: p, Severity: severity, Code: e.Code, Message: e.Message})
+				issues = append(issues, validate.Issue{Path: p, Severity: severity, Code: e.Code, Message: e.Message})
 			}
 		}
 	}
-	ctx := r.Context()
 	switch kind {
 	case workspace.KindCompose:
 		var req pulse.ComposedRequest
@@ -209,7 +220,7 @@ func (s *Server) handlePredict(w http.ResponseWriter, r *http.Request) {
 			decodeIssue(err)
 			break
 		}
-		env, err := s.engine.PredictCompose(ctx, &req)
+		env, err := eng.PredictCompose(ctx, &req)
 		if err != nil {
 			engineIssue(err)
 			break
@@ -222,7 +233,7 @@ func (s *Server) handlePredict(w http.ResponseWriter, r *http.Request) {
 			decodeIssue(err)
 			break
 		}
-		env, err := s.engine.PredictFacet(ctx, &req)
+		env, err := eng.PredictFacet(ctx, &req)
 		if err != nil {
 			engineIssue(err)
 			break
@@ -235,7 +246,7 @@ func (s *Server) handlePredict(w http.ResponseWriter, r *http.Request) {
 			decodeIssue(err)
 			break
 		}
-		env, err := s.engine.PredictChain(ctx, &req)
+		env, err := eng.PredictChain(ctx, &req)
 		if err != nil {
 			engineIssue(err)
 			break
@@ -251,12 +262,12 @@ func (s *Server) handlePredict(w http.ResponseWriter, r *http.Request) {
 		// Predict returns the verdict and suggestions but not the
 		// refusals; Explain re-runs the same header-only predict and
 		// reports them (Refusals), so both are asked.
-		pr, err := s.engine.Predict(ctx, &req)
+		pr, err := eng.Predict(ctx, &req)
 		if err != nil {
 			engineIssue(err)
 			break
 		}
-		ex, err := s.engine.Explain(ctx, descriptor.ExplainRequest{Request: &req})
+		ex, err := eng.Explain(ctx, descriptor.ExplainRequest{Request: &req})
 		if err == nil {
 			refusals := make([]*descriptor.EnvelopeEntry, len(ex.Refusals))
 			for i := range ex.Refusals {
@@ -264,11 +275,11 @@ func (s *Server) handlePredict(w http.ResponseWriter, r *http.Request) {
 			}
 			located(refusals, validate.Error)
 		}
-		if !pr.Valid && !hasError(res.Issues) {
-			res.Issues = append(res.Issues, validate.Issue{Path: "", Severity: validate.Error, Code: "PREDICT_INVALID", Message: "predict reports the request invalid"})
+		if !pr.Valid && !hasError(issues) {
+			issues = append(issues, validate.Issue{Path: "", Severity: validate.Error, Code: "PREDICT_INVALID", Message: "predict reports the request invalid"})
 		}
 		for _, sg := range pr.Suggestions {
-			res.Issues = append(res.Issues, validate.Issue{
+			issues = append(issues, validate.Issue{
 				Path:       validate.SuggestionPath("", sg.Path),
 				Severity:   validate.SuggestionSeverity(sg.Reason),
 				Code:       "SUGGESTION",
@@ -279,9 +290,7 @@ func (s *Server) handlePredict(w http.ResponseWriter, r *http.Request) {
 			})
 		}
 	}
-	res.Issues = validate.Dedupe(res.Issues)
-	res.Valid = !hasError(res.Issues)
-	WriteJSON(w, http.StatusOK, res)
+	return validate.Dedupe(issues)
 }
 
 func hasError(issues []validate.Issue) bool {
@@ -326,7 +335,7 @@ func (s *Server) handleExplain(w http.ResponseWriter, r *http.Request) {
 		WriteError(w, http.StatusUnprocessableEntity, "invalid_request", err.Error(), map[string]any{"path": validate.DecodePath(doc, "", err)})
 		return
 	}
-	ex, err := s.engine.Explain(r.Context(), req)
+	ex, err := s.engineFor(body.Path).Explain(r.Context(), req)
 	if err != nil {
 		code := "explain_failed"
 		var ce *pulseerrors.CodedError

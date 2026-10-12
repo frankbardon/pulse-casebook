@@ -120,6 +120,9 @@ func (s *Server) handlePreview(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	stamp, rows := s.cohortState(r.Context(), used.paths())
+	if ls := s.labelStamp(body.Path); ls != "" {
+		stamp += "\nlabels:" + ls
+	}
 	job := preview.Job{
 		Key:         preview.SupersedeKey(body.Client, body.Path, nodes),
 		Plan:        plan,
@@ -135,7 +138,7 @@ func (s *Server) handlePreview(w http.ResponseWriter, r *http.Request) {
 			return p, []string{"quantiles"}, err
 		}
 	}
-	res, err := s.sched.Do(r.Context(), job)
+	res, err := s.sched.Do(withEngine(r.Context(), s.engineFor(body.Path)), job)
 	if err != nil {
 		writePreviewError(w, err)
 		return
