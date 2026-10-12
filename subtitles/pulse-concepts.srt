@@ -1,0 +1,143 @@
+1
+00:00:00,250 --> 00:00:06,509
+Pulse concepts. The building blocks of a request, explained on one small cohort of twelve members.
+
+2
+00:00:07,309 --> 00:00:13,440
+Everything in Pulse starts with a cohort: a table of records, where every field has a declared type.
+
+3
+00:00:14,240 --> 00:00:23,037
+Field types cover whole numbers, decimals, dates, true-or-false flags, categories and multi-select sets, and more can be added over time.
+
+4
+00:00:23,837 --> 00:00:32,272
+Any field can be null, meaning no value at all. For a multi-select, an empty selection is a real answer, which is different from null.
+
+5
+00:00:33,072 --> 00:00:39,523
+A request is a recipe. You fill in the slots you need, and Pulse always runs them in the same order.
+
+6
+00:00:40,323 --> 00:00:46,027
+Features first, then filters, attributes, groups, aggregations, windows, and finally sort.
+
+7
+00:00:46,827 --> 00:00:53,064
+Around that spine sit tests, regressions, matrices, crosstabs and overlays. Let's meet each one.
+
+8
+00:00:53,864 --> 00:00:59,973
+Features come first, before any filter. Each one adds a new column to every record in the cohort.
+
+9
+00:01:00,773 --> 00:01:06,136
+A log transform pulls in a long tail. Bucketize turns age into numbered bands.
+
+10
+00:01:06,936 --> 00:01:15,605
+More feature operators are added over time. Because features run first, they see all twelve rows, even the ones a filter is about to drop.
+
+11
+00:01:16,405 --> 00:01:22,045
+Filters decide which records stay. This one keeps members aged eighteen to sixty-five.
+
+12
+00:01:22,845 --> 00:01:29,850
+Three records fall away. The filter counts what it saw and what it let through, and those counts come back with the answer.
+
+13
+00:01:30,650 --> 00:01:40,493
+Filters range from simple ranges to set membership to full expressions, and more are added over time. A filter can read features, but never an attribute.
+
+14
+00:01:41,293 --> 00:01:49,984
+Attributes add one derived value to every record that survived the filters. A formula reads only its own row, so it needs one pass.
+
+15
+00:01:50,784 --> 00:01:57,640
+A z-score is different. It needs the mean and spread of the whole column first, so Pulse makes a pass to learn them.
+
+16
+00:01:58,440 --> 00:02:05,360
+Then a second pass scores every row. Pulse handles both passes for you, and the set of attributes keeps growing.
+
+17
+00:02:06,160 --> 00:02:11,245
+Groupers sort records into buckets. The category grouper makes one bucket per region.
+
+18
+00:02:12,045 --> 00:02:17,749
+Multi-select fields can fan out. A member who chose travel and tech lands in both buckets.
+
+19
+00:02:18,549 --> 00:02:28,882
+Groupers cover categories, number ranges, quantiles, calendar periods, clusters and sets, with more added over time. Two groupers together make a combined key.
+
+20
+00:02:29,682 --> 00:02:37,306
+Aggregators collapse each bucket into one number. Here, the average income per region becomes one row of the result.
+
+21
+00:02:38,106 --> 00:02:45,410
+Each figure comes with its counts. In the East, one income was null, so that average stands on two records, not three.
+
+22
+00:02:46,210 --> 00:02:53,322
+Pulse ships a growing set of aggregators. And with no groupers at all, the whole filtered cohort is a single bucket.
+
+23
+00:02:54,122 --> 00:03:00,914
+Windows run after aggregation. They give each row a value that depends on its neighbours, in a set order.
+
+24
+00:03:01,714 --> 00:03:09,061
+Lag pulls in last month's revenue. Percent change compares against it. A running sum keeps a cumulative total.
+
+25
+00:03:09,861 --> 00:03:15,501
+Windows also include ranks, moving averages and smoothing, and more are added over time.
+
+26
+00:03:16,301 --> 00:03:23,626
+Tests ask whether a difference is real or just noise. Here, a Welch t-test compares incomes in two regions.
+
+27
+00:03:24,426 --> 00:03:31,645
+Pulse offers a growing set of tests. Some run during the scan, and post-tests run on the finished result rows.
+
+28
+00:03:32,445 --> 00:03:39,258
+Regressions explain an outcome from its predictors. A least-squares fit finds how income rises with age.
+
+29
+00:03:40,058 --> 00:03:45,805
+Matrices look at many fields at once. You name a vector of fields, and get a whole matrix back.
+
+30
+00:03:46,605 --> 00:03:56,384
+Correlation shows which fields move together. Other matrix operators include covariance, principal components and reliability, with more added over time.
+
+31
+00:03:57,184 --> 00:04:04,147
+Overlays are layers placed on top of a finished result. A share-of-total layer lines up with the regional rows.
+
+32
+00:04:04,947 --> 00:04:09,990
+The base data underneath never changes. An overlay only adds a sibling layer.
+
+33
+00:04:10,790 --> 00:04:18,926
+Overlays work on series too. Delta versus prior shows the month-on-month change, and new overlay kinds are added over time.
+
+34
+00:04:19,726 --> 00:04:32,939
+That is the whole toolkit: a spine of seven slots, with tests, regressions, matrices, crosstabs and overlays around it. Every category grows over time, and the manifest lists what your instance offers.
+
+35
+00:04:33,739 --> 00:04:39,315
+And every figure comes back with the counts it stands on, so you can always ask: out of how many?
+
+36
+00:04:40,115 --> 00:04:43,643
+Next, we'll take each of these concepts apart, in depth.

@@ -1,0 +1,749 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>body{margin:0}</style>
+<title>Pulse Lifecycle</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+/* Layout: a screening room. One 16:9 film (always dark, like a projection) over a themed page, transport bar beneath, chapter index below. */
+:root {
+  --bg: #E9EEEF; --plate: #F7F9F9; --plate2: #EEF2F3; --ink: #13242B; --muted: #56676E; --rule: #B9C6CA;
+  --teal: #0B7A71; --teal-soft: #D3ECE8; --stage: #0B1316;
+  --sans: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #070D0F; --plate: #111C20; --plate2: #17252A; --ink: #DCE6E8; --muted: #8C9FA6; --rule: #304449;
+  --teal: #45C1B3; --teal-soft: #12352F; --stage: #0B1316; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #070D0F; --plate: #111C20; --plate2: #17252A; --ink: #DCE6E8; --muted: #8C9FA6; --rule: #304449;
+  --teal: #45C1B3; --teal-soft: #12352F; --stage: #0B1316; color-scheme: dark; }
+body { background: var(--bg); color: var(--ink); font-family: var(--sans); font-size: 15px; line-height: 1.55; }
+.wrap { max-width: 1120px; margin: 0 auto; padding-inline: 20px; padding-block: 36px 72px; display: grid; gap: 22px; }
+@media (max-width: 520px) { .wrap { padding-inline: 16px; } }
+.eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+h1 { margin: 0; font-size: clamp(34px, 6vw, 60px); line-height: 1; font-weight: 800; font-stretch: 125%; text-transform: uppercase; text-wrap: balance; }
+h1 span { color: var(--teal); }
+.intro { margin: 0; max-width: 66ch; font-size: 16px; }
+.screen { position: relative; background: var(--stage); border-radius: 6px; overflow: hidden; border: 1px solid var(--rule); }
+.bigplay { position: absolute; left: 50%; top: 72%; transform: translate(-50%, -50%); display: inline-flex; align-items: center; gap: 10px; padding: 12px 22px; border-radius: 999px; border: 1.5px solid #45C1B3; background: rgba(11,19,22,.82); color: #DCE6E8; font-size: 16px; font-weight: 600; }
+.bigplay svg { width: 14px; height: 14px; fill: #45C1B3; }
+.bigplay:hover, .bigplay:focus-visible { background: #12352F; outline: none; }
+canvas { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; max-width: 100%; }
+.transport { display: grid; grid-template-columns: auto auto auto minmax(0, 1fr) auto; align-items: center; gap: 14px; padding: 12px 16px; background: var(--plate); border: 1px solid var(--rule); border-radius: 6px; }
+button { font: inherit; color: inherit; cursor: pointer; }
+.play { width: 44px; height: 44px; border-radius: 50%; border: 1.5px solid var(--teal); background: var(--teal-soft); color: var(--teal); display: grid; place-items: center; }
+.play svg { width: 16px; height: 16px; fill: currentColor; }
+.play:focus-visible, .chap:focus-visible, input[type=range]:focus-visible, .ghost:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
+.ghost { border: 1px solid var(--rule); background: transparent; border-radius: 999px; padding: 6px 12px; font-size: 13px; }
+.time { font-family: var(--mono); font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; min-width: 9ch; text-align: right; }
+input[type=range] { width: 100%; accent-color: var(--teal); }
+@media (max-width: 560px) { .transport { grid-template-columns: auto minmax(0, 1fr) auto; } .ghost { display: none; } }
+.chapters { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+@media (max-width: 860px) { .chapters { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.chap { width: 100%; text-align: left; background: var(--plate); border: 1px solid var(--rule); border-radius: 6px; padding: 10px 12px; display: grid; gap: 2px; min-width: 0; }
+.chap b { font-family: var(--mono); font-weight: 500; font-size: 11.5px; color: var(--muted); letter-spacing: .06em; }
+.chap span { font-size: 14px; font-weight: 600; }
+.chap[aria-current="true"] { border-color: var(--teal); background: var(--teal-soft); }
+.chap[aria-current="true"] b { color: var(--teal); }
+.note { font-size: 13px; color: var(--muted); max-width: 72ch; margin: 0; }
+</style>
+
+<main class="wrap">
+  <div class="eyebrow">Pulse Anatomy · companion film · narrated</div>
+  <h1>The <span>lifecycle</span> of a request</h1>
+  <p class="intro">One request follows its path from bytes on disk to a JSON envelope. It is admitted, checked against the schema, routed to an execution arm and streamed through the record loop across four shards. Then the response is folded, shaped and wrapped.</p>
+
+  <div class="screen"><canvas id="film" width="1280" height="720" aria-label="Animated film of the Pulse request lifecycle"></canvas>
+    <button class="bigplay" id="bigplay" hidden><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2 L14 8 L4 14 Z"/></svg>Play with narration</button>
+  </div>
+  <audio id="voice" src="narration.mp3" preload="auto"></audio>
+
+  <div class="transport">
+    <button class="play" id="play" aria-label="Pause"><svg viewBox="0 0 16 16" id="playIcon"><rect x="3" y="2" width="3.5" height="12"/><rect x="9.5" y="2" width="3.5" height="12"/></svg></button>
+    <button class="ghost" id="restart">Restart</button>
+    <button class="ghost" id="sound" aria-pressed="true">Narration on</button>
+    <input type="range" id="scrub" min="0" max="87" step="0.01" value="0" aria-label="Film position">
+    <span class="time" id="time">0:00 / 1:27</span>
+  </div>
+
+  <ol class="chapters" id="chapters"></ol>
+  <p class="note">The cohort, its 140 records and the test p-values are illustrative. The stages, operator names, gates, arm rules and folds follow the Pulse source. Each chapter opens at its first frame.</p>
+</main>
+
+<script>
+(() => {
+const W = 1280, H = 720;
+const C = { bg:'#0B1316', panel:'#111C20', panel2:'#17252A', ink:'#DCE6E8', muted:'#8C9FA6', faint:'#4A5E65', rule:'#2C3F45',
+  teal:'#45C1B3', tealS:'#12352F', amber:'#E3A94B', amberS:'#3A2C12', violet:'#A893F0', violetS:'#261F44', coral:'#F0806B', coralS:'#3D1E18' };
+const SANS = '"Archivo", "Helvetica Neue", Arial, sans-serif', MONO = '"IBM Plex Mono", ui-monospace, Menlo, monospace';
+
+const cv = document.getElementById('film'); const ctx = cv.getContext('2d');
+let scale = 1;
+function setRes(px) { cv.width = px; cv.height = Math.round(px * 9 / 16); scale = px / W; }
+
+/* ---------- helpers ---------- */
+const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
+const seg = (t, a, b) => clamp((t - a) / (b - a));
+const eo = x => 1 - Math.pow(1 - x, 3);
+const eio = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+const lerp = (a, b, u) => a + (b - a) * u;
+function R(x, y, w, h, o = {}) {
+  ctx.beginPath(); ctx.roundRect(x, y, w, h, o.r ?? 4);
+  if (o.fill) { ctx.fillStyle = o.fill; ctx.fill(); }
+  if (o.stroke) { ctx.setLineDash(o.dash || []); ctx.lineWidth = o.lw ?? 1.3; ctx.strokeStyle = o.stroke; ctx.stroke(); ctx.setLineDash([]); }
+}
+function T(s, x, y, o = {}) {
+  ctx.font = `${o.weight ?? 400} ${o.size ?? 16}px ${o.font ?? SANS}`;
+  ctx.fontStretch = o.stretch ?? 'normal';
+  ctx.fillStyle = o.color ?? C.ink; ctx.textAlign = o.align ?? 'left'; ctx.textBaseline = o.base ?? 'alphabetic';
+  ctx.letterSpacing = (o.ls ?? 0) + 'px';
+  ctx.fillText(s, x, y);
+  ctx.letterSpacing = '0px'; ctx.fontStretch = 'normal';
+}
+const M = (s, x, y, o = {}) => T(s, x, y, { font: MONO, size: 13, color: C.muted, ...o });
+const CAP = (s, x, y, o = {}) => T(s, x, y, { font: MONO, size: 11.5, color: C.muted, ls: 1.6, weight: 500, ...o });
+function Ln(pts, o = {}) {
+  ctx.beginPath(); ctx.moveTo(pts[0][0], pts[0][1]); for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i][0], pts[i][1]);
+  ctx.setLineDash(o.dash || []); ctx.lineWidth = o.lw ?? 1.4; ctx.strokeStyle = o.stroke ?? C.rule; ctx.stroke(); ctx.setLineDash([]);
+}
+function A(alpha, fn) { if (alpha <= 0.001) return; ctx.save(); ctx.globalAlpha *= alpha; fn(); ctx.restore(); }
+function dot(x, y, r, fill) { ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fillStyle = fill; ctx.fill(); }
+function ring(x, y, r, stroke, lw = 2) { ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.lineWidth = lw; ctx.strokeStyle = stroke; ctx.stroke(); }
+function keyX(t, keys) { // keys: [[time, x], ...] eased per segment
+  if (t <= keys[0][0]) return keys[0][1];
+  for (let i = 1; i < keys.length; i++) if (t <= keys[i][0]) { const [t0, x0] = keys[i - 1], [t1, x1] = keys[i]; return lerp(x0, x1, eio((t - t0) / (t1 - t0))); }
+  return keys[keys.length - 1][1];
+}
+function rng(seed) { return () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+const fmt = n => n.toLocaleString('en-US');
+
+/* ---------- the illustrative cohort: 140 records, 4 shards of 35 ---------- */
+const REG = ['North', 'South', 'East', 'West'], MU = [72, 58, 64, 81];
+const rand = rng(11), N = 140, recs = [];
+for (let i = 0; i < N; i++) {
+  const u = rand(); const g = u < .3 ? 0 : u < .55 ? 1 : u < .8 ? 2 : 3;
+  const age = 16 + Math.floor(rand() * 64);
+  const z = Math.sqrt(-2 * Math.log(rand() + 1e-9)) * Math.cos(2 * Math.PI * rand());
+  const inc = Math.round((MU[g] + 11 * z) * 10) / 10;
+  recs.push({ g, age, inc, keep: age >= 18 && age <= 65, shard: Math.floor(i / 35), s: 0.7 + 12.2 * Math.pow(i / (N - 1), 0.72) });
+}
+const stats = rs => { const b = REG.map(() => ({ n: 0, sum: 0 })); rs.forEach(r => { if (r.keep) { b[r.g].n++; b[r.g].sum += r.inc; } }); return b; };
+const FINAL = stats(recs);
+const KEPT = recs.filter(r => r.keep).length, OUT = N - KEPT;
+const PART = [0, 1, 2, 3].map(s => stats(recs.filter(r => r.shard === s)));
+const ALLMEAN = FINAL.reduce((a, b) => a + b.sum, 0) / KEPT;
+const mean = b => b.n ? (b.sum / b.n).toFixed(1) : '—';
+
+/* ---------- scenes ---------- */
+/* caps: [animation time, subtitle, spoken text (defaults to the subtitle), hide subtitle] */
+const SCENES = [
+  { name: 'Pulse Anatomy', dur: 4, draw: sTitle, caps: [
+    [0, '', 'Pulse anatomy. The lifecycle of one request, from bytes on disk, to the JSON envelope.', true] ] },
+  { name: 'The cohort on disk', dur: 9, draw: sFile, caps: [
+    [0, 'Every cohort is one self-describing file. It opens with a 9-byte header: eight magic bytes, then a format version.',
+        'Every cohort is one self-describing file. It opens with a nine-byte header: eight magic bytes, then a format version.'],
+    [1.6, 'Next comes the schema block. It names every field with its type, whether it can be null, its byte offset and its bit position.'],
+    [3.4, 'Dictionaries for categorical and set fields sit inline, so every stored code can be read back as its label.'],
+    [4.4, 'Then come the records, each exactly the same width. So Pulse counts records with arithmetic: payload length ÷ stride.',
+          'Then come the records, each one exactly the same width. So Pulse counts records with simple arithmetic: payload length, divided by stride.'] ] },
+  { name: 'Admit and check', dur: 13, draw: sAdmit, caps: [
+    [0, 'A request is admitted gate by gate. The feature-profile check and item fan-out need nothing but the request itself.'],
+    [3.0, 'Opening the cohort reads only the header and the schema. With the schema in hand, smart defaults infer the grouper type the request left out.'],
+    [5.0, 'Field references, weights and resource limits are all checked against the schema alone. Watch the counter: not one record has been read.'],
+    [7.9, 'Now a second request asks for more memory than this instance allows. The limits preflight refuses it, with zero records decoded.'] ] },
+  { name: 'Choosing an arm', dur: 7, draw: sArm, caps: [
+    [0, 'This cohort turns out to be a shard archive: four .pulse shards under one canonical schema. Now the engine chooses how to run.',
+        'This cohort turns out to be a shard archive: four pulse shards, under one canonical schema. Now the engine chooses how to run.'],
+    [3.0, 'Every operator in this request can merge its state, so the work fans out, with one worker per shard.'] ] },
+  { name: 'The record loop', dur: 18, draw: sLoop, caps: [
+    [0, 'Inside each worker, records stream through the loop one at a time. The decoder reads only the 3 columns the request names.',
+        'Inside each worker, records stream through the loop one at a time. The decoder reads only the three columns the request actually names.'],
+    [4.6, 'FILTER_RANGE drops anyone outside 18–65 and counts what passed and what didn\'t. Those counts become components of the response.',
+          'A range filter drops anyone outside eighteen to sixty-five, and counts what passed, and what didn\'t. Those counts become components of the response.'],
+    [9.0, 'ATTR_FORMULA adds income in thousands, GROUP_CATEGORY routes each record by region, and AGG_AVERAGE updates its running state.',
+          'A formula attribute adds income in thousands. The category grouper routes each record by region, and the average aggregator updates its running state.'],
+    [14.0, 'The streaming arm keeps no rows at all, just state: four buckets, each holding a count and a mean.'] ] },
+  { name: 'Shards merge in order', dur: 11, draw: sShards, caps: [
+    [0, 'Each shard runs that same loop over its own records, with fresh operator state.'],
+    [4.0, 'The workers finish whenever they finish. Here, shard 3 is first, then 1, 4 and 2.',
+          'The workers finish whenever they finish. Here, shard three is first, then one, four, and two.'],
+    [6.4, 'But partials always merge in shard order, never finish order, so the result matches a serial run exactly.'] ] },
+  { name: 'Crosstab admission', dur: 11, draw: sCrosstab, caps: [
+    [0, 'In a crosstab, each record lands in the cell where its row key and its column key meet.'],
+    [5.8, 'Record ② has a region but no plan, so it never reaches a cell. Yet the East margin and the grand total still count it.',
+          'Record two has a region, but no plan, so it never reaches a cell. Yet the East margin, and the grand total, still count it.'],
+    [8.2, 'Margins are recomputed from raw rows. Auxiliary margins admit only the records that reached a cell.'] ] },
+  { name: 'Fold and shape', dur: 14, draw: sAnswer, caps: [
+    [0, 'Now the response assembles: result rows first, then components, which count exactly what each figure stands on.'],
+    [3.0, 'Tests report a raw p-value. The multiplicity fold adds an adjusted p-value beside it and never overwrites the original.'],
+    [6.0, 'An overlay attaches as a read-only sibling, keyed to the rows it describes. The data itself is untouched.'],
+    [7.9, 'Return shaping removes whatever the caller excluded. An excluded part is absent from the output, not null.'],
+    [9.6, 'Finally the envelope wraps it all: format version 1.1, the data, and errors and warnings that are always lists.',
+          'Finally, the envelope wraps it all: format version one point one, the data, and errors and warnings that are always lists.'],
+    [11.6, '', 'That is the life of a Pulse request. Open, admit, check, choose an arm, loop, merge, fold, shape, and wrap.', true] ] },
+];
+/* Narration lengths in seconds, one per cue in order; filled in when the voice-over is rendered. */
+const NARR = /*NARR*/[5.717, 7.744, 7.36, 6.549, 8.725, 7.147, 8.405, 8.235, 8.192, 8.235, 5.781, 8.405, 9.088, 9.493, 5.739, 4.437, 5.269, 6.485, 5.056, 7.552, 6.485, 6.912, 7.936, 7.019, 6.741, 7.573, 6.805]/*END*/;
+const LEAD = 0.25, GAP = 0.75;
+{
+  let ci = 0, acc = 0;
+  SCENES.forEach(s => {
+    s.cues = s.caps.map(([a, text, say, hide]) => ({ a, text: hide ? '' : text, say: say || text, len: NARR ? NARR[ci++] : 0 }));
+    let f = 0;
+    s.cues.forEach((c, k) => {
+      const aEnd = k + 1 < s.cues.length ? s.cues[k + 1].a : s.dur;
+      c.aw = aEnd - c.a; c.fs = f; c.fw = Math.max(c.aw, c.len ? LEAD + c.len + GAP : 0); f += c.fw;
+    });
+    s.start = acc; s.fdur = f; acc += f;
+  });
+  var DUR = acc;
+}
+function animTime(s, fl) {
+  for (const c of s.cues) if (fl < c.fs + c.fw) return c.a + clamp((fl - c.fs) / c.fw) * c.aw;
+  return s.dur;
+}
+
+/* ---------- chrome ---------- */
+function wrap(text, maxW, size) {
+  ctx.font = `400 ${size}px ${SANS}`; const words = text.split(' '); const lines = []; let line = '';
+  for (const w of words) { const test = line ? line + ' ' + w : w; if (ctx.measureText(test).width > maxW && line) { lines.push(line); line = w; } else line = test; }
+  if (line) lines.push(line); return lines;
+}
+function chrome(i, fl, t) {
+  const sc = SCENES[i];
+  CAP('PULSE · LIFECYCLE OF A REQUEST', 64, 46);
+  if (i > 0) { CAP(String(i).padStart(2, '0') + ' / 07', 1216, 46, { align: 'right' }); T(sc.name, 1216, 70, { size: 15, weight: 600, align: 'right', color: C.ink }); }
+  // subtitle, crossfaded on film time
+  let k = 0; for (let j = 0; j < sc.cues.length; j++) if (fl >= sc.cues[j].fs) k = j;
+  const cue = sc.cues[k];
+  if (cue.text) {
+    const since = fl - cue.fs, left = cue.fs + cue.fw - fl;
+    const a = Math.min(clamp(since / 0.3), k + 1 < sc.cues.length ? clamp(left / 0.25) : 1);
+    const lines = wrap(cue.text, 1140, 20);
+    A(a, () => lines.forEach((ln, j) => T(ln, 64, 652 + j * 27 - (lines.length - 1) * 13.5, { size: 20, color: C.ink })));
+  }
+  // progress
+  Ln([[64, 700], [1216, 700]], { stroke: C.rule, lw: 2 });
+  Ln([[64, 700], [64 + 1152 * (t / DUR), 700]], { stroke: C.teal, lw: 2 });
+  SCENES.forEach(s => { const x = 64 + 1152 * s.start / DUR; Ln([[x, 695], [x, 705]], { stroke: C.faint, lw: 1.5 }); });
+}
+function grid() {
+  ctx.fillStyle = C.bg; ctx.fillRect(0, 0, W, H);
+  ctx.fillStyle = 'rgba(140,159,166,0.07)';
+  for (let x = 32; x < W; x += 32) for (let y = 32; y < 620; y += 32) ctx.fillRect(x - 1, y - 1, 2, 2);
+}
+
+/* ---------- 0. title ---------- */
+function sTitle(t) {
+  const p = seg(t, 0.1, 2.2);
+  const trace = [[0, 360], [470, 360], [500, 360], [520, 300], [545, 420], [565, 360], [760, 360], [782, 360], [800, 330], [820, 392], [838, 360], [1280, 360]];
+  // draw partial trace
+  let total = 0; const lens = []; for (let i = 1; i < trace.length; i++) { const d = Math.hypot(trace[i][0] - trace[i - 1][0], trace[i][1] - trace[i - 1][1]); lens.push(d); total += d; }
+  let rem = total * eo(p); const pts = [trace[0]];
+  for (let i = 1; i < trace.length && rem > 0; i++) { const d = lens[i - 1]; const u = Math.min(1, rem / d); pts.push([lerp(trace[i - 1][0], trace[i][0], u), lerp(trace[i - 1][1], trace[i][1], u)]); rem -= d; }
+  Ln(pts, { stroke: C.teal, lw: 2.5 });
+  const head = pts[pts.length - 1]; if (p < 1) dot(head[0], head[1], 5, C.teal);
+  A(seg(t, 0.7, 1.6), () => {
+    T('PULSE', 640, 270, { size: 104, weight: 800, stretch: 'expanded', align: 'center' });
+    T('ANATOMY', 640, 500, { size: 56, weight: 800, stretch: 'expanded', align: 'center', color: C.teal });
+  });
+  A(seg(t, 1.6, 2.4), () => T('The lifecycle of one request, from bytes on disk to the JSON envelope', 640, 560, { size: 20, align: 'center', color: C.muted }));
+}
+
+/* ---------- 1. file ---------- */
+function sFile(t) {
+  const SEG = [
+    { x: 80, w: 150, at: 0.3, fill: C.amberS, stroke: C.amber, label: 'magic · 8 B' },
+    { x: 230, w: 60, at: 0.9, fill: C.amberS, stroke: C.amber, label: 'version' },
+    { x: 290, w: 230, at: 1.6, fill: C.amberS, stroke: C.amber, label: 'schema block' },
+    { x: 520, w: 100, at: 2.6, fill: C.panel2, stroke: C.amber, dash: [5, 4], label: '0x02 only' },
+    { x: 620, w: 160, at: 3.4, fill: C.panel2, stroke: C.amber, label: 'dictionaries' },
+    { x: 780, w: 420, at: 4.4, fill: C.panel, stroke: C.teal, label: 'records' },
+  ];
+  const Y = 190, HH = 64;
+  SEG.forEach((s, k) => {
+    const g = eo(seg(t, s.at, s.at + 0.45)); if (g <= 0) return;
+    R(s.x, Y, s.w * g, HH, { fill: s.fill, stroke: s.stroke, dash: s.dash, r: 2 });
+    A(seg(t, s.at + 0.3, s.at + 0.6), () => M(s.label, s.x + s.w / 2, Y + HH + 24, { align: 'center' }));
+  });
+  // magic typing + version
+  const mag = 'PULSE\\0\\0\\0'.match(/\\0|./g); const nchar = Math.floor(seg(t, 0.35, 0.9) * mag.length + 0.001);
+  M(mag.slice(0, nchar).join(''), 155, Y + 39, { align: 'center', color: C.ink, size: 15 });
+  A(seg(t, 1.0, 1.3), () => M('01', 260, Y + 39, { align: 'center', color: C.ink, size: 15 }));
+  A(seg(t, 1.1, 1.5), () => { Ln([[80, Y - 10], [80, Y - 20], [290, Y - 20], [290, Y - 10]], { stroke: C.amber }); T('9-byte header', 185, Y - 30, { size: 14, align: 'center', color: C.amber }); });
+  A(seg(t, 1.8, 2.2), () => T('schema block', 405, Y + 38, { size: 16, weight: 600, align: 'center' }));
+  A(seg(t, 2.8, 3.1), () => T('extensions', 570, Y + 38, { size: 14, align: 'center', color: C.muted }));
+  A(seg(t, 3.6, 3.9), () => T('dictionaries', 700, Y + 38, { size: 15, weight: 600, align: 'center' }));
+
+  // schema table
+  const FIELDS = [['region', 'categorical_u8', 'no', '0', '–'], ['age', 'u8', 'yes', '1', '–'], ['signup', 'date', 'no', '2', '–'], ['income', 'f64', 'yes', '6', '–'], ['opted_in', 'packed_bool', 'no', '14', '0'], ['tier', 'u4', 'yes', '14', '1']];
+  A(seg(t, 1.7, 2.0), () => {
+    Ln([[405, Y + HH + 34], [405, 330]], { stroke: C.amber, dash: [4, 4] });
+    R(240, 330, 430, 236, { fill: C.panel, stroke: C.rule });
+    const cols = [262, 380, 512, 572, 632];
+    ['NAME', 'TYPE', 'NULL', 'OFFSET', 'BIT'].forEach((h, j) => CAP(h, cols[j], 358, { size: 10.5 }));
+    FIELDS.forEach((f, i) => A(seg(t, 1.9 + i * 0.22, 2.2 + i * 0.22), () => f.forEach((v, j) => M(v, cols[j], 390 + i * 29, { color: j === 0 ? C.ink : C.muted, size: 13.5 }))));
+  });
+  // dictionary
+  A(seg(t, 3.5, 3.8), () => {
+    Ln([[700, Y + HH + 34], [700, 330]], { stroke: C.amber, dash: [4, 4] });
+    R(690, 330, 200, 180, { fill: C.panel, stroke: C.rule });
+    CAP('REGION', 710, 358, { size: 10.5 });
+    REG.forEach((r, i) => A(seg(t, 3.7 + i * 0.18, 3.95 + i * 0.18), () => { M(String(i), 712, 392 + i * 29, { color: C.amber, size: 14 }); T(r, 740, 392 + i * 29, { size: 15 }); }));
+  });
+  // records stream
+  const nrows = Math.floor(seg(t, 4.5, 7.6) * N);
+  const cols = Math.min(28, Math.ceil(nrows / 5));
+  for (let i = 0; i < nrows; i++) {
+    const col = Math.floor(i / 5), row = i % 5; if (col >= 28) break;
+    const x = 786 + col * 14.8, y = Y + 6 + row * 10.6;
+    ctx.fillStyle = C.tealS; ctx.fillRect(x, y, 12, 8.6); ctx.fillStyle = C.teal; ctx.fillRect(x, y, 10.4, 8.6); ctx.fillStyle = C.coral; ctx.fillRect(x + 10.6, y, 1.4, 8.6);
+  }
+  A(seg(t, 4.6, 5.0), () => { Ln([[780, Y - 10], [780, Y - 20], [1200, Y - 20], [1200, Y - 10]], { stroke: C.teal }); T('fixed-width records', 990, Y - 30, { size: 14, align: 'center', color: C.teal }); });
+  A(seg(t, 4.8, 5.2), () => {
+    R(920, 330, 280, 236, { fill: C.panel, stroke: C.rule });
+    CAP('RECORDS', 942, 358, { size: 10.5 });
+    T(fmt(Math.min(N, nrows)), 942, 420, { size: 54, weight: 700, stretch: 'expanded', color: C.teal });
+    M('stride 16 B · bitmap 1 B of it', 942, 456, { size: 13 });
+    A(seg(t, 6.6, 7.1), () => { M('2,240 B ÷ 16 B = 140', 942, 500, { color: C.ink, size: 15 }); M('header-fast, no decode', 942, 526, { size: 13 }); });
+  });
+}
+
+/* ---------- 2. admit ---------- */
+function sAdmit(t) {
+  const G = [470, 590, 710, 830, 950, 1070];
+  const GL = [['Profile gate', 'slots visible'], ['Item fan-out', 'for_each'], ['Header +', 'schema'], ['Smart', 'defaults'], ['Field refs', '+ weights'], ['Limits', 'preflight']];
+  const GC = [C.amber, C.amber, C.amber, C.violet, C.coral, C.coral];
+  // mini file + counter
+  M('members.pulse', 628, 116, { align: 'right' });
+  const lit = t >= 3.2;
+  [[640, 40, 'hdr'], [680, 90, 'schema'], [770, 70, 'dicts'], [840, 200, 'records']].forEach(([x, w, l], k) => {
+    const on = lit && k < 2;
+    R(x, 98, w, 26, { fill: on ? C.amberS : C.panel, stroke: on ? C.amber : C.rule, r: 2 });
+    M(l, x + w / 2, 116, { align: 'center', size: 11.5, color: on ? C.amber : C.faint });
+  });
+  CAP('RECORDS DECODED', 1216, 96, { align: 'right' });
+  const refused = t >= 11.3;
+  T('0', 1216, 132, { size: 34, weight: 700, align: 'right', color: refused ? C.coral : C.ink });
+
+  // request card (A then B)
+  const aA = 1 - seg(t, 7.8, 8.1), aB = seg(t, 8.1, 8.4);
+  function card(title, chips, a, refusedState) {
+    A(a, () => {
+      R(60, 196, 340, 250, { fill: C.panel, stroke: refusedState ? C.coral : C.rule, lw: refusedState ? 1.8 : 1.3 });
+      CAP(title, 80, 224);
+      chips.forEach((c, i) => {
+        R(78, 240 + i * 48, 304, 40, { fill: C.panel2, stroke: c[2] || C.rule, r: 3 });
+        M(c[0], 90, 256 + i * 48, { size: 10.5, color: C.faint });
+        M(c[1], 90, 273 + i * 48, { size: 13.5, color: c[3] || C.ink });
+      });
+    });
+  }
+  const def = seg(t, 4.2, 4.6);
+  card('REQUEST A', [['filter', 'FILTER_RANGE age 18–65'], ['attribute', 'ATTR_FORMULA income_k = income/1000'],
+    ['group', def > 0.5 ? 'region → GROUP_CATEGORY' : 'region   (no type)', def > 0.5 ? C.violet : null, def > 0.5 ? C.violet : C.ink], ['aggregate', 'AGG_AVERAGE income_k']], aA, false);
+  card('REQUEST B', [['aggregate', 'AGG_MEDIAN income'], ['instance limit', 'MaxEstimatedMemory = 64 MiB'], ['group', 'region → GROUP_CATEGORY'], ['filter', 'none']], aB, refused);
+
+  // rail and gates
+  Ln([[400, 330], [1200, 330]], { stroke: C.rule, lw: 1.5, dash: [3, 5] });
+  const kA = [[0.8, 400], [1.2, G[0]], [1.55, G[0]], [2.2, G[1]], [2.55, G[1]], [3.2, G[2]], [3.55, G[2]], [4.2, G[3]], [4.55, G[3]], [5.2, G[4]], [5.55, G[4]], [6.2, G[5]], [6.55, G[5]], [7.3, 1190]];
+  const kB = [[8.4, 400], [8.7, G[0]], [8.95, G[0]], [9.2, G[1]], [9.45, G[1]], [9.7, G[2]], [9.95, G[2]], [10.2, G[3]], [10.45, G[3]], [10.7, G[4]], [10.95, G[4]], [11.3, G[5]]];
+  const arrA = i => 1.2 + i * 1.0, arrB = i => 8.7 + i * 0.5;
+  const onB = t >= 8.3;
+  G.forEach((x, i) => {
+    const arrive = onB ? arrB(i) : arrA(i);
+    const passed = t >= arrive + 0.15;
+    const fail = onB && i === 5 && t >= 11.3;
+    const col = fail ? C.coral : passed ? GC[i] : C.faint;
+    R(x - 4, 262, 8, 136, { fill: passed || fail ? col : C.panel2, r: 4 });
+    T(GL[i][0], x, 220, { size: 13.5, weight: 600, align: 'center', color: passed ? C.ink : C.muted });
+    M(GL[i][1], x, 240, { align: 'center', size: 12 });
+    if (passed && !fail && !(onB && t < arrive)) A(seg(t, arrive + 0.1, arrive + 0.35), () => T('✓', x, 428, { size: 18, align: 'center', color: C.teal }));
+  });
+  // beam to file on header+schema gate (A only)
+  A(seg(t, 3.2, 3.4) * (1 - seg(t, 3.9, 4.3)), () => Ln([[G[2], 318], [G[2], 160], [720, 128]], { stroke: C.amber, lw: 1.8, dash: [4, 4] }));
+  // token A
+  if (t >= 0.8 && t < 8.2) {
+    const x = keyX(t, kA); const a = 1 - seg(t, 7.4, 7.9);
+    A(a, () => { dot(x, 330, 14, C.tealS); ring(x, 330, 14, C.teal); T('A', x, 335, { size: 14, weight: 700, align: 'center', color: C.teal }); });
+    A(seg(t, 7.2, 7.5) * a, () => T('✓ admitted', 1200, 300, { size: 15, weight: 600, align: 'right', color: C.teal }));
+  }
+  // token B
+  if (t >= 8.4) {
+    const x = keyX(t, kB); const col = refused ? C.coral : C.teal;
+    dot(x, 330, 14, refused ? C.coralS : C.tealS); ring(x, 330, 14, col); T('B', x, 335, { size: 14, weight: 700, align: 'center', color: col });
+    if (refused) {
+      const p = seg(t, 11.3, 11.7);
+      A(p, () => {
+        ring(G[5], 330, 14 + 26 * eo(seg(t, 11.3, 12.3)), C.coral, 2 * (1 - seg(t, 11.3, 12.3)) + 0.01);
+        R(860, 462, 356, 104, { fill: C.coralS, stroke: C.coral });
+        M('PULSE_LIMIT_EXCEEDED', 880, 492, { color: C.coral, size: 15, weight: 600 });
+        M('MaxEstimatedMemory · grade: certain', 880, 516, { color: C.ink, size: 13 });
+        M('refused before any record was decoded', 880, 540, { size: 13 });
+      });
+    }
+  }
+}
+
+/* ---------- 3. arm ---------- */
+function sArm(t) {
+  A(seg(t, 0.1, 0.5), () => { M('members.pulse', 90, 112, { color: C.ink, size: 14 }); M('zip magic PK\\x03\\x04 → shard archive · _schema.pulse + 4 shards', 212, 112, { size: 13 }); });
+  const Q = [['Has a crosstab?', 'Request.Crosstab'], ['Shard archive, ≥ 2 shards, mergeable?', 'ShardWorkers ≠ 1'], ['Single file, ≥ 100,000 records?', 'DecodeWorkers ≠ 1'], ['Can it stream?', 'Processor.canStream']];
+  const O = ['Fused crosstab', 'Shard-parallel', 'Parallel decode', 'Streaming'];
+  const ys = [150, 246, 342, 438];
+  const chosen = t >= 2.8; const dim = seg(t, 2.8, 3.3);
+  ys.forEach((y, i) => {
+    const active = (i === 0 && t >= 0.8) || (i === 1 && t >= 1.8);
+    A(1 - dim * (i > 1 ? 0.65 : 0), () => {
+      R(90, y, 380, 66, { fill: C.panel, stroke: active ? C.ink : C.rule, lw: active ? 1.6 : 1.2 });
+      T(Q[i][0], 108, y + 28, { size: 15, weight: 600 }); M(Q[i][1], 108, y + 50, { size: 12.5 });
+      if (i < 3) Ln([[280, y + 66], [280, y + 96]], { stroke: C.faint });
+      if (i < 3) M('no', 290, y + 86, { size: 12 });
+    });
+    const win = i === 1 && chosen;
+    A(1 - dim * (win ? 0 : 0.65), () => {
+      Ln([[470, y + 33], [540, y + 33]], { stroke: win ? C.teal : C.faint, lw: win ? 2 : 1.3 });
+      M('yes', 488, y + 25, { size: 12, color: win ? C.teal : C.faint });
+      R(540, y, 240, 66, { fill: win ? C.tealS : C.panel, stroke: win ? C.teal : C.rule, lw: win ? 2 : 1.2 });
+      T(O[i], 558, y + 40, { size: 16, weight: 600, color: win ? C.teal : C.muted });
+    });
+  });
+  A(1 - dim * 0.65, () => { R(90, 534, 690, 50, { fill: C.panel2, stroke: C.rule }); T('Buffered', 108, 565, { size: 15, weight: 600, color: C.muted }); M('the universal fallback', 200, 565, { size: 12.5 }); });
+  // cursor
+  const path = [[0.2, 280, 130], [0.8, 280, 183], [1.8, 280, 279], [2.8, 756, 279]];
+  let cx = 280, cy = 130;
+  for (let i = 1; i < path.length; i++) { if (t >= path[i - 1][0]) { const u = eio(seg(t, path[i - 1][0], path[i][0])); cx = lerp(path[i - 1][1], path[i][1], u); cy = lerp(path[i - 1][2], path[i][2], u); } }
+  if (t >= 0.2) { dot(cx, cy, 7, C.teal); ring(cx, cy, 11, C.teal, 1.5); }
+  // checklist
+  A(seg(t, 3.0, 3.4), () => {
+    R(840, 150, 376, 354, { fill: C.panel, stroke: C.rule });
+    CAP('WHY IT MERGES', 862, 180, { color: C.teal });
+    const items = [['AGG_AVERAGE', 'state {n, mean} folds'], ['GROUP_CATEGORY', 'buckets union by key'], ['FILTER_RANGE', 'row-local'], ['ATTR_FORMULA', 'row-local'], ['no windows, features,', 'regressions or tests']];
+    items.forEach((it, i) => A(seg(t, 3.3 + i * 0.45, 3.6 + i * 0.45), () => {
+      T('✓', 862, 224 + i * 56, { size: 17, color: C.teal });
+      M(it[0], 890, 222 + i * 56, { color: C.ink, size: 14 }); M(it[1], 890, 242 + i * 56, { size: 12.5 });
+    }));
+  });
+}
+
+/* ---------- 4. loop ---------- */
+const TRACK = 352, X0 = 86, X1 = 240, X2 = 430, X3 = 620, X4 = 800, X5 = 966, SP = 300;
+const LANEY = [226, 304, 382, 460];
+function recState(r, t) {
+  const a = t - r.s; if (a < 0) return null;
+  const x = X0 + a * SP;
+  if (!r.keep && x >= X2) {
+    const fa = (x - X2) / SP; if (fa >= 0.75) return { done: 'out' };
+    const fy = Math.min(1, fa / 0.55);
+    return { x: X2 + fa * 46, y: TRACK + (568 - TRACK) * fy * fy, stage: 2, out: true, alpha: 1 - clamp((fa - 0.55) / 0.2), landed: fa >= 0.55 };
+  }
+  if (x <= X4) return { x, y: TRACK, stage: x < X1 ? 0 : x < X3 ? 1 : 3 };
+  const h = (x - X4) / (X5 - X4); if (h >= 1) return { done: 'in' };
+  return { x, y: lerp(TRACK, LANEY[r.g], eio(h)), stage: 3 };
+}
+function glyph(x, y, stage, out, alpha = 1) {
+  A(alpha, () => {
+    const w = stage >= 3 ? 46 : 39;
+    R(x - w / 2, y - 8, w, 16, { fill: C.panel2, stroke: out ? C.coral : stage === 0 ? C.faint : C.teal, r: 3, lw: 1.1 });
+    for (let k = 0; k < 6; k++) {
+      const proj = k === 0 || k === 1 || k === 3; const sx = x - w / 2 + 3 + k * 5.6;
+      if (stage === 0) { ctx.fillStyle = C.faint; ctx.fillRect(sx, y - 4, 4.2, 8); }
+      else if (proj) { ctx.fillStyle = out ? C.coral : C.teal; ctx.fillRect(sx, y - 4, 4.2, 8); }
+    }
+    if (stage >= 3) { ctx.fillStyle = C.violet; ctx.fillRect(x - w / 2 + 3 + 6 * 5.6 + 1, y - 4, 5, 8); }
+  });
+}
+function sLoop(t) {
+  // source
+  R(30, TRACK - 34, 46, 68, { fill: C.panel, stroke: C.teal, r: 3 });
+  M('shard', 53, TRACK - 6, { align: 'center', size: 11 }); M('.pulse', 53, TRACK + 10, { align: 'center', size: 11 });
+  Ln([[76, TRACK], [X4, TRACK]], { stroke: C.rule, lw: 1.5 });
+  // tally
+  let decoded = 0, passed = 0, outN = 0, seenF = 0; const b = REG.map(() => ({ n: 0, sum: 0 }));
+  const live = [];
+  recs.forEach(r => {
+    const st = recState(r, t); if (!st) return;
+    const x = X0 + (t - r.s) * SP;
+    if (x >= X1) decoded++;
+    if (x >= X2) seenF++;
+    if (r.keep && x >= X2) passed++;
+    if (st.done === 'out' || st.landed) outN++;
+    if (st.done === 'in') { b[r.g].n++; b[r.g].sum += r.inc; }
+    if (!st.done) live.push(st);
+  });
+  // stations
+  const ST = [[X1, 'DECODE', 'projected', '3 of 6 columns', C.teal], [X2, 'FILTER_RANGE', 'age 18–65', '', C.coral], [X3, 'ATTR_FORMULA', 'income_k = income/1000', '', C.violet], [X4, 'GROUP_CATEGORY', 'region', '', C.ink]];
+  ST.forEach(([x, a, bb, c, col]) => {
+    R(x - 30, 232, 60, 240, { fill: 'rgba(23,37,42,0.55)', stroke: C.rule, r: 6 });
+    Ln([[x, 240], [x, 464]], { stroke: col, lw: 1, dash: [2, 4] });
+    T(a, x, 184, { size: 13, weight: 600, align: 'center', color: col === C.ink ? C.ink : col }); M(bb, x, 204, { align: 'center', size: 12 });
+  });
+  M('3 of 6 columns', X1, 496, { align: 'center', size: 12 }); M(fmt(decoded) + ' decoded', X1, 516, { align: 'center', size: 12.5, color: C.ink });
+  M('n_in ' + seenF, X2 + 40, 496, { size: 12.5, color: C.ink }); M('n_out ' + passed, X2 + 40, 516, { size: 12.5, color: C.teal });
+  M('+1 column', X3, 496, { align: 'center', size: 12, color: C.violet });
+  // out bin
+  R(X2 - 30, 560, 130, 28, { fill: C.coralS, stroke: C.coral, r: 3 });
+  M('dropped ' + outN, X2 + 35, 579, { align: 'center', size: 12, color: C.coral });
+  // buckets
+  T('AGG_AVERAGE income_k', 1216, 160, { size: 13, weight: 600, align: 'right', color: C.teal }); M('running state per bucket', 1216, 180, { align: 'right', size: 12 });
+  REG.forEach((r, i) => {
+    const y = LANEY[i];
+    R(X5, y - 30, 250, 60, { fill: C.panel, stroke: C.rule });
+    T(r, X5 + 16, y - 5, { size: 15, weight: 600 }); M('n ' + b[i].n, X5 + 16, y + 17, { size: 13 });
+    const m = b[i].n ? b[i].sum / b[i].n : 0;
+    M(b[i].n ? 'mean ' + m.toFixed(1) + 'k' : 'mean —', X5 + 234, y - 5, { align: 'right', size: 14, color: C.ink });
+    ctx.fillStyle = C.rule; ctx.fillRect(X5 + 110, y + 12, 124, 4);
+    if (b[i].n) { ctx.fillStyle = C.teal; ctx.fillRect(X5 + 110, y + 12, 124 * clamp((m - 40) / 60), 4); }
+  });
+  live.forEach(st => glyph(st.x, st.y, st.stage, st.out, st.alpha ?? 1));
+  A(seg(t, 14.0, 14.6), () => { R(X5, 506, 250, 64, { fill: C.tealS, stroke: C.teal }); M('state = 4 × {n, mean}', X5 + 16, 532, { color: C.teal, size: 13.5 }); M('one record buffer, reused', X5 + 16, 554, { size: 12.5 }); });
+}
+
+/* ---------- 5. shards ---------- */
+function sShards(t) {
+  const LY = [180, 268, 356, 444], DURS = [3.8, 5.2, 3.0, 4.4], ST0 = 0.8;
+  const finish = DURS.map(d => ST0 + d);
+  const order = [0, 1, 2, 3].sort((a, b) => finish[a] - finish[b]);
+  CAP('FOUR WORKERS · ShardWorkers = 0 → NumCPU', 70, 140);
+  LY.forEach((y, s) => {
+    const p = seg(t, ST0, finish[s]);
+    T('shard ' + (s + 1), 70, y + 6, { size: 16, weight: 600 }); M('35 records', 70, y + 26, { size: 12 });
+    R(200, y - 12, 420, 24, { fill: C.panel, stroke: C.rule, r: 12 });
+    if (p > 0) R(200, y - 12, Math.max(24, 420 * p), 24, { fill: C.tealS, stroke: C.teal, r: 12 });
+    const sub = recs.filter(r => r.shard === s); const seen = Math.floor(p * 35 + 1e-6);
+    const kept = sub.slice(0, seen).filter(r => r.keep).length;
+    M('kept ' + kept, 640, y + 5, { size: 13.5, color: C.ink });
+    if (t >= finish[s]) {
+      const rank = order.indexOf(s) + 1;
+      A(seg(t, finish[s], finish[s] + 0.3), () => { R(730, y - 14, 92, 28, { fill: C.panel2, stroke: C.amber, r: 14 }); M('done #' + rank, 776, y + 5, { align: 'center', size: 12.5, color: C.amber }); });
+    }
+  });
+  A(seg(t, 4.0, 4.4), () => M('finish order:  3 · 1 · 4 · 2', 200, 520, { size: 15, color: C.amber }));
+  // merge
+  const MS = 6.6, step = 0.7;
+  A(seg(t, 6.2, 6.6), () => {
+    M('merge order:   1 → 2 → 3 → 4', 200, 552, { size: 15, color: C.teal });
+    R(900, 150, 316, 340, { fill: C.panel, stroke: C.teal, lw: 1.6 });
+    CAP('MERGED PARTIAL', 922, 180, { color: C.teal });
+  });
+  let merged = REG.map(() => ({ n: 0, sum: 0 }));
+  for (let s = 0; s < 4; s++) { if (t >= MS + (s + 1) * step) PART[s].forEach((p, i) => { merged[i].n += p.n; merged[i].sum += p.sum; }); }
+  if (t >= 6.4) REG.forEach((r, i) => {
+    const y = 226 + i * 62;
+    T(r, 922, y, { size: 15, weight: 600 });
+    M('n ' + merged[i].n, 922, y + 22, { size: 13 });
+    M(merged[i].n ? 'mean ' + mean(merged[i]) + 'k' : 'mean —', 1196, y, { align: 'right', size: 14, color: C.ink });
+  });
+  for (let s = 0; s < 4; s++) {
+    const a0 = MS + s * step, a1 = a0 + step; if (t < a0 || t > a1 + 0.05) continue;
+    const u = eio(seg(t, a0, a1)); const x = lerp(690, 900, u), y = lerp(LY[s], 320, u);
+    R(x - 34, y - 13, 68, 26, { fill: C.tealS, stroke: C.teal, r: 13 }); M('#' + (s + 1), x, y + 5, { align: 'center', size: 12.5, color: C.teal });
+  }
+  A(seg(t, 9.6, 10.0), () => M('= the serial result', 1196, 520, { align: 'right', size: 14, color: C.teal }));
+}
+
+/* ---------- 6. crosstab ---------- */
+const XT = [[12, 7, 3], [9, 14, 5], [4, 6, 8]];
+const XROWS = ['North', 'South', 'East'], XCOLS = ['Basic', 'Plus', 'Pro'];
+const parts = []; { const r2 = rng(5); XT.forEach((row, i) => row.forEach((n, j) => { for (let k = 0; k < n; k++) parts.push({ i, j, jx: r2() * 70 - 35, jy: r2() * 20 - 10, o: r2() }); })); parts.sort((a, b) => a.o - b.o); parts.forEach((p, k) => p.at = 0.6 + 4.6 * k / parts.length); }
+function sCrosstab(t) {
+  const GX = 230, GY = 196, CW = 120, CH = 70;
+  CAP('COUNT OF RECORDS · ROWS = REGION · COLUMNS = PLAN', 70, 120);
+  XCOLS.forEach((c, j) => T(c, GX + j * CW + CW / 2, GY - 16, { size: 15, weight: 600, align: 'center' }));
+  T('row margin', GX + 3 * CW + 14 + 60, GY - 16, { size: 15, weight: 600, align: 'center' });
+  const landed = XT.map(r => r.map(() => 0));
+  parts.forEach(p => { if (t >= p.at + 0.5) landed[p.i][p.j]++; });
+  const r2in = t >= 7.6;
+  XROWS.forEach((rname, i) => {
+    T(rname, GX - 18, GY + i * CH + 42, { size: 15, weight: 600, align: 'right' });
+    for (let j = 0; j < 3; j++) { R(GX + j * CW, GY + i * CH, CW - 4, CH - 4, { fill: C.panel, stroke: C.rule, r: 2 }); T(String(landed[i][j]), GX + j * CW + CW / 2 - 2, GY + i * CH + 44, { size: 26, weight: 700, align: 'center', stretch: 'expanded' }); }
+    const rm = landed[i].reduce((a, b) => a + b, 0) + (i === 2 && r2in ? 1 : 0);
+    const isEast = i === 2 && t >= 7.6;
+    R(GX + 3 * CW + 14, GY + i * CH, 120, CH - 4, { fill: C.panel2, stroke: isEast ? C.amber : C.rule, lw: isEast ? 2 : 1.2, r: 2 });
+    T(String(rm), GX + 3 * CW + 74, GY + i * CH + 36, { size: 24, weight: 700, align: 'center', stretch: 'expanded' });
+    const aux = landed[i].reduce((a, b) => a + b, 0);
+    M('aux over ' + aux, GX + 3 * CW + 74, GY + i * CH + 56, { align: 'center', size: 11.5, color: isEast ? C.amber : C.muted });
+  });
+  const my = GY + 3 * CH + 10;
+  T('col margin', GX - 18, my + 42, { size: 15, weight: 600, align: 'right' });
+  for (let j = 0; j < 3; j++) { const cm = landed.reduce((a, r) => a + r[j], 0); R(GX + j * CW, my, CW - 4, CH - 4, { fill: C.panel2, stroke: C.rule, r: 2 }); T(String(cm), GX + j * CW + CW / 2 - 2, my + 44, { size: 24, weight: 700, align: 'center', stretch: 'expanded' }); }
+  const grand = landed.flat().reduce((a, b) => a + b, 0) + (r2in ? 1 : 0);
+  R(GX + 3 * CW + 14, my, 120, CH - 4, { fill: C.panel2, stroke: C.ink, lw: 1.6, r: 2 });
+  T(String(grand), GX + 3 * CW + 74, my + 36, { size: 24, weight: 700, align: 'center', stretch: 'expanded' }); M('grand', GX + 3 * CW + 74, my + 56, { align: 'center', size: 11.5 });
+  // falling particles
+  parts.forEach(p => { if (t < p.at || t >= p.at + 0.5) return; const u = seg(t, p.at, p.at + 0.5); const tx = GX + p.j * CW + CW / 2 + p.jx * 0.5, ty = GY + p.i * CH + CH / 2 + p.jy; dot(tx, lerp(140, ty, u * u), 4, C.teal); });
+  // record 2
+  A(seg(t, 5.8, 6.2), () => {
+    R(860, 196, 356, 76, { fill: C.panel, stroke: C.amber });
+    dot(888, 234, 12, C.amber); T('2', 888, 239, { size: 14, weight: 700, align: 'center', color: C.bg });
+    T('Record ②', 912, 228, { size: 15, weight: 600 }); M('region East · plan null', 912, 250, { size: 13 });
+  });
+  if (t >= 6.2 && t < 7.8) {
+    const k = [[6.2, 860, 234], [6.8, GX + CW * 1.5, GY + 2 * CH + 33], [7.2, GX + CW * 2.6, GY + 2 * CH + 33], [7.6, GX + 3 * CW + 74, GY + 2 * CH + 33]];
+    let x = 860, y = 234; for (let i = 1; i < k.length; i++) if (t >= k[i - 1][0]) { const u = eio(seg(t, k[i - 1][0], k[i][0])); x = lerp(k[i - 1][1], k[i][1], u); y = lerp(k[i - 1][2], k[i][2], u); }
+    dot(x, y, 9, C.amber);
+    if (t > 6.8 && t < 7.5) M('no plan → no cell', GX + CW * 1.5, GY + 2 * CH + 8, { size: 12.5, color: C.amber, align: 'center' });
+  }
+  // table + rule
+  A(seg(t, 7.8, 8.1), () => {
+    const cols = ['cell', 'row m.', 'grand', 'aux m.'];
+    cols.forEach((c, j) => M(c, 940 + j * 72, 312, { align: 'center', size: 12, color: j === 3 ? C.violet : C.muted }));
+    Ln([[870, 322], [1216, 322]]);
+    M('②', 884, 350, { size: 15, color: C.amber });
+    ['—', '✓', '✓', '—'].forEach((v, j) => M(v, 940 + j * 72, 350, { align: 'center', size: 15, color: v === '✓' ? C.amber : C.muted }));
+  });
+  A(seg(t, 8.3, 8.7), () => {
+    R(860, 400, 356, 112, { fill: C.violetS, stroke: C.violet });
+    CAP('THE ADMISSION RULE', 882, 430, { color: C.violet });
+    T('A record reaches an auxiliary', 882, 464, { size: 18, weight: 600 }); T('margin only if it reached a cell.', 882, 490, { size: 18, weight: 600 });
+  });
+}
+
+/* ---------- 7. answer ---------- */
+const TESTS = [['North vs South', 0.004], ['North vs East', 0.012], ['South vs West', 0.030], ['East vs West', 0.200]];
+function sAnswer(t) {
+  const end = seg(t, 11.4, 12.2);
+  A(1 - end, () => {
+    const env = eo(seg(t, 9.6, 10.6));
+    if (env > 0) {
+      R(lerp(640, 44, env), lerp(360, 86, env), lerp(0, 1192, env), lerp(0, 536, env), { stroke: C.ink, lw: 1.6, r: 6 });
+      A(seg(t, 10.2, 10.7), () => {
+        R(44, 86, 1192, 34, { fill: C.panel2, r: 6 });
+        M('{ "format_version": "1.1",  "data": { … },  "errors": [],  "warnings": [] }', 64, 109, { size: 14.5, color: C.teal });
+      });
+    }
+    const top = 136;
+    R(70, top, 640, 470, { fill: C.panel, stroke: C.rule });
+    CAP('RESPONSE', 92, top + 26);
+    // data rows
+    CAP('DATA', 92, top + 58, { color: C.teal });
+    REG.forEach((r, i) => A(seg(t, 0.3 + i * 0.18, 0.7 + i * 0.18), () => {
+      const y = top + 86 + i * 28, dx = (1 - eo(seg(t, 0.3 + i * 0.18, 0.8 + i * 0.18))) * -30;
+      T(r, 92 + dx, y, { size: 15 }); M('n ' + FINAL[i].n, 250 + dx, y, { size: 13.5, color: C.ink }); M('mean ' + mean(FINAL[i]) + 'k', 360 + dx, y, { size: 13.5, color: C.ink });
+    }));
+    // components (collapses on return shaping)
+    const col = eio(seg(t, 8.4, 9.3));
+    A((1 - col) * seg(t, 1.6, 2.0), () => {
+      const y0 = top + 220;
+      const struck = t >= 8.0;
+      CAP('COMPONENTS', 92, y0, { color: C.violet });
+      [['aggregations[0]', 'n ' + KEPT + '   n_null 0'], ['filterers[0]', 'n_in ' + N + '   n_out ' + KEPT], ['run', 'total_records ' + N]].forEach((c, i) => A(seg(t, 1.8 + i * 0.25, 2.1 + i * 0.25), () => {
+        M(c[0], 92, y0 + 28 + i * 26, { size: 13.5, color: C.ink }); M(c[1], 300, y0 + 28 + i * 26, { size: 13.5 });
+      }));
+      if (struck) A(seg(t, 8.0, 8.3), () => Ln([[88, y0 + 34], [600, y0 + 34]], { stroke: C.coral, lw: 2 }));
+    });
+    A(seg(t, 8.9, 9.3) * (1 - seg(t, 10.4, 10.8)), () => M('components: absent, not null', 92, top + 204, { size: 13.5, color: C.coral }));
+    // tests
+    const ty = top + 340 - 110 * col;
+    A(seg(t, 3.0, 3.4), () => {
+      CAP('TESTS · TEST_T', 92, ty, { color: C.ink });
+      M('p', 330, ty, { size: 12 }); M('sig', 400, ty, { size: 12 });
+      const madj = seg(t, 4.6, 5.0);
+      A(madj, () => { M('p_adjusted', 470, ty, { size: 12, color: C.violet }); M('sig_adj', 590, ty, { size: 12, color: C.violet }); });
+      TESTS.forEach(([name, p], i) => A(seg(t, 3.2 + i * 0.15, 3.5 + i * 0.15), () => {
+        const y = ty + 28 + i * 26;
+        T(name, 92, y, { size: 14.5 }); M(p.toFixed(3), 330, y, { size: 13.5, color: C.ink }); M(p < 0.05 ? 'yes' : 'no', 400, y, { size: 13.5, color: p < 0.05 ? C.teal : C.muted });
+        A(seg(t, 4.7 + i * 0.15, 5.0 + i * 0.15), () => { const pa = Math.min(1, p * 4); M(pa.toFixed(3), 470, y, { size: 13.5, color: C.violet }); M(pa < 0.05 ? 'yes' : 'no', 590, y, { size: 13.5, color: pa < 0.05 ? C.teal : C.coral }); });
+      }));
+    });
+    // multiplicity chip
+    A(seg(t, 4.5, 4.9), () => { R(760, 440, 450, 60, { fill: C.violetS, stroke: C.violet }); M('multiplicity · bonferroni · family request · m = 4', 780, 466, { size: 13, color: C.violet }); M('raw p never moves', 780, 486, { size: 12.5 }); });
+    // overlay sibling
+    A(seg(t, 6.0, 6.4), () => {
+      R(760, top, 450, 190, { fill: C.panel, stroke: C.violet, lw: 1.5 });
+      CAP('OVERLAYS[0] · OVERLAY_INDEX_VS_TOTAL', 782, top + 26, { color: C.violet });
+      M('read-only sibling', 1190, top + 58, { align: 'right', size: 12 });
+      REG.forEach((r, i) => A(seg(t, 6.3 + i * 0.12, 6.6 + i * 0.12), () => {
+        const y = top + 86 + i * 28;
+        Ln([[712, y - 5], [758, y - 5]], { stroke: C.violet, dash: [3, 4], lw: 1.1 });
+        M('index ' + (FINAL[i].sum / FINAL[i].n / ALLMEAN * 100).toFixed(0), 782, y, { size: 13.5, color: C.ink });
+      }));
+    });
+    // return chip
+    A(seg(t, 7.9, 8.2), () => { R(760, 330, 450, 60, { fill: C.panel2, stroke: C.ink }); M('return.exclude: ["components"]', 780, 356, { size: 13.5, color: C.ink }); M('applied by the facade after the run', 780, 376, { size: 12.5 }); });
+  });
+  A(seg(t, 12.0, 12.8), () => {
+    T('PULSE', 640, 300, { size: 92, weight: 800, stretch: 'expanded', align: 'center' });
+    T('ANATOMY', 640, 372, { size: 44, weight: 800, stretch: 'expanded', align: 'center', color: C.teal });
+    M('open → admit → check → arm → loop → merge → fold → shape → envelope', 640, 430, { align: 'center', size: 15 });
+    M('github.com/frankbardon/pulse', 640, 470, { align: 'center', size: 14, color: C.faint });
+  });
+}
+
+/* ---------- render ---------- */
+function sceneAt(t) { for (let i = SCENES.length - 1; i >= 0; i--) if (t >= SCENES[i].start) return i; return 0; }
+function render(t) {
+  t = clamp(t, 0, DUR - 0.001);
+  ctx.setTransform(scale, 0, 0, scale, 0, 0);
+  grid();
+  const i = sceneAt(t), sc = SCENES[i], fl = t - sc.start;
+  const a = Math.min(clamp(fl / 0.45), i === SCENES.length - 1 ? 1 : clamp((sc.fdur - fl) / 0.45));
+  A(a, () => sc.draw(animTime(sc, fl)));
+  chrome(i, fl, t);
+}
+
+/* ---------- player ---------- */
+const playBtn = document.getElementById('play'), icon = document.getElementById('playIcon');
+const scrub = document.getElementById('scrub'), timeEl = document.getElementById('time');
+const list = document.getElementById('chapters'), voice = document.getElementById('voice');
+const soundBtn = document.getElementById('sound'), big = document.getElementById('bigplay');
+scrub.max = DUR;
+const mmss = s => Math.floor(s / 60) + ':' + String(Math.floor(s % 60)).padStart(2, '0');
+SCENES.forEach((s, i) => {
+  const li = document.createElement('li'); const b = document.createElement('button'); b.className = 'chap'; b.type = 'button';
+  b.innerHTML = `<b>${String(i).padStart(2, '0')} · ${mmss(s.start)}</b><span></span>`; b.querySelector('span').textContent = s.name;
+  b.addEventListener('click', () => { seek(s.start + 0.01); if (!playing) setPlaying(true); });
+  li.appendChild(b); list.appendChild(li);
+});
+const chapBtns = [...list.querySelectorAll('.chap')];
+let now = 0, playing = false, last = null, captureMode = false, muted = false, audioOK = !!(voice && NARR);
+const voiceLive = () => audioOK && !muted && !voice.paused;
+function syncAudio() {
+  if (!audioOK) return;
+  if (playing && !muted) { try { voice.currentTime = now; } catch (e) {} const pr = voice.play(); if (pr) pr.catch(() => {}); }
+  else voice.pause();
+}
+function seek(t) { now = clamp(t, 0, DUR - 0.001); last = null; syncAudio(); }
+function setPlaying(p) {
+  playing = p; last = null; big.hidden = true;
+  playBtn.setAttribute('aria-label', p ? 'Pause' : 'Play');
+  icon.innerHTML = p ? '<rect x="3" y="2" width="3.5" height="12"/><rect x="9.5" y="2" width="3.5" height="12"/>' : '<path d="M4 2 L14 8 L4 14 Z"/>';
+  syncAudio();
+}
+function setMuted(m) { muted = m; soundBtn.textContent = m ? 'Narration off' : 'Narration on'; soundBtn.setAttribute('aria-pressed', String(!m)); syncAudio(); }
+if (voice) voice.addEventListener('error', () => { audioOK = false; soundBtn.hidden = true; });
+if (!audioOK) soundBtn.hidden = true;
+soundBtn.addEventListener('click', () => setMuted(!muted));
+big.addEventListener('click', () => { seek(0); setPlaying(true); });
+playBtn.addEventListener('click', () => { if (now >= DUR - 0.05) seek(0); setPlaying(!playing); });
+document.getElementById('restart').addEventListener('click', () => { seek(0); setPlaying(true); });
+scrub.addEventListener('input', () => seek(parseFloat(scrub.value)));
+let curChap = -1;
+function frame(ts) {
+  if (captureMode) return;
+  if (playing) {
+    if (voiceLive() && voice.currentTime > 0) { now = voice.currentTime; }
+    else { if (last != null) now += (ts - last) / 1000; }
+    last = ts;
+    if (now >= DUR) { now = DUR - 0.001; setPlaying(false); }
+  }
+  render(now);
+  scrub.value = now; timeEl.textContent = mmss(now) + ' / ' + mmss(DUR);
+  const ci = sceneAt(now); if (ci !== curChap) { curChap = ci; chapBtns.forEach((b, k) => b.setAttribute('aria-current', k === ci ? 'true' : 'false')); }
+  requestAnimationFrame(frame);
+}
+function fitCanvas() { const w = cv.getBoundingClientRect().width || 1280; setRes(Math.round(Math.min(1920, w * (window.devicePixelRatio || 1)))); }
+window.addEventListener('resize', fitCanvas);
+fitCanvas();
+now = SCENES[0].fdur * 0.75;   /* rest on the title card until the viewer presses play */
+setPlaying(false); big.hidden = false;
+const go = () => requestAnimationFrame(frame);
+(document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).then(go, go);
+window.__film = { DUR, render: t => render(t), capture(px) { captureMode = true; setRes(px); }, toJPEG: q => cv.toDataURL('image/jpeg', q),
+  cues: () => SCENES.flatMap(s => s.cues.map(c => ({ t: s.start + c.fs + LEAD, say: c.say }))) };
+})();
+</script>
