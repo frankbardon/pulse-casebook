@@ -17,7 +17,7 @@ while [ $# -gt 0 ]; do case "$1" in
   --narrate) MODE=full; shift;; --narrate-only) MODE=narrate; shift;;
   --preview) PREVIEW="$2"; shift 2;; --all) shift; set -- $(cd "$FILMS" && ls *.html | sed 's/\.html$//');
     for f in "$@"; do "$0" ${PREVIEW:+--preview $PREVIEW} "$f"; done; exit 0;;
-  -h|--help) sed -n 2,13p "$0"; exit 0;; *) break;; esac; done
+  -h|--help) sed -n 2,12p "$0"; exit 0;; *) break;; esac; done
 NAME="${1:?film name required, e.g. pulse-filters}"
 PAGE="$FILMS/$NAME.html"; SCRIPT="$FILMS/$NAME.js"; [ -f "$SCRIPT" ] || SCRIPT="$PAGE"   # film 1 keeps its script inline
 MP3="$FILMS/$NAME-narration.mp3"
