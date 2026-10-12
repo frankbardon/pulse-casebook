@@ -1,0 +1,5 @@
+{"cohort":{"filename":"a.pulse"},"aggregations":[
+{"type":"AGG_COUNT","field":"spend"},{"type":"AGG_NULL_COUNT","field":"spend"},{"type":"AGG_SUM","field":"spend"},{"type":"AGG_AVERAGE","field":"spend"},
+{"type":"AGG_VARIANCE","field":"spend"},{"type":"AGG_WELFORD","field":"spend"},{"type":"AGG_MEDIAN","field":"spend"},{"type":"AGG_MODE","field":"spend"},
+{"type":"AGG_RATIO","field":"spend","params":{"numerator_field":"spend","denominator_field":"cost"}},{"type":"AGG_CI_LOWER","field":"spend"},
+{"type":"AGG_AVERAGE","field":"empty","label":"avg_empty"},{"type":"AGG_COUNT","field":"empty","label":"n_empty"},{"type":"AGG_MODE_COUNT","field":"tier"},{"type":"AGG_DISTINCT_COUNT","field":"tier"}]}

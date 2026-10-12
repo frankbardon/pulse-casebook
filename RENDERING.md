@@ -97,7 +97,8 @@ Commit the changed `.js` or `.html` file and the MP3 together, because the page 
    - Draw with the helpers from `PulseFilm.h`, and end with `PulseFilm.mount({ series, narr: NARR, scenes })`.
    - Keep the line `const NARR = /*NARR*/null/*END*/;`.
    - `draw(t)` must depend only on `t`.
-3. Check layouts with `node stills.js ../pulse-<topic>.html …` before narrating.
+3. Check layouts with `node stills.js ../pulse-<topic>.html …` before narrating, or `./shots.sh pulse-<topic> sheet 10 40 70 100` for 2×2 contact sheets (needs ImageMagick).
+   Put the film's cohort, requests and captured outputs in `data/<topic>/` and add it to `data/run.sh`.
 4. Run `./render.sh --narrate pulse-<topic>`.
 5. Check it against `SERIES-RULES.md`, then commit the page, script and MP3.
 

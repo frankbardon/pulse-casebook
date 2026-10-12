@@ -25,6 +25,7 @@ Infographics and a series of narrated films that explain how Pulse works. This b
   ./render.sh pulse-filters
   ```
 
+- **Film data:** `data/` holds the cohorts, generators, requests and captured outputs behind films 6 to 10. `data/run.sh` rebuilds them; see **[data/README.md](data/README.md)**.
 - **Series rules:** **[SERIES-RULES.md](SERIES-RULES.md)** holds the rules every film follows. These include no catalog counts, always saying that more are added over time, and checking every fact against the code.
 
 ## Layout
@@ -36,8 +37,9 @@ films/<name>.html / .js      one film: page markup + scenes and script
 films/<name>-narration.mp3   its narration (Kokoro, voice af_heart)
 films/build/                 render.sh, setup.sh and the pipeline scripts
 subtitles/<name>.srt         subtitles matching each committed narration
+data/<film>/                 cohort generator or CSV, requests, captured outputs; data/run.sh rebuilds
 ```
 
 ## Accuracy
 
-Operator names, parameters, null rules, components, error codes and stage order follow the Pulse source and its skill pack as of October 2026. The cohorts, samples, p-values and correlations in the films are illustrative.
+Operator names, parameters, null rules, components, error codes and stage order follow the Pulse source and its skill pack as of October 2026. The cohorts, samples, p-values and correlations in the films are illustrative. From film 6 on, every figure on a result card comes from a real Pulse run recorded in `data/`.

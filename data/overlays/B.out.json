@@ -1,0 +1,1376 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "revenue": 1754.4900000000005,
+        "signup": "2024-01"
+      },
+      {
+        "revenue": 2330.41,
+        "signup": "2024-02"
+      },
+      {
+        "revenue": 2528.650000000001,
+        "signup": "2024-03"
+      },
+      {
+        "revenue": 2167.14,
+        "signup": "2024-04"
+      },
+      {
+        "revenue": 2632.980000000001,
+        "signup": "2024-05"
+      },
+      {
+        "revenue": 2082.38,
+        "signup": "2024-06"
+      },
+      {
+        "revenue": 1948.84,
+        "signup": "2024-07"
+      },
+      {
+        "revenue": 2114.61,
+        "signup": "2024-08"
+      },
+      {
+        "revenue": 2189.8999999999996,
+        "signup": "2024-09"
+      },
+      {
+        "revenue": 1994.46,
+        "signup": "2024-10"
+      },
+      {
+        "revenue": 2007.0599999999995,
+        "signup": "2024-11"
+      },
+      {
+        "revenue": 2751.689999999999,
+        "signup": "2024-12"
+      },
+      {
+        "revenue": 2658.250000000001,
+        "signup": "2025-01"
+      },
+      {
+        "revenue": 3314.549999999999,
+        "signup": "2025-02"
+      },
+      {
+        "revenue": 3873.0900000000015,
+        "signup": "2025-03"
+      },
+      {
+        "revenue": 2603.1099999999997,
+        "signup": "2025-04"
+      },
+      {
+        "revenue": 3203.2000000000007,
+        "signup": "2025-05"
+      },
+      {
+        "revenue": 2851.1200000000003,
+        "signup": "2025-06"
+      },
+      {
+        "revenue": 2841.599999999999,
+        "signup": "2025-07"
+      },
+      {
+        "revenue": 2294.879999999999,
+        "signup": "2025-08"
+      },
+      {
+        "revenue": 3116.530000000001,
+        "signup": "2025-09"
+      },
+      {
+        "revenue": 3007.7000000000003,
+        "signup": "2025-10"
+      },
+      {
+        "revenue": 2812.610000000001,
+        "signup": "2025-11"
+      },
+      {
+        "revenue": 2961.4199999999996,
+        "signup": "2025-12"
+      }
+    ],
+    "metadata": {
+      "total_rows": 1282,
+      "filtered_rows": 1282,
+      "cohort_file": "o.pulse"
+    },
+    "overlays": [
+      {
+        "name": "mom",
+        "kind": "OVERLAY_INDEX_VS_PRIOR",
+        "scope": "group",
+        "ref": {},
+        "payload": {
+          "shape": "series",
+          "series": {
+            "entries": [
+              {
+                "key": [
+                  "2024-01"
+                ],
+                "summary": {
+                  "statistic": null
+                }
+              },
+              {
+                "key": [
+                  "2024-02"
+                ],
+                "summary": {
+                  "statistic": 132.8254934482385
+                }
+              },
+              {
+                "key": [
+                  "2024-03"
+                ],
+                "summary": {
+                  "statistic": 108.50665762676958
+                }
+              },
+              {
+                "key": [
+                  "2024-04"
+                ],
+                "summary": {
+                  "statistic": 85.70343859371597
+                }
+              },
+              {
+                "key": [
+                  "2024-05"
+                ],
+                "summary": {
+                  "statistic": 121.49561172789949
+                }
+              },
+              {
+                "key": [
+                  "2024-06"
+                ],
+                "summary": {
+                  "statistic": 79.0883333713131
+                }
+              },
+              {
+                "key": [
+                  "2024-07"
+                ],
+                "summary": {
+                  "statistic": 93.58714547777062
+                }
+              },
+              {
+                "key": [
+                  "2024-08"
+                ],
+                "summary": {
+                  "statistic": 108.50608567147637
+                }
+              },
+              {
+                "key": [
+                  "2024-09"
+                ],
+                "summary": {
+                  "statistic": 103.56046741479514
+                }
+              },
+              {
+                "key": [
+                  "2024-10"
+                ],
+                "summary": {
+                  "statistic": 91.07539157039136
+                }
+              },
+              {
+                "key": [
+                  "2024-11"
+                ],
+                "summary": {
+                  "statistic": 100.63174994735415
+                }
+              },
+              {
+                "key": [
+                  "2024-12"
+                ],
+                "summary": {
+                  "statistic": 137.10053511105795
+                }
+              },
+              {
+                "key": [
+                  "2025-01"
+                ],
+                "summary": {
+                  "statistic": 96.60426864944822
+                }
+              },
+              {
+                "key": [
+                  "2025-02"
+                ],
+                "summary": {
+                  "statistic": 124.68917520925412
+                }
+              },
+              {
+                "key": [
+                  "2025-03"
+                ],
+                "summary": {
+                  "statistic": 116.85115626555648
+                }
+              },
+              {
+                "key": [
+                  "2025-04"
+                ],
+                "summary": {
+                  "statistic": 67.21016036291432
+                }
+              },
+              {
+                "key": [
+                  "2025-05"
+                ],
+                "summary": {
+                  "statistic": 123.05280990814838
+                }
+              },
+              {
+                "key": [
+                  "2025-06"
+                ],
+                "summary": {
+                  "statistic": 89.00849150849149
+                }
+              },
+              {
+                "key": [
+                  "2025-07"
+                ],
+                "summary": {
+                  "statistic": 99.66609613064334
+                }
+              },
+              {
+                "key": [
+                  "2025-08"
+                ],
+                "summary": {
+                  "statistic": 80.76013513513513
+                }
+              },
+              {
+                "key": [
+                  "2025-09"
+                ],
+                "summary": {
+                  "statistic": 135.80361500383472
+                }
+              },
+              {
+                "key": [
+                  "2025-10"
+                ],
+                "summary": {
+                  "statistic": 96.50797521602549
+                }
+              },
+              {
+                "key": [
+                  "2025-11"
+                ],
+                "summary": {
+                  "statistic": 93.51364830268979
+                }
+              },
+              {
+                "key": [
+                  "2025-12"
+                ],
+                "summary": {
+                  "statistic": 105.2908152925574
+                }
+              }
+            ]
+          }
+        },
+        "summary": {
+          "min": 67.21016036291432,
+          "max": 137.10053511105795,
+          "count": 23,
+          "baseline": 100
+        }
+      },
+      {
+        "name": "roll",
+        "kind": "OVERLAY_ZSCORE_VS_ROLLING",
+        "scope": "group",
+        "ref": {
+          "rolling_mean": {}
+        },
+        "payload": {
+          "shape": "series",
+          "series": {
+            "entries": [
+              {
+                "key": [
+                  "2024-01"
+                ],
+                "summary": {
+                  "statistic": null
+                }
+              },
+              {
+                "key": [
+                  "2024-02"
+                ],
+                "summary": {
+                  "statistic": null
+                }
+              },
+              {
+                "key": [
+                  "2024-03"
+                ],
+                "summary": {
+                  "statistic": 1.1938995590113222
+                }
+              },
+              {
+                "key": [
+                  "2024-04"
+                ],
+                "summary": {
+                  "statistic": -0.09294407055257473
+                }
+              },
+              {
+                "key": [
+                  "2024-05"
+                ],
+                "summary": {
+                  "statistic": 1.6069303640091588
+                }
+              },
+              {
+                "key": [
+                  "2024-06"
+                ],
+                "summary": {
+                  "statistic": -1.474821215169114
+                }
+              },
+              {
+                "key": [
+                  "2024-07"
+                ],
+                "summary": {
+                  "statistic": -1.1648114722264125
+                }
+              },
+              {
+                "key": [
+                  "2024-08"
+                ],
+                "summary": {
+                  "statistic": -0.29448045325783445
+                }
+              },
+              {
+                "key": [
+                  "2024-09"
+                ],
+                "summary": {
+                  "statistic": 1.6075172221378755
+                }
+              },
+              {
+                "key": [
+                  "2024-10"
+                ],
+                "summary": {
+                  "statistic": -0.7296824927897921
+                }
+              },
+              {
+                "key": [
+                  "2024-11"
+                ],
+                "summary": {
+                  "statistic": -0.939358751180778
+                }
+              },
+              {
+                "key": [
+                  "2024-12"
+                ],
+                "summary": {
+                  "statistic": 6.288839005275492
+                }
+              },
+              {
+                "key": [
+                  "2025-01"
+                ],
+                "summary": {
+                  "statistic": 0.9390782097499685
+                }
+              },
+              {
+                "key": [
+                  "2025-02"
+                ],
+                "summary": {
+                  "statistic": 2.07627637590635
+                }
+              },
+              {
+                "key": [
+                  "2025-03"
+                ],
+                "summary": {
+                  "statistic": 2.717883853124731
+                }
+              },
+              {
+                "key": [
+                  "2025-04"
+                ],
+                "summary": {
+                  "statistic": -1.1163969682718107
+                }
+              },
+              {
+                "key": [
+                  "2025-05"
+                ],
+                "summary": {
+                  "statistic": -0.09486445891501699
+                }
+              },
+              {
+                "key": [
+                  "2025-06"
+                ],
+                "summary": {
+                  "statistic": -0.5908090471508298
+                }
+              },
+              {
+                "key": [
+                  "2025-07"
+                ],
+                "summary": {
+                  "statistic": -0.14661148617786202
+                }
+              },
+              {
+                "key": [
+                  "2025-08"
+                ],
+                "summary": {
+                  "statistic": -3.253287856972716
+                }
+              },
+              {
+                "key": [
+                  "2025-09"
+                ],
+                "summary": {
+                  "statistic": 1.4257224816108804
+                }
+              },
+              {
+                "key": [
+                  "2025-10"
+                ],
+                "summary": {
+                  "statistic": 0.613739902592549
+                }
+              },
+              {
+                "key": [
+                  "2025-11"
+                ],
+                "summary": {
+                  "statistic": 0.013981843709735847
+                }
+              },
+              {
+                "key": [
+                  "2025-12"
+                ],
+                "summary": {
+                  "statistic": -0.11381934536717585
+                }
+              }
+            ]
+          }
+        },
+        "summary": {
+          "min": -3.253287856972716,
+          "max": 6.288839005275492,
+          "count": 22,
+          "baseline": 0
+        }
+      },
+      {
+        "name": "yoy",
+        "kind": "OVERLAY_YOY",
+        "scope": "group",
+        "ref": {
+          "yoy": {}
+        },
+        "payload": {
+          "shape": "series",
+          "series": {
+            "entries": [
+              {
+                "key": [
+                  "2024-01"
+                ],
+                "summary": {
+                  "statistic": null
+                }
+              },
+              {
+                "key": [
+                  "2024-02"
+                ],
+                "summary": {
+                  "statistic": null
+                }
+              },
+              {
+                "key": [
+                  "2024-03"
+                ],
+                "summary": {
+                  "statistic": null
+                }
+              },
+              {
+                "key": [
+                  "2024-04"
+                ],
+                "summary": {
+                  "statistic": null
+                }
+              },
+              {
+                "key": [
+                  "2024-05"
+                ],
+                "summary": {
+                  "statistic": null
+                }
+              },
+              {
+                "key": [
+                  "2024-06"
+                ],
+                "summary": {
+                  "statistic": null
+                }
+              },
+              {
+                "key": [
+                  "2024-07"
+                ],
+                "summary": {
+                  "statistic": null
+                }
+              },
+              {
+                "key": [
+                  "2024-08"
+                ],
+                "summary": {
+                  "statistic": null
+                }
+              },
+              {
+                "key": [
+                  "2024-09"
+                ],
+                "summary": {
+                  "statistic": null
+                }
+              },
+              {
+                "key": [
+                  "2024-10"
+                ],
+                "summary": {
+                  "statistic": null
+                }
+              },
+              {
+                "key": [
+                  "2024-11"
+                ],
+                "summary": {
+                  "statistic": null
+                }
+              },
+              {
+                "key": [
+                  "2024-12"
+                ],
+                "summary": {
+                  "statistic": null
+                }
+              },
+              {
+                "key": [
+                  "2025-01"
+                ],
+                "summary": {
+                  "statistic": 151.51126538196286
+                }
+              },
+              {
+                "key": [
+                  "2025-02"
+                ],
+                "summary": {
+                  "statistic": 142.23033715097338
+                }
+              },
+              {
+                "key": [
+                  "2025-03"
+                ],
+                "summary": {
+                  "statistic": 153.1682913807763
+                }
+              },
+              {
+                "key": [
+                  "2025-04"
+                ],
+                "summary": {
+                  "statistic": 120.11729745194127
+                }
+              },
+              {
+                "key": [
+                  "2025-05"
+                ],
+                "summary": {
+                  "statistic": 121.65682990375923
+                }
+              },
+              {
+                "key": [
+                  "2025-06"
+                ],
+                "summary": {
+                  "statistic": 136.91641295056618
+                }
+              },
+              {
+                "key": [
+                  "2025-07"
+                ],
+                "summary": {
+                  "statistic": 145.8098150694772
+                }
+              },
+              {
+                "key": [
+                  "2025-08"
+                ],
+                "summary": {
+                  "statistic": 108.52497623675283
+                }
+              },
+              {
+                "key": [
+                  "2025-09"
+                ],
+                "summary": {
+                  "statistic": 142.31380428330067
+                }
+              },
+              {
+                "key": [
+                  "2025-10"
+                ],
+                "summary": {
+                  "statistic": 150.80272354421749
+                }
+              },
+              {
+                "key": [
+                  "2025-11"
+                ],
+                "summary": {
+                  "statistic": 140.13582055344642
+                }
+              },
+              {
+                "key": [
+                  "2025-12"
+                ],
+                "summary": {
+                  "statistic": 107.62186147422132
+                }
+              }
+            ]
+          }
+        },
+        "summary": {
+          "min": 107.62186147422132,
+          "max": 153.1682913807763,
+          "count": 12,
+          "baseline": 100
+        }
+      },
+      {
+        "name": "base",
+        "kind": "OVERLAY_INDEX_VS_BASELINE",
+        "scope": "group",
+        "ref": {
+          "baseline_index": {}
+        },
+        "payload": {
+          "shape": "series",
+          "series": {
+            "entries": [
+              {
+                "key": [
+                  "2024-01"
+                ],
+                "summary": {
+                  "statistic": 100
+                }
+              },
+              {
+                "key": [
+                  "2024-02"
+                ],
+                "summary": {
+                  "statistic": 132.8254934482385
+                }
+              },
+              {
+                "key": [
+                  "2024-03"
+                ],
+                "summary": {
+                  "statistic": 144.1245034169474
+                }
+              },
+              {
+                "key": [
+                  "2024-04"
+                ],
+                "summary": {
+                  "statistic": 123.5196552844416
+                }
+              },
+              {
+                "key": [
+                  "2024-05"
+                ],
+                "summary": {
+                  "statistic": 150.07096079202503
+                }
+              },
+              {
+                "key": [
+                  "2024-06"
+                ],
+                "summary": {
+                  "statistic": 118.68862176472932
+                }
+              },
+              {
+                "key": [
+                  "2024-07"
+                ],
+                "summary": {
+                  "statistic": 111.07729311651815
+                }
+              },
+              {
+                "key": [
+                  "2024-08"
+                ],
+                "summary": {
+                  "statistic": 120.52562283056612
+                }
+              },
+              {
+                "key": [
+                  "2024-09"
+                ],
+                "summary": {
+                  "statistic": 124.81689835792733
+                }
+              },
+              {
+                "key": [
+                  "2024-10"
+                ],
+                "summary": {
+                  "statistic": 113.67747892549968
+                }
+              },
+              {
+                "key": [
+                  "2024-11"
+                ],
+                "summary": {
+                  "statistic": 114.39563633876506
+                }
+              },
+              {
+                "key": [
+                  "2024-12"
+                ],
+                "summary": {
+                  "statistic": 156.83702956414675
+                }
+              },
+              {
+                "key": [
+                  "2025-01"
+                ],
+                "summary": {
+                  "statistic": 151.51126538196286
+                }
+              },
+              {
+                "key": [
+                  "2025-02"
+                ],
+                "summary": {
+                  "statistic": 188.91814715387366
+                }
+              },
+              {
+                "key": [
+                  "2025-03"
+                ],
+                "summary": {
+                  "statistic": 220.75303934476688
+                }
+              },
+              {
+                "key": [
+                  "2025-04"
+                ],
+                "summary": {
+                  "statistic": 148.3684717496252
+                }
+              },
+              {
+                "key": [
+                  "2025-05"
+                ],
+                "summary": {
+                  "statistic": 182.5715735056911
+                }
+              },
+              {
+                "key": [
+                  "2025-06"
+                ],
+                "summary": {
+                  "statistic": 162.5042035007324
+                }
+              },
+              {
+                "key": [
+                  "2025-07"
+                ],
+                "summary": {
+                  "statistic": 161.96159567737624
+                }
+              },
+              {
+                "key": [
+                  "2025-08"
+                ],
+                "summary": {
+                  "statistic": 130.80040353607023
+                }
+              },
+              {
+                "key": [
+                  "2025-09"
+                ],
+                "summary": {
+                  "statistic": 177.63167644158705
+                }
+              },
+              {
+                "key": [
+                  "2025-10"
+                ],
+                "summary": {
+                  "statistic": 171.4287342760574
+                }
+              },
+              {
+                "key": [
+                  "2025-11"
+                ],
+                "summary": {
+                  "statistic": 160.30926366066493
+                }
+              },
+              {
+                "key": [
+                  "2025-12"
+                ],
+                "summary": {
+                  "statistic": 168.79093069780956
+                }
+              }
+            ]
+          }
+        },
+        "summary": {
+          "min": 100,
+          "max": 220.75303934476688,
+          "count": 24,
+          "baseline": 100
+        }
+      }
+    ],
+    "components": {
+      "aggregations": [
+        {
+          "label": "revenue",
+          "n": 1282,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "2024-01"
+              ],
+              "n": 40,
+              "n_null": 0,
+              "operator": {
+                "sum": 1754.4900000000005
+              }
+            },
+            {
+              "group_key": [
+                "2024-02"
+              ],
+              "n": 44,
+              "n_null": 0,
+              "operator": {
+                "sum": 2330.41
+              }
+            },
+            {
+              "group_key": [
+                "2024-03"
+              ],
+              "n": 54,
+              "n_null": 0,
+              "operator": {
+                "sum": 2528.650000000001
+              }
+            },
+            {
+              "group_key": [
+                "2024-04"
+              ],
+              "n": 50,
+              "n_null": 0,
+              "operator": {
+                "sum": 2167.14
+              }
+            },
+            {
+              "group_key": [
+                "2024-05"
+              ],
+              "n": 54,
+              "n_null": 0,
+              "operator": {
+                "sum": 2632.980000000001
+              }
+            },
+            {
+              "group_key": [
+                "2024-06"
+              ],
+              "n": 45,
+              "n_null": 0,
+              "operator": {
+                "sum": 2082.38
+              }
+            },
+            {
+              "group_key": [
+                "2024-07"
+              ],
+              "n": 45,
+              "n_null": 0,
+              "operator": {
+                "sum": 1948.84
+              }
+            },
+            {
+              "group_key": [
+                "2024-08"
+              ],
+              "n": 40,
+              "n_null": 0,
+              "operator": {
+                "sum": 2114.61
+              }
+            },
+            {
+              "group_key": [
+                "2024-09"
+              ],
+              "n": 45,
+              "n_null": 0,
+              "operator": {
+                "sum": 2189.8999999999996
+              }
+            },
+            {
+              "group_key": [
+                "2024-10"
+              ],
+              "n": 46,
+              "n_null": 0,
+              "operator": {
+                "sum": 1994.46
+              }
+            },
+            {
+              "group_key": [
+                "2024-11"
+              ],
+              "n": 46,
+              "n_null": 0,
+              "operator": {
+                "sum": 2007.0599999999995
+              }
+            },
+            {
+              "group_key": [
+                "2024-12"
+              ],
+              "n": 56,
+              "n_null": 0,
+              "operator": {
+                "sum": 2751.689999999999
+              }
+            },
+            {
+              "group_key": [
+                "2025-01"
+              ],
+              "n": 53,
+              "n_null": 0,
+              "operator": {
+                "sum": 2658.250000000001
+              }
+            },
+            {
+              "group_key": [
+                "2025-02"
+              ],
+              "n": 67,
+              "n_null": 0,
+              "operator": {
+                "sum": 3314.549999999999
+              }
+            },
+            {
+              "group_key": [
+                "2025-03"
+              ],
+              "n": 72,
+              "n_null": 0,
+              "operator": {
+                "sum": 3873.0900000000015
+              }
+            },
+            {
+              "group_key": [
+                "2025-04"
+              ],
+              "n": 62,
+              "n_null": 0,
+              "operator": {
+                "sum": 2603.1099999999997
+              }
+            },
+            {
+              "group_key": [
+                "2025-05"
+              ],
+              "n": 63,
+              "n_null": 0,
+              "operator": {
+                "sum": 3203.2000000000007
+              }
+            },
+            {
+              "group_key": [
+                "2025-06"
+              ],
+              "n": 55,
+              "n_null": 0,
+              "operator": {
+                "sum": 2851.1200000000003
+              }
+            },
+            {
+              "group_key": [
+                "2025-07"
+              ],
+              "n": 55,
+              "n_null": 0,
+              "operator": {
+                "sum": 2841.599999999999
+              }
+            },
+            {
+              "group_key": [
+                "2025-08"
+              ],
+              "n": 52,
+              "n_null": 0,
+              "operator": {
+                "sum": 2294.879999999999
+              }
+            },
+            {
+              "group_key": [
+                "2025-09"
+              ],
+              "n": 58,
+              "n_null": 0,
+              "operator": {
+                "sum": 3116.530000000001
+              }
+            },
+            {
+              "group_key": [
+                "2025-10"
+              ],
+              "n": 56,
+              "n_null": 0,
+              "operator": {
+                "sum": 3007.7000000000003
+              }
+            },
+            {
+              "group_key": [
+                "2025-11"
+              ],
+              "n": 62,
+              "n_null": 0,
+              "operator": {
+                "sum": 2812.610000000001
+              }
+            },
+            {
+              "group_key": [
+                "2025-12"
+              ],
+              "n": 62,
+              "n_null": 0,
+              "operator": {
+                "sum": 2961.4199999999996
+              }
+            }
+          ]
+        }
+      ],
+      "groupers": [
+        {
+          "field": "signup",
+          "total_n": 1282,
+          "operator": {
+            "buckets": [
+              {
+                "count": 40,
+                "key": "2024-01",
+                "period_end": "2024-01-31",
+                "period_start": "2024-01-01"
+              },
+              {
+                "count": 44,
+                "key": "2024-02",
+                "period_end": "2024-02-29",
+                "period_start": "2024-02-01"
+              },
+              {
+                "count": 54,
+                "key": "2024-03",
+                "period_end": "2024-03-31",
+                "period_start": "2024-03-01"
+              },
+              {
+                "count": 50,
+                "key": "2024-04",
+                "period_end": "2024-04-30",
+                "period_start": "2024-04-01"
+              },
+              {
+                "count": 54,
+                "key": "2024-05",
+                "period_end": "2024-05-31",
+                "period_start": "2024-05-01"
+              },
+              {
+                "count": 45,
+                "key": "2024-06",
+                "period_end": "2024-06-30",
+                "period_start": "2024-06-01"
+              },
+              {
+                "count": 45,
+                "key": "2024-07",
+                "period_end": "2024-07-31",
+                "period_start": "2024-07-01"
+              },
+              {
+                "count": 40,
+                "key": "2024-08",
+                "period_end": "2024-08-31",
+                "period_start": "2024-08-01"
+              },
+              {
+                "count": 45,
+                "key": "2024-09",
+                "period_end": "2024-09-30",
+                "period_start": "2024-09-01"
+              },
+              {
+                "count": 46,
+                "key": "2024-10",
+                "period_end": "2024-10-31",
+                "period_start": "2024-10-01"
+              },
+              {
+                "count": 46,
+                "key": "2024-11",
+                "period_end": "2024-11-30",
+                "period_start": "2024-11-01"
+              },
+              {
+                "count": 56,
+                "key": "2024-12",
+                "period_end": "2024-12-31",
+                "period_start": "2024-12-01"
+              },
+              {
+                "count": 53,
+                "key": "2025-01",
+                "period_end": "2025-01-31",
+                "period_start": "2025-01-01"
+              },
+              {
+                "count": 67,
+                "key": "2025-02",
+                "period_end": "2025-02-28",
+                "period_start": "2025-02-01"
+              },
+              {
+                "count": 72,
+                "key": "2025-03",
+                "period_end": "2025-03-31",
+                "period_start": "2025-03-01"
+              },
+              {
+                "count": 62,
+                "key": "2025-04",
+                "period_end": "2025-04-30",
+                "period_start": "2025-04-01"
+              },
+              {
+                "count": 63,
+                "key": "2025-05",
+                "period_end": "2025-05-31",
+                "period_start": "2025-05-01"
+              },
+              {
+                "count": 55,
+                "key": "2025-06",
+                "period_end": "2025-06-30",
+                "period_start": "2025-06-01"
+              },
+              {
+                "count": 55,
+                "key": "2025-07",
+                "period_end": "2025-07-31",
+                "period_start": "2025-07-01"
+              },
+              {
+                "count": 52,
+                "key": "2025-08",
+                "period_end": "2025-08-31",
+                "period_start": "2025-08-01"
+              },
+              {
+                "count": 58,
+                "key": "2025-09",
+                "period_end": "2025-09-30",
+                "period_start": "2025-09-01"
+              },
+              {
+                "count": 56,
+                "key": "2025-10",
+                "period_end": "2025-10-31",
+                "period_start": "2025-10-01"
+              },
+              {
+                "count": 62,
+                "key": "2025-11",
+                "period_end": "2025-11-30",
+                "period_start": "2025-11-01"
+              },
+              {
+                "count": 62,
+                "key": "2025-12",
+                "period_end": "2025-12-31",
+                "period_start": "2025-12-01"
+              }
+            ],
+            "granularity": "month",
+            "n_buckets": 24,
+            "range_end": "2025-12-31",
+            "range_start": "2024-01-01"
+          }
+        }
+      ],
+      "run": {
+        "total_records": 1282,
+        "filtered_records": 1282,
+        "null_records": 0
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

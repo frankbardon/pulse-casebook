@@ -1,0 +1,1 @@
+{"cohort": {"filename": "o.pulse"}, "groups": [{"type": "GROUP_DATE", "field": "signup", "params": {"component": "month", "frequency": "monthly"}}], "aggregations": [{"type": "AGG_SUM", "field": "revenue", "label": "revenue"}], "overlays": [{"name": "roll", "kind": "OVERLAY_ZSCORE_VS_ROLLING", "scope": "group", "ref": {"rolling_mean": {}}}]}

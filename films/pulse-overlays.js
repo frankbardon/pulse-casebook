@@ -111,7 +111,7 @@ function sHosts(t) {
   A(seg(t, 4.0, 4.4), () => {
     card(64, 496, 1152, 70, C.coral);
     M('OVERLAY_INDEX_VS_PRIOR on a crosstab → PULSE_OVERLAY_REF_INCOMPATIBLE_WITH_SHAPE', 86, 524, { size: 13.5, color: C.coral });
-    M('predict and runtime refuse a misshapen spec with the same code, in errors[0].code', 86, 550, { size: 12.5, color: C.ink });
+    M('predict refuses a misshapen spec before any row is read, in errors[0].code', 86, 550, { size: 12.5, color: C.ink });
   });
 }
 
@@ -361,7 +361,7 @@ function sRecap(t) {
 }
 
 /* ---------- scenes + script ---------- */
-const NARR = /*NARR*/[5.013, 3.499, 3.733, 8.981, 7.467, 3.669, 8.683, 6.293, 11.157, 6.357, 4.608, 5.717, 5.483, 4.117, 8.021, 5.504, 3.904, 2.624, 7.979, 8.469, 4.928, 6.123, 4.203, 2.88, 4.053, 4.565, 9.408, 7.083, 6.784, 4.608, 4.8, 7.168, 6.293, 3.349, 5.141, 5.995, 7.829, 2.709, 7.424, 5.44, 5.717, 11.115, 2.325, 1.109]/*END*/;
+const NARR = /*NARR*/[5.013, 3.499, 3.733, 8.981, 7.467, 3.669, 8.683, 6.293, 11.157, 5.397, 4.608, 5.717, 5.483, 4.117, 8.021, 5.504, 3.904, 2.624, 7.979, 8.469, 4.928, 6.123, 4.203, 2.88, 4.053, 4.565, 9.408, 7.083, 6.784, 4.608, 4.8, 7.168, 6.293, 3.349, 5.141, 5.995, 7.829, 2.709, 7.424, 5.44, 5.717, 11.115, 2.325, 1.109]/*END*/;
 PulseFilm.mount({
   series: 'PULSE · OVERLAYS',
   narr: NARR,
@@ -379,7 +379,7 @@ PulseFilm.mount({
       [5.0, 'Every layer is a scalar, a series or a matrix. Indices centre on a hundred, deltas on zero.']] },
     { name: 'Hosts', dur: 6.2, draw: sHosts, caps: [
       [0, 'Which request carries the spec decides the host, and the host decides which kinds make sense: crosstabs, grouped results, facets, chains, Compose, and formulas over any of them.'],
-      [4.0, 'Ask for a series overlay on a crosstab, and predict refuses it with the same code the runtime would use.']] },
+      [4.0, 'Ask for a series overlay on a crosstab, and predict refuses it before any row is read.']] },
     { name: 'Matrix host', dur: 7, draw: sMatrix, caps: [
       [0, 'On a crosstab of region by plan, overlays read the cells and their margins.'],
       [2.4, 'Share of row turns counts into each region\'s plan mix. North leans Basic, East leans Pro.', 'Share of row turns counts into each region\'s plan mix. North leans basic, East leans pro.'],
