@@ -38,3 +38,20 @@ test('selecting a node opens the inspector and edits mark the file dirty', async
   await expect(page.getByTestId('dirty-state')).toContainText('unsaved')
   await expect(graph.locator('[data-path="tests[0]"]')).toContainText('no')
 })
+
+// Dragging stays unsaved here too; the save/reload round trip of the
+// sidecar is covered against a temp dir by the Go and unit tests.
+test('dragging a node moves it and marks the layout dirty', async ({ page }) => {
+  await page.goto('/')
+  await page.getByRole('button', { name: 'req/04_metric_battery.json' }).click()
+  const node = page.getByTestId('request-graph').locator('.react-flow__node').filter({ has: page.locator('[data-path="tests[0]"]') })
+  await expect(page.getByTestId('dirty-state')).toHaveText('saved')
+  const before = await node.boundingBox()
+  await node.hover()
+  await page.mouse.down()
+  await page.mouse.move(before!.x + before!.width / 2 + 120, before!.y + before!.height / 2 + 80, { steps: 8 })
+  await page.mouse.up()
+  const after = await node.boundingBox()
+  expect(after!.x).toBeGreaterThan(before!.x + 20)
+  await expect(page.getByTestId('dirty-state')).toContainText('unsaved')
+})

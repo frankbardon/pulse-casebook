@@ -58,7 +58,10 @@ function operators(file) {
   for (const [, op] of read(file).matchAll(/"([A-Z][A-Z0-9]*_[A-Z0-9_]+)"/g)) if (topicOf(op)) ops.set(op, (ops.get(op) || 0) + 1);
   return ops;
 }
-const isRequest = f => f.endsWith('.json') && !/\.(out|predict)\.json$/.test(f);
+// .layout.json = Pulse Studio layout sidecars: never requests, never published.
+const isLayout = f => f.endsWith('.layout.json');
+// .out/.predict = saved responses.
+const isRequest = f => f.endsWith('.json') && !/\.(out|predict|layout)\.json$/.test(f);
 const fmtSize = n => (n < 1024 ? `${n} B` : n < 1048576 ? `${(n / 1024).toFixed(1)} KB` : `${(n / 1048576).toFixed(1)} MB`);
 
 // usage[topicSlug] = [{ kind, slug, title, href, ops: Map }]
@@ -83,7 +86,7 @@ const films = fs.readdirSync(FILMS).filter(d => /^\d\d-/.test(d)).sort().map(dir
   const title = decode(html.match(/<title>([^<]*)<\/title>/)[1].replace(/^Pulse\s+/, ''));
   const intro = decode((html.match(/<p class="intro">([\s\S]*?)<\/p>/) || [, ''])[1].replace(/<[^>]+>/g, ''));
   const dataDir = path.join(FILMS, dir, 'data');
-  const dataFiles = fs.existsSync(dataDir) ? walk(dataDir, rel => rel.endsWith('.pulse')) : [];
+  const dataFiles = fs.existsSync(dataDir) ? walk(dataDir, rel => rel.endsWith('.pulse') || isLayout(rel)) : [];
   return { dir, num, topic, title, intro, dataFiles };
 });
 copyFiles(FILMS, path.join(PUBLIC, 'films'), ['kit/film-kit.js']);
@@ -106,7 +109,7 @@ const studies = fs.readdirSync(SHOWCASE).filter(d => fs.existsSync(path.join(SHO
   const title = readme.match(/^#\s+(.+)$/m)[1].trim();
   const body = readme.replace(/^#\s+.+\n/, '');
   const firstPara = body.split(/\n\s*\n/).map(p => p.trim()).find(p => p && !p.startsWith('#') && !p.startsWith('|'));
-  const files = walk(dir, (rel, e) => /^(out|deliver)$/.test(e.name) || e.name.endsWith('.pulse') || e.name === '.gitignore');
+  const files = walk(dir, (rel, e) => /^(out|deliver)$/.test(e.name) || e.name.endsWith('.pulse') || isLayout(e.name) || e.name === '.gitignore');
   return { slug, dir, title, body, description: clip(plain(firstPara || title)), files };
 });
 

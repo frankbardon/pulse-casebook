@@ -54,8 +54,26 @@ export function readFile(path: string, signal?: AbortSignal): Promise<FileConten
 // saveFile PUTs a JSON document. The server re-formats it (house style, or
 // the existing file's expanded style) and writes it atomically; the result
 // carries the exact bytes now on disk.
-export async function saveFile(path: string, text: string, signal?: AbortSignal): Promise<FileContent> {
-  const res = await fetch(`/api/file?path=${encodeURIComponent(path)}`, {
+export function saveFile(path: string, text: string, signal?: AbortSignal): Promise<FileContent> {
+  return putJSON<FileContent>(`/api/file?path=${encodeURIComponent(path)}`, text, signal)
+}
+
+// LayoutFile is /api/layout: the sidecar of a request (foo.layout.json
+// beside foo.json). layout is null when there is none or it is unusable
+// (invalid says why); see graph/layout.ts for the schema.
+export type LayoutFile = { path: string; layout: unknown; invalid?: string }
+
+export function readLayout(path: string, signal?: AbortSignal): Promise<LayoutFile> {
+  return getJSON<LayoutFile>(`/api/layout?path=${encodeURIComponent(path)}`, signal)
+}
+
+// saveLayout PUTs the sidecar object for the request at path.
+export function saveLayout(path: string, text: string, signal?: AbortSignal): Promise<LayoutFile> {
+  return putJSON<LayoutFile>(`/api/layout?path=${encodeURIComponent(path)}`, text, signal)
+}
+
+async function putJSON<T>(url: string, text: string, signal?: AbortSignal): Promise<T> {
+  const res = await fetch(url, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: text,
@@ -66,7 +84,7 @@ export async function saveFile(path: string, text: string, signal?: AbortSignal)
     const msg = isApiError(body) ? `${body.error.code}: ${body.error.message}` : `HTTP ${res.status}`
     throw new Error(msg)
   }
-  return body as FileContent
+  return body as T
 }
 
 // Catalog is /api/catalog. Only the manifest parts the graph reads are typed;

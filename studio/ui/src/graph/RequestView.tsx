@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Background, Controls, ReactFlow, ViewportPortal } from '@xyflow/react'
+import { Background, Controls, ReactFlow, ViewportPortal, type NodeChange } from '@xyflow/react'
 import {
   inspectCohort,
   readFile,
+  readLayout,
   saveFile,
+  saveLayout,
   type Catalog,
   type CohortField,
   type FileKind,
@@ -12,7 +14,8 @@ import {
 import { cohortCandidates } from './cohortPath.ts'
 import { toPlain, type JsonNode } from './jsonTree.ts'
 import { emitModel, emitModelText, parseModel, updateNode, type GraphModel } from './model.ts'
-import { buildRequestGraph } from './requestGraph.ts'
+import { buildRequestGraph, type GraphNode } from './requestGraph.ts'
+import { emptyLayout, layoutText, moveNode, parseLayout, positionOf, pruneLayout, type Layout } from './layout.ts'
 import { CohortNodeView, OpNodeView, RawNodeView } from './nodes.tsx'
 import { Inspector } from './Inspector.tsx'
 import './graph.css'
@@ -52,6 +55,12 @@ export function RequestView({ file, catalog }: Props) {
 // dirty is a plain comparison.
 type Doc = { model: GraphModel; saved: string }
 
+// Layout state: the sidecar's current contents and the text of what is
+// on disk (layoutText of an empty layout when there is no sidecar).
+type LayoutDoc = { layout: Layout; saved: string }
+
+const EMPTY_LAYOUT: LayoutDoc = { layout: emptyLayout(), saved: layoutText(emptyLayout()) }
+
 function RequestGraphView({ path, catalog }: { path: string; catalog?: Catalog }) {
   const [doc, setDoc] = useState<Doc | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -60,9 +69,17 @@ function RequestGraphView({ path, catalog }: { path: string; catalog?: Catalog }
   const [selected, setSelected] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
   const [saveError, setSaveError] = useState<string | null>(null)
+  const [lay, setLay] = useState<LayoutDoc>(EMPTY_LAYOUT)
 
   useEffect(() => {
     const ctl = new AbortController()
+    // A missing or unreadable sidecar means auto-layout, never an error.
+    readLayout(path, ctl.signal)
+      .then((f) => {
+        const layout = parseLayout(f.layout)
+        setLay({ layout, saved: layoutText(layout) })
+      })
+      .catch(() => {})
     readFile(path, ctl.signal)
       .then(async (f) => {
         let model: GraphModel
@@ -94,19 +111,36 @@ function RequestGraphView({ path, catalog }: { path: string; catalog?: Catalog }
   }, [path])
 
   const text = useMemo(() => (doc ? emitModelText(doc.model) : ''), [doc])
-  const dirty = doc !== null && text !== doc.saved
+  const textDirty = doc !== null && text !== doc.saved
+  const layoutDirty = layoutText(lay.layout) !== lay.saved
+  const dirty = textDirty || layoutDirty
 
   const graph = useMemo(() => {
     if (doc === null) return null
     try {
       // toPlain is fine here: the graph is a read-only rendering.
-      const g = buildRequestGraph(toPlain(emitModel(doc.model)), { manifest: catalog?.manifest, cohortFields: fields })
-      for (const n of g.nodes) n.selected = n.id === selected
-      return g
+      return buildRequestGraph(toPlain(emitModel(doc.model)), { manifest: catalog?.manifest, cohortFields: fields })
     } catch (e) {
       return String(e)
     }
-  }, [doc, catalog, fields, selected])
+  }, [doc, catalog, fields])
+
+  // Sidecar positions override auto-layout; ids the graph no longer has
+  // are simply never looked up.
+  const nodes = useMemo((): GraphNode[] => {
+    if (graph === null || typeof graph === 'string') return []
+    return graph.nodes.map((n) => ({ ...n, position: positionOf(lay.layout, n.id) ?? n.position, selected: n.id === selected }))
+  }, [graph, lay.layout, selected])
+
+  const onNodesChange = useCallback((changes: NodeChange<GraphNode>[]) => {
+    const moves = changes.filter((c) => c.type === 'position' && c.position)
+    if (moves.length === 0) return
+    setLay((l) => {
+      let layout = l.layout
+      for (const c of moves) if (c.type === 'position' && c.position) layout = moveNode(layout, c.id, c.position)
+      return { ...l, layout }
+    })
+  }, [])
 
   const edit = useCallback(
     (id: string, value: JsonNode) => setDoc((d) => (d ? { ...d, model: updateNode(d.model, id, value) } : d)),
@@ -117,18 +151,29 @@ function RequestGraphView({ path, catalog }: { path: string; catalog?: Catalog }
     if (!doc || saving || !dirty) return
     setSaving(true)
     setSaveError(null)
-    const sent = text
     try {
-      const res = await saveFile(path, sent)
-      const onDisk = parseModel(res.text, 'request')
-      // Edits made while the save was in flight stay dirty.
-      setDoc((d) => (d && emitModelText(d.model) === sent ? { model: onDisk, saved: emitModelText(onDisk) } : d && { ...d, saved: sent }))
+      if (textDirty) {
+        const sent = text
+        const res = await saveFile(path, sent)
+        const onDisk = parseModel(res.text, 'request')
+        // Edits made while the save was in flight stay dirty.
+        setDoc((d) => (d && emitModelText(d.model) === sent ? { model: onDisk, saved: emitModelText(onDisk) } : d && { ...d, saved: sent }))
+      }
+      // The sidecar is written beside the request when the layout changed;
+      // entries for nodes that no longer exist are dropped.
+      if (layoutDirty && graph !== null && typeof graph !== 'string') {
+        const sent = layoutText(lay.layout)
+        const res = await saveLayout(path, layoutText(pruneLayout(lay.layout, graph.nodes.map((n) => n.id))))
+        const onDisk = parseLayout(res.layout)
+        const savedText = layoutText(onDisk)
+        setLay((l) => (layoutText(l.layout) === sent ? { layout: onDisk, saved: savedText } : { ...l, saved: savedText }))
+      }
     } catch (e) {
       setSaveError(`save failed: ${String(e)}`)
     } finally {
       setSaving(false)
     }
-  }, [doc, saving, dirty, text, path])
+  }, [doc, saving, dirty, textDirty, layoutDirty, text, lay, graph, path])
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -168,10 +213,10 @@ function RequestGraphView({ path, catalog }: { path: string; catalog?: Catalog }
       </div>
       <div className="graph-body">
         <ReactFlow
-          nodes={graph.nodes}
+          nodes={nodes}
           edges={graph.edges}
           nodeTypes={nodeTypes}
-          nodesDraggable={false}
+          onNodesChange={onNodesChange}
           nodesConnectable={false}
           edgesFocusable={false}
           deleteKeyCode={null}

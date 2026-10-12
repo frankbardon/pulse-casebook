@@ -30,6 +30,7 @@ done
 "$PULSE" api predict -r req/06_syd_daily_windows.json --json > out/06_predict.json
 
 for f in req/*.json; do
+  case "$f" in *.layout.json) continue ;; esac   # Pulse Studio layout sidecars are not requests
   name=$(basename "$f" .json)
   if jq -e 'has("requests")' "$f" > /dev/null; then
     "$PULSE" api compose -r "$f" --json --no-components > "out/$name.json"

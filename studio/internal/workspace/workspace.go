@@ -223,3 +223,23 @@ func classifyFile(abs, rel string, d fs.DirEntry) File {
 	f.Kind, f.Reason = ClassifyJSON(data)
 	return f
 }
+
+// LayoutSuffix marks a layout sidecar: foo.json keeps its node positions
+// in foo.layout.json (foo.compose.json in foo.compose.layout.json).
+const LayoutSuffix = ".layout.json"
+
+// LayoutPath returns the sidecar path for a request path, or false when
+// the path is not a request-shaped JSON file (not .json, or itself a
+// sidecar or output file).
+func LayoutPath(rel string) (string, bool) {
+	lower := strings.ToLower(rel)
+	if !strings.HasSuffix(lower, ".json") {
+		return "", false
+	}
+	for _, s := range sidecarSuffixes {
+		if strings.HasSuffix(lower, s) {
+			return "", false
+		}
+	}
+	return rel[:len(rel)-len(".json")] + LayoutSuffix, true
+}

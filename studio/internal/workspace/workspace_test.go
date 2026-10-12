@@ -213,3 +213,22 @@ func TestList(t *testing.T) {
 		t.Fatalf("List = %+v, want %+v", got, want)
 	}
 }
+
+func TestLayoutPath(t *testing.T) {
+	cases := []struct {
+		in, want string
+		ok       bool
+	}{
+		{"req/01.json", "req/01.layout.json", true},
+		{"req/11_readout.compose.json", "req/11_readout.compose.layout.json", true},
+		{"req/01.layout.json", "", false},
+		{"out/01.out.json", "", false},
+		{"a.pulse", "", false},
+	}
+	for _, c := range cases {
+		got, ok := LayoutPath(c.in)
+		if got != c.want || ok != c.ok {
+			t.Errorf("LayoutPath(%q) = %q, %v; want %q, %v", c.in, got, ok, c.want, c.ok)
+		}
+	}
+}

@@ -23,7 +23,10 @@ run() {  # run <request file>: predict first, then execute
   echo "== ${n}: errors=$(jq -c '.errors|length' "out/${n}.json") warnings=$(jq -c '.warnings|length' "out/${n}.json")"
 }
 
-for f in req/0*.json req/10_*.json; do run "$f"; done
+for f in req/0*.json req/10_*.json; do
+  case "$f" in *.layout.json) continue ;; esac   # Pulse Studio layout sidecars are not requests
+  run "$f"
+done
 
 echo "== 11 client hand-off: SPSS .sav (+ labelled Excel)"
 "$PULSE" export predict -i brand_tracker.pulse --format spss --sanitize-names --json > out/11_export_predict.json
