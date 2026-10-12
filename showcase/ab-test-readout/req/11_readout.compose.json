@@ -20,8 +20,7 @@
       "multiplicity": {"method": "holm", "family": "request"},
       "aggregations": [{"type": "AGG_COUNT", "field": "user_id", "label": "users"}],
       "attributes": [
-        {"type": "ATTR_FORMULA", "field": "pages_viewed", "label": "pages_cuped",
-         "expression": "pages_viewed - 0.7601 * (prior_sessions - 10.0076)"}
+        {"type": "ATTR_FORMULA", "field": "pages_viewed", "label": "pages_cuped", "expression": "pages_viewed - 0.7601 * (prior_sessions - 10.0076)"}
       ],
       "tests": [
         {"type": "TEST_PROP_Z", "field": "trial_started", "split_by": "arm", "label": "trial_start", "params": {"success": "yes"}},
@@ -36,9 +35,7 @@
       "label": "revenue_sensitivity",
       "cohort": {"filename": "ab_test.pulse", "data_dir": "."},
       "aggregations": [{"type": "AGG_COUNT", "field": "user_id", "label": "users"}],
-      "tests": [
-        {"type": "TEST_MANN_WHITNEY_U", "field": "revenue", "split_by": "arm", "label": "revenue_mann_whitney"}
-      ]
+      "tests": [{"type": "TEST_MANN_WHITNEY_U", "field": "revenue", "split_by": "arm", "label": "revenue_mann_whitney"}]
     },
     {
       "label": "regression_adjustment",

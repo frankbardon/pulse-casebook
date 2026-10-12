@@ -51,6 +51,24 @@ export function readFile(path: string, signal?: AbortSignal): Promise<FileConten
   return getJSON<FileContent>(`/api/file?path=${encodeURIComponent(path)}`, signal)
 }
 
+// saveFile PUTs a JSON document. The server re-formats it (house style, or
+// the existing file's expanded style) and writes it atomically; the result
+// carries the exact bytes now on disk.
+export async function saveFile(path: string, text: string, signal?: AbortSignal): Promise<FileContent> {
+  const res = await fetch(`/api/file?path=${encodeURIComponent(path)}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: text,
+    signal,
+  })
+  const body: unknown = await res.json()
+  if (!res.ok || isApiError(body)) {
+    const msg = isApiError(body) ? `${body.error.code}: ${body.error.message}` : `HTTP ${res.status}`
+    throw new Error(msg)
+  }
+  return body as FileContent
+}
+
 // Catalog is /api/catalog. Only the manifest parts the graph reads are typed;
 // the rest passes through untyped.
 export type ManifestOperator = { name?: string; kind?: string; category?: string }

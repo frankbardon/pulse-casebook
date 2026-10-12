@@ -38,6 +38,7 @@ func New(root *scope.Root, engine *pulse.Pulse, cfg Config, ui fs.FS, uiBuilt bo
 	s.mux.HandleFunc("GET /api/health", s.handleHealth)
 	s.mux.HandleFunc("GET /api/files", s.handleFiles)
 	s.mux.HandleFunc("GET /api/file", s.handleFile)
+	s.mux.HandleFunc("PUT /api/file", s.handleSaveFile)
 	s.mux.HandleFunc("GET /api/cohort/inspect", s.handleCohortInspect)
 	s.mux.HandleFunc("GET /api/catalog", s.handleCatalog)
 	s.mux.HandleFunc("/api/", func(w http.ResponseWriter, r *http.Request) {
