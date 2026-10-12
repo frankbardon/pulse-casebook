@@ -28,7 +28,8 @@ type Server struct {
 	uiOK   bool
 	mux    *http.ServeMux
 
-	catalog catalogCache
+	catalog    catalogCache
+	previewCat previewCatalog
 }
 
 // New returns a Server. ui is the UI asset tree; uiBuilt says whether it
@@ -43,6 +44,7 @@ func New(root *scope.Root, engine *pulse.Pulse, cfg Config, ui fs.FS, uiBuilt bo
 	s.mux.HandleFunc("PUT /api/layout", s.handleSaveLayout)
 	s.mux.HandleFunc("GET /api/cohort/inspect", s.handleCohortInspect)
 	s.mux.HandleFunc("GET /api/catalog", s.handleCatalog)
+	s.mux.HandleFunc("POST /api/preview", s.handlePreview)
 	s.mux.HandleFunc("/api/", func(w http.ResponseWriter, r *http.Request) {
 		WriteError(w, http.StatusNotFound, "not_found", "no such API endpoint", map[string]any{"path": r.URL.Path})
 	})
