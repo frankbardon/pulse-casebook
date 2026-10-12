@@ -22,3 +22,31 @@ export async function getJSON<T>(path: string, signal?: AbortSignal): Promise<T>
   }
   return body as T
 }
+
+export type FileKind = 'request' | 'compose' | 'facet' | 'chain' | 'cohort' | 'unopenable'
+
+export type WorkspaceFile = {
+  path: string
+  kind: FileKind
+  reason?: string
+}
+
+export type FileListing = {
+  files: WorkspaceFile[]
+  truncated?: boolean
+}
+
+export type FileContent = {
+  path: string
+  kind: FileKind
+  reason?: string
+  text: string
+}
+
+export function listFiles(signal?: AbortSignal): Promise<FileListing> {
+  return getJSON<FileListing>('/api/files', signal)
+}
+
+export function readFile(path: string, signal?: AbortSignal): Promise<FileContent> {
+  return getJSON<FileContent>(`/api/file?path=${encodeURIComponent(path)}`, signal)
+}

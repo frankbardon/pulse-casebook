@@ -1,0 +1,57 @@
+.files {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.file-group h2 {
+  margin: 0 0 var(--space-1);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+.file-group .count {
+  font-family: var(--font-mono);
+  font-weight: 400;
+}
+
+.file-group ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.file {
+  display: block;
+  width: 100%;
+  padding: 2px var(--space-1);
+  border: 0;
+  border-radius: 3px;
+  background: none;
+  color: var(--text);
+  font: var(--text-sm) / 1.4 var(--font-mono);
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.file:hover:not(:disabled) {
+  background: var(--bg);
+}
+
+.file.selected,
+.file.selected:hover:not(:disabled) {
+  background: var(--accent);
+  color: var(--surface);
+}
+
+.file:disabled {
+  color: var(--muted);
+  opacity: 0.6;
+  cursor: default;
+}
