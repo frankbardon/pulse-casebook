@@ -205,8 +205,25 @@ export type PreviewQuery = {
   force?: boolean
 }
 
+// PREVIEW_CLIENT identifies this page load to the preview scheduler, sent
+// as body.client. The server supersedes (cancels) an in-flight preview
+// only for a newer one from the same client of the same path + nodes, so
+// two tabs (or parallel test workers) on one file never cancel each
+// other; the result cache stays shared.
+export const PREVIEW_CLIENT = newClientId()
+
+function newClientId(): string {
+  const c = globalThis.crypto
+  // randomUUID needs a secure context; plain http on a LAN host lacks it.
+  if (typeof c?.randomUUID === 'function') return c.randomUUID()
+  if (typeof c?.getRandomValues === 'function') {
+    return Array.from(c.getRandomValues(new Uint8Array(16)), (b) => b.toString(16).padStart(2, '0')).join('')
+  }
+  return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`
+}
+
 export async function postPreview(q: PreviewQuery, signal?: AbortSignal): Promise<PreviewResult> {
-  const body = `{"path":${JSON.stringify(q.path)},"nodes":${JSON.stringify(q.nodes)},"force":${q.force ? 'true' : 'false'},"request":${q.requestText}}`
+  const body = `{"path":${JSON.stringify(q.path)},"nodes":${JSON.stringify(q.nodes)},"force":${q.force ? 'true' : 'false'},"client":${JSON.stringify(PREVIEW_CLIENT)},"request":${q.requestText}}`
   const res = await fetch('/api/preview', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },

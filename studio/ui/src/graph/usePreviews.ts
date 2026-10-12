@@ -28,11 +28,13 @@ export function usePreview(id: string): { enabled: boolean; off?: string; state?
 
 type Flight = { gens: Map<string, number>; ctl: AbortController }
 
-// A preview the server reports cancelled while this view still wants it
-// was superseded by another client previewing the same nodes of the same
-// file (the server keys supersession by path and node ids). It is
-// retried a few times with jitter; by then the other run has usually
-// finished and is cached.
+// The server keys supersession by client (api.ts PREVIEW_CLIENT, one per
+// page load) + path + node ids, so other tabs no longer cancel this one
+// and this view's own newer sends only cancel calls it no longer wants.
+// A cancelled preview this view still wants is therefore rare (e.g. a
+// second hook instance in the same page sending the same nodes); it is
+// retried a few times with jitter, by when the other run is usually
+// cached. Retries are bounded, so a real fault still lands as cancelled.
 const CANCEL_RETRIES = 3
 
 // usePreviews keeps node previews in step with the model. 300 ms after

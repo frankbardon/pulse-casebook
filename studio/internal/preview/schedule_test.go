@@ -129,6 +129,53 @@ func TestSchedulerSupersede(t *testing.T) {
 	}
 }
 
+// Two clients previewing the same node of the same file do not cancel
+// each other (and share the cache); the same client still supersedes.
+func TestSchedulerSupersedeIsPerClient(t *testing.T) {
+	nodes := []string{"filterers[1]", "filterers[0]"}
+	if SupersedeKey("", "r.json", nodes) != SupersedeKey("", "r.json", []string{"filterers[0]", "filterers[1]"}) {
+		t.Fatal("key depends on node order")
+	}
+	if SupersedeKey("a", "r.json", nodes) == SupersedeKey("b", "r.json", nodes) || SupersedeKey("a", "r.json", nodes) == SupersedeKey("", "r.json", nodes) {
+		t.Fatal("key ignores the client")
+	}
+	r := newStub()
+	s := NewScheduler(r.run, SchedulerOptions{Timeout: 10 * time.Second})
+	slowA := make(chan *Result, 1)
+	go func() {
+		res, _ := s.Do(context.Background(), Job{Key: SupersedeKey("tab-a", "r.json", nodes), Plan: stubPlan("a", CostCheap, map[string]any{"slow": true})})
+		slowA <- res
+	}()
+	if got := <-r.started; got != "a" {
+		t.Fatalf("started %q", got)
+	}
+	// Another client on the same nodes runs alongside.
+	if res, err := s.Do(context.Background(), Job{Key: SupersedeKey("tab-b", "r.json", nodes), Plan: stubPlan("b", CostCheap, nil)}); err != nil || res.Status != StatusOK {
+		t.Fatalf("client b: %+v %v", res, err)
+	}
+	select {
+	case res := <-slowA:
+		t.Fatalf("client b cancelled client a: %+v", res)
+	case <-time.After(50 * time.Millisecond):
+	}
+	// Client b's result is cached for client a too.
+	if res, _ := s.Do(context.Background(), Job{Key: SupersedeKey("tab-c", "r.json", nodes), Plan: stubPlan("b", CostCheap, nil)}); !res.Cached {
+		t.Fatal("cache is not shared across clients")
+	}
+	// The same client's newer preview supersedes its in-flight one.
+	if res, err := s.Do(context.Background(), Job{Key: SupersedeKey("tab-a", "r.json", nodes), Plan: stubPlan("a2", CostCheap, nil)}); err != nil || res.Status != StatusOK {
+		t.Fatalf("client a newer: %+v %v", res, err)
+	}
+	select {
+	case res := <-slowA:
+		if res.Status != StatusCancelled {
+			t.Fatalf("superseded status = %s", res.Status)
+		}
+	case <-time.After(5 * time.Second):
+		t.Fatal("same client did not supersede")
+	}
+}
+
 func TestSchedulerTimeout(t *testing.T) {
 	r := newStub()
 	s := NewScheduler(r.run, SchedulerOptions{Timeout: 20 * time.Millisecond})

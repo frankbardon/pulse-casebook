@@ -8,6 +8,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"slices"
+	"strings"
 	"sync"
 	"time"
 )
@@ -158,6 +160,18 @@ func (s *Scheduler) Do(ctx context.Context, job Job) (*Result, error) {
 	res.RecordCount = job.RecordCount
 	s.cache.put(key, res)
 	return res, nil
+}
+
+// SupersedeKey identifies "the same node" for supersession: a newer
+// preview from the same client of the same request file and node set
+// cancels the older one. client is an opaque per-page id (the UI makes
+// one per page load); previews from different clients never cancel each
+// other. An empty client keys by path and nodes alone. The result cache
+// is not keyed by client: it is shared.
+func SupersedeKey(client, path string, nodes []string) string {
+	ids := slices.Clone(nodes)
+	slices.Sort(ids)
+	return client + "\x00" + path + "\x00" + strings.Join(ids, "\x00")
 }
 
 // claim registers the job as the in-flight preview for its key,

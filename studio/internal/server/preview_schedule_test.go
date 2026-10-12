@@ -157,23 +157,44 @@ func TestPreviewLargeCohort(t *testing.T) {
 		t.Fatalf("cheap probe: %d %v", code, out)
 	}
 
-	// Supersede: start a forced battery, wait for the engine to pick it
-	// up, then send a newer preview for the same node.
-	forced := map[string]any{"path": path, "request": req, "node": "tests[2]", "force": true}
-	before := f.calls.Load()
-	first := make(chan map[string]any, 1)
-	go func() {
-		_, out := f.post(t, forced)
-		first <- out
-	}()
-	deadline := time.Now().Add(5 * time.Second)
-	for f.calls.Load() == before {
-		if time.Now().After(deadline) {
-			t.Fatal("first preview never reached the engine")
+	// startForced begins a forced battery for client and waits for the
+	// engine to pick it up.
+	startForced := func(client string, node string) chan map[string]any {
+		forced := map[string]any{"path": path, "request": req, "node": node, "force": true, "client": client}
+		before := f.calls.Load()
+		first := make(chan map[string]any, 1)
+		go func() {
+			_, out := f.post(t, forced)
+			first <- out
+		}()
+		deadline := time.Now().Add(5 * time.Second)
+		for f.calls.Load() == before {
+			if time.Now().After(deadline) {
+				t.Fatal("first preview never reached the engine")
+			}
+			time.Sleep(time.Millisecond)
 		}
-		time.Sleep(time.Millisecond)
+		return first
 	}
-	newer := map[string]any{"path": path, "request": req, "node": "tests[2]"} // deferred, but still supersedes
+
+	// Another client's preview of the same node does not cancel it.
+	other := startForced("tab-a", "tests[1]")
+	if _, out := f.post(t, map[string]any{"path": path, "request": req, "node": "tests[1]", "client": "tab-b"}); out["status"] != "deferred" {
+		t.Fatalf("other client preview: %v", out)
+	}
+	select {
+	case out := <-other:
+		if out["status"] != "ok" {
+			t.Fatalf("other client's preview cancelled this one: status %v", out["status"])
+		}
+	case <-time.After(30 * time.Second):
+		t.Fatal("forced preview never finished")
+	}
+
+	// Supersede: start a forced battery, then send a newer preview for
+	// the same node from the same client.
+	first := startForced("tab-a", "tests[2]")
+	newer := map[string]any{"path": path, "request": req, "node": "tests[2]", "client": "tab-a"} // deferred, but still supersedes
 	if _, out := f.post(t, newer); out["status"] != "deferred" {
 		t.Fatalf("newer preview: %v", out)
 	}

@@ -45,14 +45,16 @@ func (s *Server) probeCatalog(ctx context.Context) *preview.Catalog {
 //	  "nodes": ["attributes[0]", ...] several nodes of one section
 //	  "quantiles": true,              attribute/feature percentiles (default true)
 //	  "facet": {"fields": [...]},     cohort/filter nodes: run a facet probe
-//	  "force": false                  run expensive probes on large cohorts
+//	  "force": false,                 run expensive probes on large cohorts
+//	  "client": "6f1c..."             opaque caller id (one per UI page load)
 //	}
 //
 // Previews go through the server's preview.Scheduler: results are
-// cached by sub-request and cohort stamp, a newer preview of the same
-// path+nodes cancels the in-flight one, and expensive probes on cohorts
-// over --auto-preview-rows come back with status "deferred" unless
-// force is set. Timeouts and supersession are statuses, not errors.
+// cached by sub-request and cohort stamp (shared by all clients), a
+// newer preview of the same client+path+nodes cancels the in-flight one
+// (no client: path+nodes; see preview.SupersedeKey), and expensive
+// probes on cohorts over --auto-preview-rows come back with status
+// "deferred" unless force is set. Timeouts and supersession are statuses, not errors.
 type previewBody struct {
 	Path      string          `json:"path"`
 	Request   json.RawMessage `json:"request"`
@@ -61,6 +63,7 @@ type previewBody struct {
 	Quantiles *bool           `json:"quantiles"`
 	Facet     map[string]any  `json:"facet"`
 	Force     bool            `json:"force"`
+	Client    string          `json:"client"`
 }
 
 // handlePreview is POST /api/preview: build the node's truncated
@@ -118,7 +121,7 @@ func (s *Server) handlePreview(w http.ResponseWriter, r *http.Request) {
 	}
 	stamp, rows := s.cohortState(r.Context(), used.paths())
 	job := preview.Job{
-		Key:         previewKey(body.Path, nodes),
+		Key:         preview.SupersedeKey(body.Client, body.Path, nodes),
 		Plan:        plan,
 		Stamp:       stamp,
 		RecordCount: rows,
@@ -245,14 +248,6 @@ func normalizeRel(p string) (string, bool) {
 		return "", false
 	}
 	return strings.Join(stack, "/"), true
-}
-
-// previewKey identifies "the same node" for supersession: a newer
-// preview of the same request file and node set cancels the older one.
-func previewKey(path string, nodes []string) string {
-	ids := slices.Clone(nodes)
-	slices.Sort(ids)
-	return path + "\x00" + strings.Join(ids, "\x00")
 }
 
 // cohortSet records the root-relative cohort files a build resolved.
