@@ -5,18 +5,15 @@
   },
   "requests": [
     {
-      "label": "device=desktop",
+      "label": "by device",
       "cohort": {
         "filename": "ab_test.pulse",
         "data_dir": "."
       },
-      "filterers": [
+      "groups": [
         {
-          "type": "FILTER_INCLUDE",
-          "field": "device",
-          "values": [
-            "desktop"
-          ]
+          "type": "GROUP_CATEGORY",
+          "field": "device"
         }
       ],
       "aggregations": [
@@ -39,18 +36,15 @@
       ]
     },
     {
-      "label": "device=mobile",
+      "label": "by plan_tier",
       "cohort": {
         "filename": "ab_test.pulse",
         "data_dir": "."
       },
-      "filterers": [
+      "groups": [
         {
-          "type": "FILTER_INCLUDE",
-          "field": "device",
-          "values": [
-            "mobile"
-          ]
+          "type": "GROUP_CATEGORY",
+          "field": "plan_tier"
         }
       ],
       "aggregations": [
@@ -73,18 +67,15 @@
       ]
     },
     {
-      "label": "device=tablet",
+      "label": "by region",
       "cohort": {
         "filename": "ab_test.pulse",
         "data_dir": "."
       },
-      "filterers": [
+      "groups": [
         {
-          "type": "FILTER_INCLUDE",
-          "field": "device",
-          "values": [
-            "tablet"
-          ]
+          "type": "GROUP_CATEGORY",
+          "field": "region"
         }
       ],
       "aggregations": [
@@ -107,290 +98,15 @@
       ]
     },
     {
-      "label": "plan_tier=individual",
+      "label": "by user_type",
       "cohort": {
         "filename": "ab_test.pulse",
         "data_dir": "."
       },
-      "filterers": [
+      "groups": [
         {
-          "type": "FILTER_INCLUDE",
-          "field": "plan_tier",
-          "values": [
-            "individual"
-          ]
-        }
-      ],
-      "aggregations": [
-        {
-          "type": "AGG_COUNT",
-          "field": "user_id",
-          "label": "users"
-        }
-      ],
-      "tests": [
-        {
-          "type": "TEST_PROP_Z",
-          "field": "trial_started",
-          "split_by": "arm",
-          "label": "trial_start_lift",
-          "params": {
-            "success": "yes"
-          }
-        }
-      ]
-    },
-    {
-      "label": "plan_tier=team",
-      "cohort": {
-        "filename": "ab_test.pulse",
-        "data_dir": "."
-      },
-      "filterers": [
-        {
-          "type": "FILTER_INCLUDE",
-          "field": "plan_tier",
-          "values": [
-            "team"
-          ]
-        }
-      ],
-      "aggregations": [
-        {
-          "type": "AGG_COUNT",
-          "field": "user_id",
-          "label": "users"
-        }
-      ],
-      "tests": [
-        {
-          "type": "TEST_PROP_Z",
-          "field": "trial_started",
-          "split_by": "arm",
-          "label": "trial_start_lift",
-          "params": {
-            "success": "yes"
-          }
-        }
-      ]
-    },
-    {
-      "label": "plan_tier=business",
-      "cohort": {
-        "filename": "ab_test.pulse",
-        "data_dir": "."
-      },
-      "filterers": [
-        {
-          "type": "FILTER_INCLUDE",
-          "field": "plan_tier",
-          "values": [
-            "business"
-          ]
-        }
-      ],
-      "aggregations": [
-        {
-          "type": "AGG_COUNT",
-          "field": "user_id",
-          "label": "users"
-        }
-      ],
-      "tests": [
-        {
-          "type": "TEST_PROP_Z",
-          "field": "trial_started",
-          "split_by": "arm",
-          "label": "trial_start_lift",
-          "params": {
-            "success": "yes"
-          }
-        }
-      ]
-    },
-    {
-      "label": "region=NA",
-      "cohort": {
-        "filename": "ab_test.pulse",
-        "data_dir": "."
-      },
-      "filterers": [
-        {
-          "type": "FILTER_INCLUDE",
-          "field": "region",
-          "values": [
-            "NA"
-          ]
-        }
-      ],
-      "aggregations": [
-        {
-          "type": "AGG_COUNT",
-          "field": "user_id",
-          "label": "users"
-        }
-      ],
-      "tests": [
-        {
-          "type": "TEST_PROP_Z",
-          "field": "trial_started",
-          "split_by": "arm",
-          "label": "trial_start_lift",
-          "params": {
-            "success": "yes"
-          }
-        }
-      ]
-    },
-    {
-      "label": "region=EMEA",
-      "cohort": {
-        "filename": "ab_test.pulse",
-        "data_dir": "."
-      },
-      "filterers": [
-        {
-          "type": "FILTER_INCLUDE",
-          "field": "region",
-          "values": [
-            "EMEA"
-          ]
-        }
-      ],
-      "aggregations": [
-        {
-          "type": "AGG_COUNT",
-          "field": "user_id",
-          "label": "users"
-        }
-      ],
-      "tests": [
-        {
-          "type": "TEST_PROP_Z",
-          "field": "trial_started",
-          "split_by": "arm",
-          "label": "trial_start_lift",
-          "params": {
-            "success": "yes"
-          }
-        }
-      ]
-    },
-    {
-      "label": "region=APAC",
-      "cohort": {
-        "filename": "ab_test.pulse",
-        "data_dir": "."
-      },
-      "filterers": [
-        {
-          "type": "FILTER_INCLUDE",
-          "field": "region",
-          "values": [
-            "APAC"
-          ]
-        }
-      ],
-      "aggregations": [
-        {
-          "type": "AGG_COUNT",
-          "field": "user_id",
-          "label": "users"
-        }
-      ],
-      "tests": [
-        {
-          "type": "TEST_PROP_Z",
-          "field": "trial_started",
-          "split_by": "arm",
-          "label": "trial_start_lift",
-          "params": {
-            "success": "yes"
-          }
-        }
-      ]
-    },
-    {
-      "label": "region=LATAM",
-      "cohort": {
-        "filename": "ab_test.pulse",
-        "data_dir": "."
-      },
-      "filterers": [
-        {
-          "type": "FILTER_INCLUDE",
-          "field": "region",
-          "values": [
-            "LATAM"
-          ]
-        }
-      ],
-      "aggregations": [
-        {
-          "type": "AGG_COUNT",
-          "field": "user_id",
-          "label": "users"
-        }
-      ],
-      "tests": [
-        {
-          "type": "TEST_PROP_Z",
-          "field": "trial_started",
-          "split_by": "arm",
-          "label": "trial_start_lift",
-          "params": {
-            "success": "yes"
-          }
-        }
-      ]
-    },
-    {
-      "label": "user_type=new",
-      "cohort": {
-        "filename": "ab_test.pulse",
-        "data_dir": "."
-      },
-      "filterers": [
-        {
-          "type": "FILTER_INCLUDE",
-          "field": "user_type",
-          "values": [
-            "new"
-          ]
-        }
-      ],
-      "aggregations": [
-        {
-          "type": "AGG_COUNT",
-          "field": "user_id",
-          "label": "users"
-        }
-      ],
-      "tests": [
-        {
-          "type": "TEST_PROP_Z",
-          "field": "trial_started",
-          "split_by": "arm",
-          "label": "trial_start_lift",
-          "params": {
-            "success": "yes"
-          }
-        }
-      ]
-    },
-    {
-      "label": "user_type=returning",
-      "cohort": {
-        "filename": "ab_test.pulse",
-        "data_dir": "."
-      },
-      "filterers": [
-        {
-          "type": "FILTER_INCLUDE",
-          "field": "user_type",
-          "values": [
-            "returning"
-          ]
+          "type": "GROUP_CATEGORY",
+          "field": "user_type"
         }
       ],
       "aggregations": [

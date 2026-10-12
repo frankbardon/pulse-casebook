@@ -344,19 +344,22 @@ away. Pre-register the covariate before the test starts; do not pick it after se
 
 ### Step 9 — Segments: most "wins" vanish after correction
 
-Pulse tests run over the whole filtered cohort. Running a test per segment therefore takes one Compose
-slot per segment value, each with a `FILTER_INCLUDE`. All 12 segment tests share one Holm family
-(`"family": "compose"`). [`req/09_segments.compose.json`](req/09_segments.compose.json), with one of
-its 12 slots shown:
+A test can run once per group. Naming a segment variable in `groups` makes Pulse run the same
+`TEST_PROP_Z` on each group's own records, and each result carries its `group_key`. Each segment
+variable is its own question (device, plan tier, region and user type are marginal splits, not a
+product), so the readout is four grouped requests in one Compose call instead of twelve filtered slots.
+All 12 segment tests (3 + 3 + 4 + 2) still share one Holm family (`"family": "compose"`), so the
+correction is computed over the same 12 p-values as before.
+[`req/09_segments.compose.json`](req/09_segments.compose.json), with one of its four slots shown:
 
 ```json
 {
   "multiplicity": {"method": "holm", "family": "compose"},
   "requests": [
     {
-      "label": "device=mobile",
+      "label": "by device",
       "cohort": {"filename": "ab_test.pulse", "data_dir": "."},
-      "filterers": [{"type": "FILTER_INCLUDE", "field": "device", "values": ["mobile"]}],
+      "groups": [{"type": "GROUP_CATEGORY", "field": "device"}],
       "aggregations": [{"type": "AGG_COUNT", "field": "user_id", "label": "users"}],
       "tests": [{"type": "TEST_PROP_Z", "field": "trial_started", "split_by": "arm",
                  "label": "trial_start_lift", "params": {"success": "yes"}}]
@@ -364,6 +367,19 @@ its 12 slots shown:
   ]
 }
 ```
+
+`tests` in a grouped slot are group-major within each test: slot `by device` returns `data` rows for
+desktop, mobile and tablet, and `tests[0..2]` carry `group_key` `["desktop"]`, `["mobile"]`,
+`["tablet"]`. A test cannot `split_by` the grouper itself (`PULSE_TEST_SPLIT_GROUPS_LT_2`); the arm
+split is a different field, so this is fine. Every per-segment figure below is identical to the
+twelve-slot version of this step, which was run against the same cohort and compared test by test
+(statistic, p, CI, effect size, Holm p, `m = 12`). Slots come back in request order and groups in
+dictionary order, so the plan and region rows are listed alphabetically in `out/09_segments.json`.
+
+A single request for all four variables would need a banner layout (one request, several marginal
+splits). That form is the survey-tables work in pulse roadmap unit
+[U47](https://github.com/frankbardon/pulse/blob/main/docs/roadmap/units/U47-survey-tables.md); until it
+lands, one grouped slot per variable is the shortest form.
 
 Trial-start lift by segment:
 
@@ -491,5 +507,5 @@ activity as a covariate.
 | `multiplicity` (`holm`, families `request` and `compose`) | Steps 3, 4, 9, 11 | Adjusted p-values next to the raw ones |
 | `REG_OLS` | Steps 7, 10 | Regression adjustment; treatment × segment interaction |
 | `ATTR_FORMULA` | Steps 8, 10 | CUPED-adjusted metric; 0/1 indicator and interaction columns |
-| `GROUP_CATEGORY`, `FILTER_INCLUDE`, `AGG_COUNT` / `AVERAGE` / `STDDEV` / `MEDIAN` / `PERCENTILE` / `SKEWNESS` / `MAX` | Steps 5, 9 | Revenue shape; per-segment slots |
+| `GROUP_CATEGORY`, `FILTER_INCLUDE`, `AGG_COUNT` / `AVERAGE` / `STDDEV` / `MEDIAN` / `PERCENTILE` / `SKEWNESS` / `MAX` | Steps 5, 9 | Revenue shape; per-variable grouped segment tests (`groups` + `tests`) |
 | `pulse api compose` (labelled slots, `--parallel`) | Steps 5, 9, 11 | Whole readout in one call; serial and parallel give identical results |
