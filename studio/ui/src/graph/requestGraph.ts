@@ -135,7 +135,7 @@ const SECTION_BY_KEY = new Map(SECTIONS.map((s) => [s.key, s]))
 
 // SectionInfo is what the inspector needs about a modeled section: where
 // the operator name and label live and which manifest list describes it.
-export type SectionInfo = Pick<SectionSpec, 'key' | 'title' | 'opKey' | 'nameKey' | 'catalog' | 'single'>
+export type SectionInfo = Pick<SectionSpec, 'key' | 'title' | 'column' | 'opKey' | 'nameKey' | 'catalog' | 'single'>
 
 export function sectionInfo(key: string): SectionInfo | undefined {
   return SECTION_BY_KEY.get(key)
@@ -148,6 +148,30 @@ export function sectionInfo(key: string): SectionInfo | undefined {
 export const REQUEST_SECTIONS: ReadonlyMap<string, { single: boolean }> = new Map(
   SECTIONS.map((s) => [s.key, { single: !!s.single }]),
 )
+
+// PREVIEW_SECTIONS are the sections whose entries get a live preview
+// (POST /api/preview has a probe for them). The cohort node is previewed
+// too; vectors, multiplicity and return have no probe.
+export const PREVIEW_SECTIONS: ReadonlySet<string> = new Set([
+  'features',
+  'filterers',
+  'attributes',
+  'groups',
+  'aggregations',
+  'windows',
+  'sort',
+  'tests',
+  'post_tests',
+  'regressions',
+  'matrices',
+  'crosstab',
+  'overlays',
+])
+
+// hasPreview says whether a node carries a preview footer.
+export function hasPreview(n: GraphNode): boolean {
+  return n.type === 'cohort' || (n.type === 'op' && PREVIEW_SECTIONS.has(n.data.section))
+}
 
 // Keys (last named path segment, outside `params`) whose values are field
 // or label references.
@@ -165,6 +189,9 @@ export const LAYOUT = {
   rawLineHeight: 15,
   rawMaxLines: 12,
   valueMax: 40,
+  // Fixed height of a node's preview footer, so previews arriving never
+  // change a node's size or the column stacking.
+  previewHeight: 38,
 }
 
 type Producer = { section: string; index: number; name: string; id: string }
@@ -377,11 +404,12 @@ function layout(nodes: GraphNode[]): RequestGraph['columns'] {
 
 export function estimateHeight(n: GraphNode): number {
   const { headerHeight, rowHeight, padding, rawLineHeight } = LAYOUT
+  const preview = hasPreview(n) ? LAYOUT.previewHeight : 0
   switch (n.type) {
     case 'op':
-      return headerHeight + n.data.rows.length * rowHeight + padding
+      return headerHeight + n.data.rows.length * rowHeight + padding + preview
     case 'cohort':
-      return headerHeight + Math.max(1, n.data.fields.length) * rowHeight + padding
+      return headerHeight + Math.max(1, n.data.fields.length) * rowHeight + padding + preview
     case 'raw':
       return 28 + n.data.json.split('\n').length * rawLineHeight + padding
   }

@@ -375,3 +375,122 @@
   white-space: pre;
   overflow: hidden;
 }
+
+/* Node previews: a fixed-height footer (LAYOUT.previewHeight) so results
+   arriving never resize the node. */
+.gnode-preview {
+  height: 38px;
+  overflow: hidden;
+  padding: 1px var(--space-2);
+  border-top: 1px dashed var(--border);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+.pv-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  height: 18px;
+  line-height: 18px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pv-line > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pv-muted {
+  color: var(--muted);
+}
+
+.pv-strong {
+  font-weight: 600;
+}
+
+.pv-err {
+  color: var(--danger);
+  display: block;
+}
+
+.pv-stale {
+  opacity: 0.45;
+}
+
+.pv-loading .pv-stale {
+  animation: pv-pulse 1s ease-in-out infinite alternate;
+}
+
+@keyframes pv-pulse {
+  to {
+    opacity: 0.25;
+  }
+}
+
+.pv-funnel {
+  flex: 1;
+  height: 6px;
+  background: var(--border);
+  border-radius: 1px;
+  overflow: hidden;
+}
+
+.pv-funnel > span {
+  display: block;
+  height: 100%;
+  background: var(--stage-filter);
+}
+
+.pv-strip {
+  flex: none;
+}
+
+.pv-strip .pv-axis {
+  stroke: var(--border);
+  stroke-width: 1;
+}
+
+.pv-strip .pv-whisker {
+  stroke: var(--stage-derive);
+  stroke-width: 1;
+}
+
+.pv-strip .pv-box {
+  fill: var(--stage-derive);
+  opacity: 0.5;
+}
+
+.pv-strip .pv-box.pv-sd {
+  opacity: 0.25;
+}
+
+.pv-strip .pv-mid {
+  stroke: var(--text);
+  stroke-width: 1.5;
+}
+
+.pv-range {
+  color: var(--muted);
+}
+
+.gnode-preview .pv-run {
+  font: inherit;
+  font-size: 11px;
+  line-height: 14px;
+  padding: 0 var(--space-1);
+  border: 1px solid var(--accent);
+  border-radius: 3px;
+  background: var(--surface);
+  color: var(--accent);
+  cursor: pointer;
+}
+
+.gnode-preview .pv-run:hover {
+  background: var(--accent);
+  color: var(--surface);
+}

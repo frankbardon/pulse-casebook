@@ -55,3 +55,31 @@ test('dragging a node moves it and marks the layout dirty', async ({ page }) => 
   expect(after!.x).toBeGreaterThan(before!.x + 20)
   await expect(page.getByTestId('dirty-state')).toContainText('unsaved')
 })
+
+// Previews run against the showcase cohort (40,000 rows, under the
+// default --auto-preview-rows, so nothing is deferred).
+test('nodes show live previews and an edit re-runs only downstream ones', async ({ page }) => {
+  await page.goto('/')
+  await page.getByRole('button', { name: 'req/08_cuped_welch.json' }).click()
+  const graph = page.getByTestId('request-graph')
+  const preview = (id: string) => graph.locator(`[data-path="${id}"] [data-testid="preview"]`)
+  await expect(preview('cohort')).toHaveAttribute('data-state', 'ok')
+  await expect(preview('cohort')).toContainText('40,000 rows')
+  await expect(preview('aggregations[0]')).toContainText('users 40,000')
+  await expect(preview('attributes[0]')).toHaveAttribute('data-state', 'ok')
+  await expect(preview('tests[1]')).toHaveAttribute('data-state', 'ok')
+  await expect(preview('tests[1]')).toContainText('p')
+  const requests: string[] = []
+  page.on('request', (r) => {
+    if (r.url().endsWith('/api/preview')) requests.push(String(r.postDataJSON()?.nodes))
+  })
+  await graph.locator('[data-path="attributes[0]"]').click()
+  await page.getByTestId('inspector').locator('[data-field="expression"] textarea').fill('pages_viewed - 0.5 * (prior_sessions - 10)')
+  await expect.poll(() => requests.length).toBeGreaterThan(0)
+  await expect(preview('attributes[0]')).toHaveAttribute('data-state', 'ok')
+  await expect(preview('tests[1]')).toHaveAttribute('data-state', 'ok')
+  // The cohort is upstream of the edit: its preview is not re-run.
+  expect(requests.join(';')).toContain('attributes[0]')
+  expect(requests.join(';')).not.toContain('cohort')
+  await expect(graph.locator('.react-flow__edge')).not.toHaveCount(0)
+})

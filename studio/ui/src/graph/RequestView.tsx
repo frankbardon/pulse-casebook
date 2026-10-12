@@ -28,6 +28,7 @@ import { buildRequestGraph, type GraphNode } from './requestGraph.ts'
 import { emptyLayout, layoutText, moveNode, parseLayout, positionOf, pruneLayout, type Layout } from './layout.ts'
 import { CohortNodeView, OpNodeView, RawNodeView } from './nodes.tsx'
 import { Inspector } from './Inspector.tsx'
+import { PreviewContext, usePreviews } from './usePreviews.ts'
 import './graph.css'
 
 const nodeTypes = { op: OpNodeView, cohort: CohortNodeView, raw: RawNodeView }
@@ -141,6 +142,14 @@ function RequestGraphView({ path, catalog }: { path: string; catalog?: Catalog }
     }
   }, [doc, catalog, fields])
 
+  // Live previews need the cohort: until it is inspected they are off.
+  const previews = usePreviews(
+    path,
+    doc?.model ?? null,
+    graph !== null && typeof graph !== 'string' ? graph : null,
+    fields !== undefined ? undefined : cohortError !== null ? 'no cohort, no preview' : 'waiting for cohort',
+  )
+
   // Sidecar positions override auto-layout; ids the graph no longer has
   // are simply never looked up.
   const nodes = useMemo((): GraphNode[] => {
@@ -248,31 +257,33 @@ function RequestGraphView({ path, catalog }: { path: string; catalog?: Catalog }
         {cohortError && <span className="err">{cohortError}</span>}
       </div>
       <div className="graph-body">
-        <ReactFlow
-          nodes={nodes}
-          edges={graph.edges}
-          nodeTypes={nodeTypes}
-          onNodesChange={onNodesChange}
-          nodesConnectable={false}
-          edgesFocusable={false}
-          deleteKeyCode={null}
-          onNodeClick={(_, n) => setSelected(n.id)}
-          onPaneClick={() => setSelected(null)}
-          fitView
-          minZoom={0.2}
-          proOptions={{ hideAttribution: true }}
-        >
-          <ViewportPortal>
-            {graph.columns.map((c) => (
-              <div key={c.key} className="col-title" style={{ transform: `translate(${c.x}px, -28px)` }}>
-                {c.title}
-              </div>
-            ))}
-          </ViewportPortal>
-          <Background />
-          <Controls showInteractive={false} />
-          <RemeasureUnready />
-        </ReactFlow>
+        <PreviewContext value={previews}>
+          <ReactFlow
+            nodes={nodes}
+            edges={graph.edges}
+            nodeTypes={nodeTypes}
+            onNodesChange={onNodesChange}
+            nodesConnectable={false}
+            edgesFocusable={false}
+            deleteKeyCode={null}
+            onNodeClick={(_, n) => setSelected(n.id)}
+            onPaneClick={() => setSelected(null)}
+            fitView
+            minZoom={0.2}
+            proOptions={{ hideAttribution: true }}
+          >
+            <ViewportPortal>
+              {graph.columns.map((c) => (
+                <div key={c.key} className="col-title" style={{ transform: `translate(${c.x}px, -28px)` }}>
+                  {c.title}
+                </div>
+              ))}
+            </ViewportPortal>
+            <Background />
+            <Controls showInteractive={false} />
+            <RemeasureUnready />
+          </ReactFlow>
+        </PreviewContext>
         {node && (
           <Inspector
             node={node}

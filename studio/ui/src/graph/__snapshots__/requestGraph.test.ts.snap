@@ -376,7 +376,7 @@ exports[`buildRequestGraph > maps 04_metric_battery 1`] = `
       "id": "tests[1]",
       "position": {
         "x": 624,
-        "y": 122,
+        "y": 160,
       },
       "type": "op",
     },
@@ -408,7 +408,7 @@ exports[`buildRequestGraph > maps 04_metric_battery 1`] = `
       "id": "tests[2]",
       "position": {
         "x": 624,
-        "y": 244,
+        "y": 320,
       },
       "type": "op",
     },
@@ -440,7 +440,7 @@ exports[`buildRequestGraph > maps 04_metric_battery 1`] = `
       "id": "tests[3]",
       "position": {
         "x": 624,
-        "y": 348,
+        "y": 462,
       },
       "type": "op",
     },
@@ -472,7 +472,7 @@ exports[`buildRequestGraph > maps 04_metric_battery 1`] = `
       "id": "tests[4]",
       "position": {
         "x": 624,
-        "y": 452,
+        "y": 604,
       },
       "type": "op",
     },
@@ -508,7 +508,7 @@ exports[`buildRequestGraph > maps 04_metric_battery 1`] = `
       "id": "tests[5]",
       "position": {
         "x": 624,
-        "y": 556,
+        "y": 746,
       },
       "type": "op",
     },
@@ -859,7 +859,7 @@ exports[`buildRequestGraph > maps 08_cuped_welch with a label wire from the attr
       "id": "tests[1]",
       "position": {
         "x": 936,
-        "y": 104,
+        "y": 142,
       },
       "type": "op",
     },
@@ -1221,7 +1221,7 @@ exports[`buildRequestGraph > maps 13_holdout_deciles without inspect data 1`] = 
       "id": "features[1]",
       "position": {
         "x": 312,
-        "y": 122,
+        "y": 160,
       },
       "type": "op",
     },
@@ -1246,7 +1246,7 @@ exports[`buildRequestGraph > maps 13_holdout_deciles without inspect data 1`] = 
       "id": "features[2]",
       "position": {
         "x": 312,
-        "y": 208,
+        "y": 284,
       },
       "type": "op",
     },
@@ -1271,7 +1271,7 @@ exports[`buildRequestGraph > maps 13_holdout_deciles without inspect data 1`] = 
       "id": "features[3]",
       "position": {
         "x": 312,
-        "y": 294,
+        "y": 408,
       },
       "type": "op",
     },
@@ -1296,7 +1296,7 @@ exports[`buildRequestGraph > maps 13_holdout_deciles without inspect data 1`] = 
       "id": "features[4]",
       "position": {
         "x": 312,
-        "y": 380,
+        "y": 532,
       },
       "type": "op",
     },
@@ -1321,7 +1321,7 @@ exports[`buildRequestGraph > maps 13_holdout_deciles without inspect data 1`] = 
       "id": "features[5]",
       "position": {
         "x": 312,
-        "y": 466,
+        "y": 656,
       },
       "type": "op",
     },
@@ -1395,7 +1395,7 @@ exports[`buildRequestGraph > maps 13_holdout_deciles without inspect data 1`] = 
       "id": "attributes[1]",
       "position": {
         "x": 936,
-        "y": 86,
+        "y": 124,
       },
       "type": "op",
     },
@@ -1418,7 +1418,7 @@ exports[`buildRequestGraph > maps 13_holdout_deciles without inspect data 1`] = 
       "id": "attributes[2]",
       "position": {
         "x": 936,
-        "y": 172,
+        "y": 248,
       },
       "type": "op",
     },
@@ -1441,7 +1441,7 @@ exports[`buildRequestGraph > maps 13_holdout_deciles without inspect data 1`] = 
       "id": "attributes[3]",
       "position": {
         "x": 936,
-        "y": 258,
+        "y": 372,
       },
       "type": "op",
     },
@@ -1464,7 +1464,7 @@ exports[`buildRequestGraph > maps 13_holdout_deciles without inspect data 1`] = 
       "id": "attributes[4]",
       "position": {
         "x": 936,
-        "y": 344,
+        "y": 496,
       },
       "type": "op",
     },
@@ -1487,7 +1487,7 @@ exports[`buildRequestGraph > maps 13_holdout_deciles without inspect data 1`] = 
       "id": "attributes[5]",
       "position": {
         "x": 936,
-        "y": 430,
+        "y": 620,
       },
       "type": "op",
     },
@@ -1510,7 +1510,7 @@ exports[`buildRequestGraph > maps 13_holdout_deciles without inspect data 1`] = 
       "id": "attributes[6]",
       "position": {
         "x": 936,
-        "y": 516,
+        "y": 744,
       },
       "type": "op",
     },
@@ -1533,7 +1533,7 @@ exports[`buildRequestGraph > maps 13_holdout_deciles without inspect data 1`] = 
       "id": "attributes[7]",
       "position": {
         "x": 936,
-        "y": 602,
+        "y": 868,
       },
       "type": "op",
     },
@@ -1611,7 +1611,7 @@ exports[`buildRequestGraph > maps 13_holdout_deciles without inspect data 1`] = 
       "id": "aggregations[1]",
       "position": {
         "x": 1560,
-        "y": 86,
+        "y": 124,
       },
       "type": "op",
     },
@@ -1636,7 +1636,7 @@ exports[`buildRequestGraph > maps 13_holdout_deciles without inspect data 1`] = 
       "id": "aggregations[2]",
       "position": {
         "x": 1560,
-        "y": 172,
+        "y": 248,
       },
       "type": "op",
     },
@@ -1661,7 +1661,7 @@ exports[`buildRequestGraph > maps 13_holdout_deciles without inspect data 1`] = 
       "id": "aggregations[3]",
       "position": {
         "x": 1560,
-        "y": 258,
+        "y": 372,
       },
       "type": "op",
     },
@@ -1686,7 +1686,7 @@ exports[`buildRequestGraph > maps 13_holdout_deciles without inspect data 1`] = 
       "id": "aggregations[4]",
       "position": {
         "x": 1560,
-        "y": 344,
+        "y": 496,
       },
       "type": "op",
     },
@@ -1711,7 +1711,7 @@ exports[`buildRequestGraph > maps 13_holdout_deciles without inspect data 1`] = 
       "id": "aggregations[5]",
       "position": {
         "x": 1560,
-        "y": 430,
+        "y": 620,
       },
       "type": "op",
     },
@@ -1805,7 +1805,7 @@ exports[`buildRequestGraph > maps 13_holdout_deciles without inspect data 1`] = 
       "id": "windows[1]",
       "position": {
         "x": 1872,
-        "y": 176,
+        "y": 214,
       },
       "type": "op",
     },

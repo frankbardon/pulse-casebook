@@ -1,5 +1,6 @@
 import { Handle, Position, type NodeProps } from '@xyflow/react'
-import type { CohortNode, OpNode, RawNode } from './requestGraph.ts'
+import { PREVIEW_SECTIONS, type CohortNode, type OpNode, type RawNode } from './requestGraph.ts'
+import { NodePreview } from './NodePreview.tsx'
 
 // OpNode renders one section entry: stage title, operator name, label and
 // a compact param list. Rows that reference a field carry a target handle
@@ -28,6 +29,7 @@ export function OpNodeView({ data }: NodeProps<OpNode>) {
           </li>
         ))}
       </ul>
+      {PREVIEW_SECTIONS.has(data.section) && <NodePreview id={data.path} label={data.name} />}
       {data.produces && <Handle type="source" position={Position.Right} id="out" isConnectable={false} />}
     </div>
   )
@@ -53,6 +55,7 @@ export function CohortNodeView({ data }: NodeProps<CohortNode>) {
           </li>
         ))}
       </ul>
+      <NodePreview id={data.path} />
     </div>
   )
 }

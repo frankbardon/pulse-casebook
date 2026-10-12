@@ -150,3 +150,73 @@ export type CohortInspect = {
 export function inspectCohort(path: string, signal?: AbortSignal): Promise<CohortInspect> {
   return getJSON<CohortInspect>(`/api/cohort/inspect?path=${encodeURIComponent(path)}`, signal)
 }
+
+// Preview is POST /api/preview (studio/internal/server/preview.go). A
+// preview that was deferred (large cohort, expensive probe), timed out
+// or superseded still answers 200 with that status; its probes then
+// carry only node and kind (and reason when deferred).
+export type PreviewStatus = 'ok' | 'deferred' | 'timed_out' | 'cancelled'
+
+export type PreviewStats = {
+  field?: string
+  n?: number
+  n_null?: number
+  min?: number | null
+  max?: number | null
+  mean?: number | null
+  stddev?: number | null
+  quantiles?: { p: number; value: number | null }[]
+  note?: string
+}
+
+export type PreviewProbe = {
+  node: string
+  kind: string
+  reason?: string
+  rows?: { total: number; filtered: number }
+  filter?: { n_in: number; n_out: number; n_null_input: number }
+  stats?: PreviewStats
+  table?: { rows: Record<string, unknown>[]; total_rows: number; truncated?: boolean }
+  component?: unknown
+  facet?: unknown
+  result?: unknown
+}
+
+export type PreviewResult = {
+  status: PreviewStatus
+  verb: string
+  cost: 'cheap' | 'expensive' | string
+  cached?: boolean
+  deferred?: string[]
+  record_count?: number
+  probes: PreviewProbe[]
+  elapsed_ms: number
+}
+
+export type PreviewQuery = {
+  path: string
+  nodes: string[]
+  // The full request document as emitted by the lossless model
+  // (emitModelText). It is spliced into the body verbatim, never
+  // re-serialized, so number spellings and key order reach the server
+  // exactly as edited.
+  requestText: string
+  // Run expensive probes even on cohorts over --auto-preview-rows.
+  force?: boolean
+}
+
+export async function postPreview(q: PreviewQuery, signal?: AbortSignal): Promise<PreviewResult> {
+  const body = `{"path":${JSON.stringify(q.path)},"nodes":${JSON.stringify(q.nodes)},"force":${q.force ? 'true' : 'false'},"request":${q.requestText}}`
+  const res = await fetch('/api/preview', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body,
+    signal,
+  })
+  const out: unknown = await res.json()
+  if (!res.ok || isApiError(out)) {
+    const msg = isApiError(out) ? `${out.error.code}: ${out.error.message}` : `HTTP ${res.status}`
+    throw new Error(msg)
+  }
+  return out as PreviewResult
+}
