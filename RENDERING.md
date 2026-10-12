@@ -28,6 +28,7 @@ cd pulse-anatomy/films/build
 | 3. Features in depth | `pulse-features` |
 | 4. Filters in depth | `pulse-filters` |
 | 5. Attributes in depth | `pulse-attributes` |
+| 6. Aggregators in depth | `pulse-aggregators` |
 
 A full 1080p render takes a few minutes per film. To check something fast, render a short preview:
 

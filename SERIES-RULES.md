@@ -52,6 +52,8 @@ Every film that covers a category says in its narration that Pulse adds more of 
   - `ATTR_ZSCORE` and `ATTR_TSCORE` use the population mean and SD (√(M2/Σw)). A null input scores 0 for z-score and 50 for t-score, not null. Normalized, percentile, date-part, code-in, set-has and popcount also map null to 0. Regression and multivariate attributes return null.
   - Attributes run in declared order and can read earlier attribute labels (`attribute_two_pass_order_test.go`). The `attribute-composition` skill's "no in-slot chaining" rule is stale. Code-in and the multivariate scores read source columns only.
   - An unguarded null in `ATTR_FORMULA` arithmetic raises `PROCESSING_RUNTIME`, which fails the request.
+  - Aggregators skip nulls: `n` is the non-null values used and `n_null` the values skipped. `AGG_VARIANCE` and `AGG_STDDEV` divide by n; `AGG_WELFORD` divides by n − 1. The CI bounds use the normal z and are null for n < 2. `AGG_RATIO` is Σnum ÷ Σden and is null when the denominators sum to 0. Skewness and kurtosis return 0 for n ≤ 1. Mergeability: median and percentile are `none`; distinct counts and sums, mode, mode count and set frequency are `partial`; the rest are `mergeable`.
+  - Behaviour the films avoid until it is settled in code: a second plain `groups` entry is ignored without a warning; a crosstab row that is null on a row axis still reaches the column margin and grand total; aggregators over zero rows return 0 where some skills say NaN.
 - Cohorts, samples, p-values and correlations are illustrative. Each page says so in its note.
 
 ## 4. Series order
@@ -62,7 +64,7 @@ Every film that covers a category says in its narration that Pulse adds more of 
    1. features
    2. filters
    3. attributes
-   4. groupers
+   4. groupers (deferred until the grouper behaviour above is settled)
    5. aggregators
    6. windows
    7. tests and regressions
