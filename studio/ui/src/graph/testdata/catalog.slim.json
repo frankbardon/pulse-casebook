@@ -1,5 +1,5 @@
 {
- "_comment": "Trimmed /api/catalog (pulse v1.0.0-alpha.9.0.20261012142608-897342c4948f): operator names, params, accepts_types/emits_type/requires, overlay scopes/ref_kinds, cohort_types, and schema property names. Regenerate from a running studio when the engine changes.",
+ "_comment": "Trimmed /api/catalog (pulse v1.0.0-alpha.10): operator names, params, accepts_types/emits_type/requires, overlay scopes/ref_kinds, cohort_types, process_chain lists, and schema property names. Regenerate from a running studio when the engine changes.",
  "manifest": {
   "components": {
    "aggregators": [
@@ -1804,6 +1804,16 @@
        "name": "missing",
        "required": false,
        "type": "enum"
+      },
+      {
+       "default": "global",
+       "enum_values": [
+        "global",
+        "within"
+       ],
+       "name": "fit",
+       "required": false,
+       "type": "enum"
       }
      ],
      "accepts_types": [
@@ -1825,6 +1835,16 @@
        "name": "interval",
        "required": false,
        "type": "int"
+      },
+      {
+       "default": "global",
+       "enum_values": [
+        "global",
+        "within"
+       ],
+       "name": "fit",
+       "required": false,
+       "type": "enum"
       }
      ],
      "accepts_types": [
@@ -2972,6 +2992,11 @@
       "name": "alpha",
       "required": false,
       "type": "float"
+     },
+     {
+      "name": "partition_by",
+      "required": false,
+      "type": "list"
      }
     ],
     "variant": "one_way_from_summary",
@@ -2989,6 +3014,11 @@
       "name": "alpha",
       "required": false,
       "type": "float"
+     },
+     {
+      "name": "partition_by",
+      "required": false,
+      "type": "list"
      }
     ],
     "variant": "welch_one_way_post",
@@ -3006,6 +3036,11 @@
       "name": "alpha",
       "required": false,
       "type": "float"
+     },
+     {
+      "name": "partition_by",
+      "required": false,
+      "type": "list"
      }
     ],
     "variant": "median_post",
@@ -3023,6 +3058,11 @@
       "name": "alpha",
       "required": false,
       "type": "float"
+     },
+     {
+      "name": "partition_by",
+      "required": false,
+      "type": "list"
      }
     ],
     "variant": "tau_b_post",
@@ -3040,6 +3080,11 @@
       "name": "alpha",
       "required": false,
       "type": "float"
+     },
+     {
+      "name": "partition_by",
+      "required": false,
+      "type": "list"
      }
     ],
     "variant": "two_sample_post",
@@ -3057,6 +3102,11 @@
       "name": "alpha",
       "required": false,
       "type": "float"
+     },
+     {
+      "name": "partition_by",
+      "required": false,
+      "type": "list"
      }
     ],
     "variant": "paired_two_sided_post",
@@ -3074,6 +3124,11 @@
       "name": "alpha",
       "required": false,
       "type": "float"
+     },
+     {
+      "name": "partition_by",
+      "required": false,
+      "type": "list"
      }
     ],
     "variant": "pearson_post",
@@ -3091,6 +3146,11 @@
       "name": "alpha",
       "required": false,
       "type": "float"
+     },
+     {
+      "name": "partition_by",
+      "required": false,
+      "type": "list"
      }
     ],
     "variant": "shapiro_francia_post",
@@ -3107,6 +3167,11 @@
       "name": "alpha",
       "required": false,
       "type": "float"
+     },
+     {
+      "name": "partition_by",
+      "required": false,
+      "type": "list"
      }
     ],
     "variant": "rank_pearson_post",
@@ -3124,6 +3189,11 @@
       "name": "alpha",
       "required": false,
       "type": "float"
+     },
+     {
+      "name": "partition_by",
+      "required": false,
+      "type": "list"
      }
     ],
     "variant": "mann_kendall",
@@ -3151,6 +3221,11 @@
       "name": "df_within",
       "required": true,
       "type": "float"
+     },
+     {
+      "name": "partition_by",
+      "required": false,
+      "type": "list"
      }
     ],
     "variant": "tukey_kramer",
@@ -3168,6 +3243,11 @@
       "name": "alpha",
       "required": false,
       "type": "float"
+     },
+     {
+      "name": "partition_by",
+      "required": false,
+      "type": "list"
      }
     ],
     "variant": "asymptotic_post",
@@ -5178,7 +5258,36 @@
     ],
     "name": "set_u256"
    }
-  ]
+  ],
+  "process_chain": {
+   "mergeable_aggregators": [
+    "AGG_AVERAGE",
+    "AGG_COUNT",
+    "AGG_DISTINCT_COUNT",
+    "AGG_FREQUENCY",
+    "AGG_MAX",
+    "AGG_MIN",
+    "AGG_MODE",
+    "AGG_MODE_COUNT",
+    "AGG_NULL_COUNT",
+    "AGG_RANGE",
+    "AGG_STDDEV",
+    "AGG_SUM",
+    "AGG_VARIANCE"
+   ],
+   "mergeable_groupers": [
+    "GROUP_CATEGORY",
+    "GROUP_RANGE"
+   ],
+   "row_local_attributes": [
+    "ATTR_DATE_PART",
+    "ATTR_FORMULA"
+   ],
+   "overlay_kinds": [
+    "OVERLAY_DELTA_VS_STAGE",
+    "OVERLAY_INDEX_VS_STAGE"
+   ]
+  }
  },
  "schema": {
   "$defs": {
