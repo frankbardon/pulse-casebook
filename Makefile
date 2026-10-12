@@ -8,6 +8,8 @@ PULSE_REF     ?= main
 PULSE_VERSION ?= v1.0.0-alpha.9
 
 BIN     := bin
+STUDIO_UI   := studio/ui
+STUDIO_DEPS := $(STUDIO_UI)/node_modules/.package-lock.json
 PULSE   := $(abspath $(BIN)/pulse)
 OS      := $(shell uname -s | tr '[:upper:]' '[:lower:]')
 ARCH    := $(shell uname -m | sed 's/x86_64/amd64/; s/aarch64/arm64/')
@@ -15,7 +17,7 @@ ARCHIVE := pulse_$(PULSE_VERSION)_$(OS)_$(ARCH).tar.gz
 RELEASE := https://github.com/frankbardon/pulse/releases/download/$(PULSE_VERSION)
 SHA256  := $(shell command -v sha256sum >/dev/null 2>&1 && echo sha256sum || echo shasum -a 256)
 
-.PHONY: help pulse pulse-release retail-bench data site site-dev
+.PHONY: help pulse pulse-release retail-bench data site site-dev studio studio-ui studio-bump studio-check
 
 help: ## List targets
 	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  %-14s %s\n", $$1, $$2}'
@@ -60,3 +62,26 @@ site: ## Build the learning site into site/dist
 
 site-dev: ## Serve the learning site locally with live reload
 	cd site && npm run dev
+
+$(STUDIO_DEPS): $(STUDIO_UI)/package-lock.json
+	cd $(STUDIO_UI) && npm ci
+	@touch $@
+
+studio-ui: $(STUDIO_DEPS) ## Build the Studio UI into studio/web/dist (embedded by go:embed)
+	cd $(STUDIO_UI) && npm run build
+
+studio: studio-ui ## Build the Studio binary (UI then Go) into bin/studio
+	@mkdir -p $(BIN)
+	cd studio && CGO_ENABLED=0 go build -trimpath -o $(abspath $(BIN))/studio .
+	@echo "· installed $(BIN)/studio (run: $(BIN)/studio showcase/ab-test-readout)"
+
+studio-bump: ## Pin studio/go.mod to the Pulse commit PULSE_REF resolves to in PULSE_SRC
+	@set -e; sha=$$(git -C "$(PULSE_SRC)" rev-parse "$(PULSE_REF)^{commit}"); \
+	echo "· pinning github.com/frankbardon/pulse@$$sha ($(PULSE_REF))"; \
+	cd studio && GOWORK=off go get github.com/frankbardon/pulse@$$sha && GOWORK=off go mod tidy; \
+	grep 'github.com/frankbardon/pulse ' go.mod
+
+studio-check: studio ## Studio gate: go vet, go test, tsc, eslint, vitest, Playwright smoke
+	cd studio && go vet ./... && go test ./...
+	cd $(STUDIO_UI) && npm run typecheck && npm run lint && npm test
+	cd $(STUDIO_UI) && npx playwright install chromium && npm run e2e
