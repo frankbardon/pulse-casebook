@@ -200,6 +200,15 @@ describe('hand-written forms', () => {
     expect(field(buildForm(entry('overlays', '{"kind":"OVERLAY_NOPE","scope":"cell"}'), catalog), 'ref').required).toBeFalsy()
   })
 
+  it('multiplicity blocks edit method, family and alpha', () => {
+    const node: ModelNode = { id: 'multiplicity', kind: 'entry', section: 'multiplicity', value: parseJson('{"method":"holm"}') }
+    const form = buildForm(node, catalog)
+    expect(form.mode).toBe('handwritten')
+    expect(fields(form, 'Correction').map((f) => f.key)).toEqual(['method', 'family', 'alpha'])
+    expect(field(form, 'family').options).toContain('request')
+    expect(json(applyField(field(form, 'family'), node.value, 'request').value)).toBe('{"method":"holm","family":"request"}')
+  })
+
   it('cohort nodes edit filename; raw nodes are JSON only', () => {
     const cohort = buildForm({ id: 'cohort', kind: 'cohort', section: 'cohort', value: parseJson('{"filename":"a.pulse"}') }, catalog)
     expect(fields(cohort, 'Cohort').map((f) => f.key)).toEqual(['filename', 'data_dir'])

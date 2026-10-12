@@ -6,6 +6,7 @@ import { operatorsOf } from './ports.ts'
 import { buildRequestGraph } from './requestGraph.ts'
 import { checkConnection } from './wiring.ts'
 import {
+  BLOCK_ITEMS,
   itemsForPort,
   nextIndex,
   paletteGroups,
@@ -34,8 +35,9 @@ describe('paletteItems', () => {
       total += ops.length
       for (const o of ops) expect(items.filter((i) => i.section === s && i.op === (o.name ?? o.kind))).toHaveLength(1)
     }
-    expect(items).toHaveLength(total)
+    expect(items).toHaveLength(total + BLOCK_ITEMS.length)
     expect(total).toBeGreaterThan(150)
+    expect(items.slice(total)).toEqual(BLOCK_ITEMS)
   })
 
   it('every item places into an empty request and builds a graph', () => {
@@ -174,6 +176,18 @@ describe('placeNode', () => {
     const m2: Manifest = { tests: [{ name: 'TEST_X', params: [{ name: 'alpha', type: 'float', required: true, default: 0.05 }, { name: 'beta', type: 'float', default: 1 }] }] }
     const x = placeNode(model, paletteItems(m2)[0], { manifest: m2 })
     expect(emitModelText(x.model)).toContain('{"type":"TEST_X","label":"x","params":{"alpha":0.05}}')
+  })
+
+  it('places a multiplicity block once per request', () => {
+    const mult = item('multiplicity', 'MULTIPLICITY')
+    const r = placeNode(model, mult, opts)
+    expect(r.id).toBe('multiplicity')
+    expect(emitModelText(r.model)).toContain('"multiplicity":{"method":"holm"}')
+    expect(() => placeNode(r.model, mult, opts)).toThrow(/already has a multiplicity block/)
+    const compose = parseModel('{"requests":[{"label":"a","cohort":{"filename":"x.pulse"}},{"label":"b","cohort":{"filename":"x.pulse"}}]}', 'compose')
+    const c = placeNode(compose, mult, { ...opts, base: ['requests', 1] })
+    expect(c.id).toBe('requests[1].multiplicity')
+    expect(emitModelText(c.model)).toContain('{"label":"b","cohort":{"filename":"x.pulse"},"multiplicity":{"method":"holm"}}')
   })
 
   it('refuses a section that is not a list', () => {

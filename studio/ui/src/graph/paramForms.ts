@@ -110,6 +110,12 @@ export function buildForm(node: ModelNode, catalog: Catalog = {}): NodeForm {
   const sections: FormSection[] = [{ title: 'Slot', fields: slot }]
   const base = { op, ...(opKnown !== undefined && { opKnown }) }
 
+  if (node.section === 'multiplicity') {
+    // The block's keys are its own (no manifest operator): pulse
+    // types.Multiplicity. Empty method/family inherit.
+    sections.push({ title: 'Correction', fields: MULTIPLICITY_FIELDS })
+    return { mode: 'handwritten', ...base, sections }
+  }
   const hand = op ? HANDWRITTEN[op] ?? (node.section === 'overlays' ? overlayForm : undefined) : undefined
   if (hand) {
     const fields = hand(ops ?? [])
@@ -206,6 +212,14 @@ function addOtherParams(sections: FormSection[], value: JsonNode, covered: FormF
     .map((m): FormField => ({ key: m.key, rel: ['params', m.key], type: 'json', hint: 'not declared by the manifest' }))
   if (extra.length > 0) sections.push({ title: 'Other params', fields: extra })
 }
+
+// MULTIPLICITY_FIELDS edit a multiplicity block (pulse
+// types.MultiplicityMethod / MultiplicityFamily values).
+const MULTIPLICITY_FIELDS: FormField[] = [
+  { key: 'method', rel: ['method'], type: 'enum', options: ['holm', 'bonferroni', 'bh', 'by', 'none'], hint: 'empty inherits' },
+  { key: 'family', rel: ['family'], type: 'enum', options: ['request', 'compose', 'layer', 'row', 'column'], hint: 'which p-values are corrected together' },
+  { key: 'alpha', rel: ['alpha'], type: 'number', hint: 'overlay significance level, in (0, 1)' },
+]
 
 type Handwritten = (ops: ManifestOperator[]) => FormField[]
 

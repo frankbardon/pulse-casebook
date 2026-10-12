@@ -27,7 +27,8 @@ export const PALETTE_MIME = 'application/x-pulse-palette'
 
 // PALETTE_SECTIONS are the request sections whose operators the manifest
 // lists, in stage order. Sections without manifest operators (sort,
-// vectors, crosstab, multiplicity, return) are not in the palette.
+// vectors, crosstab, return) are not in the palette; multiplicity is, as
+// a fixed BLOCK_ITEMS entry.
 export const PALETTE_SECTIONS = [
   'features',
   'filterers',
@@ -58,8 +59,24 @@ export type PaletteItem = {
   description?: string
 }
 
+// BLOCK_ITEMS are request blocks the manifest lists no operators for,
+// placed as fixed items after the manifest's: the multiplicity block
+// (one per request, method written to `method`; family and alpha are set
+// in the inspector).
+export const BLOCK_ITEMS: readonly PaletteItem[] = [
+  {
+    key: 'multiplicity/MULTIPLICITY',
+    section: 'multiplicity',
+    column: 'output',
+    kind: 'Multiplicity',
+    op: 'MULTIPLICITY',
+    type: 'holm',
+    description: "Multiple-comparison correction of the request's tests: method, family and alpha.",
+  },
+]
+
 // paletteItems lists every manifest operator in stage order, manifest
-// order within a section.
+// order within a section, then BLOCK_ITEMS.
 export function paletteItems(manifest: Manifest | undefined): PaletteItem[] {
   if (!manifest) return []
   const out: PaletteItem[] = []
@@ -81,6 +98,7 @@ export function paletteItems(manifest: Manifest | undefined): PaletteItem[] {
       })
     }
   }
+  out.push(...BLOCK_ITEMS)
   return out
 }
 
@@ -183,6 +201,13 @@ export function placeNode(model: GraphModel, item: PaletteItem, opts: PlaceOptio
   const base = opts.base ?? []
   const root = emitModel(model)
   if (base.length > 0 && getIn(root, base)?.type !== 'object') throw new Error(`${formatPath(base)} is not a request`)
+  if (info.single) {
+    // A one-per-request block (multiplicity): written whole, never twice.
+    if (getIn(root, [...base, item.section]) !== undefined) throw new Error(`this request already has a ${info.title.toLowerCase()} block`)
+    const block = info.opKey ? fromPlain({ [info.opKey]: item.type }) : fromPlain({})
+    const id = formatPath([...base, item.section])
+    return { model: buildModel(setIn(root, [...base, item.section], block), model.kind), id }
+  }
   const arr = getIn(root, [...base, item.section])
   if (arr !== undefined && arr.type !== 'array') throw new Error(`${item.section} is not a list in this request`)
   const index = arr ? arr.items.length : 0

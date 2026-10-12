@@ -1,6 +1,10 @@
-import { expect, test } from '@playwright/test'
+import { drag, expect, test } from './harness.ts'
 
-// Placeholder smoke test: the embedded shell loads and reaches the API.
+// Read-only smoke: every test here shares its worker's server over a temp
+// copy of ab-test-readout (cohorts synthesized by global setup), so
+// nothing is saved. Flows that write files live in workspace.spec.ts,
+// chain.spec.ts and flagship.spec.ts with a fresh workspace per test.
+
 test('studio shell loads', async ({ page }) => {
   await page.goto('/')
   await expect(page.getByRole('heading', { name: 'Pulse Studio' })).toBeVisible()
@@ -17,8 +21,6 @@ test('opens a plain request as a stage-column graph', async ({ page }) => {
   await expect(graph.locator('.react-flow__edge')).toHaveCount(13)
 })
 
-// Facet edits stay unsaved here: the smoke server serves the real
-// showcase dir (the save round trip is covered by chainFacet.save.test.ts).
 test('facet files open with a live facet preview and editable settings', async ({ page }) => {
   await page.goto('/')
   await page.getByRole('button', { name: 'req/02_srm_gof.facet.json' }).click()
@@ -44,9 +46,9 @@ test('cohort and non-request files do not open as graphs', async ({ page }) => {
   await page.goto('/')
   await page.getByRole('button', { name: 'ab_test.pulse' }).click()
   await expect(page.getByTestId('cohort-file')).toContainText('New request')
-  const out = page.getByRole('button', { name: 'out/02_srm_gof.json' })
-  await expect(out).toBeDisabled()
-  await expect(out).toHaveAttribute('title', /not a Pulse request/)
+  const spec = page.getByRole('button', { name: 'data/ab_test.synth.json' })
+  await expect(spec).toBeDisabled()
+  await expect(spec).toHaveAttribute('title', /not a Pulse/)
 })
 
 test('compose files open as parallel lanes with per-lane previews', async ({ page }) => {
@@ -63,8 +65,6 @@ test('compose files open as parallel lanes with per-lane previews', async ({ pag
   await expect(page.getByTestId('dirty-state')).toHaveText('saved')
 })
 
-// Lane edits stay unsaved here: the smoke server serves the real showcase
-// dir (the save round trip is covered by compose.save.test.ts).
 test('compose lanes reorder, rename and add', async ({ page }) => {
   await page.goto('/')
   await page.getByRole('button', { name: 'req/11_readout.compose.json' }).click()
@@ -84,7 +84,6 @@ test('compose lanes reorder, rename and add', async ({ page }) => {
   await expect(graph.locator('[data-path="requests[4].cohort"]')).toContainText('ab_test.pulse')
 })
 
-// Edits stay unsaved here: the smoke server serves the real showcase dir.
 test('selecting a node opens the inspector and edits mark the file dirty', async ({ page }) => {
   await page.goto('/')
   await page.getByRole('button', { name: 'req/04_metric_battery.json' }).click()
@@ -100,8 +99,7 @@ test('selecting a node opens the inspector and edits mark the file dirty', async
   await expect(graph.locator('[data-path="tests[0]"]')).toContainText('no')
 })
 
-// Dragging stays unsaved here too; the save/reload round trip of the
-// sidecar is covered against a temp dir by the Go and unit tests.
+// Dragging stays unsaved here; workspace.spec.ts saves and reloads a layout.
 test('dragging a node moves it and marks the layout dirty', async ({ page }) => {
   await page.goto('/')
   await page.getByRole('button', { name: 'req/04_metric_battery.json' }).click()
@@ -144,16 +142,6 @@ test('nodes show live previews and an edit re-runs only downstream ones', async 
   expect(requests.join(';')).not.toContain('cohort')
   await expect(graph.locator('.react-flow__edge')).not.toHaveCount(0)
 })
-
-// Wiring stays unsaved too. Drags run handle to handle with the mouse.
-async function drag(page: import('@playwright/test').Page, from: import('@playwright/test').Locator, to: import('@playwright/test').Locator) {
-  const a = (await from.boundingBox())!
-  const b = (await to.boundingBox())!
-  await page.mouse.move(a.x + a.width / 2, a.y + a.height / 2)
-  await page.mouse.down()
-  await page.mouse.move(b.x + b.width / 2, b.y + b.height / 2, { steps: 12 })
-  return async () => page.mouse.up()
-}
 
 test('wiring a label into an input updates the param; bad types are refused', async ({ page }) => {
   await page.goto('/')
@@ -206,7 +194,6 @@ test('deleting a node removes it and its wires; drags stay in the stage column',
   await expect(page.getByTestId('dirty-state')).toContainText('unsaved')
 })
 
-// Palette placements stay unsaved too.
 test('the palette lists every manifest operator, searches, and places a node', async ({ page }) => {
   const catalog = (await (await page.request.get('/api/catalog')).json()) as { manifest: Record<string, unknown> }
   const m = catalog.manifest as { components: Record<string, unknown[]> } & Record<string, unknown[]>
@@ -220,7 +207,9 @@ test('the palette lists every manifest operator, searches, and places a node', a
   await expect(graph.locator('[data-path="tests[1]"]')).toBeVisible()
   await page.getByTestId('palette-toggle').click()
   const palette = page.getByTestId('palette')
-  await expect(palette.getByTestId('palette-item')).toHaveCount(total)
+  // Plus the fixed multiplicity block (no manifest operator list).
+  await expect(palette.getByTestId('palette-item')).toHaveCount(total + 1)
+  await expect(palette.locator('[data-op="MULTIPLICITY"]')).toBeVisible()
 
   // By description words, then by name.
   await palette.getByTestId('palette-search').fill('two-sample alias')
@@ -349,9 +338,7 @@ test('validation badges show predict errors and suggestions; hover shows explain
   await expect(badge).toHaveCount(0)
 })
 
-// A full run is read-only; Save to out/ is mocked here because the smoke
-// server serves the real showcase dir (the write itself is covered by
-// the Go run tests in a temp workspace).
+// A full run is read-only; workspace.spec.ts saves a run to out/ for real.
 test('Run executes the edited compose and shows per-lane results and node headlines', async ({ page }) => {
   await page.goto('/')
   await page.getByRole('button', { name: 'req/11_readout.compose.json' }).click()
@@ -371,23 +358,6 @@ test('Run executes the edited compose and shows per-lane results and node headli
   await panel.getByTestId('results-tab-raw').click()
   await expect(panel.getByTestId('results-raw')).toContainText('"format_version": "1.1"')
   await expect(panel.getByTestId('save-out-name')).toHaveValue('11_readout.json')
-
-  // Save refuses to overwrite until confirmed (server mocked).
-  const saves: unknown[] = []
-  await page.route('**/api/run/save', async (route) => {
-    const body = route.request().postDataJSON() as { overwrite: boolean }
-    saves.push(body)
-    if (!body.overwrite) {
-      await route.fulfill({ status: 409, contentType: 'application/json', body: JSON.stringify({ error: { code: 'exists', message: 'a file already exists at that path' } }) })
-      return
-    }
-    await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ path: 'out/11_readout.json', bytes: 10, overwritten: true }) })
-  })
-  await panel.getByTestId('save-out').click()
-  await expect(panel.getByTestId('save-out-exists')).toContainText('out/11_readout.json exists')
-  await panel.getByTestId('save-out-overwrite').click()
-  await expect(panel.getByTestId('save-out-done')).toContainText('replaced out/11_readout.json')
-  expect(saves).toHaveLength(2)
 
   // An edit marks the results as stale.
   await page.getByTestId('lane-add').click()

@@ -81,7 +81,7 @@ studio-bump: ## Pin studio/go.mod to the Pulse commit PULSE_REF resolves to in P
 	cd studio && GOWORK=off go get github.com/frankbardon/pulse@$$sha && GOWORK=off go mod tidy; \
 	grep 'github.com/frankbardon/pulse ' go.mod
 
-studio-check: studio ## Studio gate: go vet, go test, tsc, eslint, vitest, Playwright smoke
+studio-check: studio ## Studio gate: go vet, go test, tsc, eslint, vitest, Playwright e2e (temp workspaces)
 	cd studio && go vet ./... && go test ./...
 	cd $(STUDIO_UI) && npm run typecheck && npm run lint && npm test
 	cd $(STUDIO_UI) && npx playwright install chromium && npm run e2e

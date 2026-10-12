@@ -536,7 +536,8 @@ function RequestGraphView({ path, kind, catalog }: { path: string; kind: ViewKin
   // the chain gate accepts; a facet takes filters and overlays.
   const items = useMemo(() => {
     const all = paletteItems(catalog?.manifest)
-    if (kind === 'chain') return all.filter((it) => chainRefusal(catalog?.manifest, it.section, it.type) === null)
+    // Chain stages run no tests, so no multiplicity block either.
+    if (kind === 'chain') return all.filter((it) => it.section !== 'multiplicity' && chainRefusal(catalog?.manifest, it.section, it.type) === null)
     if (kind === 'facet') return all.filter((it) => it.section === 'filterers' || it.section === 'overlays')
     return all
   }, [catalog, kind])
