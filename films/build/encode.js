@@ -7,7 +7,8 @@ const { spawn } = require('child_process');
   await p.goto('file://'+require('path').resolve(page)); await p.waitForTimeout(1500); await p.evaluate(()=>document.fonts.ready);
   const dur = await p.evaluate(px=>{window.__film.capture(+px); return window.__film.DUR;}, px);
   const ff = spawn('ffmpeg', ['-y','-loglevel','error','-f','image2pipe','-framerate',fps,'-c:v','mjpeg','-i','-','-i',process.env.AUDIO || 'narration.wav','-map','0:v','-map','1:a','-c:a','aac','-b:a','160k','-ar','48000','-shortest','-c:v','libx264','-preset','slow','-crf','18','-pix_fmt','yuv420p','-movflags','+faststart',out], {stdio:['pipe','inherit','inherit']});
-  const n = Math.round(dur*fps);
+  const limit = parseFloat(process.env.LIMIT || '0');
+  const n = Math.round((limit > 0 ? Math.min(limit, dur) : dur) * fps);
   for (let i=0;i<n;i++){
     const d = await p.evaluate(t=>{window.__film.render(t); return window.__film.toJPEG(0.93);}, i/fps);
     const buf = Buffer.from(d.split(',')[1],'base64');

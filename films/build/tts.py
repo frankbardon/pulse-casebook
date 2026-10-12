@@ -1,7 +1,9 @@
 import json, sys, soundfile as sf
 from kokoro_onnx import Kokoro
 voice = sys.argv[1]
-k = Kokoro('models/kokoro-v1.0.onnx', 'models/voices-v1.0.bin')
+import os
+md = os.environ.get('KOKORO_DIR', 'models')
+k = Kokoro(os.path.join(md, 'kokoro-v1.0.onnx'), os.path.join(md, 'voices-v1.0.bin'))
 cues = json.load(open('cues.json'))
 lens = []
 for i, c in enumerate(cues):

@@ -80,4 +80,6 @@ Every film that covers a category says in its narration that Pulse adds more of 
   | violet | derived output |
   | coral | checks, refusals and nulls |
 
-- **Delivery:** check the stills before rendering, and sample frames after. Publish the page and send the MP4 separately, because uploads cap at 30 MB.
+- **Delivery:** check the stills before narrating. Publish the page as an artifact and commit the sources. Do not render or send MP4s; the user renders them with `films/build/render.sh` (see `RENDERING.md`).
+- **Parallel renders:** each film renders in its own `films/build/work/<name>/` folder, so several films can render at once.
+- **Archive:** commit every film's sources to the `pulse-anatomy-films` branch under `pulse-anatomy/`. That means the page, scene script, narration MP3, subtitles and any build changes. The branch is an archive and is never merged. MP4s are not committed.
