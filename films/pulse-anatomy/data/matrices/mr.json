@@ -1,0 +1,18 @@
+{"cohort":{"filename":"m.pulse"},
+ "vectors":[{"name":"items","fields":["s1","s2","s3","v1","v2","v3"]},
+            {"name":"service","fields":["s1","s2","s3","r4"]},
+            {"name":"preds","fields":["age","tenure","income"]}],
+ "matrices":[
+  {"name":"cov","type":"MAT_COVARIANCE","vector":"items"},
+  {"name":"cor","type":"MAT_CORRELATION","vector":"items","params":{"summary":{"top_pairs":3}}},
+  {"name":"corpw","type":"MAT_CORRELATION","vector":"items","params":{"missing":"pairwise"}},
+  {"name":"spear","type":"MAT_CORRELATION","vector":"items","params":{"method":"spearman"}},
+  {"name":"pcor","type":"MAT_PARTIAL_CORRELATION","vector":"items"},
+  {"name":"rel","type":"MAT_RELIABILITY","vector":"service","params":{"reverse":["r4"],"scale_min":1,"scale_max":7}},
+  {"name":"relraw","type":"MAT_RELIABILITY","vector":"service"},
+  {"name":"pca","type":"MAT_PCA","vector":"items"},
+  {"name":"pcav","type":"MAT_PCA","vector":"items","params":{"rotation":"varimax","components":2}},
+  {"name":"fa","type":"MAT_FACTOR","vector":"items","params":{"factors":2,"extraction":"ml","rotation":"varimax"}},
+  {"name":"col","type":"MAT_COLLINEARITY","vector":"preds"},
+  {"name":"dist","type":"MAT_DISTANCE","vector":"items","params":{"between":{"type":"GROUP_CATEGORY","field":"segment"},"standardize":true}}
+ ]}

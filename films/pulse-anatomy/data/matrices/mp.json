@@ -1,0 +1,6 @@
+{"cohort":{"filename":"m.pulse"},
+ "vectors":[{"name":"items","fields":["s1","s2","s3","v1","v2","v3"]}],
+ "groups":[{"type":"GROUP_CATEGORY","field":"segment"}],
+ "aggregations":[{"type":"AGG_COUNT","field":"s1","label":"n"}],
+ "matrices":[{"name":"cor","type":"MAT_CORRELATION","vector":"items","params":{"missing":"pairwise"},"encoding":"upper"},
+             {"name":"sp","type":"MAT_CORRELATION","vector":"items","params":{"method":"spearman"}}]}

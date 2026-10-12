@@ -1,0 +1,386 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "metadata": {
+      "total_rows": 1282,
+      "filtered_rows": 1282,
+      "cohort_file": "o.pulse"
+    },
+    "crosstab": {
+      "shape": "matrix",
+      "matrix": {
+        "row_header": {
+          "fields": [
+            "region"
+          ],
+          "types": [
+            "GROUP_CATEGORY"
+          ]
+        },
+        "column_header": {
+          "fields": [
+            "plan"
+          ],
+          "types": [
+            "GROUP_CATEGORY"
+          ]
+        },
+        "row_keys": [
+          [
+            "East"
+          ],
+          [
+            "North"
+          ],
+          [
+            "South"
+          ]
+        ],
+        "column_keys": [
+          [
+            "Basic"
+          ],
+          [
+            "Plus"
+          ],
+          [
+            "Pro"
+          ]
+        ],
+        "cells": [
+          [
+            {
+              "value": 108,
+              "present": true
+            },
+            {
+              "value": 83,
+              "present": true
+            },
+            {
+              "value": 133,
+              "present": true
+            }
+          ],
+          [
+            {
+              "value": 249,
+              "present": true
+            },
+            {
+              "value": 150,
+              "present": true
+            },
+            {
+              "value": 107,
+              "present": true
+            }
+          ],
+          [
+            {
+              "value": 162,
+              "present": true
+            },
+            {
+              "value": 199,
+              "present": true
+            },
+            {
+              "value": 91,
+              "present": true
+            }
+          ]
+        ],
+        "row_margins": [
+          {
+            "value": 324,
+            "present": true
+          },
+          {
+            "value": 506,
+            "present": true
+          },
+          {
+            "value": 452,
+            "present": true
+          }
+        ],
+        "column_margins": [
+          {
+            "value": 519,
+            "present": true
+          },
+          {
+            "value": 432,
+            "present": true
+          },
+          {
+            "value": 331,
+            "present": true
+          }
+        ],
+        "grand_total": {
+          "value": 1282,
+          "present": true
+        },
+        "cell_label": "n",
+        "normalize_applied": "none"
+      }
+    },
+    "overlays": [
+      {
+        "name": "oops",
+        "kind": "OVERLAY_SHARE_OF_ROW",
+        "scope": "cell",
+        "ref": {
+          "margin": {
+            "axis": "column"
+          }
+        },
+        "payload": {
+          "shape": "matrix",
+          "matrix": {
+            "row_header": {
+              "fields": [
+                "region"
+              ],
+              "types": [
+                "GROUP_CATEGORY"
+              ]
+            },
+            "column_header": {
+              "fields": [
+                "plan"
+              ],
+              "types": [
+                "GROUP_CATEGORY"
+              ]
+            },
+            "row_keys": [
+              [
+                "East"
+              ],
+              [
+                "North"
+              ],
+              [
+                "South"
+              ]
+            ],
+            "column_keys": [
+              [
+                "Basic"
+              ],
+              [
+                "Plus"
+              ],
+              [
+                "Pro"
+              ]
+            ],
+            "cells": [
+              [
+                {
+                  "value": 0.3333333333333333,
+                  "present": true
+                },
+                {
+                  "value": 0.25617283950617287,
+                  "present": true
+                },
+                {
+                  "value": 0.4104938271604938,
+                  "present": true
+                }
+              ],
+              [
+                {
+                  "value": 0.49209486166007904,
+                  "present": true
+                },
+                {
+                  "value": 0.2964426877470356,
+                  "present": true
+                },
+                {
+                  "value": 0.21146245059288538,
+                  "present": true
+                }
+              ],
+              [
+                {
+                  "value": 0.3584070796460177,
+                  "present": true
+                },
+                {
+                  "value": 0.44026548672566373,
+                  "present": true
+                },
+                {
+                  "value": 0.2013274336283186,
+                  "present": true
+                }
+              ]
+            ],
+            "grand_total": {
+              "present": false
+            },
+            "cell_label": "oops",
+            "normalize_applied": "none"
+          }
+        },
+        "summary": {
+          "min": 0.2013274336283186,
+          "max": 0.49209486166007904,
+          "count": 9,
+          "baseline": 0
+        }
+      }
+    ],
+    "components": {
+      "crosstab": {
+        "cell_counts": [
+          [
+            108,
+            83,
+            133
+          ],
+          [
+            249,
+            150,
+            107
+          ],
+          [
+            162,
+            199,
+            91
+          ]
+        ],
+        "cell_components": [
+          [
+            {
+              "n": 108,
+              "n_null": 0
+            },
+            {
+              "n": 83,
+              "n_null": 0
+            },
+            {
+              "n": 133,
+              "n_null": 0
+            }
+          ],
+          [
+            {
+              "n": 249,
+              "n_null": 0
+            },
+            {
+              "n": 150,
+              "n_null": 0
+            },
+            {
+              "n": 107,
+              "n_null": 0
+            }
+          ],
+          [
+            {
+              "n": 162,
+              "n_null": 0
+            },
+            {
+              "n": 199,
+              "n_null": 0
+            },
+            {
+              "n": 91,
+              "n_null": 0
+            }
+          ]
+        ],
+        "row_margin_counts": [
+          324,
+          506,
+          452
+        ],
+        "row_margin_components": [
+          {
+            "n": 324,
+            "n_null": 0
+          },
+          {
+            "n": 506,
+            "n_null": 0
+          },
+          {
+            "n": 452,
+            "n_null": 0
+          }
+        ],
+        "column_margin_counts": [
+          519,
+          432,
+          331
+        ],
+        "column_margin_components": [
+          {
+            "n": 519,
+            "n_null": 0
+          },
+          {
+            "n": 432,
+            "n_null": 0
+          },
+          {
+            "n": 331,
+            "n_null": 0
+          }
+        ],
+        "grand_total_count": 1282,
+        "grand_total_components": {
+          "n": 1282,
+          "n_null": 0
+        },
+        "row_key_components": [
+          {
+            "count": 324,
+            "key": "East",
+            "label": "East"
+          },
+          {
+            "count": 506,
+            "key": "North",
+            "label": "North"
+          },
+          {
+            "count": 452,
+            "key": "South",
+            "label": "South"
+          }
+        ],
+        "column_key_components": [
+          {
+            "count": 519,
+            "key": "Basic",
+            "label": "Basic"
+          },
+          {
+            "count": 432,
+            "key": "Plus",
+            "label": "Plus"
+          },
+          {
+            "count": 331,
+            "key": "Pro",
+            "label": "Pro"
+          }
+        ],
+        "included_records": 1282
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

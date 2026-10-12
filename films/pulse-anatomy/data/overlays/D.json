@@ -1,0 +1,3 @@
+{"cohort":{"filename":"o2025.pulse"},"fields":["plan"],
+ "overlays":[{"name":"idx","kind":"OVERLAY_INDEX_VS_POP","scope":"group","ref":{"population":{"cohort":"o.pulse"}}},
+  {"name":"chi","kind":"OVERLAY_CHISQ_VS_POP","scope":"group","ref":{"population":{"cohort":"o.pulse"}}}]}

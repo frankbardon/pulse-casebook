@@ -1,0 +1,163 @@
+1
+00:00:00,250 --> 00:00:05,527
+Pulse windows. One value per row, read from its neighbours, taken apart in depth.
+
+2
+00:00:06,327 --> 00:00:13,546
+Windows run sixth, after aggregation. They see one row per group, or one row per record when nothing was grouped.
+
+3
+00:00:14,346 --> 00:00:19,474
+Each window names a type and a field, a partition and an order, plus its own parameters.
+
+4
+00:00:20,274 --> 00:00:28,367
+It adds one new column to every row and collapses nothing. Without a label, the column is the type and the field joined together.
+
+5
+00:00:29,167 --> 00:00:37,580
+A window needs its partition sorted, so any window turns streaming off. Windows that share a partition and an order share one sort.
+
+6
+00:00:38,380 --> 00:00:42,783
+Every window shares three ideas. Here are twelve rows, as they're stored.
+
+7
+00:00:43,583 --> 00:00:50,482
+Partition carves them into independent slices, here by region. A window never reads across a partition.
+
+8
+00:00:51,282 --> 00:00:55,471
+Order sorts each slice. That order is the direction the window scans.
+
+9
+00:00:56,271 --> 00:01:01,548
+And the frame bounds which rows the current row may read, such as the two before it and itself.
+
+10
+00:01:02,348 --> 00:01:09,268
+Nulls always sort last, whichever direction you choose. Descending reverses only the values that exist.
+
+11
+00:01:10,068 --> 00:01:18,311
+The order is the scan order, not the response order. Rows come back as they went in, so add a sort to the request if you need them ordered.
+
+12
+00:01:19,111 --> 00:01:25,412
+Lag reads a value from earlier in the partition, by an offset you choose. A null carries straight through.
+
+13
+00:01:26,212 --> 00:01:27,991
+Lead reads forward instead.
+
+14
+00:01:28,791 --> 00:01:32,938
+At the edge there is no neighbour, so you get null, or a default you set.
+
+15
+00:01:33,738 --> 00:01:38,098
+Delta subtracts the earlier value, so it reads in the field's own units.
+
+16
+00:01:38,898 --> 00:01:45,285
+Percent change divides by it instead, giving a fraction. If either side is null, both return null.
+
+17
+00:01:46,085 --> 00:01:54,626
+From February to March, sales went from zero to thirty. Delta says thirty. Percent change says null, because it won't divide by zero.
+
+18
+00:01:55,426 --> 00:02:00,063
+Use points when the metric is already a rate, and the fraction when the base matters.
+
+19
+00:02:00,863 --> 00:02:07,506
+Running sum and running average read everything so far: a frame with no start, ending at the current row.
+
+20
+00:02:08,306 --> 00:02:16,229
+April is null. It's skipped, not counted as zero. The total holds, and the average divides by the values that exist.
+
+21
+00:02:17,029 --> 00:02:21,666
+A moving average reads a frame bounded on both sides, like the last three months.
+
+22
+00:02:22,466 --> 00:02:25,887
+Shift the frame and it centres on the current month instead.
+
+23
+00:02:26,687 --> 00:02:34,012
+Leave one end open and predict refuses it, because that's a running average. Near the start, the frame is simply shorter.
+
+24
+00:02:34,812 --> 00:02:41,775
+An exponentially weighted moving average blends each value with everything before it, weighting recent values more.
+
+25
+00:02:42,575 --> 00:02:48,834
+Set either alpha or decay, never both. A higher alpha follows the latest value more closely.
+
+26
+00:02:49,634 --> 00:02:54,506
+A null row returns null, but the smoothing carries on to the next real value.
+
+27
+00:02:55,306 --> 00:03:01,415
+Ranking windows read no field. The order is their whole input, here sales from highest to lowest.
+
+28
+00:03:02,215 --> 00:03:05,231
+Row number counts one, two, three, and never ties.
+
+29
+00:03:06,031 --> 00:03:08,791
+Rank lets ties share a place, then skips ahead.
+
+30
+00:03:09,591 --> 00:03:13,034
+Dense rank lets ties share a place, with no gap after.
+
+31
+00:03:13,834 --> 00:03:16,402
+The null sorts last and still gets a rank.
+
+32
+00:03:17,202 --> 00:03:21,775
+Because windows run after aggregation, they can work on the result rows.
+
+33
+00:03:22,575 --> 00:03:26,167
+Group by month, sum the sales, then window over the totals.
+
+34
+00:03:26,967 --> 00:03:31,775
+That gives a cumulative total and a month-on-month change in a single request.
+
+35
+00:03:32,575 --> 00:03:37,980
+One request can't filter on a window, because its filters ran before the window existed.
+
+36
+00:03:38,780 --> 00:03:47,364
+So write the column first. Materialize stores the row number as an ordinary field in a new cohort, and the next request filters on it.
+
+37
+00:03:48,164 --> 00:03:50,775
+That keeps the top two months in every region.
+
+38
+00:03:51,575 --> 00:03:57,876
+That's the window toolkit today: offsets, changes, running and moving aggregates, smoothing and ranks.
+
+39
+00:03:58,676 --> 00:04:06,300
+More windows are added over time, and embedders can register their own. The manifest always shows what your instance offers.
+
+40
+00:04:07,100 --> 00:04:13,316
+Remember: check the partition and the order before you read the number. Next up, tests and regressions.
+
+41
+00:04:14,116 --> 00:04:15,340
+Pulse windows.
