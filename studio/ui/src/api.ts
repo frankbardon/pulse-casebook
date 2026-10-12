@@ -109,6 +109,28 @@ export type ManifestOperator = {
   params?: ManifestParam[] | null
   // Overlays: the scopes the kind accepts.
   scopes?: string[]
+  // Cohort field types the operator's field input takes (absent for
+  // tests, whose input rules come from requires).
+  accepts_types?: string[]
+  // Field type of the column the operator writes (features, attributes,
+  // windows); absent when it varies or the operator writes none.
+  emits_type?: string
+  // Tests and post-tests: the inputs the engine requires, by Go field
+  // name (`Field`, `SplitBy`, `Rows`, ...).
+  requires?: string[]
+}
+
+// CohortType is one entry of manifest.cohort_types: a cohort field type
+// and the operators that take it.
+export type CohortType = {
+  name: string
+  categorical?: boolean
+  compatible_aggregators?: string[]
+  compatible_attributes?: string[]
+  compatible_features?: string[]
+  compatible_filterers?: string[]
+  compatible_groupers?: string[]
+  compatible_windows?: string[]
 }
 
 export type Manifest = {
@@ -120,6 +142,7 @@ export type Manifest = {
   regressions?: ManifestOperator[]
   matrices?: ManifestOperator[]
   overlays?: ManifestOperator[]
+  cohort_types?: CohortType[]
   [key: string]: unknown
 }
 

@@ -1,11 +1,24 @@
 {
- "_comment": "Trimmed /api/catalog (pulse v1.0.0-alpha.9.0.20261012142608-897342c4948f): operator names + params, and schema property names. Regenerate from a running studio when the engine changes.",
+ "_comment": "Trimmed /api/catalog (pulse v1.0.0-alpha.9.0.20261012142608-897342c4948f): operator names, params, accepts_types/emits_type/requires, cohort_types, and schema property names. Regenerate from a running studio when the engine changes.",
  "manifest": {
   "components": {
    "aggregators": [
     {
      "name": "AGG_AVERAGE",
-     "params": null
+     "params": null,
+     "accepts_types": [
+      "date",
+      "datetime",
+      "decimal128",
+      "f32",
+      "f64",
+      "packed_bool",
+      "u16",
+      "u32",
+      "u4",
+      "u64",
+      "u8"
+     ]
     },
     {
      "name": "AGG_CI_LOWER",
@@ -22,6 +35,18 @@
        "required": false,
        "type": "string"
       }
+     ],
+     "accepts_types": [
+      "date",
+      "datetime",
+      "f32",
+      "f64",
+      "packed_bool",
+      "u16",
+      "u32",
+      "u4",
+      "u64",
+      "u8"
      ]
     },
     {
@@ -39,15 +64,65 @@
        "required": false,
        "type": "string"
       }
+     ],
+     "accepts_types": [
+      "date",
+      "datetime",
+      "f32",
+      "f64",
+      "packed_bool",
+      "u16",
+      "u32",
+      "u4",
+      "u64",
+      "u8"
      ]
     },
     {
      "name": "AGG_COUNT",
-     "params": null
+     "params": null,
+     "accepts_types": [
+      "categorical_u16",
+      "categorical_u32",
+      "categorical_u8",
+      "date",
+      "datetime",
+      "decimal128",
+      "f32",
+      "f64",
+      "packed_bool",
+      "set_u128",
+      "set_u16",
+      "set_u256",
+      "set_u32",
+      "set_u64",
+      "set_u8",
+      "u16",
+      "u32",
+      "u4",
+      "u64",
+      "u8"
+     ]
     },
     {
      "name": "AGG_DISTINCT_COUNT",
-     "params": null
+     "params": null,
+     "accepts_types": [
+      "categorical_u16",
+      "categorical_u32",
+      "categorical_u8",
+      "date",
+      "datetime",
+      "decimal128",
+      "f32",
+      "f64",
+      "packed_bool",
+      "u16",
+      "u32",
+      "u4",
+      "u64",
+      "u8"
+     ]
     },
     {
      "name": "AGG_DISTINCT_SUM",
@@ -57,6 +132,18 @@
        "required": true,
        "type": "string"
       }
+     ],
+     "accepts_types": [
+      "date",
+      "datetime",
+      "f32",
+      "f64",
+      "packed_bool",
+      "u16",
+      "u32",
+      "u4",
+      "u64",
+      "u8"
      ]
     },
     {
@@ -67,11 +154,38 @@
        "required": true,
        "type": "string"
       }
+     ],
+     "accepts_types": [
+      "categorical_u16",
+      "categorical_u32",
+      "categorical_u8",
+      "date",
+      "datetime",
+      "f32",
+      "f64",
+      "packed_bool",
+      "u16",
+      "u32",
+      "u4",
+      "u64",
+      "u8"
      ]
     },
     {
      "name": "AGG_KURTOSIS",
-     "params": null
+     "params": null,
+     "accepts_types": [
+      "date",
+      "datetime",
+      "f32",
+      "f64",
+      "packed_bool",
+      "u16",
+      "u32",
+      "u4",
+      "u64",
+      "u8"
+     ]
     },
     {
      "name": "AGG_MAE",
@@ -82,6 +196,16 @@
        "required": true,
        "type": "field"
       }
+     ],
+     "accepts_types": [
+      "f32",
+      "f64",
+      "packed_bool",
+      "u16",
+      "u32",
+      "u4",
+      "u64",
+      "u8"
      ]
     },
     {
@@ -93,31 +217,133 @@
        "required": true,
        "type": "field"
       }
+     ],
+     "accepts_types": [
+      "f32",
+      "f64",
+      "packed_bool",
+      "u16",
+      "u32",
+      "u4",
+      "u64",
+      "u8"
      ]
     },
     {
      "name": "AGG_MAX",
-     "params": null
+     "params": null,
+     "accepts_types": [
+      "date",
+      "datetime",
+      "decimal128",
+      "f32",
+      "f64",
+      "packed_bool",
+      "u16",
+      "u32",
+      "u4",
+      "u64",
+      "u8"
+     ]
     },
     {
      "name": "AGG_MEDIAN",
-     "params": null
+     "params": null,
+     "accepts_types": [
+      "date",
+      "datetime",
+      "f32",
+      "f64",
+      "packed_bool",
+      "u16",
+      "u32",
+      "u4",
+      "u64",
+      "u8"
+     ]
     },
     {
      "name": "AGG_MIN",
-     "params": null
+     "params": null,
+     "accepts_types": [
+      "date",
+      "datetime",
+      "decimal128",
+      "f32",
+      "f64",
+      "packed_bool",
+      "u16",
+      "u32",
+      "u4",
+      "u64",
+      "u8"
+     ]
     },
     {
      "name": "AGG_MODE",
-     "params": null
+     "params": null,
+     "accepts_types": [
+      "categorical_u16",
+      "categorical_u32",
+      "categorical_u8",
+      "date",
+      "datetime",
+      "decimal128",
+      "f32",
+      "f64",
+      "packed_bool",
+      "u16",
+      "u32",
+      "u4",
+      "u64",
+      "u8"
+     ]
     },
     {
      "name": "AGG_MODE_COUNT",
-     "params": null
+     "params": null,
+     "accepts_types": [
+      "categorical_u16",
+      "categorical_u32",
+      "categorical_u8",
+      "date",
+      "datetime",
+      "decimal128",
+      "f32",
+      "f64",
+      "packed_bool",
+      "u16",
+      "u32",
+      "u4",
+      "u64",
+      "u8"
+     ]
     },
     {
      "name": "AGG_NULL_COUNT",
-     "params": null
+     "params": null,
+     "accepts_types": [
+      "categorical_u16",
+      "categorical_u32",
+      "categorical_u8",
+      "date",
+      "datetime",
+      "decimal128",
+      "f32",
+      "f64",
+      "packed_bool",
+      "set_u128",
+      "set_u16",
+      "set_u256",
+      "set_u32",
+      "set_u64",
+      "set_u8",
+      "u16",
+      "u32",
+      "u4",
+      "u64",
+      "u8"
+     ]
     },
     {
      "name": "AGG_PERCENTILE",
@@ -127,11 +353,35 @@
        "required": true,
        "type": "float"
       }
+     ],
+     "accepts_types": [
+      "date",
+      "datetime",
+      "f32",
+      "f64",
+      "packed_bool",
+      "u16",
+      "u32",
+      "u4",
+      "u64",
+      "u8"
      ]
     },
     {
      "name": "AGG_RANGE",
-     "params": null
+     "params": null,
+     "accepts_types": [
+      "date",
+      "datetime",
+      "f32",
+      "f64",
+      "packed_bool",
+      "u16",
+      "u32",
+      "u4",
+      "u64",
+      "u8"
+     ]
     },
     {
      "name": "AGG_RATIO",
@@ -148,6 +398,28 @@
        "required": true,
        "type": "field"
       }
+     ],
+     "accepts_types": [
+      "categorical_u16",
+      "categorical_u32",
+      "categorical_u8",
+      "date",
+      "datetime",
+      "decimal128",
+      "f32",
+      "f64",
+      "packed_bool",
+      "set_u128",
+      "set_u16",
+      "set_u256",
+      "set_u32",
+      "set_u64",
+      "set_u8",
+      "u16",
+      "u32",
+      "u4",
+      "u64",
+      "u8"
      ]
     },
     {
@@ -159,47 +431,156 @@
        "required": true,
        "type": "field"
       }
+     ],
+     "accepts_types": [
+      "f32",
+      "f64",
+      "packed_bool",
+      "u16",
+      "u32",
+      "u4",
+      "u64",
+      "u8"
      ]
     },
     {
      "name": "AGG_SET_CARDINALITY_AVG",
-     "params": null
+     "params": null,
+     "accepts_types": [
+      "set_u128",
+      "set_u16",
+      "set_u256",
+      "set_u32",
+      "set_u64",
+      "set_u8"
+     ]
     },
     {
      "name": "AGG_SET_CARDINALITY_SUM",
-     "params": null
+     "params": null,
+     "accepts_types": [
+      "set_u128",
+      "set_u16",
+      "set_u256",
+      "set_u32",
+      "set_u64",
+      "set_u8"
+     ]
     },
     {
      "name": "AGG_SET_DISTINCT_VALUES",
-     "params": null
+     "params": null,
+     "accepts_types": [
+      "set_u128",
+      "set_u16",
+      "set_u256",
+      "set_u32",
+      "set_u64",
+      "set_u8"
+     ]
     },
     {
      "name": "AGG_SET_FREQUENCY",
-     "params": null
+     "params": null,
+     "accepts_types": [
+      "set_u128",
+      "set_u16",
+      "set_u256",
+      "set_u32",
+      "set_u64",
+      "set_u8"
+     ]
     },
     {
      "name": "AGG_SET_INTERSECTION",
-     "params": null
+     "params": null,
+     "accepts_types": [
+      "set_u128",
+      "set_u16",
+      "set_u256",
+      "set_u32",
+      "set_u64",
+      "set_u8"
+     ]
     },
     {
      "name": "AGG_SET_UNION",
-     "params": null
+     "params": null,
+     "accepts_types": [
+      "set_u128",
+      "set_u16",
+      "set_u256",
+      "set_u32",
+      "set_u64",
+      "set_u8"
+     ]
     },
     {
      "name": "AGG_SKEWNESS",
-     "params": null
+     "params": null,
+     "accepts_types": [
+      "date",
+      "datetime",
+      "f32",
+      "f64",
+      "packed_bool",
+      "u16",
+      "u32",
+      "u4",
+      "u64",
+      "u8"
+     ]
     },
     {
      "name": "AGG_STDDEV",
-     "params": null
+     "params": null,
+     "accepts_types": [
+      "date",
+      "datetime",
+      "decimal128",
+      "f32",
+      "f64",
+      "packed_bool",
+      "u16",
+      "u32",
+      "u4",
+      "u64",
+      "u8"
+     ]
     },
     {
      "name": "AGG_SUM",
-     "params": null
+     "params": null,
+     "accepts_types": [
+      "date",
+      "datetime",
+      "decimal128",
+      "f32",
+      "f64",
+      "packed_bool",
+      "u16",
+      "u32",
+      "u4",
+      "u64",
+      "u8"
+     ]
     },
     {
      "name": "AGG_VARIANCE",
-     "params": null
+     "params": null,
+     "accepts_types": [
+      "date",
+      "datetime",
+      "decimal128",
+      "f32",
+      "f64",
+      "packed_bool",
+      "u16",
+      "u32",
+      "u4",
+      "u64",
+      "u8"
+     ]
     },
     {
      "name": "AGG_VEC_MEAN",
@@ -214,6 +595,16 @@
        "required": false,
        "type": "bool"
       }
+     ],
+     "accepts_types": [
+      "date",
+      "f32",
+      "f64",
+      "u16",
+      "u32",
+      "u4",
+      "u64",
+      "u8"
      ]
     },
     {
@@ -229,6 +620,16 @@
        "required": false,
        "type": "bool"
       }
+     ],
+     "accepts_types": [
+      "date",
+      "f32",
+      "f64",
+      "u16",
+      "u32",
+      "u4",
+      "u64",
+      "u8"
      ]
     },
     {
@@ -239,15 +640,47 @@
        "required": false,
        "type": "string"
       }
+     ],
+     "accepts_types": [
+      "date",
+      "datetime",
+      "f32",
+      "f64",
+      "packed_bool",
+      "u16",
+      "u32",
+      "u4",
+      "u64",
+      "u8"
      ]
     },
     {
      "name": "AGG_WELFORD",
-     "params": null
+     "params": null,
+     "accepts_types": [
+      "f32",
+      "f64",
+      "u16",
+      "u32",
+      "u64",
+      "u8"
+     ]
     },
     {
      "name": "AGG_ZSCORE",
-     "params": null
+     "params": null,
+     "accepts_types": [
+      "date",
+      "datetime",
+      "f32",
+      "f64",
+      "packed_bool",
+      "u16",
+      "u32",
+      "u4",
+      "u64",
+      "u8"
+     ]
     }
    ],
    "attributes": [
@@ -259,7 +692,18 @@
        "required": true,
        "type": "list"
       }
-     ]
+     ],
+     "accepts_types": [
+      "categorical_u16",
+      "categorical_u32",
+      "categorical_u8",
+      "u16",
+      "u32",
+      "u4",
+      "u64",
+      "u8"
+     ],
+     "emits_type": "packed_bool"
     },
     {
      "name": "ATTR_DATE_PART",
@@ -278,7 +722,12 @@
        "required": true,
        "type": "enum"
       }
-     ]
+     ],
+     "accepts_types": [
+      "date",
+      "datetime"
+     ],
+     "emits_type": "f64"
     },
     {
      "name": "ATTR_FACTOR_SCORE",
@@ -354,11 +803,45 @@
        "required": false,
        "type": "enum"
       }
-     ]
+     ],
+     "accepts_types": [
+      "date",
+      "f32",
+      "f64",
+      "u16",
+      "u32",
+      "u4",
+      "u64",
+      "u8"
+     ],
+     "emits_type": "f64"
     },
     {
      "name": "ATTR_FORMULA",
-     "params": null
+     "params": null,
+     "accepts_types": [
+      "categorical_u16",
+      "categorical_u32",
+      "categorical_u8",
+      "date",
+      "datetime",
+      "decimal128",
+      "f32",
+      "f64",
+      "packed_bool",
+      "set_u128",
+      "set_u16",
+      "set_u256",
+      "set_u32",
+      "set_u64",
+      "set_u8",
+      "u16",
+      "u32",
+      "u4",
+      "u64",
+      "u8"
+     ],
+     "emits_type": "f64"
     },
     {
      "name": "ATTR_MAHALANOBIS",
@@ -388,11 +871,33 @@
        "required": false,
        "type": "enum"
       }
-     ]
+     ],
+     "accepts_types": [
+      "date",
+      "f32",
+      "f64",
+      "u16",
+      "u32",
+      "u4",
+      "u64",
+      "u8"
+     ],
+     "emits_type": "f64"
     },
     {
      "name": "ATTR_NORMALIZED",
-     "params": null
+     "params": null,
+     "accepts_types": [
+      "date",
+      "f32",
+      "f64",
+      "u16",
+      "u32",
+      "u4",
+      "u64",
+      "u8"
+     ],
+     "emits_type": "f64"
     },
     {
      "name": "ATTR_PC_SCORE",
@@ -442,11 +947,33 @@
        "required": false,
        "type": "enum"
       }
-     ]
+     ],
+     "accepts_types": [
+      "date",
+      "f32",
+      "f64",
+      "u16",
+      "u32",
+      "u4",
+      "u64",
+      "u8"
+     ],
+     "emits_type": "f64"
     },
     {
      "name": "ATTR_PERCENTILE",
-     "params": null
+     "params": null,
+     "accepts_types": [
+      "date",
+      "f32",
+      "f64",
+      "u16",
+      "u32",
+      "u4",
+      "u64",
+      "u8"
+     ],
+     "emits_type": "f64"
     },
     {
      "name": "ATTR_PROFILE_SIMILARITY",
@@ -479,15 +1006,48 @@
        "required": false,
        "type": "list"
       }
-     ]
+     ],
+     "accepts_types": [
+      "date",
+      "f32",
+      "f64",
+      "u16",
+      "u32",
+      "u4",
+      "u64",
+      "u8"
+     ],
+     "emits_type": "f64"
     },
     {
      "name": "ATTR_REG_FITTED",
-     "params": null
+     "params": null,
+     "accepts_types": [
+      "date",
+      "f32",
+      "f64",
+      "u16",
+      "u32",
+      "u4",
+      "u64",
+      "u8"
+     ],
+     "emits_type": "f64"
     },
     {
      "name": "ATTR_REG_LEVERAGE",
-     "params": null
+     "params": null,
+     "accepts_types": [
+      "date",
+      "f32",
+      "f64",
+      "u16",
+      "u32",
+      "u4",
+      "u64",
+      "u8"
+     ],
+     "emits_type": "f64"
     },
     {
      "name": "ATTR_REG_PREDICT",
@@ -523,11 +1083,33 @@
        "required": false,
        "type": "enum"
       }
-     ]
+     ],
+     "accepts_types": [
+      "date",
+      "f32",
+      "f64",
+      "u16",
+      "u32",
+      "u4",
+      "u64",
+      "u8"
+     ],
+     "emits_type": "f64"
     },
     {
      "name": "ATTR_REG_RESIDUAL",
-     "params": null
+     "params": null,
+     "accepts_types": [
+      "date",
+      "f32",
+      "f64",
+      "u16",
+      "u32",
+      "u4",
+      "u64",
+      "u8"
+     ],
+     "emits_type": "f64"
     },
     {
      "name": "ATTR_SCALE_SCORE",
@@ -562,7 +1144,18 @@
        "required": false,
        "type": "float"
       }
-     ]
+     ],
+     "accepts_types": [
+      "date",
+      "f32",
+      "f64",
+      "u16",
+      "u32",
+      "u4",
+      "u64",
+      "u8"
+     ],
+     "emits_type": "f64"
     },
     {
      "name": "ATTR_SET_HAS",
@@ -572,15 +1165,44 @@
        "required": true,
        "type": "string"
       }
-     ]
+     ],
+     "accepts_types": [
+      "set_u128",
+      "set_u16",
+      "set_u256",
+      "set_u32",
+      "set_u64",
+      "set_u8"
+     ],
+     "emits_type": "packed_bool"
     },
     {
      "name": "ATTR_SET_POPCOUNT",
-     "params": null
+     "params": null,
+     "accepts_types": [
+      "set_u128",
+      "set_u16",
+      "set_u256",
+      "set_u32",
+      "set_u64",
+      "set_u8"
+     ],
+     "emits_type": "u16"
     },
     {
      "name": "ATTR_TSCORE",
-     "params": null
+     "params": null,
+     "accepts_types": [
+      "date",
+      "f32",
+      "f64",
+      "u16",
+      "u32",
+      "u4",
+      "u64",
+      "u8"
+     ],
+     "emits_type": "f64"
     },
     {
      "name": "ATTR_VEC_DISTANCE",
@@ -633,11 +1255,33 @@
        "required": false,
        "type": "enum"
       }
-     ]
+     ],
+     "accepts_types": [
+      "date",
+      "f32",
+      "f64",
+      "u16",
+      "u32",
+      "u4",
+      "u64",
+      "u8"
+     ],
+     "emits_type": "f64"
     },
     {
      "name": "ATTR_ZSCORE",
-     "params": null
+     "params": null,
+     "accepts_types": [
+      "date",
+      "f32",
+      "f64",
+      "u16",
+      "u32",
+      "u4",
+      "u64",
+      "u8"
+     ],
+     "emits_type": "f64"
     }
    ],
    "features": [
@@ -656,23 +1300,60 @@
        "required": false,
        "type": "int"
       }
-     ]
+     ],
+     "accepts_types": [
+      "date",
+      "f32",
+      "f64",
+      "u16",
+      "u32",
+      "u4",
+      "u64",
+      "u8"
+     ],
+     "emits_type": "u32"
     },
     {
      "name": "FEAT_DATE_FEATURES",
-     "params": null
+     "params": null,
+     "accepts_types": [
+      "date",
+      "datetime"
+     ]
     },
     {
      "name": "FEAT_FREQUENCY_ENCODE",
-     "params": null
+     "params": null,
+     "accepts_types": [
+      "categorical_u16",
+      "categorical_u32",
+      "categorical_u8"
+     ],
+     "emits_type": "f32"
     },
     {
      "name": "FEAT_LOG",
-     "params": null
+     "params": null,
+     "accepts_types": [
+      "date",
+      "f32",
+      "f64",
+      "u16",
+      "u32",
+      "u4",
+      "u64",
+      "u8"
+     ],
+     "emits_type": "f64"
     },
     {
      "name": "FEAT_ONE_HOT",
-     "params": null
+     "params": null,
+     "accepts_types": [
+      "categorical_u16",
+      "categorical_u32",
+      "categorical_u8"
+     ]
     },
     {
      "name": "FEAT_POLY",
@@ -682,11 +1363,34 @@
        "required": true,
        "type": "int"
       }
-     ]
+     ],
+     "accepts_types": [
+      "date",
+      "decimal128",
+      "f32",
+      "f64",
+      "u16",
+      "u32",
+      "u4",
+      "u64",
+      "u8"
+     ],
+     "emits_type": "f64"
     },
     {
      "name": "FEAT_SQRT",
-     "params": null
+     "params": null,
+     "accepts_types": [
+      "date",
+      "f32",
+      "f64",
+      "u16",
+      "u32",
+      "u4",
+      "u64",
+      "u8"
+     ],
+     "emits_type": "f64"
     },
     {
      "name": "FEAT_TARGET_ENCODE",
@@ -703,7 +1407,13 @@
        "required": false,
        "type": "float"
       }
-     ]
+     ],
+     "accepts_types": [
+      "categorical_u16",
+      "categorical_u32",
+      "categorical_u8"
+     ],
+     "emits_type": "f32"
     },
     {
      "name": "FEAT_TRAIN_TEST_SPLIT",
@@ -725,63 +1435,269 @@
        "required": false,
        "type": "field"
       }
-     ]
+     ],
+     "accepts_types": [
+      "categorical_u16",
+      "categorical_u32",
+      "categorical_u8",
+      "date",
+      "datetime",
+      "decimal128",
+      "f32",
+      "f64",
+      "packed_bool",
+      "set_u128",
+      "set_u16",
+      "set_u256",
+      "set_u32",
+      "set_u64",
+      "set_u8",
+      "u16",
+      "u32",
+      "u4",
+      "u64",
+      "u8"
+     ],
+     "emits_type": "u8"
     }
    ],
    "filterers": [
     {
      "name": "FILTER_DATE_RANGES",
-     "params": null
+     "params": null,
+     "accepts_types": [
+      "date",
+      "datetime"
+     ]
     },
     {
      "name": "FILTER_EXCLUDE",
-     "params": null
+     "params": null,
+     "accepts_types": [
+      "categorical_u16",
+      "categorical_u32",
+      "categorical_u8",
+      "date",
+      "datetime",
+      "decimal128",
+      "f32",
+      "f64",
+      "packed_bool",
+      "u16",
+      "u32",
+      "u4",
+      "u64",
+      "u8"
+     ]
     },
     {
      "name": "FILTER_EXPRESSION",
-     "params": null
+     "params": null,
+     "accepts_types": [
+      "categorical_u16",
+      "categorical_u32",
+      "categorical_u8",
+      "date",
+      "datetime",
+      "decimal128",
+      "f32",
+      "f64",
+      "packed_bool",
+      "set_u128",
+      "set_u16",
+      "set_u256",
+      "set_u32",
+      "set_u64",
+      "set_u8",
+      "u16",
+      "u32",
+      "u4",
+      "u64",
+      "u8"
+     ]
     },
     {
      "name": "FILTER_FALSE",
-     "params": null
+     "params": null,
+     "accepts_types": [
+      "categorical_u16",
+      "categorical_u32",
+      "categorical_u8",
+      "date",
+      "datetime",
+      "decimal128",
+      "f32",
+      "f64",
+      "packed_bool",
+      "set_u128",
+      "set_u16",
+      "set_u256",
+      "set_u32",
+      "set_u64",
+      "set_u8",
+      "u16",
+      "u32",
+      "u4",
+      "u64",
+      "u8"
+     ]
     },
     {
      "name": "FILTER_INCLUDE",
-     "params": null
+     "params": null,
+     "accepts_types": [
+      "categorical_u16",
+      "categorical_u32",
+      "categorical_u8",
+      "date",
+      "datetime",
+      "decimal128",
+      "f32",
+      "f64",
+      "packed_bool",
+      "u16",
+      "u32",
+      "u4",
+      "u64",
+      "u8"
+     ]
     },
     {
      "name": "FILTER_NULL",
-     "params": null
+     "params": null,
+     "accepts_types": [
+      "categorical_u16",
+      "categorical_u32",
+      "categorical_u8",
+      "date",
+      "datetime",
+      "decimal128",
+      "f32",
+      "f64",
+      "packed_bool",
+      "set_u128",
+      "set_u16",
+      "set_u256",
+      "set_u32",
+      "set_u64",
+      "set_u8",
+      "u16",
+      "u32",
+      "u4",
+      "u64",
+      "u8"
+     ]
     },
     {
      "name": "FILTER_RANGE",
-     "params": null
+     "params": null,
+     "accepts_types": [
+      "date",
+      "decimal128",
+      "f32",
+      "f64",
+      "u16",
+      "u32",
+      "u4",
+      "u64",
+      "u8"
+     ]
     },
     {
      "name": "FILTER_SET_CONTAINS_ALL",
-     "params": null
+     "params": null,
+     "accepts_types": [
+      "set_u128",
+      "set_u16",
+      "set_u256",
+      "set_u32",
+      "set_u64",
+      "set_u8"
+     ]
     },
     {
      "name": "FILTER_SET_CONTAINS_ANY",
-     "params": null
+     "params": null,
+     "accepts_types": [
+      "set_u128",
+      "set_u16",
+      "set_u256",
+      "set_u32",
+      "set_u64",
+      "set_u8"
+     ]
     },
     {
      "name": "FILTER_SET_CONTAINS_NONE",
-     "params": null
+     "params": null,
+     "accepts_types": [
+      "set_u128",
+      "set_u16",
+      "set_u256",
+      "set_u32",
+      "set_u64",
+      "set_u8"
+     ]
     },
     {
      "name": "FILTER_SET_EQUALS",
-     "params": null
+     "params": null,
+     "accepts_types": [
+      "set_u128",
+      "set_u16",
+      "set_u256",
+      "set_u32",
+      "set_u64",
+      "set_u8"
+     ]
     },
     {
      "name": "FILTER_TRUE",
-     "params": null
+     "params": null,
+     "accepts_types": [
+      "categorical_u16",
+      "categorical_u32",
+      "categorical_u8",
+      "date",
+      "datetime",
+      "decimal128",
+      "f32",
+      "f64",
+      "packed_bool",
+      "set_u128",
+      "set_u16",
+      "set_u256",
+      "set_u32",
+      "set_u64",
+      "set_u8",
+      "u16",
+      "u32",
+      "u4",
+      "u64",
+      "u8"
+     ]
     }
    ],
    "groupers": [
     {
      "name": "GROUP_CATEGORY",
-     "params": null
+     "params": null,
+     "accepts_types": [
+      "categorical_u16",
+      "categorical_u32",
+      "categorical_u8",
+      "date",
+      "datetime",
+      "decimal128",
+      "f32",
+      "f64",
+      "packed_bool",
+      "u16",
+      "u32",
+      "u4",
+      "u64",
+      "u8"
+     ]
     },
     {
      "name": "GROUP_DATE",
@@ -822,6 +1738,10 @@
        "required": false,
        "type": "int"
       }
+     ],
+     "accepts_types": [
+      "date",
+      "datetime"
      ]
     },
     {
@@ -838,6 +1758,10 @@
        "required": false,
        "type": "string"
       }
+     ],
+     "accepts_types": [
+      "date",
+      "datetime"
      ]
     },
     {
@@ -881,6 +1805,16 @@
        "required": false,
        "type": "enum"
       }
+     ],
+     "accepts_types": [
+      "date",
+      "f32",
+      "f64",
+      "u16",
+      "u32",
+      "u4",
+      "u64",
+      "u8"
      ]
     },
     {
@@ -892,6 +1826,16 @@
        "required": false,
        "type": "int"
       }
+     ],
+     "accepts_types": [
+      "date",
+      "f32",
+      "f64",
+      "u16",
+      "u32",
+      "u4",
+      "u64",
+      "u8"
      ]
     },
     {
@@ -902,6 +1846,16 @@
        "required": true,
        "type": "float"
       }
+     ],
+     "accepts_types": [
+      "date",
+      "f32",
+      "f64",
+      "u16",
+      "u32",
+      "u4",
+      "u64",
+      "u8"
      ]
     },
     {
@@ -912,15 +1866,41 @@
        "required": true,
        "type": "float"
       }
+     ],
+     "accepts_types": [
+      "date",
+      "f32",
+      "f64",
+      "u16",
+      "u32",
+      "u4",
+      "u64",
+      "u8"
      ]
     },
     {
      "name": "GROUP_SET_PER_ELEMENT",
-     "params": null
+     "params": null,
+     "accepts_types": [
+      "set_u128",
+      "set_u16",
+      "set_u256",
+      "set_u32",
+      "set_u64",
+      "set_u8"
+     ]
     },
     {
      "name": "GROUP_SET_VALUE",
-     "params": null
+     "params": null,
+     "accepts_types": [
+      "set_u128",
+      "set_u16",
+      "set_u256",
+      "set_u32",
+      "set_u64",
+      "set_u8"
+     ]
     }
    ],
    "windows": [
@@ -933,11 +1913,45 @@
        "required": false,
        "type": "int"
       }
-     ]
+     ],
+     "accepts_types": [
+      "date",
+      "f32",
+      "f64",
+      "u16",
+      "u32",
+      "u4",
+      "u64",
+      "u8"
+     ],
+     "emits_type": "f64"
     },
     {
      "name": "WIN_DENSE_RANK",
-     "params": null
+     "params": null,
+     "accepts_types": [
+      "categorical_u16",
+      "categorical_u32",
+      "categorical_u8",
+      "date",
+      "datetime",
+      "decimal128",
+      "f32",
+      "f64",
+      "packed_bool",
+      "set_u128",
+      "set_u16",
+      "set_u256",
+      "set_u32",
+      "set_u64",
+      "set_u8",
+      "u16",
+      "u32",
+      "u4",
+      "u64",
+      "u8"
+     ],
+     "emits_type": "u32"
     },
     {
      "name": "WIN_EWMA",
@@ -954,7 +1968,18 @@
        "required": false,
        "type": "float"
       }
-     ]
+     ],
+     "accepts_types": [
+      "date",
+      "f32",
+      "f64",
+      "u16",
+      "u32",
+      "u4",
+      "u64",
+      "u8"
+     ],
+     "emits_type": "f64"
     },
     {
      "name": "WIN_LAG",
@@ -970,7 +1995,18 @@
        "required": false,
        "type": "any"
       }
-     ]
+     ],
+     "accepts_types": [
+      "date",
+      "f32",
+      "f64",
+      "u16",
+      "u32",
+      "u4",
+      "u64",
+      "u8"
+     ],
+     "emits_type": "f64"
     },
     {
      "name": "WIN_LEAD",
@@ -986,11 +2022,33 @@
        "required": false,
        "type": "any"
       }
-     ]
+     ],
+     "accepts_types": [
+      "date",
+      "f32",
+      "f64",
+      "u16",
+      "u32",
+      "u4",
+      "u64",
+      "u8"
+     ],
+     "emits_type": "f64"
     },
     {
      "name": "WIN_MOVING_AVG",
-     "params": null
+     "params": null,
+     "accepts_types": [
+      "date",
+      "f32",
+      "f64",
+      "u16",
+      "u32",
+      "u4",
+      "u64",
+      "u8"
+     ],
+     "emits_type": "f64"
     },
     {
      "name": "WIN_PCT_CHANGE",
@@ -1001,23 +2059,102 @@
        "required": false,
        "type": "int"
       }
-     ]
+     ],
+     "accepts_types": [
+      "date",
+      "f32",
+      "f64",
+      "u16",
+      "u32",
+      "u4",
+      "u64",
+      "u8"
+     ],
+     "emits_type": "f64"
     },
     {
      "name": "WIN_RANK",
-     "params": null
+     "params": null,
+     "accepts_types": [
+      "categorical_u16",
+      "categorical_u32",
+      "categorical_u8",
+      "date",
+      "datetime",
+      "decimal128",
+      "f32",
+      "f64",
+      "packed_bool",
+      "set_u128",
+      "set_u16",
+      "set_u256",
+      "set_u32",
+      "set_u64",
+      "set_u8",
+      "u16",
+      "u32",
+      "u4",
+      "u64",
+      "u8"
+     ],
+     "emits_type": "u32"
     },
     {
      "name": "WIN_ROW_NUMBER",
-     "params": null
+     "params": null,
+     "accepts_types": [
+      "categorical_u16",
+      "categorical_u32",
+      "categorical_u8",
+      "date",
+      "datetime",
+      "decimal128",
+      "f32",
+      "f64",
+      "packed_bool",
+      "set_u128",
+      "set_u16",
+      "set_u256",
+      "set_u32",
+      "set_u64",
+      "set_u8",
+      "u16",
+      "u32",
+      "u4",
+      "u64",
+      "u8"
+     ],
+     "emits_type": "u32"
     },
     {
      "name": "WIN_RUNNING_AVG",
-     "params": null
+     "params": null,
+     "accepts_types": [
+      "date",
+      "f32",
+      "f64",
+      "u16",
+      "u32",
+      "u4",
+      "u64",
+      "u8"
+     ],
+     "emits_type": "f64"
     },
     {
      "name": "WIN_RUNNING_SUM",
-     "params": null
+     "params": null,
+     "accepts_types": [
+      "date",
+      "f32",
+      "f64",
+      "u16",
+      "u32",
+      "u4",
+      "u64",
+      "u8"
+     ],
+     "emits_type": "f64"
     }
    ]
   },
@@ -1054,6 +2191,16 @@
       "required": false,
       "type": "float"
      }
+    ],
+    "accepts_types": [
+     "f32",
+     "f64",
+     "packed_bool",
+     "u16",
+     "u32",
+     "u4",
+     "u64",
+     "u8"
     ]
    },
    {
@@ -1090,6 +2237,16 @@
       "required": false,
       "type": "object"
      }
+    ],
+    "accepts_types": [
+     "f32",
+     "f64",
+     "packed_bool",
+     "u16",
+     "u32",
+     "u4",
+     "u64",
+     "u8"
     ]
    },
    {
@@ -1120,6 +2277,16 @@
       "required": false,
       "type": "float"
      }
+    ],
+    "accepts_types": [
+     "f32",
+     "f64",
+     "packed_bool",
+     "u16",
+     "u32",
+     "u4",
+     "u64",
+     "u8"
     ]
    },
    {
@@ -1172,6 +2339,16 @@
       "required": false,
       "type": "float"
      }
+    ],
+    "accepts_types": [
+     "f32",
+     "f64",
+     "packed_bool",
+     "u16",
+     "u32",
+     "u4",
+     "u64",
+     "u8"
     ]
    },
    {
@@ -1247,6 +2424,16 @@
       "required": false,
       "type": "float"
      }
+    ],
+    "accepts_types": [
+     "f32",
+     "f64",
+     "packed_bool",
+     "u16",
+     "u32",
+     "u4",
+     "u64",
+     "u8"
     ]
    },
    {
@@ -1281,6 +2468,16 @@
       "required": false,
       "type": "float"
      }
+    ],
+    "accepts_types": [
+     "f32",
+     "f64",
+     "packed_bool",
+     "u16",
+     "u32",
+     "u4",
+     "u64",
+     "u8"
     ]
    },
    {
@@ -1335,6 +2532,16 @@
       "required": false,
       "type": "float"
      }
+    ],
+    "accepts_types": [
+     "f32",
+     "f64",
+     "packed_bool",
+     "u16",
+     "u32",
+     "u4",
+     "u64",
+     "u8"
     ]
    },
    {
@@ -1378,6 +2585,16 @@
       "required": false,
       "type": "float"
      }
+    ],
+    "accepts_types": [
+     "f32",
+     "f64",
+     "packed_bool",
+     "u16",
+     "u32",
+     "u4",
+     "u64",
+     "u8"
     ]
    }
   ],
@@ -1671,7 +2888,11 @@
       "type": "float"
      }
     ],
-    "variant": "one_way_from_summary"
+    "variant": "one_way_from_summary",
+    "requires": [
+     "Field",
+     "SplitBy"
+    ]
    },
    {
     "family": "TEST_ANOVA_WELCH",
@@ -1684,7 +2905,11 @@
       "type": "float"
      }
     ],
-    "variant": "welch_one_way_post"
+    "variant": "welch_one_way_post",
+    "requires": [
+     "Field",
+     "SplitBy"
+    ]
    },
    {
     "family": "TEST_BROWN_FORSYTHE",
@@ -1697,7 +2922,11 @@
       "type": "float"
      }
     ],
-    "variant": "median_post"
+    "variant": "median_post",
+    "requires": [
+     "Field",
+     "SplitBy"
+    ]
    },
    {
     "family": "TEST_KENDALL_TAU",
@@ -1710,7 +2939,11 @@
       "type": "float"
      }
     ],
-    "variant": "tau_b_post"
+    "variant": "tau_b_post",
+    "requires": [
+     "Field",
+     "Field2"
+    ]
    },
    {
     "family": "TEST_KS",
@@ -1723,7 +2956,11 @@
       "type": "float"
      }
     ],
-    "variant": "two_sample_post"
+    "variant": "two_sample_post",
+    "requires": [
+     "Field",
+     "Field2"
+    ]
    },
    {
     "family": "TEST_PAIRED_T",
@@ -1736,7 +2973,11 @@
       "type": "float"
      }
     ],
-    "variant": "paired_two_sided_post"
+    "variant": "paired_two_sided_post",
+    "requires": [
+     "Field",
+     "Field2"
+    ]
    },
    {
     "family": "TEST_PEARSON_R",
@@ -1749,7 +2990,11 @@
       "type": "float"
      }
     ],
-    "variant": "pearson_post"
+    "variant": "pearson_post",
+    "requires": [
+     "Field",
+     "Field2"
+    ]
    },
    {
     "family": "TEST_SHAPIRO_WILK",
@@ -1762,7 +3007,10 @@
       "type": "float"
      }
     ],
-    "variant": "shapiro_francia_post"
+    "variant": "shapiro_francia_post",
+    "requires": [
+     "Field"
+    ]
    },
    {
     "family": "TEST_SPEARMAN_R",
@@ -1775,7 +3023,11 @@
       "type": "float"
      }
     ],
-    "variant": "rank_pearson_post"
+    "variant": "rank_pearson_post",
+    "requires": [
+     "Field",
+     "Field2"
+    ]
    },
    {
     "family": "TEST_TREND",
@@ -1788,7 +3040,11 @@
       "type": "float"
      }
     ],
-    "variant": "mann_kendall"
+    "variant": "mann_kendall",
+    "requires": [
+     "Field",
+     "OrderBy"
+    ]
    },
    {
     "family": "TEST_TUKEY_HSD",
@@ -1811,7 +3067,11 @@
       "type": "float"
      }
     ],
-    "variant": "tukey_kramer"
+    "variant": "tukey_kramer",
+    "requires": [
+     "Field",
+     "SplitBy"
+    ]
    },
    {
     "family": "TEST_WILCOXON_SR",
@@ -1824,7 +3084,11 @@
       "type": "float"
      }
     ],
-    "variant": "asymptotic_post"
+    "variant": "asymptotic_post",
+    "requires": [
+     "Field",
+     "Field2"
+    ]
    }
   ],
   "regressions": [
@@ -1894,6 +3158,18 @@
       "required": false,
       "type": "object"
      }
+    ],
+    "accepts_types": [
+     "date",
+     "decimal128",
+     "f32",
+     "f64",
+     "packed_bool",
+     "u16",
+     "u32",
+     "u4",
+     "u64",
+     "u8"
     ]
    },
    {
@@ -2001,6 +3277,18 @@
       "required": false,
       "type": "object"
      }
+    ],
+    "accepts_types": [
+     "date",
+     "decimal128",
+     "f32",
+     "f64",
+     "packed_bool",
+     "u16",
+     "u32",
+     "u4",
+     "u64",
+     "u8"
     ]
    },
    {
@@ -2106,6 +3394,18 @@
       "required": false,
       "type": "object"
      }
+    ],
+    "accepts_types": [
+     "date",
+     "decimal128",
+     "f32",
+     "f64",
+     "packed_bool",
+     "u16",
+     "u32",
+     "u4",
+     "u64",
+     "u8"
     ]
    }
   ],
@@ -2120,6 +3420,10 @@
       "required": false,
       "type": "float"
      }
+    ],
+    "requires": [
+     "Field",
+     "SplitBy"
     ]
    },
    {
@@ -2132,6 +3436,11 @@
       "required": false,
       "type": "float"
      }
+    ],
+    "requires": [
+     "Field",
+     "SplitBy",
+     "SubjectField"
     ]
    },
    {
@@ -2144,6 +3453,10 @@
       "required": false,
       "type": "float"
      }
+    ],
+    "requires": [
+     "Field",
+     "SplitBy"
     ]
    },
    {
@@ -2186,6 +3499,9 @@
       "required": false,
       "type": "enum"
      }
+    ],
+    "requires": [
+     "SplitBy"
     ]
    },
    {
@@ -2198,6 +3514,10 @@
       "required": false,
       "type": "float"
      }
+    ],
+    "requires": [
+     "Field",
+     "SplitBy"
     ]
    },
    {
@@ -2210,6 +3530,10 @@
       "required": false,
       "type": "float"
      }
+    ],
+    "requires": [
+     "Rows",
+     "Cols"
     ]
    },
    {
@@ -2222,6 +3546,10 @@
       "required": false,
       "type": "float"
      }
+    ],
+    "requires": [
+     "Rows",
+     "Cols"
     ]
    },
    {
@@ -2270,6 +3598,10 @@
       "required": false,
       "type": "float"
      }
+    ],
+    "requires": [
+     "Field",
+     "Field2"
     ]
    },
    {
@@ -2282,6 +3614,10 @@
       "required": false,
       "type": "float"
      }
+    ],
+    "requires": [
+     "Field",
+     "SplitBy"
     ]
    },
    {
@@ -2294,6 +3630,10 @@
       "required": false,
       "type": "float"
      }
+    ],
+    "requires": [
+     "Field",
+     "SplitBy"
     ]
    },
    {
@@ -2306,6 +3646,10 @@
       "required": false,
       "type": "float"
      }
+    ],
+    "requires": [
+     "Field",
+     "SplitBy"
     ]
    },
    {
@@ -2327,6 +3671,9 @@
       "required": false,
       "type": "enum"
      }
+    ],
+    "requires": [
+     "SplitBy"
     ]
    },
    {
@@ -2370,6 +3717,10 @@
       "required": false,
       "type": "float"
      }
+    ],
+    "requires": [
+     "Field",
+     "Field2"
     ]
    },
    {
@@ -2382,6 +3733,10 @@
       "required": false,
       "type": "float"
      }
+    ],
+    "requires": [
+     "Field",
+     "Field2"
     ]
    },
    {
@@ -2399,6 +3754,10 @@
       "required": true,
       "type": "string"
      }
+    ],
+    "requires": [
+     "Field",
+     "SplitBy"
     ]
    },
    {
@@ -2411,6 +3770,9 @@
       "required": false,
       "type": "float"
      }
+    ],
+    "requires": [
+     "Field"
     ]
    },
    {
@@ -2423,6 +3785,10 @@
       "required": false,
       "type": "float"
      }
+    ],
+    "requires": [
+     "Field",
+     "Field2"
     ]
    },
    {
@@ -2441,6 +3807,9 @@
       "required": false,
       "type": "float"
      }
+    ],
+    "requires": [
+     "Field"
     ]
    },
    {
@@ -2453,6 +3822,10 @@
       "required": false,
       "type": "float"
      }
+    ],
+    "requires": [
+     "Field",
+     "SplitBy"
     ]
    },
    {
@@ -2465,6 +3838,10 @@
       "required": false,
       "type": "float"
      }
+    ],
+    "requires": [
+     "Field",
+     "Field2"
     ]
    },
    {
@@ -2477,7 +3854,1243 @@
       "required": false,
       "type": "float"
      }
+    ],
+    "requires": [
+     "Field",
+     "SplitBy"
     ]
+   }
+  ],
+  "cohort_types": [
+   {
+    "categorical": false,
+    "compatible_aggregators": [
+     "AGG_AVERAGE",
+     "AGG_CI_LOWER",
+     "AGG_CI_UPPER",
+     "AGG_COUNT",
+     "AGG_DISTINCT_COUNT",
+     "AGG_DISTINCT_SUM",
+     "AGG_FREQUENCY",
+     "AGG_KURTOSIS",
+     "AGG_MAE",
+     "AGG_MAPE",
+     "AGG_MAX",
+     "AGG_MEDIAN",
+     "AGG_MIN",
+     "AGG_MODE",
+     "AGG_MODE_COUNT",
+     "AGG_NULL_COUNT",
+     "AGG_PERCENTILE",
+     "AGG_RANGE",
+     "AGG_RATIO",
+     "AGG_RMSE",
+     "AGG_SKEWNESS",
+     "AGG_STDDEV",
+     "AGG_SUM",
+     "AGG_VARIANCE",
+     "AGG_VEC_MEAN",
+     "AGG_VEC_SUM",
+     "AGG_WEIGHTED_MEAN",
+     "AGG_WELFORD",
+     "AGG_ZSCORE"
+    ],
+    "compatible_attributes": [
+     "ATTR_CODE_IN",
+     "ATTR_FACTOR_SCORE",
+     "ATTR_FORMULA",
+     "ATTR_MAHALANOBIS",
+     "ATTR_NORMALIZED",
+     "ATTR_PC_SCORE",
+     "ATTR_PERCENTILE",
+     "ATTR_PROFILE_SIMILARITY",
+     "ATTR_REG_FITTED",
+     "ATTR_REG_LEVERAGE",
+     "ATTR_REG_PREDICT",
+     "ATTR_REG_RESIDUAL",
+     "ATTR_SCALE_SCORE",
+     "ATTR_TSCORE",
+     "ATTR_VEC_DISTANCE",
+     "ATTR_ZSCORE"
+    ],
+    "compatible_features": [
+     "FEAT_BUCKETIZE",
+     "FEAT_LOG",
+     "FEAT_POLY",
+     "FEAT_SQRT",
+     "FEAT_TRAIN_TEST_SPLIT"
+    ],
+    "compatible_filterers": [
+     "FILTER_EXCLUDE",
+     "FILTER_EXPRESSION",
+     "FILTER_FALSE",
+     "FILTER_INCLUDE",
+     "FILTER_NULL",
+     "FILTER_RANGE",
+     "FILTER_TRUE"
+    ],
+    "compatible_groupers": [
+     "GROUP_CATEGORY",
+     "GROUP_KMEANS",
+     "GROUP_QUANTILE",
+     "GROUP_RANGE",
+     "GROUP_ROUNDED"
+    ],
+    "compatible_windows": [
+     "WIN_DELTA",
+     "WIN_DENSE_RANK",
+     "WIN_EWMA",
+     "WIN_LAG",
+     "WIN_LEAD",
+     "WIN_MOVING_AVG",
+     "WIN_PCT_CHANGE",
+     "WIN_RANK",
+     "WIN_ROW_NUMBER",
+     "WIN_RUNNING_AVG",
+     "WIN_RUNNING_SUM"
+    ],
+    "name": "u8"
+   },
+   {
+    "categorical": false,
+    "compatible_aggregators": [
+     "AGG_AVERAGE",
+     "AGG_CI_LOWER",
+     "AGG_CI_UPPER",
+     "AGG_COUNT",
+     "AGG_DISTINCT_COUNT",
+     "AGG_DISTINCT_SUM",
+     "AGG_FREQUENCY",
+     "AGG_KURTOSIS",
+     "AGG_MAE",
+     "AGG_MAPE",
+     "AGG_MAX",
+     "AGG_MEDIAN",
+     "AGG_MIN",
+     "AGG_MODE",
+     "AGG_MODE_COUNT",
+     "AGG_NULL_COUNT",
+     "AGG_PERCENTILE",
+     "AGG_RANGE",
+     "AGG_RATIO",
+     "AGG_RMSE",
+     "AGG_SKEWNESS",
+     "AGG_STDDEV",
+     "AGG_SUM",
+     "AGG_VARIANCE",
+     "AGG_VEC_MEAN",
+     "AGG_VEC_SUM",
+     "AGG_WEIGHTED_MEAN",
+     "AGG_WELFORD",
+     "AGG_ZSCORE"
+    ],
+    "compatible_attributes": [
+     "ATTR_CODE_IN",
+     "ATTR_FACTOR_SCORE",
+     "ATTR_FORMULA",
+     "ATTR_MAHALANOBIS",
+     "ATTR_NORMALIZED",
+     "ATTR_PC_SCORE",
+     "ATTR_PERCENTILE",
+     "ATTR_PROFILE_SIMILARITY",
+     "ATTR_REG_FITTED",
+     "ATTR_REG_LEVERAGE",
+     "ATTR_REG_PREDICT",
+     "ATTR_REG_RESIDUAL",
+     "ATTR_SCALE_SCORE",
+     "ATTR_TSCORE",
+     "ATTR_VEC_DISTANCE",
+     "ATTR_ZSCORE"
+    ],
+    "compatible_features": [
+     "FEAT_BUCKETIZE",
+     "FEAT_LOG",
+     "FEAT_POLY",
+     "FEAT_SQRT",
+     "FEAT_TRAIN_TEST_SPLIT"
+    ],
+    "compatible_filterers": [
+     "FILTER_EXCLUDE",
+     "FILTER_EXPRESSION",
+     "FILTER_FALSE",
+     "FILTER_INCLUDE",
+     "FILTER_NULL",
+     "FILTER_RANGE",
+     "FILTER_TRUE"
+    ],
+    "compatible_groupers": [
+     "GROUP_CATEGORY",
+     "GROUP_KMEANS",
+     "GROUP_QUANTILE",
+     "GROUP_RANGE",
+     "GROUP_ROUNDED"
+    ],
+    "compatible_windows": [
+     "WIN_DELTA",
+     "WIN_DENSE_RANK",
+     "WIN_EWMA",
+     "WIN_LAG",
+     "WIN_LEAD",
+     "WIN_MOVING_AVG",
+     "WIN_PCT_CHANGE",
+     "WIN_RANK",
+     "WIN_ROW_NUMBER",
+     "WIN_RUNNING_AVG",
+     "WIN_RUNNING_SUM"
+    ],
+    "name": "u16"
+   },
+   {
+    "categorical": false,
+    "compatible_aggregators": [
+     "AGG_AVERAGE",
+     "AGG_CI_LOWER",
+     "AGG_CI_UPPER",
+     "AGG_COUNT",
+     "AGG_DISTINCT_COUNT",
+     "AGG_DISTINCT_SUM",
+     "AGG_FREQUENCY",
+     "AGG_KURTOSIS",
+     "AGG_MAE",
+     "AGG_MAPE",
+     "AGG_MAX",
+     "AGG_MEDIAN",
+     "AGG_MIN",
+     "AGG_MODE",
+     "AGG_MODE_COUNT",
+     "AGG_NULL_COUNT",
+     "AGG_PERCENTILE",
+     "AGG_RANGE",
+     "AGG_RATIO",
+     "AGG_RMSE",
+     "AGG_SKEWNESS",
+     "AGG_STDDEV",
+     "AGG_SUM",
+     "AGG_VARIANCE",
+     "AGG_VEC_MEAN",
+     "AGG_VEC_SUM",
+     "AGG_WEIGHTED_MEAN",
+     "AGG_WELFORD",
+     "AGG_ZSCORE"
+    ],
+    "compatible_attributes": [
+     "ATTR_CODE_IN",
+     "ATTR_FACTOR_SCORE",
+     "ATTR_FORMULA",
+     "ATTR_MAHALANOBIS",
+     "ATTR_NORMALIZED",
+     "ATTR_PC_SCORE",
+     "ATTR_PERCENTILE",
+     "ATTR_PROFILE_SIMILARITY",
+     "ATTR_REG_FITTED",
+     "ATTR_REG_LEVERAGE",
+     "ATTR_REG_PREDICT",
+     "ATTR_REG_RESIDUAL",
+     "ATTR_SCALE_SCORE",
+     "ATTR_TSCORE",
+     "ATTR_VEC_DISTANCE",
+     "ATTR_ZSCORE"
+    ],
+    "compatible_features": [
+     "FEAT_BUCKETIZE",
+     "FEAT_LOG",
+     "FEAT_POLY",
+     "FEAT_SQRT",
+     "FEAT_TRAIN_TEST_SPLIT"
+    ],
+    "compatible_filterers": [
+     "FILTER_EXCLUDE",
+     "FILTER_EXPRESSION",
+     "FILTER_FALSE",
+     "FILTER_INCLUDE",
+     "FILTER_NULL",
+     "FILTER_RANGE",
+     "FILTER_TRUE"
+    ],
+    "compatible_groupers": [
+     "GROUP_CATEGORY",
+     "GROUP_KMEANS",
+     "GROUP_QUANTILE",
+     "GROUP_RANGE",
+     "GROUP_ROUNDED"
+    ],
+    "compatible_windows": [
+     "WIN_DELTA",
+     "WIN_DENSE_RANK",
+     "WIN_EWMA",
+     "WIN_LAG",
+     "WIN_LEAD",
+     "WIN_MOVING_AVG",
+     "WIN_PCT_CHANGE",
+     "WIN_RANK",
+     "WIN_ROW_NUMBER",
+     "WIN_RUNNING_AVG",
+     "WIN_RUNNING_SUM"
+    ],
+    "name": "u32"
+   },
+   {
+    "categorical": false,
+    "compatible_aggregators": [
+     "AGG_AVERAGE",
+     "AGG_CI_LOWER",
+     "AGG_CI_UPPER",
+     "AGG_COUNT",
+     "AGG_DISTINCT_COUNT",
+     "AGG_DISTINCT_SUM",
+     "AGG_FREQUENCY",
+     "AGG_KURTOSIS",
+     "AGG_MAE",
+     "AGG_MAPE",
+     "AGG_MAX",
+     "AGG_MEDIAN",
+     "AGG_MIN",
+     "AGG_MODE",
+     "AGG_MODE_COUNT",
+     "AGG_NULL_COUNT",
+     "AGG_PERCENTILE",
+     "AGG_RANGE",
+     "AGG_RATIO",
+     "AGG_RMSE",
+     "AGG_SKEWNESS",
+     "AGG_STDDEV",
+     "AGG_SUM",
+     "AGG_VARIANCE",
+     "AGG_VEC_MEAN",
+     "AGG_VEC_SUM",
+     "AGG_WEIGHTED_MEAN",
+     "AGG_WELFORD",
+     "AGG_ZSCORE"
+    ],
+    "compatible_attributes": [
+     "ATTR_CODE_IN",
+     "ATTR_FACTOR_SCORE",
+     "ATTR_FORMULA",
+     "ATTR_MAHALANOBIS",
+     "ATTR_NORMALIZED",
+     "ATTR_PC_SCORE",
+     "ATTR_PERCENTILE",
+     "ATTR_PROFILE_SIMILARITY",
+     "ATTR_REG_FITTED",
+     "ATTR_REG_LEVERAGE",
+     "ATTR_REG_PREDICT",
+     "ATTR_REG_RESIDUAL",
+     "ATTR_SCALE_SCORE",
+     "ATTR_TSCORE",
+     "ATTR_VEC_DISTANCE",
+     "ATTR_ZSCORE"
+    ],
+    "compatible_features": [
+     "FEAT_BUCKETIZE",
+     "FEAT_LOG",
+     "FEAT_POLY",
+     "FEAT_SQRT",
+     "FEAT_TRAIN_TEST_SPLIT"
+    ],
+    "compatible_filterers": [
+     "FILTER_EXCLUDE",
+     "FILTER_EXPRESSION",
+     "FILTER_FALSE",
+     "FILTER_INCLUDE",
+     "FILTER_NULL",
+     "FILTER_RANGE",
+     "FILTER_TRUE"
+    ],
+    "compatible_groupers": [
+     "GROUP_CATEGORY",
+     "GROUP_KMEANS",
+     "GROUP_QUANTILE",
+     "GROUP_RANGE",
+     "GROUP_ROUNDED"
+    ],
+    "compatible_windows": [
+     "WIN_DELTA",
+     "WIN_DENSE_RANK",
+     "WIN_EWMA",
+     "WIN_LAG",
+     "WIN_LEAD",
+     "WIN_MOVING_AVG",
+     "WIN_PCT_CHANGE",
+     "WIN_RANK",
+     "WIN_ROW_NUMBER",
+     "WIN_RUNNING_AVG",
+     "WIN_RUNNING_SUM"
+    ],
+    "name": "u64"
+   },
+   {
+    "categorical": false,
+    "compatible_aggregators": [
+     "AGG_AVERAGE",
+     "AGG_CI_LOWER",
+     "AGG_CI_UPPER",
+     "AGG_COUNT",
+     "AGG_DISTINCT_COUNT",
+     "AGG_DISTINCT_SUM",
+     "AGG_FREQUENCY",
+     "AGG_KURTOSIS",
+     "AGG_MAE",
+     "AGG_MAPE",
+     "AGG_MAX",
+     "AGG_MEDIAN",
+     "AGG_MIN",
+     "AGG_MODE",
+     "AGG_MODE_COUNT",
+     "AGG_NULL_COUNT",
+     "AGG_PERCENTILE",
+     "AGG_RANGE",
+     "AGG_RATIO",
+     "AGG_RMSE",
+     "AGG_SKEWNESS",
+     "AGG_STDDEV",
+     "AGG_SUM",
+     "AGG_VARIANCE",
+     "AGG_VEC_MEAN",
+     "AGG_VEC_SUM",
+     "AGG_WEIGHTED_MEAN",
+     "AGG_WELFORD",
+     "AGG_ZSCORE"
+    ],
+    "compatible_attributes": [
+     "ATTR_FACTOR_SCORE",
+     "ATTR_FORMULA",
+     "ATTR_MAHALANOBIS",
+     "ATTR_NORMALIZED",
+     "ATTR_PC_SCORE",
+     "ATTR_PERCENTILE",
+     "ATTR_PROFILE_SIMILARITY",
+     "ATTR_REG_FITTED",
+     "ATTR_REG_LEVERAGE",
+     "ATTR_REG_PREDICT",
+     "ATTR_REG_RESIDUAL",
+     "ATTR_SCALE_SCORE",
+     "ATTR_TSCORE",
+     "ATTR_VEC_DISTANCE",
+     "ATTR_ZSCORE"
+    ],
+    "compatible_features": [
+     "FEAT_BUCKETIZE",
+     "FEAT_LOG",
+     "FEAT_POLY",
+     "FEAT_SQRT",
+     "FEAT_TRAIN_TEST_SPLIT"
+    ],
+    "compatible_filterers": [
+     "FILTER_EXCLUDE",
+     "FILTER_EXPRESSION",
+     "FILTER_FALSE",
+     "FILTER_INCLUDE",
+     "FILTER_NULL",
+     "FILTER_RANGE",
+     "FILTER_TRUE"
+    ],
+    "compatible_groupers": [
+     "GROUP_CATEGORY",
+     "GROUP_KMEANS",
+     "GROUP_QUANTILE",
+     "GROUP_RANGE",
+     "GROUP_ROUNDED"
+    ],
+    "compatible_windows": [
+     "WIN_DELTA",
+     "WIN_DENSE_RANK",
+     "WIN_EWMA",
+     "WIN_LAG",
+     "WIN_LEAD",
+     "WIN_MOVING_AVG",
+     "WIN_PCT_CHANGE",
+     "WIN_RANK",
+     "WIN_ROW_NUMBER",
+     "WIN_RUNNING_AVG",
+     "WIN_RUNNING_SUM"
+    ],
+    "name": "f32"
+   },
+   {
+    "categorical": false,
+    "compatible_aggregators": [
+     "AGG_AVERAGE",
+     "AGG_CI_LOWER",
+     "AGG_CI_UPPER",
+     "AGG_COUNT",
+     "AGG_DISTINCT_COUNT",
+     "AGG_DISTINCT_SUM",
+     "AGG_FREQUENCY",
+     "AGG_KURTOSIS",
+     "AGG_MAE",
+     "AGG_MAPE",
+     "AGG_MAX",
+     "AGG_MEDIAN",
+     "AGG_MIN",
+     "AGG_MODE",
+     "AGG_MODE_COUNT",
+     "AGG_NULL_COUNT",
+     "AGG_PERCENTILE",
+     "AGG_RANGE",
+     "AGG_RATIO",
+     "AGG_RMSE",
+     "AGG_SKEWNESS",
+     "AGG_STDDEV",
+     "AGG_SUM",
+     "AGG_VARIANCE",
+     "AGG_VEC_MEAN",
+     "AGG_VEC_SUM",
+     "AGG_WEIGHTED_MEAN",
+     "AGG_WELFORD",
+     "AGG_ZSCORE"
+    ],
+    "compatible_attributes": [
+     "ATTR_FACTOR_SCORE",
+     "ATTR_FORMULA",
+     "ATTR_MAHALANOBIS",
+     "ATTR_NORMALIZED",
+     "ATTR_PC_SCORE",
+     "ATTR_PERCENTILE",
+     "ATTR_PROFILE_SIMILARITY",
+     "ATTR_REG_FITTED",
+     "ATTR_REG_LEVERAGE",
+     "ATTR_REG_PREDICT",
+     "ATTR_REG_RESIDUAL",
+     "ATTR_SCALE_SCORE",
+     "ATTR_TSCORE",
+     "ATTR_VEC_DISTANCE",
+     "ATTR_ZSCORE"
+    ],
+    "compatible_features": [
+     "FEAT_BUCKETIZE",
+     "FEAT_LOG",
+     "FEAT_POLY",
+     "FEAT_SQRT",
+     "FEAT_TRAIN_TEST_SPLIT"
+    ],
+    "compatible_filterers": [
+     "FILTER_EXCLUDE",
+     "FILTER_EXPRESSION",
+     "FILTER_FALSE",
+     "FILTER_INCLUDE",
+     "FILTER_NULL",
+     "FILTER_RANGE",
+     "FILTER_TRUE"
+    ],
+    "compatible_groupers": [
+     "GROUP_CATEGORY",
+     "GROUP_KMEANS",
+     "GROUP_QUANTILE",
+     "GROUP_RANGE",
+     "GROUP_ROUNDED"
+    ],
+    "compatible_windows": [
+     "WIN_DELTA",
+     "WIN_DENSE_RANK",
+     "WIN_EWMA",
+     "WIN_LAG",
+     "WIN_LEAD",
+     "WIN_MOVING_AVG",
+     "WIN_PCT_CHANGE",
+     "WIN_RANK",
+     "WIN_ROW_NUMBER",
+     "WIN_RUNNING_AVG",
+     "WIN_RUNNING_SUM"
+    ],
+    "name": "f64"
+   },
+   {
+    "categorical": false,
+    "compatible_aggregators": [
+     "AGG_AVERAGE",
+     "AGG_CI_LOWER",
+     "AGG_CI_UPPER",
+     "AGG_COUNT",
+     "AGG_DISTINCT_COUNT",
+     "AGG_DISTINCT_SUM",
+     "AGG_FREQUENCY",
+     "AGG_KURTOSIS",
+     "AGG_MAE",
+     "AGG_MAPE",
+     "AGG_MAX",
+     "AGG_MEDIAN",
+     "AGG_MIN",
+     "AGG_MODE",
+     "AGG_MODE_COUNT",
+     "AGG_NULL_COUNT",
+     "AGG_PERCENTILE",
+     "AGG_RANGE",
+     "AGG_RATIO",
+     "AGG_RMSE",
+     "AGG_SKEWNESS",
+     "AGG_STDDEV",
+     "AGG_SUM",
+     "AGG_VARIANCE",
+     "AGG_VEC_MEAN",
+     "AGG_VEC_SUM",
+     "AGG_WEIGHTED_MEAN",
+     "AGG_ZSCORE"
+    ],
+    "compatible_attributes": [
+     "ATTR_CODE_IN",
+     "ATTR_FACTOR_SCORE",
+     "ATTR_FORMULA",
+     "ATTR_MAHALANOBIS",
+     "ATTR_NORMALIZED",
+     "ATTR_PC_SCORE",
+     "ATTR_PERCENTILE",
+     "ATTR_PROFILE_SIMILARITY",
+     "ATTR_REG_FITTED",
+     "ATTR_REG_LEVERAGE",
+     "ATTR_REG_PREDICT",
+     "ATTR_REG_RESIDUAL",
+     "ATTR_SCALE_SCORE",
+     "ATTR_TSCORE",
+     "ATTR_VEC_DISTANCE",
+     "ATTR_ZSCORE"
+    ],
+    "compatible_features": [
+     "FEAT_BUCKETIZE",
+     "FEAT_LOG",
+     "FEAT_POLY",
+     "FEAT_SQRT",
+     "FEAT_TRAIN_TEST_SPLIT"
+    ],
+    "compatible_filterers": [
+     "FILTER_EXCLUDE",
+     "FILTER_EXPRESSION",
+     "FILTER_FALSE",
+     "FILTER_INCLUDE",
+     "FILTER_NULL",
+     "FILTER_RANGE",
+     "FILTER_TRUE"
+    ],
+    "compatible_groupers": [
+     "GROUP_CATEGORY",
+     "GROUP_KMEANS",
+     "GROUP_QUANTILE",
+     "GROUP_RANGE",
+     "GROUP_ROUNDED"
+    ],
+    "compatible_windows": [
+     "WIN_DELTA",
+     "WIN_DENSE_RANK",
+     "WIN_EWMA",
+     "WIN_LAG",
+     "WIN_LEAD",
+     "WIN_MOVING_AVG",
+     "WIN_PCT_CHANGE",
+     "WIN_RANK",
+     "WIN_ROW_NUMBER",
+     "WIN_RUNNING_AVG",
+     "WIN_RUNNING_SUM"
+    ],
+    "name": "u4"
+   },
+   {
+    "categorical": false,
+    "compatible_aggregators": [
+     "AGG_AVERAGE",
+     "AGG_CI_LOWER",
+     "AGG_CI_UPPER",
+     "AGG_COUNT",
+     "AGG_DISTINCT_COUNT",
+     "AGG_DISTINCT_SUM",
+     "AGG_FREQUENCY",
+     "AGG_KURTOSIS",
+     "AGG_MAX",
+     "AGG_MEDIAN",
+     "AGG_MIN",
+     "AGG_MODE",
+     "AGG_MODE_COUNT",
+     "AGG_NULL_COUNT",
+     "AGG_PERCENTILE",
+     "AGG_RANGE",
+     "AGG_RATIO",
+     "AGG_SKEWNESS",
+     "AGG_STDDEV",
+     "AGG_SUM",
+     "AGG_VARIANCE",
+     "AGG_VEC_MEAN",
+     "AGG_VEC_SUM",
+     "AGG_WEIGHTED_MEAN",
+     "AGG_ZSCORE"
+    ],
+    "compatible_attributes": [
+     "ATTR_DATE_PART",
+     "ATTR_FACTOR_SCORE",
+     "ATTR_FORMULA",
+     "ATTR_MAHALANOBIS",
+     "ATTR_NORMALIZED",
+     "ATTR_PC_SCORE",
+     "ATTR_PERCENTILE",
+     "ATTR_PROFILE_SIMILARITY",
+     "ATTR_REG_FITTED",
+     "ATTR_REG_LEVERAGE",
+     "ATTR_REG_PREDICT",
+     "ATTR_REG_RESIDUAL",
+     "ATTR_SCALE_SCORE",
+     "ATTR_TSCORE",
+     "ATTR_VEC_DISTANCE",
+     "ATTR_ZSCORE"
+    ],
+    "compatible_features": [
+     "FEAT_BUCKETIZE",
+     "FEAT_DATE_FEATURES",
+     "FEAT_LOG",
+     "FEAT_POLY",
+     "FEAT_SQRT",
+     "FEAT_TRAIN_TEST_SPLIT"
+    ],
+    "compatible_filterers": [
+     "FILTER_DATE_RANGES",
+     "FILTER_EXCLUDE",
+     "FILTER_EXPRESSION",
+     "FILTER_FALSE",
+     "FILTER_INCLUDE",
+     "FILTER_NULL",
+     "FILTER_RANGE",
+     "FILTER_TRUE"
+    ],
+    "compatible_groupers": [
+     "GROUP_CATEGORY",
+     "GROUP_DATE",
+     "GROUP_DATE_RANGES",
+     "GROUP_KMEANS",
+     "GROUP_QUANTILE",
+     "GROUP_RANGE",
+     "GROUP_ROUNDED"
+    ],
+    "compatible_windows": [
+     "WIN_DELTA",
+     "WIN_DENSE_RANK",
+     "WIN_EWMA",
+     "WIN_LAG",
+     "WIN_LEAD",
+     "WIN_MOVING_AVG",
+     "WIN_PCT_CHANGE",
+     "WIN_RANK",
+     "WIN_ROW_NUMBER",
+     "WIN_RUNNING_AVG",
+     "WIN_RUNNING_SUM"
+    ],
+    "name": "date"
+   },
+   {
+    "categorical": false,
+    "compatible_aggregators": [
+     "AGG_AVERAGE",
+     "AGG_CI_LOWER",
+     "AGG_CI_UPPER",
+     "AGG_COUNT",
+     "AGG_DISTINCT_COUNT",
+     "AGG_DISTINCT_SUM",
+     "AGG_FREQUENCY",
+     "AGG_KURTOSIS",
+     "AGG_MAE",
+     "AGG_MAPE",
+     "AGG_MAX",
+     "AGG_MEDIAN",
+     "AGG_MIN",
+     "AGG_MODE",
+     "AGG_MODE_COUNT",
+     "AGG_NULL_COUNT",
+     "AGG_PERCENTILE",
+     "AGG_RANGE",
+     "AGG_RATIO",
+     "AGG_RMSE",
+     "AGG_SKEWNESS",
+     "AGG_STDDEV",
+     "AGG_SUM",
+     "AGG_VARIANCE",
+     "AGG_WEIGHTED_MEAN",
+     "AGG_ZSCORE"
+    ],
+    "compatible_attributes": [
+     "ATTR_FORMULA"
+    ],
+    "compatible_features": [
+     "FEAT_TRAIN_TEST_SPLIT"
+    ],
+    "compatible_filterers": [
+     "FILTER_EXCLUDE",
+     "FILTER_EXPRESSION",
+     "FILTER_FALSE",
+     "FILTER_INCLUDE",
+     "FILTER_NULL",
+     "FILTER_TRUE"
+    ],
+    "compatible_groupers": [
+     "GROUP_CATEGORY"
+    ],
+    "compatible_windows": [
+     "WIN_DENSE_RANK",
+     "WIN_RANK",
+     "WIN_ROW_NUMBER"
+    ],
+    "name": "packed_bool"
+   },
+   {
+    "categorical": true,
+    "compatible_aggregators": [
+     "AGG_COUNT",
+     "AGG_DISTINCT_COUNT",
+     "AGG_FREQUENCY",
+     "AGG_MODE",
+     "AGG_MODE_COUNT",
+     "AGG_NULL_COUNT",
+     "AGG_RATIO"
+    ],
+    "compatible_attributes": [
+     "ATTR_CODE_IN",
+     "ATTR_FORMULA"
+    ],
+    "compatible_features": [
+     "FEAT_FREQUENCY_ENCODE",
+     "FEAT_ONE_HOT",
+     "FEAT_TARGET_ENCODE",
+     "FEAT_TRAIN_TEST_SPLIT"
+    ],
+    "compatible_filterers": [
+     "FILTER_EXCLUDE",
+     "FILTER_EXPRESSION",
+     "FILTER_FALSE",
+     "FILTER_INCLUDE",
+     "FILTER_NULL",
+     "FILTER_TRUE"
+    ],
+    "compatible_groupers": [
+     "GROUP_CATEGORY"
+    ],
+    "compatible_windows": [
+     "WIN_DENSE_RANK",
+     "WIN_RANK",
+     "WIN_ROW_NUMBER"
+    ],
+    "name": "categorical_u8"
+   },
+   {
+    "categorical": true,
+    "compatible_aggregators": [
+     "AGG_COUNT",
+     "AGG_DISTINCT_COUNT",
+     "AGG_FREQUENCY",
+     "AGG_MODE",
+     "AGG_MODE_COUNT",
+     "AGG_NULL_COUNT",
+     "AGG_RATIO"
+    ],
+    "compatible_attributes": [
+     "ATTR_CODE_IN",
+     "ATTR_FORMULA"
+    ],
+    "compatible_features": [
+     "FEAT_FREQUENCY_ENCODE",
+     "FEAT_ONE_HOT",
+     "FEAT_TARGET_ENCODE",
+     "FEAT_TRAIN_TEST_SPLIT"
+    ],
+    "compatible_filterers": [
+     "FILTER_EXCLUDE",
+     "FILTER_EXPRESSION",
+     "FILTER_FALSE",
+     "FILTER_INCLUDE",
+     "FILTER_NULL",
+     "FILTER_TRUE"
+    ],
+    "compatible_groupers": [
+     "GROUP_CATEGORY"
+    ],
+    "compatible_windows": [
+     "WIN_DENSE_RANK",
+     "WIN_RANK",
+     "WIN_ROW_NUMBER"
+    ],
+    "name": "categorical_u16"
+   },
+   {
+    "categorical": true,
+    "compatible_aggregators": [
+     "AGG_COUNT",
+     "AGG_DISTINCT_COUNT",
+     "AGG_FREQUENCY",
+     "AGG_MODE",
+     "AGG_MODE_COUNT",
+     "AGG_NULL_COUNT",
+     "AGG_RATIO"
+    ],
+    "compatible_attributes": [
+     "ATTR_CODE_IN",
+     "ATTR_FORMULA"
+    ],
+    "compatible_features": [
+     "FEAT_FREQUENCY_ENCODE",
+     "FEAT_ONE_HOT",
+     "FEAT_TARGET_ENCODE",
+     "FEAT_TRAIN_TEST_SPLIT"
+    ],
+    "compatible_filterers": [
+     "FILTER_EXCLUDE",
+     "FILTER_EXPRESSION",
+     "FILTER_FALSE",
+     "FILTER_INCLUDE",
+     "FILTER_NULL",
+     "FILTER_TRUE"
+    ],
+    "compatible_groupers": [
+     "GROUP_CATEGORY"
+    ],
+    "compatible_windows": [
+     "WIN_DENSE_RANK",
+     "WIN_RANK",
+     "WIN_ROW_NUMBER"
+    ],
+    "name": "categorical_u32"
+   },
+   {
+    "categorical": false,
+    "compatible_aggregators": [
+     "AGG_AVERAGE",
+     "AGG_COUNT",
+     "AGG_DISTINCT_COUNT",
+     "AGG_MAX",
+     "AGG_MIN",
+     "AGG_MODE",
+     "AGG_MODE_COUNT",
+     "AGG_NULL_COUNT",
+     "AGG_RATIO",
+     "AGG_STDDEV",
+     "AGG_SUM",
+     "AGG_VARIANCE"
+    ],
+    "compatible_attributes": [
+     "ATTR_FORMULA"
+    ],
+    "compatible_features": [
+     "FEAT_POLY",
+     "FEAT_TRAIN_TEST_SPLIT"
+    ],
+    "compatible_filterers": [
+     "FILTER_EXCLUDE",
+     "FILTER_EXPRESSION",
+     "FILTER_FALSE",
+     "FILTER_INCLUDE",
+     "FILTER_NULL",
+     "FILTER_RANGE",
+     "FILTER_TRUE"
+    ],
+    "compatible_groupers": [
+     "GROUP_CATEGORY"
+    ],
+    "compatible_windows": [
+     "WIN_DENSE_RANK",
+     "WIN_RANK",
+     "WIN_ROW_NUMBER"
+    ],
+    "name": "decimal128"
+   },
+   {
+    "categorical": false,
+    "compatible_aggregators": [
+     "AGG_COUNT",
+     "AGG_NULL_COUNT",
+     "AGG_RATIO",
+     "AGG_SET_CARDINALITY_AVG",
+     "AGG_SET_CARDINALITY_SUM",
+     "AGG_SET_DISTINCT_VALUES",
+     "AGG_SET_FREQUENCY",
+     "AGG_SET_INTERSECTION",
+     "AGG_SET_UNION"
+    ],
+    "compatible_attributes": [
+     "ATTR_FORMULA",
+     "ATTR_SET_HAS",
+     "ATTR_SET_POPCOUNT"
+    ],
+    "compatible_features": [
+     "FEAT_TRAIN_TEST_SPLIT"
+    ],
+    "compatible_filterers": [
+     "FILTER_EXPRESSION",
+     "FILTER_FALSE",
+     "FILTER_NULL",
+     "FILTER_SET_CONTAINS_ALL",
+     "FILTER_SET_CONTAINS_ANY",
+     "FILTER_SET_CONTAINS_NONE",
+     "FILTER_SET_EQUALS",
+     "FILTER_TRUE"
+    ],
+    "compatible_groupers": [
+     "GROUP_SET_PER_ELEMENT",
+     "GROUP_SET_VALUE"
+    ],
+    "compatible_windows": [
+     "WIN_DENSE_RANK",
+     "WIN_RANK",
+     "WIN_ROW_NUMBER"
+    ],
+    "name": "set_u8"
+   },
+   {
+    "categorical": false,
+    "compatible_aggregators": [
+     "AGG_COUNT",
+     "AGG_NULL_COUNT",
+     "AGG_RATIO",
+     "AGG_SET_CARDINALITY_AVG",
+     "AGG_SET_CARDINALITY_SUM",
+     "AGG_SET_DISTINCT_VALUES",
+     "AGG_SET_FREQUENCY",
+     "AGG_SET_INTERSECTION",
+     "AGG_SET_UNION"
+    ],
+    "compatible_attributes": [
+     "ATTR_FORMULA",
+     "ATTR_SET_HAS",
+     "ATTR_SET_POPCOUNT"
+    ],
+    "compatible_features": [
+     "FEAT_TRAIN_TEST_SPLIT"
+    ],
+    "compatible_filterers": [
+     "FILTER_EXPRESSION",
+     "FILTER_FALSE",
+     "FILTER_NULL",
+     "FILTER_SET_CONTAINS_ALL",
+     "FILTER_SET_CONTAINS_ANY",
+     "FILTER_SET_CONTAINS_NONE",
+     "FILTER_SET_EQUALS",
+     "FILTER_TRUE"
+    ],
+    "compatible_groupers": [
+     "GROUP_SET_PER_ELEMENT",
+     "GROUP_SET_VALUE"
+    ],
+    "compatible_windows": [
+     "WIN_DENSE_RANK",
+     "WIN_RANK",
+     "WIN_ROW_NUMBER"
+    ],
+    "name": "set_u16"
+   },
+   {
+    "categorical": false,
+    "compatible_aggregators": [
+     "AGG_COUNT",
+     "AGG_NULL_COUNT",
+     "AGG_RATIO",
+     "AGG_SET_CARDINALITY_AVG",
+     "AGG_SET_CARDINALITY_SUM",
+     "AGG_SET_DISTINCT_VALUES",
+     "AGG_SET_FREQUENCY",
+     "AGG_SET_INTERSECTION",
+     "AGG_SET_UNION"
+    ],
+    "compatible_attributes": [
+     "ATTR_FORMULA",
+     "ATTR_SET_HAS",
+     "ATTR_SET_POPCOUNT"
+    ],
+    "compatible_features": [
+     "FEAT_TRAIN_TEST_SPLIT"
+    ],
+    "compatible_filterers": [
+     "FILTER_EXPRESSION",
+     "FILTER_FALSE",
+     "FILTER_NULL",
+     "FILTER_SET_CONTAINS_ALL",
+     "FILTER_SET_CONTAINS_ANY",
+     "FILTER_SET_CONTAINS_NONE",
+     "FILTER_SET_EQUALS",
+     "FILTER_TRUE"
+    ],
+    "compatible_groupers": [
+     "GROUP_SET_PER_ELEMENT",
+     "GROUP_SET_VALUE"
+    ],
+    "compatible_windows": [
+     "WIN_DENSE_RANK",
+     "WIN_RANK",
+     "WIN_ROW_NUMBER"
+    ],
+    "name": "set_u32"
+   },
+   {
+    "categorical": false,
+    "compatible_aggregators": [
+     "AGG_COUNT",
+     "AGG_NULL_COUNT",
+     "AGG_RATIO",
+     "AGG_SET_CARDINALITY_AVG",
+     "AGG_SET_CARDINALITY_SUM",
+     "AGG_SET_DISTINCT_VALUES",
+     "AGG_SET_FREQUENCY",
+     "AGG_SET_INTERSECTION",
+     "AGG_SET_UNION"
+    ],
+    "compatible_attributes": [
+     "ATTR_FORMULA",
+     "ATTR_SET_HAS",
+     "ATTR_SET_POPCOUNT"
+    ],
+    "compatible_features": [
+     "FEAT_TRAIN_TEST_SPLIT"
+    ],
+    "compatible_filterers": [
+     "FILTER_EXPRESSION",
+     "FILTER_FALSE",
+     "FILTER_NULL",
+     "FILTER_SET_CONTAINS_ALL",
+     "FILTER_SET_CONTAINS_ANY",
+     "FILTER_SET_CONTAINS_NONE",
+     "FILTER_SET_EQUALS",
+     "FILTER_TRUE"
+    ],
+    "compatible_groupers": [
+     "GROUP_SET_PER_ELEMENT",
+     "GROUP_SET_VALUE"
+    ],
+    "compatible_windows": [
+     "WIN_DENSE_RANK",
+     "WIN_RANK",
+     "WIN_ROW_NUMBER"
+    ],
+    "name": "set_u64"
+   },
+   {
+    "categorical": false,
+    "compatible_aggregators": [
+     "AGG_AVERAGE",
+     "AGG_CI_LOWER",
+     "AGG_CI_UPPER",
+     "AGG_COUNT",
+     "AGG_DISTINCT_COUNT",
+     "AGG_DISTINCT_SUM",
+     "AGG_FREQUENCY",
+     "AGG_KURTOSIS",
+     "AGG_MAX",
+     "AGG_MEDIAN",
+     "AGG_MIN",
+     "AGG_MODE",
+     "AGG_MODE_COUNT",
+     "AGG_NULL_COUNT",
+     "AGG_PERCENTILE",
+     "AGG_RANGE",
+     "AGG_RATIO",
+     "AGG_SKEWNESS",
+     "AGG_STDDEV",
+     "AGG_SUM",
+     "AGG_VARIANCE",
+     "AGG_WEIGHTED_MEAN",
+     "AGG_ZSCORE"
+    ],
+    "compatible_attributes": [
+     "ATTR_DATE_PART",
+     "ATTR_FORMULA"
+    ],
+    "compatible_features": [
+     "FEAT_DATE_FEATURES",
+     "FEAT_TRAIN_TEST_SPLIT"
+    ],
+    "compatible_filterers": [
+     "FILTER_DATE_RANGES",
+     "FILTER_EXCLUDE",
+     "FILTER_EXPRESSION",
+     "FILTER_FALSE",
+     "FILTER_INCLUDE",
+     "FILTER_NULL",
+     "FILTER_TRUE"
+    ],
+    "compatible_groupers": [
+     "GROUP_CATEGORY",
+     "GROUP_DATE",
+     "GROUP_DATE_RANGES"
+    ],
+    "compatible_windows": [
+     "WIN_DENSE_RANK",
+     "WIN_RANK",
+     "WIN_ROW_NUMBER"
+    ],
+    "name": "datetime"
+   },
+   {
+    "categorical": false,
+    "compatible_aggregators": [
+     "AGG_COUNT",
+     "AGG_NULL_COUNT",
+     "AGG_RATIO",
+     "AGG_SET_CARDINALITY_AVG",
+     "AGG_SET_CARDINALITY_SUM",
+     "AGG_SET_DISTINCT_VALUES",
+     "AGG_SET_FREQUENCY",
+     "AGG_SET_INTERSECTION",
+     "AGG_SET_UNION"
+    ],
+    "compatible_attributes": [
+     "ATTR_FORMULA",
+     "ATTR_SET_HAS",
+     "ATTR_SET_POPCOUNT"
+    ],
+    "compatible_features": [
+     "FEAT_TRAIN_TEST_SPLIT"
+    ],
+    "compatible_filterers": [
+     "FILTER_EXPRESSION",
+     "FILTER_FALSE",
+     "FILTER_NULL",
+     "FILTER_SET_CONTAINS_ALL",
+     "FILTER_SET_CONTAINS_ANY",
+     "FILTER_SET_CONTAINS_NONE",
+     "FILTER_SET_EQUALS",
+     "FILTER_TRUE"
+    ],
+    "compatible_groupers": [
+     "GROUP_SET_PER_ELEMENT",
+     "GROUP_SET_VALUE"
+    ],
+    "compatible_windows": [
+     "WIN_DENSE_RANK",
+     "WIN_RANK",
+     "WIN_ROW_NUMBER"
+    ],
+    "name": "set_u128"
+   },
+   {
+    "categorical": false,
+    "compatible_aggregators": [
+     "AGG_COUNT",
+     "AGG_NULL_COUNT",
+     "AGG_RATIO",
+     "AGG_SET_CARDINALITY_AVG",
+     "AGG_SET_CARDINALITY_SUM",
+     "AGG_SET_DISTINCT_VALUES",
+     "AGG_SET_FREQUENCY",
+     "AGG_SET_INTERSECTION",
+     "AGG_SET_UNION"
+    ],
+    "compatible_attributes": [
+     "ATTR_FORMULA",
+     "ATTR_SET_HAS",
+     "ATTR_SET_POPCOUNT"
+    ],
+    "compatible_features": [
+     "FEAT_TRAIN_TEST_SPLIT"
+    ],
+    "compatible_filterers": [
+     "FILTER_EXPRESSION",
+     "FILTER_FALSE",
+     "FILTER_NULL",
+     "FILTER_SET_CONTAINS_ALL",
+     "FILTER_SET_CONTAINS_ANY",
+     "FILTER_SET_CONTAINS_NONE",
+     "FILTER_SET_EQUALS",
+     "FILTER_TRUE"
+    ],
+    "compatible_groupers": [
+     "GROUP_SET_PER_ELEMENT",
+     "GROUP_SET_VALUE"
+    ],
+    "compatible_windows": [
+     "WIN_DENSE_RANK",
+     "WIN_RANK",
+     "WIN_ROW_NUMBER"
+    ],
+    "name": "set_u256"
    }
   ]
  },

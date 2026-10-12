@@ -9,13 +9,15 @@ type Props = {
   catalog: Catalog
   onChange: (value: JsonNode) => void
   onClose: () => void
+  // Set when the node can be deleted from the canvas (not the cohort).
+  onDelete?: () => void
 }
 
 // Inspector edits one model node: a form generated from the manifest (or
 // hand-written for free-form operators) plus the node's JSON as text.
 // Every edit replaces the node's jsonTree value; nothing round-trips
 // through JSON.parse.
-export function Inspector({ node, catalog, onChange, onClose }: Props) {
+export function Inspector({ node, catalog, onChange, onClose, onDelete }: Props) {
   const form = useMemo(() => buildForm(node, catalog), [node, catalog])
   const problems = form.mode === 'raw' ? [] : formProblems(form, node.value)
   const title = node.kind === 'cohort' ? 'Cohort' : node.kind === 'raw' ? `Raw ${node.section}` : node.section
@@ -28,6 +30,11 @@ export function Inspector({ node, catalog, onChange, onClose }: Props) {
           ×
         </button>
         <span className="insp-path">{node.id}</span>
+        {onDelete && (
+          <button type="button" className="insp-delete" data-testid="delete-node" onClick={onDelete} title="Delete node (Delete / Backspace)">
+            Delete
+          </button>
+        )}
       </header>
       {form.note && <p className="insp-note">{form.note}</p>}
       {form.sections

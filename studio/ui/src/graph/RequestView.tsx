@@ -1,12 +1,16 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { createContext, use, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   Background,
   Controls,
   ReactFlow,
   ViewportPortal,
+  getBezierPath,
   useStore,
   useStoreApi,
+  type Connection,
+  type ConnectionLineComponentProps,
   type Dimensions,
+  type FinalConnectionState,
   type NodeChange,
   type ReactFlowState,
 } from '@xyflow/react'
@@ -24,8 +28,19 @@ import {
 import { cohortCandidates } from './cohortPath.ts'
 import { toPlain, type JsonNode } from './jsonTree.ts'
 import { emitModel, emitModelText, parseModel, updateNode, type GraphModel } from './model.ts'
-import { buildRequestGraph, type GraphNode } from './requestGraph.ts'
-import { emptyLayout, layoutText, moveNode, parseLayout, positionOf, pruneLayout, type Layout } from './layout.ts'
+import { buildRequestGraph, type GraphEdge, type GraphNode } from './requestGraph.ts'
+import { emptyLayout, layoutText, moveNode, parseLayout, positionOf, pruneLayout, renameNodes, type Layout } from './layout.ts'
+import { isPathPrefix } from './nodePath.ts'
+import {
+  checkConnection,
+  clampToColumn,
+  connectWire,
+  deletable,
+  deleteNode,
+  disconnectWires,
+  type Wire,
+  type WireCheck,
+} from './wiring.ts'
 import { CohortNodeView, OpNodeView, RawNodeView } from './nodes.tsx'
 import { Inspector } from './Inspector.tsx'
 import { PreviewContext, usePreviews } from './usePreviews.ts'
@@ -78,6 +93,10 @@ function RequestGraphView({ path, catalog }: { path: string; catalog?: Catalog }
   const [fields, setFields] = useState<CohortField[] | undefined>(undefined)
   const [cohortError, setCohortError] = useState<string | null>(null)
   const [selected, setSelected] = useState<string | null>(null)
+  const [selectedEdge, setSelectedEdge] = useState<string | null>(null)
+  // Why the last dropped wire was refused, shown until the next gesture.
+  const [wireNote, setWireNote] = useState<string | null>(null)
+  const noteTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
   const [saving, setSaving] = useState(false)
   const [saveError, setSaveError] = useState<string | null>(null)
   const [lay, setLay] = useState<LayoutDoc>(EMPTY_LAYOUT)
@@ -162,6 +181,15 @@ function RequestGraphView({ path, catalog }: { path: string; catalog?: Catalog }
     }))
   }, [graph, lay.layout, selected, measured])
 
+  const edges = useMemo((): GraphEdge[] => {
+    if (graph === null || typeof graph === 'string') return []
+    return graph.edges.map((e) => (e.id === selectedEdge ? { ...e, selected: true } : e))
+  }, [graph, selectedEdge])
+
+  // Column lookup for drags: a node stays inside its own stage column.
+  const placed = graph !== null && typeof graph !== 'string' ? graph : null
+  const columnOf = useMemo(() => new Map(placed?.nodes.map((n) => [n.id, n.data.column]) ?? []), [placed])
+
   const onNodesChange = useCallback((changes: NodeChange<GraphNode>[]) => {
     const sizes = changes.filter((c) => c.type === 'dimensions' && c.dimensions)
     if (sizes.length > 0) {
@@ -182,10 +210,91 @@ function RequestGraphView({ path, catalog }: { path: string; catalog?: Catalog }
     if (moves.length === 0) return
     setLay((l) => {
       let layout = l.layout
-      for (const c of moves) if (c.type === 'position' && c.position) layout = moveNode(layout, c.id, c.position)
+      for (const c of moves) {
+        if (c.type !== 'position' || !c.position) continue
+        const column = columnOf.get(c.id)
+        const pos = column && placed ? clampToColumn(c.position, column, placed.columns) : c.position
+        layout = moveNode(layout, c.id, pos)
+      }
       return { ...l, layout }
     })
+  }, [columnOf, placed])
+
+  const wireCtx = useMemo(() => ({ manifest: catalog?.manifest, cohortFields: fields }), [catalog, fields])
+  const check = useCallback(
+    (w: Wire): WireCheck => (placed ? checkConnection(placed, w, wireCtx) : { ok: false, reason: 'no graph' }),
+    [placed, wireCtx],
+  )
+
+  const note = useCallback((text: string | null) => {
+    clearTimeout(noteTimer.current)
+    setWireNote(text)
+    if (text !== null) noteTimer.current = setTimeout(() => setWireNote(null), 6000)
   }, [])
+  useEffect(() => () => clearTimeout(noteTimer.current), [])
+
+  // A wire drawn into an input writes the source's field or label name
+  // there; the graph re-derives its edges from the edited model.
+  const onConnect = useCallback(
+    (c: Connection) => {
+      const r = check(c)
+      if (!r.ok) return note(r.reason)
+      note(null)
+      setDoc((d) => (d && c.target ? { ...d, model: connectWire(d.model, c.target, r.rowKey, r.ref) } : d))
+    },
+    [check, note],
+  )
+
+  // A wire dropped on an input that refuses it leaves the reason on screen.
+  const onConnectEnd = useCallback(
+    (_: MouseEvent | TouchEvent, s: FinalConnectionState) => {
+      if (s.isValid !== false || !s.fromHandle || !s.toHandle) return
+      const r = check(wireOf(s.fromHandle, s.toHandle))
+      if (!r.ok) note(r.reason)
+    },
+    [check, note],
+  )
+
+  // Deleting a node removes its JSON (and so its wires); deleting a wire
+  // clears the param it fed. The cohort is never deleted.
+  const onBeforeDelete = useCallback(
+    async ({ nodes: ns, edges: es }: { nodes: GraphNode[]; edges: GraphEdge[] }) => {
+      const keep = doc ? ns.filter((n) => deletable(doc.model, n.id)) : []
+      if (ns.length > 0 && keep.length === 0) return false
+      return { nodes: keep, edges: es }
+    },
+    [doc],
+  )
+  const remove = useCallback(
+    (nodeIds: string[], wires: GraphEdge[]) => {
+      if (!doc) return
+      let model = doc.model
+      let layout = lay.layout
+      const gone = (id: string) => nodeIds.some((g) => isPathPrefix(g, id))
+      model = disconnectWires(
+        model,
+        wires
+          .filter((e) => !gone(e.source) && !gone(e.target) && e.targetHandle?.startsWith('in:'))
+          .map((e) => ({ target: e.target, rowKey: e.targetHandle!.slice(3) })),
+      )
+      // Later siblings first, so earlier ids stay valid.
+      for (const id of [...nodeIds].sort(byPathDesc)) {
+        if (!deletable(model, id)) continue
+        const r = deleteNode(model, id)
+        model = r.model
+        layout = renameNodes(layout, (x) => isPathPrefix(id, x), r.renames)
+      }
+      if (model !== doc.model) setDoc({ ...doc, model })
+      if (layout !== lay.layout) setLay({ ...lay, layout })
+      if (selected !== null && nodeIds.includes(selected)) setSelected(null)
+      setSelectedEdge(null)
+    },
+    [doc, lay, selected],
+  )
+  const onDelete = useCallback(
+    ({ nodes: ns, edges: es }: { nodes: GraphNode[]; edges: GraphEdge[] }) => remove(ns.map((n) => n.id), es),
+    [remove],
+  )
 
   const edit = useCallback(
     (id: string, value: JsonNode) => setDoc((d) => (d ? { ...d, model: updateNode(d.model, id, value) } : d)),
@@ -257,44 +366,109 @@ function RequestGraphView({ path, catalog }: { path: string; catalog?: Catalog }
         {cohortError && <span className="err">{cohortError}</span>}
       </div>
       <div className="graph-body">
-        <PreviewContext value={previews}>
-          <ReactFlow
-            nodes={nodes}
-            edges={graph.edges}
-            nodeTypes={nodeTypes}
-            onNodesChange={onNodesChange}
-            nodesConnectable={false}
-            edgesFocusable={false}
-            deleteKeyCode={null}
-            onNodeClick={(_, n) => setSelected(n.id)}
-            onPaneClick={() => setSelected(null)}
-            fitView
-            minZoom={0.2}
-            proOptions={{ hideAttribution: true }}
-          >
-            <ViewportPortal>
-              {graph.columns.map((c) => (
-                <div key={c.key} className="col-title" style={{ transform: `translate(${c.x}px, -28px)` }}>
-                  {c.title}
-                </div>
-              ))}
-            </ViewportPortal>
-            <Background />
-            <Controls showInteractive={false} />
-            <RemeasureUnready />
-          </ReactFlow>
-        </PreviewContext>
+        <div className="graph-flow">
+          <PreviewContext value={previews}>
+            <WireCheckContext value={check}>
+              <ReactFlow
+                nodes={nodes}
+                edges={edges}
+                nodeTypes={nodeTypes}
+                onNodesChange={onNodesChange}
+                isValidConnection={(c) => check(c).ok}
+                onConnect={onConnect}
+                onConnectStart={() => note(null)}
+                onConnectEnd={onConnectEnd}
+                connectionLineComponent={WireLine}
+                connectionRadius={24}
+                deleteKeyCode={DELETE_KEYS}
+                onBeforeDelete={onBeforeDelete}
+                onDelete={onDelete}
+                onNodeClick={(_, n) => {
+                  setSelected(n.id)
+                  setSelectedEdge(null)
+                }}
+                onEdgeClick={(_, e) => {
+                  setSelectedEdge(e.id)
+                  setSelected(null)
+                }}
+                onPaneClick={() => {
+                  setSelected(null)
+                  setSelectedEdge(null)
+                }}
+                fitView
+                minZoom={0.2}
+                proOptions={{ hideAttribution: true }}
+              >
+                <ViewportPortal>
+                  {graph.columns.map((c) => (
+                    <div key={c.key} className="col-title" style={{ transform: `translate(${c.x}px, -28px)` }}>
+                      {c.title}
+                    </div>
+                  ))}
+                </ViewportPortal>
+                <Background />
+                <Controls showInteractive={false} />
+                <RemeasureUnready />
+              </ReactFlow>
+            </WireCheckContext>
+          </PreviewContext>
+          {wireNote && (
+            <div className="wire-note" role="status" data-testid="wire-refused">
+              Wire refused: {wireNote}
+            </div>
+          )}
+        </div>
         {node && (
           <Inspector
             node={node}
             catalog={catalog ?? {}}
             onChange={(v) => edit(node.id, v)}
             onClose={() => setSelected(null)}
+            onDelete={deletable(doc.model, node.id) ? () => remove([node.id], []) : undefined}
           />
         )}
       </div>
     </div>
   )
+}
+
+const DELETE_KEYS = ['Backspace', 'Delete']
+
+// WireCheckContext hands the connection check to the connection line,
+// which React Flow renders outside our props.
+const WireCheckContext = createContext<((w: Wire) => WireCheck) | null>(null)
+
+// wireOf orients a gesture's two handles as source -> target.
+function wireOf(
+  from: { nodeId: string; id?: string | null; type: string },
+  to: { nodeId: string; id?: string | null; type: string },
+): Wire {
+  const [s, t] = from.type === 'source' ? [from, to] : [to, from]
+  return { source: s.nodeId, sourceHandle: s.id ?? null, target: t.nodeId, targetHandle: t.id ?? null }
+}
+
+// WireLine is the wire being drawn; over an input that refuses it, it
+// shows why next to the cursor.
+function WireLine({ fromX, fromY, toX, toY, fromPosition, toPosition, fromHandle, toHandle, connectionStatus }: ConnectionLineComponentProps<GraphNode>) {
+  const check = use(WireCheckContext)
+  const [path] = getBezierPath({ sourceX: fromX, sourceY: fromY, sourcePosition: fromPosition, targetX: toX, targetY: toY, targetPosition: toPosition })
+  const r = toHandle && connectionStatus === 'invalid' && check ? check(wireOf(fromHandle, toHandle)) : null
+  const refused = r && !r.ok ? r.reason : null
+  return (
+    <g>
+      <path d={path} fill="none" className="react-flow__connection-path" stroke={refused ? 'var(--danger)' : 'var(--accent)'} strokeWidth={1.5} />
+      {refused && (
+        <text x={toX + 10} y={toY - 10} className="wire-hint" data-testid="wire-hint">
+          {refused}
+        </text>
+      )}
+    </g>
+  )
+}
+
+// byPathDesc orders node ids so later array items come first.
+function byPathDesc(a: string, b: string): number {
+  return b.localeCompare(a, undefined, { numeric: true })
 }
 
 // unreadyIds lists the visible nodes React Flow holds without a size or

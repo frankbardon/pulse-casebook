@@ -71,6 +71,18 @@ export function pruneLayout(layout: Layout, live: Iterable<string>): Layout {
   return { ...layout, nodes }
 }
 
+// renameNodes follows a node deletion: entries for removed ids are
+// dropped and entries of shifted siblings move to their new ids.
+export function renameNodes(layout: Layout, removed: (id: string) => boolean, renames: ReadonlyMap<string, string>): Layout {
+  const nodes: Record<string, NodeLayout> = {}
+  for (const [id, e] of Object.entries(layout.nodes)) {
+    const to = renames.get(id)
+    if (to !== undefined) nodes[to] = e
+    else if (!removed(id) && !Object.hasOwn(nodes, id)) nodes[id] = e
+  }
+  return { ...layout, nodes }
+}
+
 // layoutText is the compact JSON sent to the server (which applies house
 // style) and the basis of the dirty check.
 export function layoutText(layout: Layout): string {

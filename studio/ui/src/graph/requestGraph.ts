@@ -13,6 +13,7 @@
 import type { Edge, Node } from '@xyflow/react'
 import type { CohortField, Manifest, ManifestOperator } from '../api.ts'
 import { formatPath, type PathSegment } from './nodePath.ts'
+import { describeAccept, slotFor, slotsFor } from './ports.ts'
 
 export type ColumnKey =
   | 'source'
@@ -42,8 +43,19 @@ export const COLUMNS: { key: ColumnKey; title: string }[] = [
 // ParamRow is one line of a node's compact body. key is the JSON path of
 // the value relative to the entry (`field`, `params.success`,
 // `predictors[1]`, `rows[0].field`). ref is set when the value names a
-// field or label; resolved says whether a wire was found for it.
-export type ParamRow = { key: string; value: string; ref?: string; resolved?: boolean }
+// field or label; resolved says whether a wire was found for it. port
+// marks an input the entry does not fill yet: `empty` for a missing
+// required field, `append` for the next item of a list input
+// (`predictors[2]`). accepts is the input's type rule, for its handle
+// tooltip, when the manifest declares one.
+export type ParamRow = {
+  key: string
+  value: string
+  ref?: string
+  resolved?: boolean
+  port?: 'empty' | 'append'
+  accepts?: string
+}
 
 export type OpNodeData = {
   path: string
@@ -237,6 +249,7 @@ export function buildRequestGraph(req: unknown, opts: BuildOptions = {}): Reques
       if (name !== undefined && spec.nameKey) omit.add(spec.nameKey)
       const rows: ParamRow[] = []
       for (const [k, v] of Object.entries(e)) if (!omit.has(k)) flatten(v, [k], rows)
+      if (opts.manifest) addPorts(opts.manifest, key, op, e, rows)
       const list = opts.manifest && spec.catalog ? spec.catalog(opts.manifest) : undefined
       const opKnown =
         typeof opVal === 'string' && list ? list.some((o) => (o.name ?? o.kind) === opVal) : undefined
@@ -311,6 +324,40 @@ export function buildRequestGraph(req: unknown, opts: BuildOptions = {}): Reques
   const nodes: GraphNode[] = [cohort, ...raws, ...ops]
   const columns = layout(nodes)
   return { nodes, edges, columns }
+}
+
+// canSee says whether an entry of section at index may name the label of
+// the producer entry (producerSection, producerIndex): the producer's
+// section is upstream of it, or an earlier entry of its own section for
+// sections that see themselves. Vector refs only see vectors.
+export function canSee(section: string, index: number, producerSection: string, producerIndex: number, role = ''): boolean {
+  if (role === 'vector') return producerSection === 'vectors'
+  const spec = SECTION_BY_KEY.get(section)
+  if (!spec) return false
+  if (spec.sees.includes(producerSection)) return true
+  return !!spec.seesSelf && producerSection === section && producerIndex < index
+}
+
+// addPorts appends rows for the field inputs the manifest declares but
+// the entry does not fill (an empty required input, the next slot of a
+// list input) and notes each ref row's type rule for its tooltip.
+function addPorts(manifest: Manifest, section: string, op: string, e: Record<string, unknown>, rows: ParamRow[]): void {
+  for (const row of rows) {
+    if (row.ref === undefined) continue
+    const slot = slotFor(manifest, section, op, row.key)
+    if (slot.accept.types || slot.accept.kinds) row.accepts = describeAccept(slot)
+  }
+  for (const slot of slotsFor(manifest, section, op)) {
+    if (!slot.required) continue
+    const v = e[slot.key]
+    const accepts = slot.accept.types || slot.accept.kinds ? { accepts: describeAccept(slot) } : {}
+    if (!slot.list) {
+      if (v === undefined) rows.push({ key: slot.key, value: '', port: 'empty', ...accepts })
+    } else if (v === undefined || (Array.isArray(v) && v.every((x) => typeof x === 'string'))) {
+      const n = Array.isArray(v) ? v.length : 0
+      rows.push({ key: formatPath([slot.key, n]), value: '', port: 'append', ...accepts })
+    }
+  }
 }
 
 function resolve(

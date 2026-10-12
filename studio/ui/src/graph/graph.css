@@ -74,7 +74,7 @@
 
 .insp-head {
   display: grid;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: auto 1fr auto auto;
   align-items: baseline;
   column-gap: var(--space-2);
   margin-bottom: var(--space-2);
@@ -99,8 +99,17 @@
 }
 
 .insp-close {
+  grid-column: 4;
+  grid-row: 1;
+}
+
+.insp-delete {
   grid-column: 3;
   grid-row: 1;
+}
+
+.inspector button.insp-delete {
+  color: var(--danger);
 }
 
 .insp-path {
@@ -364,6 +373,60 @@
   min-height: 0;
   background: var(--muted);
   border: none;
+}
+
+.gnode .react-flow__handle.connectingto.valid,
+.gnode .react-flow__handle.valid {
+  background: var(--accent);
+}
+
+.gnode .react-flow__handle.connectingto:not(.valid) {
+  background: var(--danger);
+}
+
+.gnode-row.port .v {
+  color: var(--muted);
+  font-style: italic;
+}
+
+.react-flow__edge.selected .react-flow__edge-path {
+  stroke: var(--accent);
+  stroke-width: 2;
+}
+
+/* Wiring: the live reason a wire would be refused, drawn at the cursor,
+   and the note left when a refused wire is dropped. */
+.wire-hint {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  fill: var(--danger);
+  paint-order: stroke;
+  stroke: var(--bg);
+  stroke-width: 3px;
+}
+
+.wire-note {
+  position: absolute;
+  left: 50%;
+  bottom: var(--space-3);
+  transform: translateX(-50%);
+  z-index: 5;
+  max-width: 80%;
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid var(--danger);
+  border-radius: 3px;
+  background: var(--surface);
+  color: var(--danger);
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.graph-flow {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
 }
 
 .gnode-json {

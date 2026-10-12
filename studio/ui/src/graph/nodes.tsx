@@ -3,8 +3,10 @@ import { PREVIEW_SECTIONS, type CohortNode, type OpNode, type RawNode } from './
 import { NodePreview } from './NodePreview.tsx'
 
 // OpNode renders one section entry: stage title, operator name, label and
-// a compact param list. Rows that reference a field carry a target handle
-// (`in:<row key>`); entries that produce a label carry an `out` handle.
+// a compact param list. Rows that reference a field, and inputs the entry
+// does not fill yet (ports), carry a target handle (`in:<row key>`);
+// entries that produce a label carry an `out` handle. Wires are drawn
+// between these handles (RequestView checks and applies them).
 export function OpNodeView({ data }: NodeProps<OpNode>) {
   const unknown = data.opKnown === false
   return (
@@ -18,19 +20,23 @@ export function OpNodeView({ data }: NodeProps<OpNode>) {
       </header>
       <ul className="gnode-rows">
         {data.rows.map((r) => (
-          <li key={r.key} className={'gnode-row' + (r.ref !== undefined && !r.resolved ? ' unresolved' : '')}>
-            {r.ref !== undefined && (
-              <Handle type="target" position={Position.Left} id={`in:${r.key}`} isConnectable={false} />
+          <li
+            key={r.key}
+            className={'gnode-row' + (r.ref !== undefined && !r.resolved ? ' unresolved' : '') + (r.port ? ' port' : '')}
+            data-row={r.key}
+          >
+            {(r.ref !== undefined || r.port) && (
+              <Handle type="target" position={Position.Left} id={`in:${r.key}`} title={r.accepts ?? r.key} />
             )}
             <span className="k">{r.key}</span>
             <span className="v" title={r.value}>
-              {r.value}
+              {r.port === 'append' ? '+ wire to add' : r.port === 'empty' ? 'wire a field' : r.value}
             </span>
           </li>
         ))}
       </ul>
       {PREVIEW_SECTIONS.has(data.section) && <NodePreview id={data.path} label={data.name} />}
-      {data.produces && <Handle type="source" position={Position.Right} id="out" isConnectable={false} />}
+      {data.produces && <Handle type="source" position={Position.Right} id="out" title={`label ${data.name}`} />}
     </div>
   )
 }
@@ -51,7 +57,7 @@ export function CohortNodeView({ data }: NodeProps<CohortNode>) {
           <li key={f.name} className={'gnode-row' + (f.used ? ' used' : '')}>
             <span className="k">{f.name}</span>
             <span className="v type">{f.type || '?'}</span>
-            <Handle type="source" position={Position.Right} id={`field:${f.name}`} isConnectable={false} />
+            <Handle type="source" position={Position.Right} id={`field:${f.name}`} title={`${f.name} ${f.type}`.trim()} />
           </li>
         ))}
       </ul>

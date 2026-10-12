@@ -83,3 +83,64 @@ test('nodes show live previews and an edit re-runs only downstream ones', async 
   expect(requests.join(';')).not.toContain('cohort')
   await expect(graph.locator('.react-flow__edge')).not.toHaveCount(0)
 })
+
+// Wiring stays unsaved too. Drags run handle to handle with the mouse.
+async function drag(page: import('@playwright/test').Page, from: import('@playwright/test').Locator, to: import('@playwright/test').Locator) {
+  const a = (await from.boundingBox())!
+  const b = (await to.boundingBox())!
+  await page.mouse.move(a.x + a.width / 2, a.y + a.height / 2)
+  await page.mouse.down()
+  await page.mouse.move(b.x + b.width / 2, b.y + b.height / 2, { steps: 12 })
+  return async () => page.mouse.up()
+}
+
+test('wiring a label into an input updates the param; bad types are refused', async ({ page }) => {
+  await page.goto('/')
+  await page.getByRole('button', { name: 'req/08_cuped_welch.json' }).click()
+  const graph = page.getByTestId('request-graph')
+  await expect(graph.locator('[data-path="cohort"]')).toContainText('categorical_u8')
+  const fieldIn = graph.locator('[data-path="tests[0]"] [data-row="field"] .react-flow__handle')
+
+  // A categorical cohort field into the Welch numeric field is refused.
+  const armOut = graph.locator('[data-path="cohort"] .react-flow__handle[data-handleid="field:arm"]')
+  const release = await drag(page, armOut, fieldIn)
+  await expect(graph.getByTestId('wire-hint')).toContainText('numeric')
+  await release()
+  await expect(page.getByTestId('wire-refused')).toContainText('takes a numeric field, not categorical_u8')
+  await expect(page.getByTestId('dirty-state')).toHaveText('saved')
+
+  // The pages_cuped attribute label into tests[0].field rewrites it.
+  const cupedOut = graph.locator('[data-path="attributes[0]"] .react-flow__handle[data-handleid="out"]')
+  await (await drag(page, cupedOut, fieldIn))()
+  await expect(graph.locator('[data-path="tests[0]"] [data-row="field"]')).toContainText('pages_cuped')
+  await expect(page.getByTestId('dirty-state')).toContainText('unsaved')
+  await graph.locator('[data-path="tests[0]"]').click()
+  await expect(page.getByTestId('inspector').locator('[data-field="field"] input')).toHaveValue('pages_cuped')
+})
+
+test('deleting a node removes it and its wires; drags stay in the stage column', async ({ page }) => {
+  await page.goto('/')
+  await page.getByRole('button', { name: 'req/08_cuped_welch.json' }).click()
+  const graph = page.getByTestId('request-graph')
+  await expect(graph.locator('[data-path="cohort"]')).toContainText('categorical_u8')
+  const edges = graph.locator('.react-flow__edge')
+  await expect(edges).toHaveCount(6)
+
+  // A test dragged far right stays in the Analysis column.
+  const node = graph.locator('.react-flow__node').filter({ has: page.locator('[data-path="tests[1]"]') })
+  const before = (await node.boundingBox())!
+  await node.hover()
+  await page.mouse.down()
+  await page.mouse.move(before.x + before.width / 2 + 2000, before.y + before.height / 2, { steps: 10 })
+  await page.mouse.up()
+  const after = (await node.boundingBox())!
+  expect(after.x - before.x).toBeLessThan(before.width)
+
+  await graph.locator('[data-path="attributes[0]"]').click()
+  await page.getByTestId('delete-node').click()
+  await expect(graph.locator('[data-path="attributes[0]"]')).toHaveCount(0)
+  // Its two wires (field in, pages_cuped out) are gone.
+  await expect(edges).toHaveCount(4)
+  await expect(graph.locator('[data-path="tests[1]"] [data-row="field"]')).toHaveClass(/unresolved/)
+  await expect(page.getByTestId('dirty-state')).toContainText('unsaved')
+})
