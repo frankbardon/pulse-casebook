@@ -1,0 +1,48 @@
+{
+  "requests": [
+    {
+      "label": "base",
+      "cohort": {"filename": "data/ab_test.pulse"},
+      "windows": [
+        {
+          "type": "WIN_ROLLING_MEAN",
+          "field": "revenue",
+          "label": "rev_{{w}}d",
+          "params": {"window": {"$var": "w"}},
+          "for_each": {"axes": [{"name": "w", "values": [7, 28]}]}
+        }
+      ],
+      "aggregations": [{"type": "AGG_MEAN", "field": "revenue", "label": "mean_rev"}],
+      "tests": "later"
+    }
+  ],
+  "fits": [
+    {
+      "name": "uplift",
+      "request": {
+        "cohort": {"filename": "data/ab_test.pulse"},
+        "regressions": [{"type": "REG_OLS", "name": "uplift", "target": "revenue", "predictors": ["variant"]}]
+      },
+      "save": "models/uplift.pulse-model.json"
+    }
+  ],
+  "sweep": {
+    "axes": [
+      {"name": "alpha", "values": [0.10, 0.050, 1e-2]},
+      {"name": "seg", "values": ["café", "new"]}
+    ],
+    "mode": "grid",
+    "label": "a={{alpha}} {{seg}}",
+    "request": {
+      "cohort": {"filename": "data/ab_test.pulse"},
+      "filterers": [{"type": "FILTER_INCLUDE", "field": "segment", "values": ["{{seg}}"]}],
+      "tests": [
+        {"type": "TEST_WELCH", "field": "revenue", "split_by": "variant", "params": {"alpha": {"$var": "alpha"}}}
+      ]
+    },
+    "rank": {"by": "tests[0].p_value", "order": "asc"}
+  },
+  "multiplicity": {"method": "MULT_HOLM"},
+  "x_future": {"big": 12345678901234567890, "n": 1.50},
+  "x_future": [1, 2]
+}

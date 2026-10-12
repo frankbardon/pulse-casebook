@@ -133,6 +133,14 @@ const SECTIONS: SectionSpec[] = [
 
 const SECTION_BY_KEY = new Map(SECTIONS.map((s) => [s.key, s]))
 
+// REQUEST_SECTIONS lists the Request sections drawn as op nodes: array
+// sections (one node per entry) and single-object sections. The graph
+// model (model.ts) uses the same table, so both agree on which keys are
+// modeled and which become raw nodes.
+export const REQUEST_SECTIONS: ReadonlyMap<string, { single: boolean }> = new Map(
+  SECTIONS.map((s) => [s.key, { single: !!s.single }]),
+)
+
 // Keys (last named path segment, outside `params`) whose values are field
 // or label references.
 const REF_KEYS = new Set(['field', 'split_by', 'rows', 'cols', 'predictors', 'target', 'fields', 'vector'])
