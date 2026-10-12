@@ -2,6 +2,7 @@
 package server
 
 import (
+	"context"
 	"encoding/json"
 	"io/fs"
 	"net/http"
@@ -10,6 +11,7 @@ import (
 
 	"github.com/frankbardon/pulse"
 
+	"github.com/frankbardon/pulse-casebook/studio/internal/preview"
 	"github.com/frankbardon/pulse-casebook/studio/internal/scope"
 )
 
@@ -30,12 +32,17 @@ type Server struct {
 
 	catalog    catalogCache
 	previewCat previewCatalog
+	sched      *preview.Scheduler
+	cohorts    cohortCounts
 }
 
 // New returns a Server. ui is the UI asset tree; uiBuilt says whether it
 // contains a real build (otherwise a hint page is served).
 func New(root *scope.Root, engine *pulse.Pulse, cfg Config, ui fs.FS, uiBuilt bool) *Server {
 	s := &Server{root: root, engine: engine, cfg: cfg, ui: ui, uiOK: uiBuilt, mux: http.NewServeMux()}
+	s.sched = preview.NewScheduler(func(ctx context.Context, plan *preview.Plan) (*preview.Result, error) {
+		return preview.Run(ctx, s.engine, plan)
+	}, preview.SchedulerOptions{Timeout: cfg.PreviewTimeout, AutoRows: cfg.AutoPreviewRows})
 	s.mux.HandleFunc("GET /api/health", s.handleHealth)
 	s.mux.HandleFunc("GET /api/files", s.handleFiles)
 	s.mux.HandleFunc("GET /api/file", s.handleFile)

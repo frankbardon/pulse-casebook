@@ -118,10 +118,15 @@ var inlineRequests = map[string]string{
 type previewFixture struct {
 	srv   *Server
 	dir   string
-	calls atomic.Int64 // top-level engine operations, excluding the manifest
+	calls atomic.Int64 // top-level engine operations, excluding manifest and inspect
 }
 
 func newPreviewFixture(t *testing.T) *previewFixture {
+	t.Helper()
+	return newPreviewFixtureConfig(t, Config{PreviewTimeout: 30 * time.Second})
+}
+
+func newPreviewFixtureConfig(t *testing.T, cfg Config) *previewFixture {
 	t.Helper()
 	show := showcaseDir()
 	dir := t.TempDir()
@@ -153,7 +158,7 @@ func newPreviewFixture(t *testing.T) *previewFixture {
 	}
 	f := &previewFixture{dir: dir}
 	hooks := &observe.Hooks{OnOperationStart: func(ctx context.Context, info observe.OperationInfo) context.Context {
-		if info.Parent == 0 && info.Kind != observe.OpManifest && info.Kind != observe.OpPayloadSchema {
+		if info.Parent == 0 && info.Kind != observe.OpManifest && info.Kind != observe.OpPayloadSchema && info.Kind != observe.OpInspect {
 			f.calls.Add(1)
 		}
 		return ctx
@@ -162,7 +167,7 @@ func newPreviewFixture(t *testing.T) *previewFixture {
 	if err != nil {
 		t.Fatal(err)
 	}
-	f.srv = New(root, engine, Config{PreviewTimeout: 30 * time.Second}, nil, false)
+	f.srv = New(root, engine, cfg, nil, false)
 	return f
 }
 

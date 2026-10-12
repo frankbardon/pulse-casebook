@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
 	"os"
@@ -43,8 +44,15 @@ func (s *Server) probeCatalog(ctx context.Context) *preview.Catalog {
 //	  "node": "filterers[0]",         one node id, or
 //	  "nodes": ["attributes[0]", ...] several nodes of one section
 //	  "quantiles": true,              attribute/feature percentiles (default true)
-//	  "facet": {"fields": [...]}      cohort/filter nodes: run a facet probe
+//	  "facet": {"fields": [...]},     cohort/filter nodes: run a facet probe
+//	  "force": false                  run expensive probes on large cohorts
 //	}
+//
+// Previews go through the server's preview.Scheduler: results are
+// cached by sub-request and cohort stamp, a newer preview of the same
+// path+nodes cancels the in-flight one, and expensive probes on cohorts
+// over --auto-preview-rows come back with status "deferred" unless
+// force is set. Timeouts and supersession are statuses, not errors.
 type previewBody struct {
 	Path      string          `json:"path"`
 	Request   json.RawMessage `json:"request"`
@@ -52,6 +60,7 @@ type previewBody struct {
 	Nodes     []string        `json:"nodes"`
 	Quantiles *bool           `json:"quantiles"`
 	Facet     map[string]any  `json:"facet"`
+	Force     bool            `json:"force"`
 }
 
 // handlePreview is POST /api/preview: build the node's truncated
@@ -95,24 +104,35 @@ func (s *Server) handlePreview(w http.ResponseWriter, r *http.Request) {
 		WriteError(w, http.StatusBadRequest, "invalid_json", err.Error(), nil)
 		return
 	}
+	used := &cohortSet{}
 	opts := preview.Options{
 		Quantiles:     body.Quantiles == nil || *body.Quantiles,
 		Facet:         body.Facet,
-		ResolveCohort: s.cohortResolver(body.Path),
+		ResolveCohort: used.wrap(s.cohortResolver(body.Path)),
 	}
-	plan, err := preview.Build(doc, string(kind), nodes, s.probeCatalog(r.Context()), opts)
+	cat := s.probeCatalog(r.Context())
+	plan, err := preview.Build(doc, string(kind), nodes, cat, opts)
 	if err != nil {
 		writePreviewError(w, err)
 		return
 	}
-
-	ctx := r.Context()
-	if s.cfg.PreviewTimeout > 0 {
-		var cancel context.CancelFunc
-		ctx, cancel = context.WithTimeout(ctx, s.cfg.PreviewTimeout)
-		defer cancel()
+	stamp, rows := s.cohortState(r.Context(), used.paths())
+	job := preview.Job{
+		Key:         previewKey(body.Path, nodes),
+		Plan:        plan,
+		Stamp:       stamp,
+		RecordCount: rows,
+		Force:       body.Force,
 	}
-	res, err := preview.Run(ctx, s.engine, plan)
+	if opts.Quantiles {
+		job.Cheaper = func() (*preview.Plan, []string, error) {
+			cheap := opts
+			cheap.Quantiles = false
+			p, err := preview.Build(doc, string(kind), nodes, cat, cheap)
+			return p, []string{"quantiles"}, err
+		}
+	}
+	res, err := s.sched.Do(r.Context(), job)
 	if err != nil {
 		writePreviewError(w, err)
 		return
@@ -225,4 +245,95 @@ func normalizeRel(p string) (string, bool) {
 		return "", false
 	}
 	return strings.Join(stack, "/"), true
+}
+
+// previewKey identifies "the same node" for supersession: a newer
+// preview of the same request file and node set cancels the older one.
+func previewKey(path string, nodes []string) string {
+	ids := slices.Clone(nodes)
+	slices.Sort(ids)
+	return path + "\x00" + strings.Join(ids, "\x00")
+}
+
+// cohortSet records the root-relative cohort files a build resolved.
+type cohortSet struct {
+	mu  sync.Mutex
+	set map[string]bool
+}
+
+func (c *cohortSet) wrap(resolve func(any) (any, error)) func(any) (any, error) {
+	return func(v any) (any, error) {
+		out, err := resolve(v)
+		if m, ok := out.(map[string]any); ok && err == nil {
+			if name, ok := m["filename"].(string); ok {
+				c.mu.Lock()
+				if c.set == nil {
+					c.set = map[string]bool{}
+				}
+				c.set[name] = true
+				c.mu.Unlock()
+			}
+		}
+		return out, err
+	}
+}
+
+func (c *cohortSet) paths() []string {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	out := make([]string, 0, len(c.set))
+	for p := range c.set {
+		out = append(out, p)
+	}
+	slices.Sort(out)
+	return out
+}
+
+// cohortCounts caches inspect record counts by cohort stamp.
+type cohortCounts struct {
+	mu     sync.Mutex
+	counts map[string]int64
+}
+
+// cohortState returns the cache stamp of the cohorts (path, size, mtime
+// of each) and the largest record_count among them (0 when unknown).
+func (s *Server) cohortState(ctx context.Context, paths []string) (string, int64) {
+	var stamp strings.Builder
+	var rows int64
+	for _, rel := range paths {
+		abs, err := s.root.Resolve(rel)
+		if err != nil {
+			continue
+		}
+		info, err := os.Stat(abs)
+		if err != nil {
+			continue
+		}
+		one := fmt.Sprintf("%s|%d|%d", rel, info.Size(), info.ModTime().UnixNano())
+		stamp.WriteString(one + "\n")
+		if n := s.recordCount(ctx, rel, one); n > rows {
+			rows = n
+		}
+	}
+	return stamp.String(), rows
+}
+
+func (s *Server) recordCount(ctx context.Context, rel, stamp string) int64 {
+	s.cohorts.mu.Lock()
+	n, ok := s.cohorts.counts[stamp]
+	s.cohorts.mu.Unlock()
+	if ok {
+		return n
+	}
+	res, err := s.engine.Inspect(ctx, rel)
+	if err != nil {
+		return 0
+	}
+	s.cohorts.mu.Lock()
+	if s.cohorts.counts == nil {
+		s.cohorts.counts = map[string]int64{}
+	}
+	s.cohorts.counts[stamp] = res.RecordCount
+	s.cohorts.mu.Unlock()
+	return res.RecordCount
 }

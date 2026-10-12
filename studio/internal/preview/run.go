@@ -15,14 +15,21 @@ import (
 // MaxTableRows caps the rows a table probe returns.
 const MaxTableRows = 100
 
-// Result is the /api/preview response body.
+// Result is the /api/preview response body. Status is StatusOK, or
+// StatusDeferred / StatusTimedOut / StatusCancelled with probes that
+// carry only node and kind (and reason for deferred). Deferred names the
+// parts of an expensive probe left out to keep it cheap ("quantiles").
 type Result struct {
-	Verb      string            `json:"verb"`
-	Cost      string            `json:"cost"`
-	Request   json.RawMessage   `json:"request,omitempty"`
-	Probes    []*Probe          `json:"probes"`
-	Warnings  []json.RawMessage `json:"warnings,omitempty"`
-	ElapsedMS int64             `json:"elapsed_ms"`
+	Status      string            `json:"status"`
+	Verb        string            `json:"verb"`
+	Cost        string            `json:"cost"`
+	Cached      bool              `json:"cached,omitempty"`
+	Deferred    []string          `json:"deferred,omitempty"`
+	RecordCount int64             `json:"record_count,omitempty"`
+	Request     json.RawMessage   `json:"request,omitempty"`
+	Probes      []*Probe          `json:"probes"`
+	Warnings    []json.RawMessage `json:"warnings,omitempty"`
+	ElapsedMS   int64             `json:"elapsed_ms"`
 }
 
 // Probe is one node's typed preview. Which fields are set depends on
@@ -105,7 +112,7 @@ func (e *EngineError) Error() string { return e.Message }
 // response. Context cancellation and deadlines are returned as the
 // context's error.
 func Run(ctx context.Context, engine *pulse.Pulse, plan *Plan) (*Result, error) {
-	res := &Result{Verb: plan.Verb, Cost: plan.Cost}
+	res := &Result{Status: StatusOK, Verb: plan.Verb, Cost: plan.Cost}
 	if plan.Verb == VerbNone {
 		for _, np := range plan.Nodes {
 			res.Probes = append(res.Probes, &Probe{Node: np.ID, Kind: KindNone, Reason: np.Reason})
