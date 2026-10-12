@@ -1,0 +1,8 @@
+{"cohort":{"filename":"t.pulse"},
+"tests":[{"type":"TEST_T","field":"spend","split_by":"arm"},
+{"type":"TEST_CHISQ","rows":"region","cols":"arm"},
+{"type":"TEST_PEARSON_R","field":"spend","field2":"visits"},
+{"type":"TEST_ANOVA_F","field":"spend","split_by":"region"}],
+"multiplicity":{"method":"holm"},
+"regressions":[{"type":"REG_OLS","target":"spend","predictors":["visits","tenure"]},
+{"type":"REG_GLM","target":"converted","predictors":["visits"],"family":"binomial"}]}

@@ -1,0 +1,175 @@
+1
+00:00:00,250 --> 00:00:05,463
+Pulse overlays. Reading a finished result against something, taken apart in depth.
+
+2
+00:00:06,263 --> 00:00:09,962
+Overlays run last, on a result that is already computed.
+
+3
+00:00:10,762 --> 00:00:14,695
+Each spec adds one layer to the response, in the order you list them.
+
+4
+00:00:15,495 --> 00:00:24,676
+A layer is a read-only sibling keyed to the result's rows and columns. Run with or without overlays, the base figures are byte-identical.
+
+5
+00:00:25,476 --> 00:00:33,143
+Use one for a figure derived from the result: a share, an index, a change, a z-score, or a test between cells.
+
+6
+00:00:33,943 --> 00:00:37,812
+A spec names its kind, its scope, and what it compares against.
+
+7
+00:00:38,612 --> 00:00:47,495
+The reference can be a margin, a sibling group, an earlier point in the series, another cohort, an earlier chain stage, or another Compose slot.
+
+8
+00:00:48,295 --> 00:00:54,788
+Every layer is a scalar, a series or a matrix. Indices centre on a hundred, deltas on zero.
+
+9
+00:00:55,588 --> 00:01:06,945
+Which request carries the spec decides the host, and the host decides which kinds make sense: crosstabs, grouped results, facets, chains, Compose, and formulas over any of them.
+
+10
+00:01:07,745 --> 00:01:13,342
+Ask for a series overlay on a crosstab, and predict refuses it before any row is read.
+
+11
+00:01:14,142 --> 00:01:18,950
+On a crosstab of region by plan, overlays read the cells and their margins.
+
+12
+00:01:19,750 --> 00:01:25,667
+Share of row turns counts into each region's plan mix. North leans basic, East leans pro.
+
+13
+00:01:26,467 --> 00:01:32,150
+A chi-square layer tests the whole table at once. Here plan mix clearly depends on region.
+
+14
+00:01:32,950 --> 00:01:37,267
+A formula overlay computes your own figure from the host's variables.
+
+15
+00:01:38,067 --> 00:01:46,288
+Here, lift: each plan's share in a region against its share overall. East buys pro at one point six times the overall rate.
+
+16
+00:01:47,088 --> 00:01:52,792
+The variables are fixed per shape, and predict catches an unknown name before any row is read.
+
+17
+00:01:53,592 --> 00:01:57,696
+On a monthly series, overlays compare each point with earlier ones.
+
+18
+00:01:58,496 --> 00:02:01,320
+Index against prior shows month-on-month change.
+
+19
+00:02:02,120 --> 00:02:10,299
+Index against a baseline sets January twenty twenty-four to a hundred, so March twenty twenty-five reads two hundred and twenty-one.
+
+20
+00:02:11,099 --> 00:02:19,768
+Year over year compares each month with the same month a year before. The first year has nothing to compare, so it is null, with no warning.
+
+21
+00:02:20,568 --> 00:02:25,696
+A rolling z-score asks whether a point is unusual against the few points before it.
+
+22
+00:02:26,496 --> 00:02:32,819
+December twenty twenty-four stands out at more than six standard deviations above the three months before it.
+
+23
+00:02:33,619 --> 00:02:38,022
+It uses the sample spread of the window, and needs at least two earlier points.
+
+24
+00:02:38,822 --> 00:02:41,902
+Leave out the window, and predict refuses the spec.
+
+25
+00:02:42,702 --> 00:02:46,955
+A sibling overlay compares every group with one named group, here North.
+
+26
+00:02:47,755 --> 00:02:52,520
+East trails North by about three thousand six hundred, an index of eighty-four.
+
+27
+00:02:53,320 --> 00:03:02,928
+Name a sibling that is not there, and every entry comes back null with a warning. The request still succeeds, so read the warnings before you report a figure.
+
+28
+00:03:03,728 --> 00:03:11,011
+On a facet, overlays compare a subset with a population cohort: here, this year's sign-ups against everyone.
+
+29
+00:03:11,811 --> 00:03:18,795
+Pro runs about nine percent above its overall share, but a chi-square says a shift that size is well within chance.
+
+30
+00:03:19,595 --> 00:03:24,403
+Population overlays ride on the facet request, not the process request.
+
+31
+00:03:25,203 --> 00:03:30,203
+In Compose, overlays compare one slot with another after every slot has run.
+
+32
+00:03:31,003 --> 00:03:38,371
+Indexing twenty twenty-five against twenty twenty-four shows every cell grew, with South's pro plan almost doubling.
+
+33
+00:03:39,171 --> 00:03:45,664
+A chi-square says the mix itself changed. On this kind the scalar is the p-value, so read the summary.
+
+34
+00:03:46,464 --> 00:03:50,013
+The slots must line up on keys, schema and dictionaries.
+
+35
+00:03:50,813 --> 00:03:56,154
+Descriptive overlays read weighted figures from a weighted host, with no extra setting.
+
+36
+00:03:56,954 --> 00:04:03,149
+Inferential overlays return p-values, and refuse a weight that reaches them, with one exception.
+
+37
+00:04:03,949 --> 00:04:11,978
+A multiplicity block adds adjusted p-values beside the raw ones, per layer, row, column, request or Compose batch.
+
+38
+00:04:12,778 --> 00:04:15,687
+Predict lists each overlay and whether it streams.
+
+39
+00:04:16,487 --> 00:04:24,111
+An index against the prior point keeps one number and streams. Windows, siblings and year-back lookups need the whole series.
+
+40
+00:04:24,911 --> 00:04:30,551
+The manifest lists every kind with its shapes, scopes and flags, so you can pick by intent.
+
+41
+00:04:31,351 --> 00:04:37,268
+That's the toolkit today: shares, indices, deltas, z-scores, tests, formulas and ranks.
+
+42
+00:04:38,068 --> 00:04:49,383
+More are added over time, and the manifest always shows what your instance offers. Overlay kinds are built in, but your own expression functions still reach formula overlays.
+
+43
+00:04:50,183 --> 00:04:52,708
+Remember: the base result never moves.
+
+44
+00:04:53,508 --> 00:04:54,817
+Pulse overlays.

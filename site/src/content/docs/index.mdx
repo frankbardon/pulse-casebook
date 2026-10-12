@@ -1,0 +1,36 @@
+---
+title: Pulse Casebook
+description: Learn Pulse through narrated films and worked case studies, every figure computed by Pulse.
+template: splash
+hero:
+  tagline: Learn Pulse through narrated films and worked case studies. Every figure on this site was computed by Pulse, and every request is here to run yourself.
+  actions:
+    - text: I analyse data
+      link: /paths/analyst/
+      icon: right-arrow
+    - text: I build with Pulse
+      link: /paths/developer/
+      icon: right-arrow
+      variant: secondary
+---
+
+import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
+
+<CardGrid>
+	<Card title="Films" icon="seti:video">
+		Ten narrated films, from one request's lifecycle to overlays. Each stage of a request gets its own film.
+		[Start with the lifecycle](/films/lifecycle/).
+	</Card>
+	<Card title="Case studies" icon="open-book">
+		Six end-to-end analyses: an A/B test, a brand tracker, a credit model, time-zone operations, a synthetic data share and 25 million rows on one machine.
+		[Browse the case studies](/case-studies/ab-test-readout/).
+	</Card>
+	<Card title="Topics" icon="list-format">
+		Every Pulse operator the films and case studies use, grouped by stage and linked both ways.
+		[See the topics](/topics/filters/).
+	</Card>
+	<Card title="Run it yourself" icon="seti:shell">
+		Each case study ships its requests, data and a script. One `make` target builds Pulse.
+		[How to run the examples](/paths/running-examples/).
+	</Card>
+</CardGrid>

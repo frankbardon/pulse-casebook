@@ -1,0 +1,35 @@
+---
+// Embeds a film page and sizes the frame to its content (same origin, so readable).
+interface Props { src: string; title: string }
+const { src, title } = Astro.props;
+---
+<div class="film-embed">
+  <iframe src={src} title={title} loading="lazy" allow="autoplay; fullscreen"></iframe>
+  <p><a href={src} target="_blank" rel="noopener">Open the film on its own page ↗</a></p>
+</div>
+
+<script>
+  for (const frame of document.querySelectorAll<HTMLIFrameElement>('.film-embed iframe')) {
+    const fit = () => {
+      const doc = frame.contentDocument;
+      if (doc?.body) frame.style.height = `${doc.documentElement.scrollHeight}px`;
+    };
+    frame.addEventListener('load', () => {
+      fit();
+      const doc = frame.contentDocument;
+      if (doc) new ResizeObserver(fit).observe(doc.documentElement);
+    });
+  }
+</script>
+
+<style>
+  .film-embed iframe {
+    display: block;
+    width: 100%;
+    min-height: 480px;
+    border: 1px solid var(--sl-color-gray-5);
+    border-radius: 0.5rem;
+    background: #0d1418;
+  }
+  .film-embed p { margin-top: 0.5rem; font-size: var(--sl-text-sm); }
+</style>

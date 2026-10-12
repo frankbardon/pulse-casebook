@@ -1,0 +1,9 @@
+{
+  "name": "pulse-anatomy-render",
+  "private": true,
+  "description": "Renders Pulse Anatomy films to MP4 (see ../RENDERING.md)",
+  "dependencies": {
+    "kokoro-js": "1.2.1",
+    "playwright": "1.56.1"
+  }
+}
