@@ -6,7 +6,7 @@ committed. The commands use `jq` only to pull numbers out of the Pulse JSON enve
 ## 1. Build Pulse and copy the example to a scratch directory
 
 ```bash
-# from a fresh checkout of the repo root
+# from a fresh checkout of the repo root (step 9 needs per-group tests: Pulse with pulse U46 E3)
 make pulse && cp bin/pulse /tmp/pulse     # builds Pulse from the local checkout (root Makefile)
 rm -rf /tmp/ab-test-readout && cp -r showcase/ab-test-readout /tmp/ab-test-readout
 cd /tmp/ab-test-readout
@@ -60,7 +60,7 @@ jq -c '.data.responses[].data' out/05_revenue_shape.json
 jq -c '.data.tests[] | {label, statistic, p_value, z: .details.z, warnings}' out/06_revenue_tests.json
 jq -c '.data.data, (.data.regressions[] | {name, coefficients, std_errors, p_values, r2})' out/07_regression_adjustment.json
 jq -c '.data.tests[] | {label, diff: .details.diff, ci: [.details.ci_low, .details.ci_high], variance: .details.variance, p_value}' out/08_cuped_welch.json
-jq -r '.data.responses[] | [.data[0].users, .tests[0].details.diff, .tests[0].p_value, .tests[0].p_adjusted] | @tsv' out/09_segments.json
+jq -r '.data.responses[] | .data as $d | .tests | to_entries[] | [.value.group_key[0], $d[.key].users, .value.details.diff, .value.p_value, .value.p_adjusted, .value.multiplicity.m] | @tsv' out/09_segments.json
 jq -c '.data.regressions[] | {name, coefficients, std_errors, p_values}' out/10_heterogeneity.json
 jq -c '.data.responses[1].tests[] | {label, p_value, p_adjusted}' out/11_readout.json
 cmp out/11_readout.json out/11_readout_parallel.json && echo "serial == parallel"
@@ -86,6 +86,7 @@ cmp out/11_readout.json out/11_readout_parallel.json && echo "serial == parallel
 | 7 | is_variant coef / SE / p, adjusted; R² | 0.086158 / 0.024882 / 0.00053539; 0.60048 |
 | 7 | θ (cuped_theta prior_sessions); mean prior_sessions | 0.760123; 10.007625 |
 | 8 | pages_cuped diff, CI, p; variance | 0.086158, [0.037392, 0.134925], 0.00053500; [6.2499, 6.1313] |
+| 9 | four grouped slots (device, plan_tier, region, user_type), 12 tests, `group_key` on each; same figures as the former 12 filtered slots |
 | 9 | Holm p (m = 12) below 0.05 | mobile 3.1368e-8, EMEA 0.044217; all other slots ≥ 0.055 |
 | 9 | raw p below 0.05 | mobile, team (0.00553), NA (0.01024), EMEA (0.00402), new (0.00772) |
 | 10 | new_page_x_mobile coef / SE / p | 0.032758 / 0.0063227 / 2.2171e-7 |
