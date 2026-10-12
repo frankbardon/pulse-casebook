@@ -212,13 +212,22 @@ type Handwritten = (ops: ManifestOperator[]) => FormField[]
 const valuesList: Handwritten = () => [{ key: 'values', rel: ['values'], type: 'strings', required: true }]
 const expression: Handwritten = () => [{ key: 'expression', rel: ['expression'], type: 'expression', required: true }]
 
+// overlayForm edits scope and ref. `ref` is required only when the
+// kind's manifest entry lists ref_kinds (the OverlayRef families the
+// engine insists on, e.g. Margin); kinds with none — the pairwise
+// row/column family, χ², formula, ... — legitimately omit it.
 function overlayForm(ops: ManifestOperator[]): FormField[] {
   const scopes = ops.flatMap((o) => o.scopes ?? [])
+  const refKinds = [...new Set(ops.flatMap((o) => o.ref_kinds ?? []))]
+  const ref: FormField =
+    refKinds.length > 0
+      ? { key: 'ref', rel: ['ref'], type: 'json', required: true, hint: `ref family: ${refKinds.join(' | ')}` }
+      : { key: 'ref', rel: ['ref'], type: 'json' }
   return [
     scopes.length > 0
       ? { key: 'scope', rel: ['scope'], type: 'enum', options: [...new Set(scopes)], required: true }
       : { key: 'scope', rel: ['scope'], type: 'string', required: true },
-    { key: 'ref', rel: ['ref'], type: 'json', required: true },
+    ref,
   ]
 }
 

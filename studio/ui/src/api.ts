@@ -150,6 +150,9 @@ export type ManifestOperator = {
   params?: ManifestParam[] | null
   // Overlays: the scopes the kind accepts.
   scopes?: string[]
+  // Overlays: the OverlayRef families the kind reads (Go field names,
+  // e.g. `Margin`); empty when the kind takes no ref.
+  ref_kinds?: string[]
   // Cohort field types the operator's field input takes (absent for
   // tests, whose input rules come from requires).
   accepts_types?: string[]

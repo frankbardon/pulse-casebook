@@ -188,6 +188,18 @@ describe('hand-written forms', () => {
     expect(field(ov, 'scope').options!.length).toBeGreaterThan(0)
   })
 
+  it('overlay ref is required only for kinds whose manifest lists ref_kinds', () => {
+    // brand-tracker req 03: a row-scope pairwise overlay with no ref.
+    const pairwise = buildForm(entry('overlays', '{"name":"w","kind":"OVERLAY_PAIRWISE_PROP_Z","scope":"row","params":{"p_source":"cell_value"}}'), catalog)
+    expect(field(pairwise, 'ref').required).toBeFalsy()
+    expect(formProblems(pairwise, parseJson('{"name":"w","kind":"OVERLAY_PAIRWISE_PROP_Z","scope":"row"}'))).toEqual([])
+    const margin = buildForm(entry('overlays', '{"name":"s","kind":"OVERLAY_SHARE_OF_COL","scope":"cell"}'), catalog)
+    expect(field(margin, 'ref')).toMatchObject({ required: true, hint: 'ref family: Margin' })
+    expect(formProblems(margin, parseJson('{"name":"s","kind":"OVERLAY_SHARE_OF_COL","scope":"cell"}')).length).toBeGreaterThan(0)
+    // Unknown kinds: nothing to go on, so ref is not demanded.
+    expect(field(buildForm(entry('overlays', '{"kind":"OVERLAY_NOPE","scope":"cell"}'), catalog), 'ref').required).toBeFalsy()
+  })
+
   it('cohort nodes edit filename; raw nodes are JSON only', () => {
     const cohort = buildForm({ id: 'cohort', kind: 'cohort', section: 'cohort', value: parseJson('{"filename":"a.pulse"}') }, catalog)
     expect(fields(cohort, 'Cohort').map((f) => f.key)).toEqual(['filename', 'data_dir'])

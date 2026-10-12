@@ -1,5 +1,5 @@
 {
- "_comment": "Trimmed /api/catalog (pulse v1.0.0-alpha.9.0.20261012142608-897342c4948f): operator names, params, accepts_types/emits_type/requires, cohort_types, and schema property names. Regenerate from a running studio when the engine changes.",
+ "_comment": "Trimmed /api/catalog (pulse v1.0.0-alpha.9.0.20261012142608-897342c4948f): operator names, params, accepts_types/emits_type/requires, overlay scopes/ref_kinds, cohort_types, and schema property names. Regenerate from a running studio when the engine changes.",
  "manifest": {
   "components": {
    "aggregators": [
@@ -2603,24 +2603,30 @@
     "kind": "OVERLAY_CHISQ_COL",
     "scopes": [
      "column"
-    ]
+    ],
+    "ref_kinds": []
    },
    {
     "kind": "OVERLAY_CHISQ_MATRIX",
     "scopes": [
      "matrix"
-    ]
+    ],
+    "ref_kinds": []
    },
    {
     "kind": "OVERLAY_CHISQ_ROW",
     "scopes": [
      "row"
-    ]
+    ],
+    "ref_kinds": []
    },
    {
     "kind": "OVERLAY_CHISQ_VS_POP",
     "scopes": [
      "group"
+    ],
+    "ref_kinds": [
+     "Population"
     ]
    },
    {
@@ -2628,24 +2634,34 @@
     "scopes": [
      "matrix",
      "total"
-    ]
+    ],
+    "ref_kinds": []
    },
    {
     "kind": "OVERLAY_DELTA_VS_BASELINE",
     "scopes": [
      "group"
+    ],
+    "ref_kinds": [
+     "BaselineIndex"
     ]
    },
    {
     "kind": "OVERLAY_DELTA_VS_MARGIN",
     "scopes": [
      "cell"
+    ],
+    "ref_kinds": [
+     "Margin"
     ]
    },
    {
     "kind": "OVERLAY_DELTA_VS_PRIOR",
     "scopes": [
      "group"
+    ],
+    "ref_kinds": [
+     "Prior"
     ]
    },
    {
@@ -2653,25 +2669,33 @@
     "scopes": [
      "cell",
      "group"
-    ]
+    ],
+    "ref_kinds": []
    },
    {
     "kind": "OVERLAY_DELTA_VS_SIBLING",
     "scopes": [
      "group"
+    ],
+    "ref_kinds": [
+     "Sibling"
     ]
    },
    {
     "kind": "OVERLAY_DELTA_VS_STAGE",
     "scopes": [
      "total"
+    ],
+    "ref_kinds": [
+     "Stage"
     ]
    },
    {
     "kind": "OVERLAY_FISHER_EXACT_CELL",
     "scopes": [
      "cell"
-    ]
+    ],
+    "ref_kinds": []
    },
    {
     "kind": "OVERLAY_FORMULA",
@@ -2679,30 +2703,43 @@
      "cell",
      "group",
      "total"
-    ]
+    ],
+    "ref_kinds": []
    },
    {
     "kind": "OVERLAY_INDEX_VS_BASELINE",
     "scopes": [
      "group"
+    ],
+    "ref_kinds": [
+     "BaselineIndex"
     ]
    },
    {
     "kind": "OVERLAY_INDEX_VS_MARGIN",
     "scopes": [
      "cell"
+    ],
+    "ref_kinds": [
+     "Margin"
     ]
    },
    {
     "kind": "OVERLAY_INDEX_VS_POP",
     "scopes": [
      "group"
+    ],
+    "ref_kinds": [
+     "Population"
     ]
    },
    {
     "kind": "OVERLAY_INDEX_VS_PRIOR",
     "scopes": [
      "group"
+    ],
+    "ref_kinds": [
+     "Prior"
     ]
    },
    {
@@ -2710,36 +2747,50 @@
     "scopes": [
      "cell",
      "group"
-    ]
+    ],
+    "ref_kinds": []
    },
    {
     "kind": "OVERLAY_INDEX_VS_ROLLING_MEAN",
     "scopes": [
      "group"
+    ],
+    "ref_kinds": [
+     "RollingMean"
     ]
    },
    {
     "kind": "OVERLAY_INDEX_VS_SIBLING",
     "scopes": [
      "group"
+    ],
+    "ref_kinds": [
+     "Sibling"
     ]
    },
    {
     "kind": "OVERLAY_INDEX_VS_STAGE",
     "scopes": [
      "total"
+    ],
+    "ref_kinds": [
+     "Stage"
     ]
    },
    {
     "kind": "OVERLAY_INDEX_VS_TOTAL",
     "scopes": [
      "group"
-    ]
+    ],
+    "ref_kinds": []
    },
    {
     "kind": "OVERLAY_KS_VS_POP",
     "scopes": [
      "group"
+    ],
+    "ref_kinds": [
+     "Population"
     ]
    },
    {
@@ -2747,71 +2798,86 @@
     "scopes": [
      "column",
      "row"
-    ]
+    ],
+    "ref_kinds": []
    },
    {
     "kind": "OVERLAY_PAIRWISE_PROP_Z",
     "scopes": [
      "column",
      "row"
-    ]
+    ],
+    "ref_kinds": []
    },
    {
     "kind": "OVERLAY_PAIRWISE_TWO_MEANS_Z",
     "scopes": [
      "column",
      "row"
-    ]
+    ],
+    "ref_kinds": []
    },
    {
     "kind": "OVERLAY_PAIRWISE_WEIGHTED_TWO_MEANS_Z",
     "scopes": [
      "column",
      "row"
-    ]
+    ],
+    "ref_kinds": []
    },
    {
     "kind": "OVERLAY_PAIRWISE_WELCH_T",
     "scopes": [
      "column",
      "row"
-    ]
+    ],
+    "ref_kinds": []
    },
    {
     "kind": "OVERLAY_PANEL_INDEX_VS_REF",
     "scopes": [
      "cell",
      "group"
-    ]
+    ],
+    "ref_kinds": []
    },
    {
     "kind": "OVERLAY_PROP_Z_CELL",
     "scopes": [
      "cell"
-    ]
+    ],
+    "ref_kinds": []
    },
    {
     "kind": "OVERLAY_PROP_Z_PANEL",
     "scopes": [
      "cell"
-    ]
+    ],
+    "ref_kinds": []
    },
    {
     "kind": "OVERLAY_RANK",
     "scopes": [
      "cell"
-    ]
+    ],
+    "ref_kinds": []
    },
    {
     "kind": "OVERLAY_SHARE_OF_COL",
     "scopes": [
      "cell"
+    ],
+    "ref_kinds": [
+     "Margin"
     ]
    },
    {
     "kind": "OVERLAY_SHARE_OF_ROW",
     "scopes": [
      "cell"
+    ],
+    "ref_kinds": [
+     "Margin"
     ]
    },
    {
@@ -2819,61 +2885,81 @@
     "scopes": [
      "cell",
      "group"
+    ],
+    "ref_kinds": [
+     "Margin"
     ]
    },
    {
     "kind": "OVERLAY_T_CELL",
     "scopes": [
      "cell"
-    ]
+    ],
+    "ref_kinds": []
    },
    {
     "kind": "OVERLAY_T_VS_REF",
     "scopes": [
      "group"
-    ]
+    ],
+    "ref_kinds": []
    },
    {
     "kind": "OVERLAY_YOY",
     "scopes": [
      "group"
+    ],
+    "ref_kinds": [
+     "YoY"
     ]
    },
    {
     "kind": "OVERLAY_ZSCORE_VS_MARGIN",
     "scopes": [
      "cell"
+    ],
+    "ref_kinds": [
+     "Margin"
     ]
    },
    {
     "kind": "OVERLAY_ZSCORE_VS_POP",
     "scopes": [
      "group"
+    ],
+    "ref_kinds": [
+     "Population"
     ]
    },
    {
     "kind": "OVERLAY_ZSCORE_VS_ROLLING",
     "scopes": [
      "group"
+    ],
+    "ref_kinds": [
+     "RollingMean"
     ]
    },
    {
     "kind": "OVERLAY_ZSCORE_VS_TOTAL",
     "scopes": [
      "group"
-    ]
+    ],
+    "ref_kinds": []
    },
    {
     "kind": "OVERLAY_Z_CELL",
     "scopes": [
      "cell"
-    ]
+    ],
+    "ref_kinds": []
    },
    {
     "kind": "OVERLAY_Z_VS_REF",
     "scopes": [
      "group"
-    ]
+    ],
+    "ref_kinds": []
    }
   ],
   "post_tests": [
