@@ -60,6 +60,26 @@ func TestPreviewTiering(t *testing.T) {
 	})
 }
 
+// A grouped request's own AGG_PERCENTILE sorts the cohort per group: its
+// probe, and downstream probes that keep it, defer on large cohorts.
+func TestPreviewPercentileAggregationDefers(t *testing.T) {
+	f := newPreviewFixtureConfig(t, Config{PreviewTimeout: 30 * time.Second, AutoPreviewRows: 1000})
+	path := "ab/req/percentile.json"
+	for node, want := range map[string]string{"groups[0]": "ok", "aggregations[0]": "ok", "aggregations[1]": "deferred", "sort[0]": "deferred"} {
+		code, out := f.post(t, map[string]any{"path": path, "request": f.read(t, path), "node": node})
+		if code != 200 || out["status"] != want {
+			t.Fatalf("%s: %d %v, want %s", node, code, out, want)
+		}
+		if want == "deferred" && out["cost"] != "expensive" {
+			t.Fatalf("%s: cost %v", node, out["cost"])
+		}
+	}
+	code, out := f.post(t, map[string]any{"path": path, "request": f.read(t, path), "node": "aggregations[1]", "force": true})
+	if code != 200 || out["status"] != "ok" || at(out, "probes", 0, "table") == nil {
+		t.Fatalf("forced: %d %v", code, out)
+	}
+}
+
 func TestPreviewCache(t *testing.T) {
 	f := newPreviewFixture(t)
 	path := "ab/req/pipeline.json"

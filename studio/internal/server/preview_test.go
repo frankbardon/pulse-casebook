@@ -99,6 +99,22 @@ var inlineRequests = map[string]string{
   "post_tests": [{"type": "TEST_TREND", "field": "rev", "label": "rev_trend", "order_by": [{"field": "assign_week"}], "params": {"variant": "mann_kendall"}}],
   "outputs": [{"format": "csv", "path": "should_never_be_written.csv"}]
 }`,
+	"ab/req/weighted.json": `{
+  "cohort": ` + abCohort + `,
+  "weight": {"field": "order_value", "kind": "probability"},
+  "attributes": [{"type": "ATTR_FORMULA", "field": "pages_viewed", "label": "pages_x2", "expression": "pages_viewed * 2"}],
+  "groups": [{"type": "GROUP_CATEGORY", "field": "device"}],
+  "aggregations": [{"type": "AGG_AVERAGE", "field": "pages_viewed", "label": "pages"}]
+}`,
+	"ab/req/percentile.json": `{
+  "cohort": ` + abCohort + `,
+  "groups": [{"type": "GROUP_CATEGORY", "field": "device"}],
+  "aggregations": [
+    {"type": "AGG_AVERAGE", "field": "pages_viewed", "label": "pages"},
+    {"type": "AGG_PERCENTILE", "field": "pages_viewed", "label": "pages_p90", "params": {"percentile": 90}}
+  ],
+  "sort": [{"field": "device"}]
+}`,
 	"ab/req/matrix.json": `{
   "cohort": ` + abCohort + `,
   "vectors": [{"name": "drivers", "fields": ["pages_viewed", "prior_sessions", "revenue"]}],
@@ -600,5 +616,24 @@ func TestCohortCandidates(t *testing.T) {
 		if !reflect.DeepEqual(got, c.want) {
 			t.Errorf("cohortCandidates(%q, %v) = %v, want %v", c.req, c.cohort, got, c.want)
 		}
+	}
+}
+
+// Stats and group probes on a request with a probability weight: the
+// hidden AGG_MIN / AGG_MAX (not weight-aware) must opt out of the weight
+// instead of failing PROCESSING_CONFIG.
+func TestPreviewWeightedRequest(t *testing.T) {
+	f := newPreviewFixture(t)
+	path := "ab/req/weighted.json"
+	for _, node := range []string{"attributes[0]", "groups[0]", "aggregations[0]"} {
+		code, out := f.post(t, map[string]any{"path": path, "request": f.read(t, path), "node": node, "force": true})
+		if code != 200 || out["status"] != "ok" {
+			t.Fatalf("%s: %d %v", node, code, out)
+		}
+	}
+	_, out := f.post(t, map[string]any{"path": path, "request": f.read(t, path), "node": "attributes[0]"})
+	st, _ := at(out, "probes", 0, "stats").(map[string]any)
+	if st["min"] == nil || st["max"] == nil || st["mean"] == nil || st["quantiles"] == nil {
+		t.Fatalf("weighted stats = %v", st)
 	}
 }

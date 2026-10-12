@@ -59,6 +59,10 @@ type Catalog struct {
 	MomentTypes   map[string]bool   // field types AGG_AVERAGE accepts
 	QuantileTypes map[string]bool   // field types AGG_PERCENTILE accepts
 	Mergeable     map[string]bool   // aggregators a chain stage accepts
+	// Buffered are the aggregators the manifest marks non-streamable
+	// (they buffer and sort their input: AGG_PERCENTILE, AGG_MEDIAN,
+	// ...). A sub-request carrying one is an expensive probe.
+	Buffered map[string]bool
 }
 
 // CatalogFromManifest extracts a Catalog from the engine manifest.
@@ -69,6 +73,7 @@ func CatalogFromManifest(m *descriptor.Manifest) *Catalog {
 		MomentTypes:   map[string]bool{},
 		QuantileTypes: map[string]bool{},
 		Mergeable:     map[string]bool{},
+		Buffered:      map[string]bool{},
 	}
 	for _, ops := range [][]descriptor.Operator{m.Components.Attributes, m.Components.Features} {
 		for _, op := range ops {
@@ -77,6 +82,9 @@ func CatalogFromManifest(m *descriptor.Manifest) *Catalog {
 	}
 	for _, op := range m.Components.Aggregators {
 		c.Aggregators[op.Name] = true
+		if !op.Streamable {
+			c.Buffered[op.Name] = true
+		}
 		switch op.Name {
 		case "AGG_AVERAGE":
 			for _, t := range op.AcceptsTypes {
@@ -402,6 +410,7 @@ func (b *builder) requestFrame(section string, ids []string, indices []int) (*Pl
 	}
 
 	plan := &Plan{Verb: VerbProcess, Cost: CostCheap, Slot: -1}
+	weighted := frame["weight"] != nil
 	include := []string{"metadata", "components"}
 	var hidden []any
 	for i, id := range ids {
@@ -421,7 +430,7 @@ func (b *builder) requestFrame(section string, ids []string, indices []int) (*Pl
 		keepThrough(section, maxIdx)
 		for _, np := range plan.Nodes {
 			entry, _ := frame[section].([]any)[np.Index].(map[string]any)
-			np.Stats, hidden = b.statsProbe(entry, np.Index, inChain, hidden)
+			np.Stats, hidden = b.statsProbe(entry, np.Index, inChain, weighted, hidden)
 			if len(np.Stats.Quantiles) > 0 {
 				plan.Cost = CostExpensive
 			}
@@ -436,7 +445,11 @@ func (b *builder) requestFrame(section string, ids []string, indices []int) (*Pl
 				continue
 			}
 			np.CountLabel = fmt.Sprintf("__probe%d_n", np.Index)
-			hidden = append(hidden, map[string]any{"type": "AGG_COUNT", "field": field, "label": np.CountLabel})
+			count := map[string]any{"type": "AGG_COUNT", "field": field, "label": np.CountLabel}
+			if weighted {
+				count["weight"] = nil // bucket row count, see statsProbe
+			}
+			hidden = append(hidden, count)
 		}
 		include = append(include, "data")
 	case KindAggregation, KindWindow:
@@ -480,6 +493,12 @@ func (b *builder) requestFrame(section string, ids []string, indices []int) (*Pl
 			}
 		}
 		include = append(include, "overlays")
+		plan.Cost = CostExpensive
+	}
+	// The request's own buffered aggregations (percentiles, medians)
+	// sort the whole cohort per group: any probe whose sub-request keeps
+	// one is expensive.
+	if b.hasBuffered(sub["aggregations"]) {
 		plan.Cost = CostExpensive
 	}
 	if len(hidden) > 0 {
@@ -551,9 +570,27 @@ func (b *builder) wrap(plan *Plan, sub map[string]any) (*Plan, error) {
 	return plan, nil
 }
 
+// hasBuffered reports whether an aggregations list holds an aggregator
+// the catalog marks buffered.
+func (b *builder) hasBuffered(aggs any) bool {
+	list, _ := aggs.([]any)
+	for _, a := range list {
+		entry, _ := a.(map[string]any)
+		if op, _ := entry["type"].(string); b.cat.Buffered[op] {
+			return true
+		}
+	}
+	return false
+}
+
 // statsProbe appends the hidden aggregations describing one attribute
 // or feature output.
-func (b *builder) statsProbe(entry map[string]any, idx int, inChain bool, hidden []any) (*StatsPlan, []any) {
+//
+// On a weighted request every hidden slot carries "weight": null (the
+// engine's per-slot opt-out): probe stats describe the column itself,
+// and non-weight-aware aggregators (AGG_MIN, AGG_MAX) refuse an explicit
+// request weight. Unweighted requests leave the key out.
+func (b *builder) statsProbe(entry map[string]any, idx int, inChain, weighted bool, hidden []any) (*StatsPlan, []any) {
 	sp := &StatsPlan{}
 	label, _ := entry["label"].(string)
 	op, _ := entry["type"].(string)
@@ -573,6 +610,9 @@ func (b *builder) statsProbe(entry map[string]any, idx int, inChain bool, hidden
 		}
 		l := fmt.Sprintf("__probe%d_%s", idx, stat)
 		a := map[string]any{"type": agg, "field": label, "label": l}
+		if weighted {
+			a["weight"] = nil
+		}
 		if params != nil {
 			a["params"] = params
 		}

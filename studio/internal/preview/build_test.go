@@ -1,11 +1,15 @@
 package preview
 
 import (
+	"context"
 	"encoding/json"
 	"reflect"
 	"slices"
 	"sort"
+	"strings"
 	"testing"
+
+	"github.com/frankbardon/pulse"
 )
 
 func testCatalog() *Catalog {
@@ -16,6 +20,7 @@ func testCatalog() *Catalog {
 		MomentTypes:   numeric,
 		QuantileTypes: map[string]bool{"f64": true, "u16": true},
 		Mergeable:     map[string]bool{"AGG_COUNT": true, "AGG_MIN": true, "AGG_MAX": true, "AGG_AVERAGE": true, "AGG_STDDEV": true, "AGG_SUM": true},
+		Buffered:      map[string]bool{"AGG_PERCENTILE": true, "AGG_MEDIAN": true},
 	}
 }
 
@@ -222,6 +227,84 @@ func TestBuildQuantilesOff(t *testing.T) {
 	}
 	if plan.Cost != CostCheap || len(plan.Nodes[0].Stats.Quantiles) != 0 || lenOf(plan.Request, "aggregations") != 5 {
 		t.Fatalf("plan = %+v aggs %v", plan, plan.Request["aggregations"])
+	}
+}
+
+// A request's own buffered aggregations (percentile, median) make every
+// probe whose sub-request keeps them expensive; probes upstream of them,
+// or truncated before them, stay cheap.
+func TestBuildBufferedAggregationsAreExpensive(t *testing.T) {
+	const req = `{
+  "cohort": {"filename": "c.pulse"},
+  "attributes": [{"type": "ATTR_FORMULA", "label": "a0", "expression": "x+1"}],
+  "groups": [{"type": "GROUP_CATEGORY", "field": "g"}],
+  "aggregations": [{"type": "AGG_SUM", "field": "x", "label": "s"}, {"type": "AGG_PERCENTILE", "field": "x", "label": "p90", "params": {"percentile": 90}}],
+  "windows": [{"type": "WIN_LAG", "field": "s", "label": "lag"}],
+  "sort": [{"field": "g"}],
+  "tests": [{"type": "TEST_WELCH", "field": "x", "split_by": "g", "label": "t0"}]
+}`
+	for node, want := range map[string]string{
+		"attributes[0]":   CostCheap,
+		"groups[0]":       CostCheap,
+		"aggregations[0]": CostCheap, // truncated before the percentile
+		"aggregations[1]": CostExpensive,
+		"windows[0]":      CostExpensive,
+		"sort[0]":         CostExpensive,
+		"tests[0]":        CostExpensive,
+	} {
+		plan, err := Build(decode(t, req), "request", []string{node}, testCatalog(), Options{})
+		if err != nil {
+			t.Fatalf("%s: %v", node, err)
+		}
+		if plan.Cost != want {
+			t.Errorf("%s: cost %s, want %s", node, plan.Cost, want)
+		}
+	}
+	// AGG_MEDIAN is buffered too; an unbuffered aggregation stays cheap.
+	median := `{"cohort": {"filename": "c.pulse"}, "groups": [{"type": "GROUP_CATEGORY", "field": "g"}], "aggregations": [{"type": "AGG_MEDIAN", "field": "x", "label": "m"}]}`
+	if plan, _ := Build(decode(t, median), "request", []string{"aggregations[0]"}, testCatalog(), Options{}); plan.Cost != CostExpensive {
+		t.Errorf("median cost %s", plan.Cost)
+	}
+	sum := `{"cohort": {"filename": "c.pulse"}, "groups": [{"type": "GROUP_CATEGORY", "field": "g"}], "aggregations": [{"type": "AGG_SUM", "field": "x", "label": "s"}]}`
+	if plan, _ := Build(decode(t, sum), "request", []string{"aggregations[0]"}, testCatalog(), Options{}); plan.Cost != CostCheap {
+		t.Errorf("sum cost %s", plan.Cost)
+	}
+}
+
+// Hidden probe aggregations opt out of a request weight with
+// "weight": null; unweighted requests leave the key out.
+func TestBuildHiddenAggregationsOptOutOfWeight(t *testing.T) {
+	weighted := `{"cohort": {"filename": "c.pulse"}, "weight": {"field": "w"},
+  "attributes": [{"type": "ATTR_FORMULA", "label": "a0", "expression": "x+1"}],
+  "groups": [{"type": "GROUP_CATEGORY", "field": "g"}]}`
+	unweighted := `{"cohort": {"filename": "c.pulse"},
+  "attributes": [{"type": "ATTR_FORMULA", "label": "a0", "expression": "x+1"}],
+  "groups": [{"type": "GROUP_CATEGORY", "field": "g"}]}`
+	for _, c := range []struct {
+		doc  string
+		want bool
+	}{{weighted, true}, {unweighted, false}} {
+		for _, node := range []string{"attributes[0]", "groups[0]"} {
+			plan, err := Build(decode(t, c.doc), "request", []string{node}, testCatalog(), Options{Quantiles: true})
+			if err != nil {
+				t.Fatal(err)
+			}
+			aggs := plan.Request["aggregations"].([]any)
+			if len(aggs) == 0 {
+				t.Fatalf("%s: no hidden aggregations", node)
+			}
+			for _, a := range aggs {
+				w, has := a.(map[string]any)["weight"]
+				if has != c.want || w != nil {
+					t.Fatalf("%s weighted=%v: hidden aggregation %v", node, c.want, a)
+				}
+			}
+			// The null must reach the wire.
+			raw, _ := json.Marshal(aggs[0])
+			if c.want && !strings.Contains(string(raw), `"weight":null`) {
+				t.Fatalf("%s: marshalled %s", node, raw)
+			}
+		}
 	}
 }
 
@@ -470,5 +553,25 @@ func TestDecodeDocKeepsNumbers(t *testing.T) {
 	}
 	if string(out) != `{"f":0.10,"n":12345678901234567890}` {
 		t.Fatalf("numbers changed: %s", out)
+	}
+}
+
+// Buffered comes from the manifest's streamable flag: percentile-type
+// aggregators are buffered, moments are not.
+func TestCatalogBufferedFromManifest(t *testing.T) {
+	engine, err := pulse.New(pulse.Options{DataDir: t.TempDir()})
+	if err != nil {
+		t.Fatal(err)
+	}
+	cat := CatalogFromManifest(engine.Manifest(context.Background()))
+	for _, agg := range []string{"AGG_PERCENTILE", "AGG_MEDIAN"} {
+		if !cat.Buffered[agg] {
+			t.Errorf("%s not buffered", agg)
+		}
+	}
+	for _, agg := range []string{"AGG_COUNT", "AGG_SUM", "AGG_AVERAGE", "AGG_MIN", "AGG_STDDEV"} {
+		if cat.Buffered[agg] {
+			t.Errorf("%s buffered", agg)
+		}
 	}
 }
