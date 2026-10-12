@@ -349,3 +349,65 @@ export function postPredict(path: string, requestText: string, signal?: AbortSig
 export function postExplain(path: string, requestText: string, signal?: AbortSignal): Promise<ExplainResult> {
   return postValidate<ExplainResult>('/api/explain', path, requestText, signal)
 }
+
+// RunResult is POST /api/run: one full run of the in-memory document.
+// text is the envelope exactly as `pulse api <verb> -r <file> --json`
+// prints it (and as Save writes it); ok is false when it carries errors.
+// out_dir/out_name are where Save writes by default (the casebook's
+// <case>/out/<request name>.json).
+export type RunResult = {
+  run_id: string
+  root: string
+  path: string
+  elapsed_ms: number
+  ok: boolean
+  out_dir: string
+  out_name: string
+  text: string
+}
+
+// ApiCallError is a failed API call with the server's error code (e.g.
+// "exists" for a Save that would overwrite).
+export class ApiCallError extends Error {
+  code: string
+  status: number
+  details?: unknown
+  constructor(status: number, code: string, message: string, details?: unknown) {
+    super(`${code}: ${message}`)
+    this.name = 'ApiCallError'
+    this.status = status
+    this.code = code
+    this.details = details
+  }
+}
+
+async function postJSON<T>(url: string, body: string, signal?: AbortSignal): Promise<T> {
+  const res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body, signal })
+  const out: unknown = await res.json()
+  if (!res.ok || isApiError(out)) {
+    if (isApiError(out)) throw new ApiCallError(res.status, out.error.code, out.error.message, out.error.details)
+    throw new ApiCallError(res.status, 'http_error', `HTTP ${res.status}`)
+  }
+  return out as T
+}
+
+// postRun runs the in-memory document (emitModelText, spliced in
+// verbatim) with its root's engine call. Aborting signal cancels the run
+// on the server; a newer run of the same file from this page supersedes
+// an in-flight one.
+export function postRun(path: string, requestText: string, signal?: AbortSignal): Promise<RunResult> {
+  return postJSON<RunResult>(
+    '/api/run',
+    `{"path":${JSON.stringify(path)},"client":${JSON.stringify(PREVIEW_CLIENT)},"request":${requestText}}`,
+    signal,
+  )
+}
+
+export type SavedRun = { path: string; bytes: number; overwritten: boolean }
+
+// saveRun writes a run's envelope into its request's out/ directory as
+// name (default: the derived name). Without overwrite an existing file
+// is refused with ApiCallError code "exists".
+export function saveRun(runId: string, name: string, overwrite: boolean, signal?: AbortSignal): Promise<SavedRun> {
+  return postJSON<SavedRun>('/api/run/save', JSON.stringify({ run_id: runId, name, overwrite }), signal)
+}

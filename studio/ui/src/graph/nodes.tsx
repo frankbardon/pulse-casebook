@@ -8,6 +8,7 @@ import { FacetResult } from './FacetPreview.tsx'
 import { FIT_HANDLE } from './wiring.ts'
 import { NodePreview } from './NodePreview.tsx'
 import { NodeIssues } from './NodeIssues.tsx'
+import { NodeRunHeadline } from './ResultsPanel.tsx'
 
 // OpNode renders one section entry: stage title, operator name, label and
 // a compact param list. Rows that reference a field, and inputs the entry
@@ -48,6 +49,7 @@ export function OpNodeView({ data }: NodeProps<OpNode>) {
         <Handle type="source" position={Position.Bottom} id={FIT_HANDLE} className="fit-handle" title={`fit ${data.fit}: wire into a slot's fit input`} />
       )}
       <NodeIssues id={data.path} />
+      <NodeRunHeadline id={data.path} />
     </div>
   )
 }
@@ -106,6 +108,7 @@ export function FacetNodeView({ data }: NodeProps<FacetNode>) {
       <NodePreview id={data.path} />
       <FacetResult id={data.path} />
       <NodeIssues id={data.path} also={FACET_PROPS} />
+      <NodeRunHeadline id={data.path} />
     </div>
   )
 }

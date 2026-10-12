@@ -348,3 +348,79 @@ test('validation badges show predict errors and suggestions; hover shows explain
   await page.getByTestId('inspector').locator('[data-field="field"] input').fill('user_id')
   await expect(badge).toHaveCount(0)
 })
+
+// A full run is read-only; Save to out/ is mocked here because the smoke
+// server serves the real showcase dir (the write itself is covered by
+// the Go run tests in a temp workspace).
+test('Run executes the edited compose and shows per-lane results and node headlines', async ({ page }) => {
+  await page.goto('/')
+  await page.getByRole('button', { name: 'req/11_readout.compose.json' }).click()
+  const graph = page.getByTestId('request-graph')
+  await expect(graph.getByTestId('lane-title')).toHaveCount(4)
+  await page.getByTestId('run-button').click()
+  const panel = page.getByTestId('results-panel')
+  await expect(panel.getByTestId('run-status')).toHaveAttribute('data-phase', 'done', { timeout: 30_000 })
+  await expect(panel.getByTestId('run-status')).toContainText('ok')
+  await expect(panel.getByTestId('results-section')).toHaveText(['guardrails', 'scorecard', 'revenue_sensitivity', 'regression_adjustment'])
+  await expect(panel.getByTestId('results-table-tests')).toContainText('srm_by_week')
+  await panel.getByTestId('results-section').nth(3).click()
+  await expect(panel.getByTestId('results-table-regressions')).toContainText('pages_adjusted')
+  // Headlines reach terminal nodes by context.
+  await expect(graph.locator('[data-path="requests[1].tests[0]"] [data-testid="node-run"]')).toContainText(/^padj /)
+  await expect(graph.locator('[data-path="requests[3].regressions[1]"] [data-testid="node-run"]')).toContainText('R²')
+  await panel.getByTestId('results-tab-raw').click()
+  await expect(panel.getByTestId('results-raw')).toContainText('"format_version": "1.1"')
+  await expect(panel.getByTestId('save-out-name')).toHaveValue('11_readout.json')
+
+  // Save refuses to overwrite until confirmed (server mocked).
+  const saves: unknown[] = []
+  await page.route('**/api/run/save', async (route) => {
+    const body = route.request().postDataJSON() as { overwrite: boolean }
+    saves.push(body)
+    if (!body.overwrite) {
+      await route.fulfill({ status: 409, contentType: 'application/json', body: JSON.stringify({ error: { code: 'exists', message: 'a file already exists at that path' } }) })
+      return
+    }
+    await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ path: 'out/11_readout.json', bytes: 10, overwritten: true }) })
+  })
+  await panel.getByTestId('save-out').click()
+  await expect(panel.getByTestId('save-out-exists')).toContainText('out/11_readout.json exists')
+  await panel.getByTestId('save-out-overwrite').click()
+  await expect(panel.getByTestId('save-out-done')).toContainText('replaced out/11_readout.json')
+  expect(saves).toHaveLength(2)
+
+  // An edit marks the results as stale.
+  await page.getByTestId('lane-add').click()
+  await expect(panel.getByTestId('run-status')).toContainText('edited since this run')
+})
+
+test('Run of a plain request and a facet; an in-flight run cancels', async ({ page }) => {
+  await page.goto('/')
+  await page.getByRole('button', { name: 'req/04_metric_battery.json' }).click()
+  const graph = page.getByTestId('request-graph')
+  await page.getByTestId('run-button').click()
+  const panel = page.getByTestId('results-panel')
+  await expect(panel.getByTestId('run-status')).toHaveAttribute('data-phase', 'done', { timeout: 30_000 })
+  await expect(panel.getByTestId('results-table-tests')).toContainText('trial_start')
+  await expect(graph.locator('[data-path="aggregations[0]"] [data-testid="node-run"]')).toHaveText('40,000')
+
+  await page.getByRole('button', { name: 'req/02_srm_gof.facet.json' }).click()
+  await page.getByTestId('run-button').click()
+  await expect(page.getByTestId('run-status')).toHaveAttribute('data-phase', 'done', { timeout: 30_000 })
+  await expect(page.getByTestId('results-table-fields')).toContainText('arm')
+  await expect(graph.locator('[data-path="fields"] [data-testid="node-run"]')).toContainText('1 field')
+
+  // Hold the next run so Cancel has something to abort.
+  let release: () => void = () => {}
+  const held = new Promise<void>((r) => (release = r))
+  await page.route('**/api/run', async (route) => {
+    await held
+    await route.continue().catch(() => {})
+  })
+  await page.getByTestId('run-button').click()
+  await expect(page.getByTestId('run-status')).toHaveAttribute('data-phase', 'running')
+  await page.getByTestId('run-cancel').click()
+  await expect(page.getByTestId('run-status')).toHaveAttribute('data-phase', 'cancelled')
+  await expect(page.getByTestId('run-button')).toBeVisible()
+  release()
+})

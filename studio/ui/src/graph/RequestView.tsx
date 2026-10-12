@@ -57,6 +57,8 @@ import { itemsForPort, PALETTE_MIME, paletteItems, placeNode, type PaletteItem, 
 import { emitsType } from './ports.ts'
 import { PreviewContext, usePreviews } from './usePreviews.ts'
 import { useValidation, ValidationContext } from './useValidation.ts'
+import { RunContext, useRun, type RunResults } from './useRun.ts'
+import { ResultsPanel } from './ResultsPanel.tsx'
 import { proposal, worst, type Issue } from './validation.ts'
 import './graph.css'
 
@@ -293,6 +295,20 @@ function RequestGraphView({ path, kind, catalog }: { path: string; kind: ViewKin
   )
   const validationCatalog = useMemo(() => catalog ?? {}, [catalog])
   const validation = useValidation(path, doc?.model ?? null, nodeIds, validationCatalog, fields)
+
+  // Full run of the in-memory document; results stay in memory (bottom
+  // panel) and reach terminal nodes by context, like previews.
+  const run = useRun(path, doc?.model ?? null)
+  const [resultsOpen, setResultsOpen] = useState(false)
+  const runResults = useMemo(
+    (): RunResults => ({ get: (id) => run.last?.view.headlines.get(id), stale: run.stale }),
+    [run.last, run.stale],
+  )
+  const runNow = run.run
+  const startRun = useCallback(() => {
+    setResultsOpen(true)
+    runNow()
+  }, [runNow])
 
   // Sidecar positions override auto-layout; ids the graph no longer has
   // are simply never looked up. Compose content positions are relative to
@@ -747,6 +763,20 @@ function RequestGraphView({ path, kind, catalog }: { path: string; kind: ViewKin
         >
           + Node
         </button>
+        {run.phase === 'running' ? (
+          <button type="button" className="run on" data-testid="run-cancel" onClick={run.cancel} title="Cancel the run">
+            Cancel run
+          </button>
+        ) : (
+          <button type="button" className="run" data-testid="run-button" onClick={startRun} title="Run the whole request as edited (nothing is written)">
+            ▶ Run
+          </button>
+        )}
+        {!resultsOpen && run.last && (
+          <button type="button" data-testid="results-toggle" onClick={() => setResultsOpen(true)}>
+            Results
+          </button>
+        )}
         {compose && kind === 'compose' && (
           <button type="button" data-testid="lane-add" onClick={newLane} title="Add a compose slot (a new lane reading the last lane's cohort)">
             + Lane
@@ -785,6 +815,7 @@ function RequestGraphView({ path, kind, catalog }: { path: string; kind: ViewKin
           onDrop={onDrop}
         >
           <PreviewContext value={previews}>
+            <RunContext value={runResults}>
             <ValidationContext value={validation}>
               <WireCheckContext value={check}>
                 <LaneActionsContext value={laneActions}>
@@ -841,6 +872,7 @@ function RequestGraphView({ path, kind, catalog }: { path: string; kind: ViewKin
                 </LaneActionsContext>
               </WireCheckContext>
             </ValidationContext>
+            </RunContext>
           </PreviewContext>
           {portPick && (
             <Palette
@@ -877,6 +909,7 @@ function RequestGraphView({ path, kind, catalog }: { path: string; kind: ViewKin
           />
         )}
       </div>
+      {resultsOpen && <ResultsPanel run={run} onClose={() => setResultsOpen(false)} />}
     </div>
   )
 }

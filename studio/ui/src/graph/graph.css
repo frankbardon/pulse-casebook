@@ -1023,3 +1023,189 @@
 .react-flow__edge.stage-wire .react-flow__edge-path {
   stroke-dasharray: 2 3;
 }
+
+/* Full run: bar button, bottom results panel, node headlines. */
+.graph-bar button.run:not(.on) {
+  border-color: var(--stage-aggregate);
+  color: var(--stage-aggregate);
+}
+
+.graph-bar button.run.on {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+.results {
+  flex: none;
+  height: 260px;
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+  font-size: var(--text-sm);
+}
+
+.results-head {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-3);
+  border-bottom: 1px solid var(--border);
+}
+
+.results-spacer {
+  flex: 1;
+}
+
+.results button {
+  font: inherit;
+  padding: 1px var(--space-2);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.results button.on {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.results button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.results-tabs,
+.results-save {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.results-save input {
+  font: inherit;
+  font-family: var(--font-mono);
+  width: 220px;
+  padding: 1px var(--space-1);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.results-save .muted,
+.results-status {
+  font-family: var(--font-mono);
+}
+
+.results .err {
+  color: var(--danger);
+}
+
+.results-stale {
+  color: var(--stage-filter);
+}
+
+.results-body {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: var(--space-2) var(--space-3);
+}
+
+.results-body p {
+  margin: 0 0 var(--space-2);
+}
+
+.results-sections {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  margin-bottom: var(--space-2);
+}
+
+.results-table {
+  margin-bottom: var(--space-3);
+}
+
+.results-table h4 {
+  margin: 0 0 var(--space-1);
+  font-size: var(--text-sm);
+}
+
+.results-table table {
+  border-collapse: collapse;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.results-table th,
+.results-table td {
+  padding: 1px var(--space-2);
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.results-table th {
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.results-entries {
+  margin: 0 0 var(--space-2);
+  padding-left: var(--space-3);
+}
+
+.results-entries.error {
+  color: var(--danger);
+}
+
+.results-entries.warning {
+  color: var(--warn);
+}
+
+.results-raw,
+.results-other pre {
+  margin: 0;
+  font: var(--text-sm) / 1.35 var(--font-mono);
+  white-space: pre;
+}
+
+.results-other summary {
+  cursor: pointer;
+  color: var(--muted);
+}
+
+.gnode-run {
+  position: absolute;
+  right: 8px;
+  bottom: -9px;
+  height: 17px;
+  padding: 0 6px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  font: 500 11px/15px var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.gnode-run.sig {
+  border-color: var(--stage-aggregate);
+  color: var(--stage-aggregate);
+}
+
+.gnode-run.ns {
+  color: var(--muted);
+}
+
+.gnode-run.stale {
+  border-style: dashed;
+  opacity: 0.7;
+}

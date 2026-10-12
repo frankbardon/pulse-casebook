@@ -39,6 +39,7 @@ type Server struct {
 	sched      *preview.Scheduler
 	cohorts    cohortCounts
 	labels     labelEngines
+	runs       runState
 }
 
 // New returns a Server. ui is the UI asset tree; uiBuilt says whether it
@@ -60,6 +61,8 @@ func New(root *scope.Root, engine *pulse.Pulse, cfg Config, ui fs.FS, uiBuilt bo
 	s.mux.HandleFunc("POST /api/preview", s.handlePreview)
 	s.mux.HandleFunc("POST /api/predict", s.handlePredict)
 	s.mux.HandleFunc("POST /api/explain", s.handleExplain)
+	s.mux.HandleFunc("POST /api/run", s.handleRun)
+	s.mux.HandleFunc("POST /api/run/save", s.handleRunSave)
 	s.mux.HandleFunc("/api/", func(w http.ResponseWriter, r *http.Request) {
 		WriteError(w, http.StatusNotFound, "not_found", "no such API endpoint", map[string]any{"path": r.URL.Path})
 	})
