@@ -1,6 +1,8 @@
 // Flows that write files, each against its own temp copy of
 // ab-test-readout (harness.ts): saving an edit, creating a request,
 // saving and reloading a layout sidecar, and saving a run to out/.
+import { writeFileSync } from 'node:fs'
+import { join } from 'node:path'
 import { expect, test } from './harness.ts'
 
 test.use({ workspace: 'ab-test-readout' })
@@ -134,4 +136,44 @@ test('a run saves to out/ for real and refuses to overwrite until confirmed', as
   await page.reload()
   await expect(page.getByRole('button', { name: 'out/11_readout.json' })).toBeDisabled()
   await expect(page.getByRole('button', { name: 'out/11_readout.json' })).toHaveAttribute('title', /not a Pulse/)
+})
+
+test('grouper fit and post-test partition_by edit as first-class fields', async ({ page, studio }) => {
+  const rel = 'req/50_partitioned.json'
+  const request = {
+    cohort: { filename: 'ab_test.pulse', data_dir: '.' },
+    groups: [
+      { type: 'GROUP_CATEGORY', field: 'region' },
+      { type: 'GROUP_QUANTILE', field: 'pages_viewed', params: { n: 2 } },
+      { type: 'GROUP_CATEGORY', field: 'arm' },
+    ],
+    aggregations: [
+      { type: 'AGG_AVERAGE', field: 'revenue', label: 'rev' },
+      { type: 'AGG_AVERAGE', field: 'pages_viewed', label: 'pv' },
+    ],
+    post_tests: [{ type: 'TEST_PEARSON_R', field: 'rev', field2: 'pv', params: { variant: 'pearson_post', partition_by: ['region'] } }],
+  }
+  writeFileSync(join(studio.dir, rel), JSON.stringify(request, null, 2) + '\n')
+  await page.goto('/')
+  await page.getByRole('button', { name: rel }).click()
+  const graph = page.getByTestId('request-graph')
+  const inspector = page.getByTestId('inspector')
+
+  // The partition key is wired from the cohort field the grouper keys on.
+  await expect(graph.locator('[data-path="post_tests[0]"] [data-row="params.partition_by[0]"]')).not.toHaveClass(/unresolved/)
+  await expect(graph.locator('[data-path="post_tests[0]"] [data-row="params.partition_by[1]"]')).toContainText('wire to add')
+
+  await graph.locator('[data-path="groups[1]"]').click()
+  const fit = inspector.locator('[data-field="fit"]')
+  await expect(fit).toContainText('within: refit per bucket')
+  await fit.locator('select').selectOption('within')
+
+  await graph.locator('[data-path="post_tests[0]"]').click()
+  await inspector.getByTestId('partition-keys').getByRole('button', { name: 'Add pages_viewed' }).click()
+  await page.keyboard.press('ControlOrMeta+s')
+  await expect(page.getByTestId('dirty-state')).toHaveText('saved')
+
+  const saved = JSON.parse(studio.read(rel)) as typeof request & { groups: { params?: { fit?: string } }[] }
+  expect(saved.groups[1].params).toEqual({ n: 2, fit: 'within' })
+  expect(saved.post_tests[0].params.partition_by).toEqual(['region', 'pages_viewed'])
 })

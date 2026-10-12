@@ -12,7 +12,7 @@ import { getIn, setIn } from './jsonEdit.ts'
 import { stringValue, type JsonNode } from './jsonTree.ts'
 import { buildModel, emitModel, type GraphModel } from './model.ts'
 import { formatPath, parsePath, type PathSegment } from './nodePath.ts'
-import { FIT_ROW } from './wiring.ts'
+import { bindsFit, FIT_ROW } from './wiring.ts'
 
 const str = (s: string): JsonNode => ({ type: 'string', raw: JSON.stringify(s) })
 
@@ -137,7 +137,8 @@ export function removeLane(model: GraphModel, id: string): { model: GraphModel; 
 // slot label or stage name removes the key (the engine then defaults a
 // slot to request_<n>; a stage name is only diagnostic); a fit needs a
 // name. Renaming a fit rewrites the slot entries bound to the old
-// name (`params.fit`), so its bindings follow.
+// name (`params.fit`), so its bindings follow (a grouper's `params.fit`
+// is its global | within enum and is left alone).
 export function renameLane(model: GraphModel, id: string, name: string): GraphModel {
   const { key, index } = laneKey(id)
   let root = emitModel(model)
@@ -152,7 +153,7 @@ export function renameLane(model: GraphModel, id: string, name: string): GraphMo
   if (old !== undefined && old !== name) {
     const fitPath = parsePath(FIT_ROW)
     for (const n of model.nodes.values()) {
-      if (n.kind !== 'entry' || !n.id.startsWith('requests[')) continue
+      if (n.kind !== 'entry' || !n.id.startsWith('requests[') || !bindsFit(n.section, '')) continue
       if (stringValue(getIn(n.value, fitPath)) !== old) continue
       const at: PathSegment[] = [...parsePath(n.id), ...fitPath]
       root = setIn(root, at, str(name))

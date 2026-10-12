@@ -215,6 +215,35 @@
   align-self: flex-start;
 }
 
+.insp-keys {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.insp-key {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-mono);
+}
+
+.insp-key.bad .insp-key-name {
+  color: var(--danger);
+  text-decoration: underline wavy;
+}
+
+.insp-keys-state {
+  color: var(--muted);
+  font-style: italic;
+}
+
+.insp-keys-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
 .insp-json summary {
   cursor: pointer;
   font-weight: 600;

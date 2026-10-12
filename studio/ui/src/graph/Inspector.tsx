@@ -3,6 +3,8 @@ import { getIn, parseEdit, prettyJson, setIn } from './jsonEdit.ts'
 import { fromPlain, type JsonNode } from './jsonTree.ts'
 import type { ModelNode } from './model.ts'
 import { applyField, buildForm, fieldText, formProblems, type Catalog, type FormField } from './paramForms.ts'
+import { clearPartition, partitionProblem, removePartitionItem } from './partition.ts'
+import { stringValue } from './jsonTree.ts'
 
 type Props = {
   node: ModelNode
@@ -11,14 +13,17 @@ type Props = {
   onClose: () => void
   // Set when the node can be deleted from the canvas (not the cohort).
   onDelete?: () => void
+  // Group key columns of the node's request frame, in groups order
+  // (a post-test's partition_by options).
+  groupKeys?: readonly string[]
 }
 
 // Inspector edits one model node: a form generated from the manifest (or
 // hand-written for free-form operators) plus the node's JSON as text.
 // Every edit replaces the node's jsonTree value; nothing round-trips
 // through JSON.parse.
-export function Inspector({ node, catalog, onChange, onClose, onDelete }: Props) {
-  const form = useMemo(() => buildForm(node, catalog), [node, catalog])
+export function Inspector({ node, catalog, onChange, onClose, onDelete, groupKeys }: Props) {
+  const form = useMemo(() => buildForm(node, catalog, { groupKeys }), [node, catalog, groupKeys])
   const problems = form.mode === 'raw' ? [] : formProblems(form, node.value)
   const title = node.kind === 'cohort' ? 'Cohort' : node.kind === 'raw' ? `Raw ${node.section}` : node.section
   return (
@@ -120,6 +125,9 @@ function Field({ field: f, value, onChange }: { field: FormField; value: JsonNod
       )
       break
     }
+    case 'keys':
+      input = <KeysEditor field={f} value={value} onChange={onChange} />
+      break
     case 'ranges':
       // Not a list of range objects: edit as JSON.
       input = isRangeList(getIn(value, f.rel)) ? <RangesEditor field={f} value={value} onChange={onChange} /> : textArea()
@@ -153,6 +161,70 @@ function Field({ field: f, value, onChange }: { field: FormField; value: JsonNod
       {input}
       {draft?.error && <span className="insp-err">{draft.error}</span>}
       {f.hint && !draft?.error && <span className="insp-hint">{f.hint}</span>}
+    </div>
+  )
+}
+
+// KeysEditor edits a post-test's partition_by: the leading group key
+// columns, one row each. Add appends the next group key (the list must
+// stay a leading prefix); removing the last key returns to the implicit
+// default (every key but the last), and "No partition" writes `[]`.
+// Nothing is written until the user acts.
+function KeysEditor({ field: f, value, onChange }: { field: FormField; value: JsonNode; onChange: (v: JsonNode) => void }) {
+  const keys = f.options ?? []
+  const v = getIn(value, f.rel)
+  if (v !== undefined && v.type !== 'null' && !(v.type === 'array' && v.items.every((x) => x.type === 'string'))) {
+    return (
+      <div className="insp-keys">
+        <span className="insp-keys-state">not a list of names: edit as JSON below</span>
+        <button type="button" onClick={() => onChange(clearPartition(value))}>
+          Reset to default
+        </button>
+      </div>
+    )
+  }
+  const items = v?.type === 'array' ? v.items.map((x) => stringValue(x) ?? '') : []
+  const bad = partitionProblem(v, keys)
+  const next = keys[items.length]
+  const state =
+    v === undefined || v.type === 'null'
+      ? `default: ${keys.length > 1 ? keys.slice(0, -1).join(', ') : 'no partition'}`
+      : items.length === 0
+        ? '[] no partition (all rows)'
+        : undefined
+  return (
+    <div className="insp-keys" data-testid="partition-keys">
+      {state && <span className="insp-keys-state">{state}</span>}
+      {items.map((name, i) => (
+        <div key={i} className={'insp-key' + (bad?.index === i ? ' bad' : '')}>
+          <span className="insp-key-name">{name}</span>
+          <button type="button" aria-label={`Remove ${name}`} onClick={() => onChange(removePartitionItem(value, i))}>
+            −
+          </button>
+        </div>
+      ))}
+      {bad && <span className="insp-err">{bad.message}</span>}
+      <div className="insp-keys-bar">
+        {next !== undefined && !bad && (
+          <button
+            type="button"
+            className="insp-add"
+            onClick={() => onChange(setIn(value, v?.type === 'array' ? [...f.rel, items.length] : f.rel, v?.type === 'array' ? fromPlain(next) : fromPlain([next])))}
+          >
+            Add {next}
+          </button>
+        )}
+        {(v === undefined || v.type === 'null') && keys.length > 1 && (
+          <button type="button" onClick={() => onChange(setIn(value, f.rel, { type: 'array', items: [] }))}>
+            No partition ([])
+          </button>
+        )}
+        {v !== undefined && (
+          <button type="button" onClick={() => onChange(clearPartition(value))}>
+            Reset to default
+          </button>
+        )}
+      </div>
     </div>
   )
 }

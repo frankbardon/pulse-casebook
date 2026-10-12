@@ -43,7 +43,10 @@ function sample(f: FormField): string {
       return 'true'
     case 'enum':
     case 'enumItem':
-      return f.options!.find((o) => o !== '')!
+      // A non-default option, so omitDefault fields write it too.
+      return f.options!.find((o) => o !== '' && o !== f.default) ?? f.options!.find((o) => o !== '')!
+    case 'keys':
+      return 'a\nb'
     case 'strings':
       return f.count === 2 ? '1\n2' : 'a\nb'
     case 'json':

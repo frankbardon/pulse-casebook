@@ -16,6 +16,13 @@
 //     (TEST_PROP_Z's `field` categorical), split_by/rows/cols/
 //     subject_field a grouping field (categorical; integer and bool
 //     codes are let through, floats, dates and sets are refused).
+//   - Post-tests that declare a `partition_by` param (pulse alpha.10)
+//     take a list of GROUP KEY COLUMNS under `params.partition_by`: a
+//     leading prefix of the request's grouper key columns (pulse
+//     groupedtests.PostTestDepth / seriespartition.PrefixDepth). Any
+//     field type can be a group key (a quantile or k-means grouper keys
+//     on a numeric field, GROUP_DATE on a date), so the slot has no type
+//     rule; membership and prefix order are checked by partition.ts.
 //
 // A field whose type is not known (no inspect, a label whose operator
 // declares no emits_type) is never refused: the engine's own validation
@@ -46,8 +53,17 @@ const INTEGER = /^u(4|8|16|32|64)$/
 export type Accept = { types?: readonly string[]; kinds?: readonly FieldKind[]; integers?: boolean; what: string }
 
 // Slot is one field input of an operator. key is the entry key the
-// field name is written to; list slots hold an array of names.
-export type Slot = { key: string; list: boolean; required: boolean; accept: Accept }
+// field name is written to (a dotted path for inputs under `params`,
+// e.g. `params.partition_by`); list slots hold an array of names.
+// groupKey marks an input that names group key columns (post-test
+// partition_by): it is wired from the field a grouper keys on, never
+// offered by the type-aware palette.
+export type Slot = { key: string; list: boolean; required: boolean; accept: Accept; groupKey?: true }
+
+// PARTITION_KEY is the post-test input naming its partition keys.
+export const PARTITION_KEY = 'params.partition_by'
+
+const GROUP_KEY: Accept = { what: 'a group key column (a grouper\'s field, leading prefix)' }
 
 const ANY: Accept = { what: 'any field' }
 const NUMERIC: Accept = { kinds: ['numeric'], what: 'a numeric field' }
@@ -94,9 +110,19 @@ export function operatorsOf(manifest: Manifest | undefined, section: string): Ma
   return undefined
 }
 
-// findOperator looks an operator up by name (or overlay kind).
+// findOperator looks an operator up by name (or overlay kind). A tier-2
+// post-test written as its family (`TEST_ANOVA_F`, variant in
+// params.variant) matches the family's first variant entry.
 export function findOperator(manifest: Manifest | undefined, section: string, op: string): ManifestOperator | undefined {
-  return operatorsOf(manifest, section)?.find((o) => (o.name ?? o.kind) === op)
+  const list = operatorsOf(manifest, section)
+  return list?.find((o) => (o.name ?? o.kind) === op) ?? (section === 'post_tests' ? list?.find((o) => o.family === op) : undefined)
+}
+
+// declaresParam says whether an operator's manifest entry (any variant
+// of a post-test family) declares a param.
+export function declaresParam(manifest: Manifest | undefined, section: string, op: string, param: string): boolean {
+  const list = operatorsOf(manifest, section) ?? []
+  return list.some((o) => ((o.name ?? o.kind) === op || (section === 'post_tests' && o.family === op)) && !!o.params?.some((p) => p.name === param))
 }
 
 // acceptedTypes lists the cohort field types a component operator takes:
@@ -122,14 +148,19 @@ export function slotsFor(manifest: Manifest | undefined, section: string, op: st
   }
   switch (section) {
     case 'tests':
-    case 'post_tests':
-      return (o?.requires ?? [])
+    case 'post_tests': {
+      const slots: Slot[] = (o?.requires ?? [])
         .filter((r) => Object.hasOwn(REQUIRES, r))
         .map((r) => {
           const s = REQUIRES[r]
           const accept = s.key === 'field' && (o?.family ?? o?.name) === 'TEST_PROP_Z' ? CATEGORICAL : s.accept
           return { key: s.key, list: false, required: true, accept }
         })
+      if (section === 'post_tests' && declaresParam(manifest, section, op, 'partition_by')) {
+        slots.push({ key: PARTITION_KEY, list: true, required: false, accept: GROUP_KEY, groupKey: true })
+      }
+      return slots
+    }
     case 'regressions':
       if (!o) return []
       return [
@@ -148,6 +179,11 @@ export function slotsFor(manifest: Manifest | undefined, section: string, op: st
 // Keys that are no declared slot (crosstab `rows[0].field`, sort refs)
 // get an any-field slot, so they stay wireable but unchecked.
 export function slotFor(manifest: Manifest | undefined, section: string, op: string, rowKey: string): Slot {
+  const bare = rowKey.replace(/(\[\d+\])+$/, '')
+  if (bare.includes('.')) {
+    const dotted = slotsFor(manifest, section, op).find((s) => s.key === bare)
+    if (dotted) return dotted
+  }
   const head = /^[A-Za-z_][A-Za-z0-9_]*/.exec(rowKey)?.[0] ?? rowKey
   const nested = rowKey.length > head.length && !/^\[\d+\]$/.test(rowKey.slice(head.length))
   const slot = nested ? undefined : slotsFor(manifest, section, op).find((s) => s.key === head)
@@ -189,7 +225,7 @@ export function compatibleOperators(manifest: Manifest | undefined, section: str
   const ops = operatorsOf(manifest, section) ?? []
   return ops.filter((o) => {
     const name = o.name ?? o.kind ?? ''
-    const slots = slotsFor(manifest, section, name)
+    const slots = slotsFor(manifest, section, name).filter((s) => !s.groupKey)
     if (slots.length === 0) return true
     return slots.some((s) => refusal(s.accept, type) === null)
   })

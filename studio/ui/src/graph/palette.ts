@@ -158,7 +158,7 @@ export function itemsForPort(
       compatible.set(it.section, ok)
     }
     if (!ok.has(it.op)) continue
-    const slot = slotsFor(manifest, it.section, it.op).find((s) => refusal(s.accept, src.type) === null)
+    const slot = slotsFor(manifest, it.section, it.op).find((s) => !s.groupKey && refusal(s.accept, src.type) === null)
     if (!slot) continue
     if (src.producer && !canSee(it.section, nextIndex(model, it.section, base), src.producer.section, src.producer.index, slot.key)) {
       continue

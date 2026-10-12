@@ -13,7 +13,7 @@
 
 import type { Manifest, ManifestOperator, ManifestParam } from '../api.ts'
 import { getIn, parseEdit, prettyJson, sameJson, setIn, stringItems } from './jsonEdit.ts'
-import { stringValue, type JsonNode } from './jsonTree.ts'
+import { fromPlain, stringValue, type JsonNode } from './jsonTree.ts'
 import type { ModelNode } from './model.ts'
 import type { PathSegment } from './nodePath.ts'
 import { sectionInfo } from './requestGraph.ts'
@@ -30,6 +30,7 @@ export type FieldType =
   | 'enumItem' // one-element string array chosen from options
   | 'expression' // multi-line string
   | 'ranges' // [{label,start,end}] date ranges
+  | 'keys' // string array of group key columns (post-test partition_by)
 
 export type FormField = {
   key: string
@@ -44,6 +45,10 @@ export type FormField = {
   // strings: exact item count.
   count?: number
   hint?: string
+  // Choosing the default on an entry that does not have the key leaves
+  // it out (the engine default applies); an entry that already has the
+  // key keeps it. Clearing the field removes it either way.
+  omitDefault?: true
 }
 
 export type FormSection = { title: string; fields: FormField[] }
@@ -65,8 +70,13 @@ export type NodeForm = {
 
 export type Catalog = { manifest?: Manifest; schema?: unknown }
 
+// FormContext is what a form needs from the rest of the request: the
+// group key columns of the node's request frame (in groups order), the
+// options of a post-test's partition_by.
+export type FormContext = { groupKeys?: readonly string[] }
+
 // buildForm returns the inspector form for a node.
-export function buildForm(node: ModelNode, catalog: Catalog = {}): NodeForm {
+export function buildForm(node: ModelNode, catalog: Catalog = {}, ctx: FormContext = {}): NodeForm {
   if (node.kind === 'cohort') {
     return {
       mode: 'handwritten',
@@ -124,7 +134,7 @@ export function buildForm(node: ModelNode, catalog: Catalog = {}): NodeForm {
     return { mode: 'handwritten', ...base, sections }
   }
   if (declared && declared.length > 0) {
-    const fields = declared.map((p) => paramField(p, value, top))
+    const fields = declared.map((p) => refineParam(node.section, op, paramField(p, value, top), ctx))
     sections.push({ title: 'Params', fields })
     addOtherParams(sections, value, fields)
     return { mode: 'generated', ...base, sections }
@@ -160,6 +170,36 @@ export function paramField(p: ManifestParam, value: JsonNode, top: Set<string> |
   if (p.default !== undefined) f.default = p.default
   if (p.enum_values) f.options = p.enum_values
   if (p.exactly_one_of) f.oneOf = p.exactly_one_of
+  return f
+}
+
+// refineParam gives manifest params that need more than their declared
+// type a first-class field: a grouper's `fit` (GROUP_KMEANS,
+// GROUP_QUANTILE) explains global vs within and never writes its
+// default unasked; a post-test's `partition_by` is a list of group key
+// columns.
+function refineParam(section: string, op: string | undefined, f: FormField, ctx: FormContext): FormField {
+  if (section === 'groups' && f.key === 'fit' && f.type === 'enum') {
+    const what = op === 'GROUP_KMEANS' ? 'centroids' : op === 'GROUP_QUANTILE' ? 'cut points' : 'the grouper'
+    return {
+      ...f,
+      omitDefault: true,
+      hint: `global: fit ${what} once over the filtered set. within: refit per bucket of the groupers before this one (a no-op on the first grouper).`,
+    }
+  }
+  if (section === 'post_tests' && f.key === 'partition_by') {
+    const keys = ctx.groupKeys ?? []
+    const implicit = keys.length > 1 ? keys.slice(0, -1).join(', ') : ''
+    return {
+      ...f,
+      type: 'keys',
+      options: [...keys],
+      hint:
+        keys.length === 0
+          ? 'Group key columns to run the test per partition of; the request has no groups.'
+          : `Leading group keys to run the test per partition of. Unset: ${implicit ? `every key but the last (${implicit})` : 'one run (a single grouper)'}; [] = no partition. Same on every post-test.`,
+    }
+  }
   return f
 }
 
@@ -288,6 +328,7 @@ export function fieldText(f: FormField, value: JsonNode): string {
         ? (stringValue(v.items[0]) as string)
         : prettyJson(v)
     case 'strings':
+    case 'keys':
       return v.type === 'array' && v.items.every((x) => x.type === 'string')
         ? v.items.map((x) => stringValue(x) as string).join('\n')
         : prettyJson(v)
@@ -328,6 +369,9 @@ function encodeRaw(f: FormField, text: string, current: JsonNode | undefined): E
       return { value: { type: 'string', raw: JSON.stringify(t) } }
     case 'enumItem':
       return { value: stringItems(current, [t]) }
+    case 'keys':
+      if (t === '[]') return { value: { type: 'array', items: [] } }
+      return { value: stringItems(current, t.split('\n').map((s) => s.trim()).filter((s) => s !== '')) }
     case 'strings': {
       const items = t.split('\n').map((s) => s.trim()).filter((s) => s !== '')
       if (f.count !== undefined && items.length !== f.count) return { error: `needs exactly ${f.count} values` }
@@ -355,6 +399,9 @@ export function applyField(f: FormField, value: JsonNode, text: string): { value
   const enc = encodeField(f, text, current)
   if ('error' in enc) return { value, error: enc.error }
   if (enc.value === current) return { value }
+  if (f.omitDefault && current === undefined && enc.value !== undefined && f.default !== undefined && sameValue(enc.value, fromPlain(f.default))) {
+    return { value }
+  }
   return { value: setIn(value, f.rel, enc.value) }
 }
 

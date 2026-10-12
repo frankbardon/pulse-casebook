@@ -18,7 +18,8 @@ import type { JsonNode } from './jsonTree.ts'
 import { buildModel, emitModel, updateNode, type GraphModel } from './model.ts'
 import { formatPath, frameOf, parsePath, type PathSegment } from './nodePath.ts'
 import { FACET_NODE } from './facetGraph.ts'
-import { emitsType, refusal, slotFor } from './ports.ts'
+import { emitsType, findOperator, refusal, slotFor } from './ports.ts'
+import { groupKeyColumn, PARTITION_PATH, removePartitionItem, wireRefusal, type GroupEntry } from './partition.ts'
 import { canSee, LAYOUT, type ColumnKey, type RequestGraph } from './requestGraph.ts'
 
 // FIT_HANDLE is the source handle of a compose fit's regression; a wire
@@ -27,6 +28,18 @@ export const FIT_HANDLE = 'fit'
 
 // FIT_ROW is the input row a fit binding writes (ATTR_REG_PREDICT `fit`).
 export const FIT_ROW = 'params.fit'
+
+// bindsFit says whether an entry's `params.fit` names a compose fit. Not
+// every `params.fit` does: GROUP_KMEANS / GROUP_QUANTILE take a `fit`
+// enum (global | within: fit centroids / cut points once over the
+// filtered set, or per bucket of the groupers before it), which is a
+// plain param, never a fit binding. Groupers are excluded outright; any
+// other operator whose manifest `fit` param is an enum is too.
+export function bindsFit(section: string, op: string, manifest?: Manifest): boolean {
+  if (section === 'groups') return false
+  const p = findOperator(manifest, section, op)?.params?.find((x) => x.name === 'fit')
+  return p === undefined || p.type !== 'enum'
+}
 
 // Wire is a connection as React Flow reports it.
 export type Wire = {
@@ -59,7 +72,7 @@ export function checkConnection(graph: Pick<RequestGraph, 'nodes'>, wire: Wire, 
   // entry's fit input, and nothing else into that input.
   if (wire.sourceHandle === FIT_HANDLE) {
     if (src.type !== 'op' || src.data.fit === undefined) return { ok: false, reason: 'not a compose fit' }
-    if (rowKey !== FIT_ROW) return { ok: false, reason: `fit ${src.data.fit} binds only a fit input` }
+    if (rowKey !== FIT_ROW || !bindsFit(section, op, ctx.manifest)) return { ok: false, reason: `fit ${src.data.fit} binds only a fit input` }
     if (!frameOf(tgt.id).startsWith('requests[')) return { ok: false, reason: 'only compose slots read fits' }
     return { ok: true, ref: src.data.fit, rowKey }
   }
@@ -95,7 +108,30 @@ export function checkConnection(graph: Pick<RequestGraph, 'nodes'>, wire: Wire, 
   const slot = slotFor(ctx.manifest, section, op, rowKey)
   const why = refusal(slot.accept, type)
   if (why) return { ok: false, reason: `${op} ${slot.key} ${why} (${from})` }
+  if (slot.groupKey) {
+    const keys = groupKeysOfGraph(graph.nodes, frameOf(tgt.id))
+    const at = /\[(\d+)\]$/.exec(rowKey)
+    const refused = wireRefusal(ref, at ? Number(at[1]) : 0, keys)
+    if (refused) return { ok: false, reason: `${op} ${refused}` }
+  }
   return { ok: true, ref, rowKey, ...(type && { sourceType: type }) }
+}
+
+// groupKeysOfGraph lists the group key columns of a request frame from
+// its grouper nodes, in groups order.
+export function groupKeysOfGraph(nodes: RequestGraph['nodes'], frame: string): string[] {
+  const out: string[] = []
+  for (const n of nodes) {
+    if (n.type !== 'op' || n.data.section !== 'groups' || frameOf(n.id) !== frame) continue
+    const at = (k: string) => {
+      const r = n.data.rows.find((x) => x.key === k)
+      return r ? (r.ref ?? r.value) : undefined
+    }
+    const first = at('fields[0]')
+    const g: GroupEntry = { type: n.data.op, field: at('field'), vector: at('vector'), ...(first !== undefined && { fields: [first] }) }
+    out.push(groupKeyColumn(g))
+  }
+  return out
 }
 
 // stageOf is the chain stage index of a node id (`stages[1].request.…`).
@@ -129,12 +165,17 @@ export function connectWire(model: GraphModel, id: string, rowKey: string, ref: 
 }
 
 // disconnectWire clears the value at rowKey: the member is removed, or
-// the list item spliced out.
+// the list item spliced out. Removing a post-test's last partition key
+// removes partition_by (back to the implicit default, not `[]` = no
+// partition), and a `params` object that leaves empty goes too.
 export function disconnectWire(model: GraphModel, id: string, rowKey: string): GraphModel {
   const node = model.nodes.get(id)
   if (!node) throw new Error(`model has no node ${id}`)
   const rel = parsePath(rowKey)
   if (getIn(node.value, rel) === undefined) return model
+  if (rel.length === 3 && rel[0] === PARTITION_PATH[0] && rel[1] === PARTITION_PATH[1] && typeof rel[2] === 'number') {
+    return updateNode(model, id, removePartitionItem(node.value, rel[2]))
+  }
   return updateNode(model, id, setIn(node.value, rel, undefined))
 }
 

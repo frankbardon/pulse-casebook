@@ -52,6 +52,7 @@ import {
 } from './wiring.ts'
 import { CohortNodeView, FacetNodeView, LaneNodeView, OpNodeView, RawNodeView, type LaneNode } from './nodes.tsx'
 import { Inspector } from './Inspector.tsx'
+import { groupKeysOfModel } from './partition.ts'
 import { Palette } from './Palette.tsx'
 import { itemsForPort, PALETTE_MIME, paletteItems, placeNode, type PaletteItem, type PortSource } from './palette.ts'
 import { emitsType } from './ports.ts'
@@ -739,6 +740,13 @@ function RequestGraphView({ path, kind, catalog }: { path: string; kind: ViewKin
     return () => window.removeEventListener('beforeunload', warn)
   }, [dirty])
 
+  // The selected node's request-frame group keys (post-test partition_by
+  // options in the inspector).
+  const selectedGroupKeys = useMemo(
+    () => (doc && selected !== null ? groupKeysOfModel(doc.model, frameOf(selected)) : undefined),
+    [doc, selected],
+  )
+
   if (error) return <Empty title="Cannot open" body={error} />
   if (graph === null || doc === null) return <Empty title="Loading…" body={path} />
   if (typeof graph === 'string') return <Empty title="Cannot open" body={graph} />
@@ -907,6 +915,7 @@ function RequestGraphView({ path, kind, catalog }: { path: string; kind: ViewKin
             onChange={(v) => edit(node.id, v)}
             onClose={() => setSelected(null)}
             onDelete={deletable(doc.model, node.id) ? () => remove([node.id], []) : undefined}
+            groupKeys={selectedGroupKeys}
           />
         )}
       </div>

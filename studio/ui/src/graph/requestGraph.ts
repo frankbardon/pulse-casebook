@@ -14,6 +14,7 @@ import type { Edge, Node } from '@xyflow/react'
 import type { CohortField, Manifest, ManifestOperator } from '../api.ts'
 import { formatPath, type PathSegment } from './nodePath.ts'
 import { describeAccept, slotFor, slotsFor } from './ports.ts'
+import { groupKeyColumn, type GroupEntry } from './partition.ts'
 
 export type ColumnKey =
   | 'source'
@@ -207,6 +208,13 @@ export function hasPreview(n: GraphNode): boolean {
 // or label references.
 const REF_KEYS = new Set(['field', 'split_by', 'rows', 'cols', 'predictors', 'target', 'fields', 'vector'])
 
+// PARAM_REF_KEYS are the `params` members of a section whose values are
+// field references: a post-test's partition_by (group key columns).
+// Not `params.fit`: that binds a compose fit by name (composeGraph.ts).
+const PARAM_REF_KEYS: Readonly<Record<string, ReadonlySet<string>>> = {
+  post_tests: new Set(['partition_by']),
+}
+
 // Layout constants (px). Heights estimate the rendered node so columns
 // stack without overlap; React Flow measures the real size.
 export const LAYOUT = {
@@ -239,6 +247,9 @@ export function buildRequestGraph(req: unknown, opts: BuildOptions = {}): Reques
   const ops: OpNode[] = []
   const raws: RawNode[] = []
   const producers = new Map<string, Producer[]>()
+  // Group key columns, in groups order (post-test partition_by names a
+  // leading prefix of them).
+  const groupKeys = Array.isArray(doc.groups) ? doc.groups.filter(isObject).map((g) => groupKeyColumn(g as GroupEntry)) : []
 
   // Pass 1: op and raw nodes, producer registry.
   for (const [key, value] of Object.entries(doc)) {
@@ -268,8 +279,9 @@ export function buildRequestGraph(req: unknown, opts: BuildOptions = {}): Reques
       if (typeof opVal === 'string' && spec.opKey) omit.add(spec.opKey)
       if (name !== undefined && spec.nameKey) omit.add(spec.nameKey)
       const rows: ParamRow[] = []
-      for (const [k, v] of Object.entries(e)) if (!omit.has(k)) flatten(v, [k], rows)
-      if (opts.manifest) addPorts(opts.manifest, key, op, e, rows)
+      const paramRefs = PARAM_REF_KEYS[key]
+      for (const [k, v] of Object.entries(e)) if (!omit.has(k)) flatten(v, [k], rows, paramRefs)
+      if (opts.manifest) addPorts(opts.manifest, key, op, e, rows, groupKeys)
       const list = opts.manifest && spec.catalog ? spec.catalog(opts.manifest) : undefined
       const opKnown =
         typeof opVal === 'string' && list ? list.some((o) => (o.name ?? o.kind) === opVal) : undefined
@@ -356,6 +368,8 @@ export function buildRequestGraph(req: unknown, opts: BuildOptions = {}): Reques
 // sections that see themselves. Vector refs only see vectors.
 export function canSee(section: string, index: number, producerSection: string, producerIndex: number, role = ''): boolean {
   if (role === 'vector') return producerSection === 'vectors'
+  // partition_by names group key columns: what the groupers see.
+  if (role === 'partition_by') return ROW_LEVEL.includes(producerSection)
   const spec = SECTION_BY_KEY.get(section)
   if (!spec) return false
   if (spec.sees.includes(producerSection)) return true
@@ -364,16 +378,25 @@ export function canSee(section: string, index: number, producerSection: string, 
 
 // addPorts appends rows for the field inputs the manifest declares but
 // the entry does not fill (an empty required input, the next slot of a
-// list input) and notes each ref row's type rule for its tooltip.
-function addPorts(manifest: Manifest, section: string, op: string, e: Record<string, unknown>, rows: ParamRow[]): void {
+// list input) and notes each ref row's type rule for its tooltip. A
+// post-test's partition_by gets an add row while the request has group
+// keys it does not list yet.
+function addPorts(manifest: Manifest, section: string, op: string, e: Record<string, unknown>, rows: ParamRow[], groupKeys: readonly string[]): void {
   for (const row of rows) {
     if (row.ref === undefined) continue
     const slot = slotFor(manifest, section, op, row.key)
-    if (slot.accept.types || slot.accept.kinds) row.accepts = describeAccept(slot)
+    if (slot.accept.types || slot.accept.kinds || slot.groupKey) row.accepts = describeAccept(slot)
   }
   for (const slot of slotsFor(manifest, section, op)) {
+    const v = plainAt(e, slot.key)
+    if (slot.groupKey) {
+      const list = v === undefined || v === null ? [] : v
+      if (Array.isArray(list) && list.every((x) => typeof x === 'string') && list.length < groupKeys.length) {
+        rows.push({ key: formatPath([...slot.key.split('.'), list.length]), value: '', port: 'append', accepts: describeAccept(slot) })
+      }
+      continue
+    }
     if (!slot.required) continue
-    const v = e[slot.key]
     const accepts = slot.accept.types || slot.accept.kinds ? { accepts: describeAccept(slot) } : {}
     if (!slot.list) {
       if (v === undefined) rows.push({ key: slot.key, value: '', port: 'empty', ...accepts })
@@ -382,6 +405,13 @@ function addPorts(manifest: Manifest, section: string, op: string, e: Record<str
       rows.push({ key: formatPath([slot.key, n]), value: '', port: 'append', ...accepts })
     }
   }
+}
+
+// plainAt reads a dotted key (`params.partition_by`) from an entry.
+function plainAt(e: Record<string, unknown>, key: string): unknown {
+  let cur: unknown = e
+  for (const k of key.split('.')) cur = isObject(cur) ? cur[k] : undefined
+  return cur
 }
 
 function resolve(
@@ -396,10 +426,11 @@ function resolve(
   if (role === 'vector') {
     return findLast(producers.get('vectors') ?? [], (p) => p.name === ref)?.id ?? null
   }
-  // Downstream-most visible producer first.
+  // Downstream-most visible producer first. partition_by names group
+  // key columns, which resolve where the groupers' fields do.
   const visible: Producer[] = []
-  for (const s of spec.sees) visible.push(...(producers.get(s) ?? []))
-  if (spec.seesSelf) visible.push(...(producers.get(spec.key) ?? []).filter((p) => p.index < index))
+  for (const s of role === 'partition_by' ? ROW_LEVEL : spec.sees) visible.push(...(producers.get(s) ?? []))
+  if (spec.seesSelf && role !== 'partition_by') visible.push(...(producers.get(spec.key) ?? []).filter((p) => p.index < index))
   const exact = findLast(visible, (p) => p.name === ref)
   if (exact) return exact.id
   if (fieldsKnown && knownNames.has(ref)) return 'cohort'
@@ -423,23 +454,26 @@ function edge(source: string, sourceHandle: string, target: string, role: string
 
 // flatten turns an entry value into compact body rows, descending into
 // objects and arrays of objects up to three levels.
-function flatten(v: unknown, segs: PathSegment[], rows: ParamRow[]): void {
+function flatten(v: unknown, segs: PathSegment[], rows: ParamRow[], paramRefs?: ReadonlySet<string>): void {
   const key = formatPath(segs)
-  const isRef = segs[0] !== 'params' && REF_KEYS.has(lastNameOf(segs))
+  const isRef =
+    segs[0] !== 'params'
+      ? REF_KEYS.has(lastNameOf(segs))
+      : !!paramRefs?.has(segs[1] as string) && (segs.length === 2 || (segs.length === 3 && typeof segs[2] === 'number'))
   if (Array.isArray(v)) {
     if (v.every(isScalar)) {
-      if (isRef && v.length > 0) v.forEach((item, i) => flatten(item, [...segs, i], rows))
+      if (isRef && v.length > 0) v.forEach((item, i) => flatten(item, [...segs, i], rows, paramRefs))
       else rows.push({ key, value: clip(`[${v.map(display).join(', ')}]`) })
       return
     }
-    if (segs.length < 3) v.forEach((item, i) => flatten(item, [...segs, i], rows))
+    if (segs.length < 3) v.forEach((item, i) => flatten(item, [...segs, i], rows, paramRefs))
     else rows.push({ key, value: clip(JSON.stringify(v)) })
     return
   }
   if (isObject(v)) {
     const entries = Object.entries(v)
     if (entries.length === 0 || segs.length >= 3) rows.push({ key, value: clip(JSON.stringify(v)) })
-    else for (const [k, child] of entries) flatten(child, [...segs, k], rows)
+    else for (const [k, child] of entries) flatten(child, [...segs, k], rows, paramRefs)
     return
   }
   const row: ParamRow = { key, value: clip(display(v)) }

@@ -30,7 +30,7 @@ import {
   type GraphEdge,
   type GraphNode,
 } from './requestGraph.ts'
-import { FIT_HANDLE, FIT_ROW } from './wiring.ts'
+import { bindsFit, FIT_HANDLE, FIT_ROW } from './wiring.ts'
 
 export const ROOT_LANE = '(compose)'
 
@@ -166,9 +166,12 @@ export function buildComposeLayout(lanes: Lane[], nodes: GraphNode[], edges: Gra
 }
 
 // bindFit marks a slot entry's `params.fit` row as a fit binding and
-// wires it from the fit's regression; an operator whose manifest requires
+// wires it from the fit's regression (never a grouper's fit enum, see
+// wiring.bindsFit); an operator whose manifest requires
 // a `fit` param and has none gets an empty fit input.
 function bindFit(n: GraphNode & { type: 'op' }, manifest: Manifest | undefined, fits: Map<string, string>, edges: GraphEdge[]): void {
+  // A grouper's params.fit is its global | within enum, not a binding.
+  if (!bindsFit(n.data.section, n.data.op, manifest)) return
   const row = n.data.rows.find((r) => r.key === FIT_ROW)
   if (row) {
     if (row.port) return

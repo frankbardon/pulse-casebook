@@ -27,7 +27,7 @@ describe('slotsFor', () => {
     expect(slotsFor(manifest, 'tests', 'TEST_WELCH').map((s) => s.key)).toEqual(['field', 'split_by'])
     expect(slotsFor(manifest, 'tests', 'TEST_CHISQ').map((s) => s.key)).toEqual(['rows', 'cols'])
     expect(slotsFor(manifest, 'tests', 'TEST_PEARSON_R').map((s) => s.key)).toEqual(['field', 'field2'])
-    expect(slotsFor(manifest, 'post_tests', 'TEST_TUKEY_HSD').map((s) => s.key)).toEqual(['field', 'split_by'])
+    expect(slotsFor(manifest, 'post_tests', 'TEST_TUKEY_HSD').map((s) => s.key)).toEqual(['field', 'split_by', 'params.partition_by'])
   })
 
   it('declares regression target and predictors, matrix fields', () => {

@@ -11,9 +11,10 @@
 
 import type { CohortField, ExplainStep, Manifest, PredictIssue } from '../api.ts'
 import { getIn } from './jsonEdit.ts'
-import { stringValue } from './jsonTree.ts'
+import { stringValue, type JsonNode } from './jsonTree.ts'
 import type { GraphModel } from './model.ts'
-import { isPathPrefix } from './nodePath.ts'
+import { frameOf, isPathPrefix, parsePath } from './nodePath.ts'
+import { groupKeysOfModel, partitionDepth, partitionProblem, PARTITION_KEY, PARTITION_PATH } from './partition.ts'
 import { chainRefusal } from './chainRules.ts'
 import { buildForm, formProblems, type Catalog } from './paramForms.ts'
 import { refusal, slotsFor } from './ports.ts'
@@ -41,6 +42,12 @@ export function clientIssues(model: GraphModel, catalog: Catalog, cohortFields?:
   if (!manifest) return []
   const types = new Map(cohortFields?.map((f) => [f.name, f.type]) ?? [])
   const out: Issue[] = []
+  const frameKeys = new Map<string, string[]>()
+  const keysOf = (frame: string) => {
+    let k = frameKeys.get(frame)
+    if (!k) frameKeys.set(frame, (k = groupKeysOfModel(model, frame)))
+    return k
+  }
   for (const node of model.nodes.values()) {
     if (node.kind !== 'entry' || node.value.type !== 'object') continue
     const form = buildForm(node, catalog)
@@ -70,9 +77,10 @@ export function clientIssues(model: GraphModel, catalog: Catalog, cohortFields?:
     for (const p of form.mode === 'generated' ? formProblems(form, node.value) : []) {
       out.push({ path: node.id, severity: 'error', code: 'MISSING_PARAM', message: p, source: 'client' })
     }
+    if (node.section === 'post_tests') out.push(...partitionIssues(model, node.id, node.value, keysOf))
     if (types.size === 0) continue
     for (const slot of slotsFor(manifest, node.section, op)) {
-      const v = getIn(node.value, [slot.key])
+      const v = getIn(node.value, parsePath(slot.key))
       const refs: [string, string][] = []
       if (v?.type === 'string') refs.push([slot.key, stringValue(v) ?? ''])
       else if (v?.type === 'array') v.items.forEach((x, i) => x.type === 'string' && refs.push([`${slot.key}[${i}]`, stringValue(x) ?? '']))
@@ -92,6 +100,42 @@ export function clientIssues(model: GraphModel, catalog: Catalog, cohortFields?:
     }
   }
   return out
+}
+
+// partitionIssues checks a post-test's params.partition_by against the
+// request's group key columns (pulse PULSE_TEST_PARTITION_INVALID): a
+// string list, each name a group key column, a leading prefix, and the
+// same depth as the request's first post-test.
+function partitionIssues(model: GraphModel, id: string, value: JsonNode, keysOf: (frame: string) => string[]): Issue[] {
+  const frame = frameOf(id)
+  const keys = keysOf(frame)
+  const v = getIn(value, PARTITION_PATH)
+  const p = partitionProblem(v, keys)
+  const issue = (path: string, message: string, current?: string): Issue => ({
+    path,
+    severity: 'error',
+    code: 'PARTITION_BY',
+    message,
+    ...(current !== undefined && { current }),
+    source: 'client',
+  })
+  if (p) {
+    const at = p.index !== undefined ? `${id}.${PARTITION_KEY}[${p.index}]` : `${id}.${PARTITION_KEY}`
+    const item = p.index !== undefined && v?.type === 'array' ? stringValue(v.items[p.index]) : undefined
+    return [issue(at, p.message, item)]
+  }
+  // Mixed depth: compare with the frame's first post-test.
+  const first = [...model.nodes.values()].find((n) => n.kind === 'entry' && n.section === 'post_tests' && frameOf(n.id) === frame)
+  if (!first || first.id === id || partitionProblem(getIn(first.value, PARTITION_PATH), keys)) return []
+  const mine = partitionDepth(v, keys.length)
+  const theirs = partitionDepth(getIn(first.value, PARTITION_PATH), keys.length)
+  if (mine === theirs) return []
+  return [
+    issue(
+      v === undefined ? id : `${id}.${PARTITION_KEY}`,
+      `partitions by ${mine} group key(s) and ${first.id} by ${theirs}: every post-test of one request must partition alike`,
+    ),
+  ]
 }
 
 // closestOperators proposes up to three manifest operators of the
@@ -147,7 +191,8 @@ export type Attached = {
 
 // attach groups client issues, engine issues and explain steps by node.
 // An engine issue repeating a client unknown-operator error (the engine's
-// "unknown test type" for the same node) is dropped.
+// "unknown test type" for the same node), or a client partition_by error
+// (PULSE_TEST_PARTITION_INVALID), is dropped.
 export function attach(nodeIds: readonly string[], client: Issue[], engine: Issue[], steps: ExplainStep[]): Attached {
   const byNode = new Map<string, NodeValidation>()
   const request: Issue[] = []
@@ -157,6 +202,9 @@ export function attach(nodeIds: readonly string[], client: Issue[], engine: Issu
     return v
   }
   const unknownOp = new Map<string, string>()
+  // Nodes with a client partition_by finding: the engine's
+  // PULSE_TEST_PARTITION_INVALID for the same post-test repeats it.
+  const partitioned = new Set<string>()
   const add = (is: Issue) => {
     const id = ownerOf(is.path, nodeIds)
     if (id === undefined) {
@@ -164,6 +212,8 @@ export function attach(nodeIds: readonly string[], client: Issue[], engine: Issu
       return
     }
     if (is.source === 'client' && is.code === 'UNKNOWN_OPERATOR' && typeof is.current === 'string') unknownOp.set(id, is.current)
+    if (is.source === 'client' && is.code === 'PARTITION_BY') partitioned.add(id)
+    if (is.source === 'engine' && is.code === 'PULSE_TEST_PARTITION_INVALID' && partitioned.has(id)) return
     if (is.source === 'engine' && is.severity !== 'hint') {
       const op = unknownOp.get(id)
       if (op !== undefined && is.message.includes(op)) return
