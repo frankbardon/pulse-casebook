@@ -49,6 +49,9 @@ Every film that covers a category says in its narration that Pulse adds more of 
   - `FEAT_BUCKETIZE` emits a bucket index, not a label.
   - The limits preflight refuses only certain findings (`MaxEstimatedMemory`, `MaxMatrixDim`). `MaxGroups` is only a possible finding.
   - Slot order: `features → filterers → attributes → groups → aggregations → windows → sort`.
+  - `ATTR_ZSCORE` and `ATTR_TSCORE` use the population mean and SD (√(M2/Σw)). A null input scores 0 for z-score and 50 for t-score, not null. Normalized, percentile, date-part, code-in, set-has and popcount also map null to 0. Regression and multivariate attributes return null.
+  - Attributes run in declared order and can read earlier attribute labels (`attribute_two_pass_order_test.go`). The `attribute-composition` skill's "no in-slot chaining" rule is stale. Code-in and the multivariate scores read source columns only.
+  - An unguarded null in `ATTR_FORMULA` arithmetic raises `PROCESSING_RUNTIME`, which fails the request.
 - Cohorts, samples, p-values and correlations are illustrative. Each page says so in its note.
 
 ## 4. Series order

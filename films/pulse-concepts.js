@@ -28,7 +28,7 @@ const BOUNDS = [18, 35, 50, 65];
 const bucket = v => { let i = 0; while (i < BOUNDS.length && v > BOUNDS[i]) i++; return i; };   // b[i-1] < v <= b[i]
 const incVals = KEPT.map(r => r.income).filter(v => v != null);
 const MEAN = incVals.reduce((a, b) => a + b, 0) / incVals.length;
-const SD = Math.sqrt(incVals.reduce((a, b) => a + (b - MEAN) ** 2, 0) / (incVals.length - 1));
+const SD = Math.sqrt(incVals.reduce((a, b) => a + (b - MEAN) ** 2, 0) / incVals.length);   // population sd, as ATTR_ZSCORE
 
 /* ---------- table helper ---------- */
 const COLS = { id: { l: '#', w: 40 }, region: { l: 'region', w: 96, t: 'categorical_u8' }, age: { l: 'age', w: 60, t: 'u8' },
@@ -216,9 +216,9 @@ function sAttributes(t) {
   const p1 = i => 3.2 + i * 0.2;
   let n = 0, mean = 0, m2 = 0;
   KEPT.forEach((r, i) => { if (t >= p1(i) + 0.1 && r.income != null) { n++; const d = r.income - mean; mean += d / n; m2 += d * (r.income - mean); } });
-  const sd = n > 1 ? Math.sqrt(m2 / (n - 1)) : 0;
+  const sd = n > 0 ? Math.sqrt(m2 / n) : 0;
   const sen = { k: 'senior', l: 'senior', w: 84, color: C.violet, hc: C.violet, ha: seg(t, 0.6, 1.0), ca: i => seg(t, 0.8 + i * 0.16, 1.1 + i * 0.16), val: r => r.age >= 50 ? '1' : '0' };
-  const z = { k: 'z', l: 'z_income', w: 104, color: C.violet, hc: C.violet, ha: seg(t, 5.4, 5.8), ca: i => seg(t, 5.6 + i * 0.2, 5.9 + i * 0.2), val: r => r.income == null ? 'null' : ((r.income - MEAN) / SD >= 0 ? '+' : '') + ((r.income - MEAN) / SD).toFixed(2) };
+  const z = { k: 'z', l: 'z_income', w: 104, color: C.violet, hc: C.violet, ha: seg(t, 5.4, 5.8), ca: i => seg(t, 5.6 + i * 0.2, 5.9 + i * 0.2), val: r => r.income == null ? '0.00' : ((r.income - MEAN) / SD >= 0 ? '+' : '') + ((r.income - MEAN) / SD).toFixed(2) };   // null input → 0
   const cols = [col('id'), col('region'), col('age'), col('income'), sen, z];
   const rows = KEPT.map((r, i) => ({ r, y: rowY(140, i, false), tint: t >= p1(i) && t < p1(i) + 0.3 ? 'teal' : null }));
   table(70, 150, cols, rows);
@@ -232,7 +232,7 @@ function sAttributes(t) {
     card(640, 240, 576, 150, C.violet);
     CAP('TWO-PASS · STATISTICS FIRST, THEN SCORES', 662, 268, { color: C.violet });
     M('ATTR_ZSCORE', 662, 300, { size: 14, color: C.violet, weight: 600 }); M('z_income = (income − mean) / sd', 790, 300, { size: 14, color: C.ink });
-    M('pass 1', 662, 334, { size: 12.5, color: t < 5.4 ? C.teal : C.muted }); M(`n ${n}   mean ${n ? mean.toFixed(2) : '—'}   sd ${n > 1 ? sd.toFixed(2) : '—'}`, 730, 334, { size: 14, color: C.ink });
+    M('pass 1', 662, 334, { size: 12.5, color: t < 5.4 ? C.teal : C.muted }); M(`n ${n}   mean ${n ? mean.toFixed(2) : '—'}   sd ${n > 0 ? sd.toFixed(2) : '—'}`, 730, 334, { size: 14, color: C.ink });
     M('pass 2', 662, 366, { size: 12.5, color: t >= 5.4 ? C.teal : C.faint }); M('score every row against those statistics', 730, 366, { size: 12.5 });
   });
   A(seg(t, 7.6, 8.0), () => {
