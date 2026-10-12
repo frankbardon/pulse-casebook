@@ -228,7 +228,9 @@ test('a changed feature_set_digest reloads the catalog and the palette', async (
     body.manifest.tests.push({ name: 'TEST_SIMULATED', description: 'A simulated engine operator.', requires: ['Field'] })
     await route.fulfill({ json: body })
   })
-  await page.evaluate(() => window.dispatchEvent(new Event('focus')))
+  // The e2e project is Node-typed (no DOM lib): in the browser globalThis is
+  // the window, so dispatch through it as a plain EventTarget.
+  await page.evaluate(() => (globalThis as unknown as EventTarget).dispatchEvent(new Event('focus')))
   await expect(palette.locator('[data-op="TEST_SIMULATED"]')).toBeVisible()
 })
 
