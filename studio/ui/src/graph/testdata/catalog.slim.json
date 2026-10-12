@@ -1,0 +1,2833 @@
+{
+ "_comment": "Trimmed /api/catalog (pulse v1.0.0-alpha.9.0.20261012142608-897342c4948f): operator names + params, and schema property names. Regenerate from a running studio when the engine changes.",
+ "manifest": {
+  "components": {
+   "aggregators": [
+    {
+     "name": "AGG_AVERAGE",
+     "params": null
+    },
+    {
+     "name": "AGG_CI_LOWER",
+     "params": [
+      {
+       "default": 0.95,
+       "name": "confidence",
+       "required": false,
+       "type": "float"
+      },
+      {
+       "default": "normal",
+       "name": "method",
+       "required": false,
+       "type": "string"
+      }
+     ]
+    },
+    {
+     "name": "AGG_CI_UPPER",
+     "params": [
+      {
+       "default": 0.95,
+       "name": "confidence",
+       "required": false,
+       "type": "float"
+      },
+      {
+       "default": "normal",
+       "name": "method",
+       "required": false,
+       "type": "string"
+      }
+     ]
+    },
+    {
+     "name": "AGG_COUNT",
+     "params": null
+    },
+    {
+     "name": "AGG_DISTINCT_COUNT",
+     "params": null
+    },
+    {
+     "name": "AGG_DISTINCT_SUM",
+     "params": [
+      {
+       "name": "distinct_by",
+       "required": true,
+       "type": "string"
+      }
+     ]
+    },
+    {
+     "name": "AGG_FREQUENCY",
+     "params": [
+      {
+       "name": "value",
+       "required": true,
+       "type": "string"
+      }
+     ]
+    },
+    {
+     "name": "AGG_KURTOSIS",
+     "params": null
+    },
+    {
+     "name": "AGG_MAE",
+     "params": [
+      {
+       "field_filter": "numeric",
+       "name": "prediction_field",
+       "required": true,
+       "type": "field"
+      }
+     ]
+    },
+    {
+     "name": "AGG_MAPE",
+     "params": [
+      {
+       "field_filter": "numeric",
+       "name": "prediction_field",
+       "required": true,
+       "type": "field"
+      }
+     ]
+    },
+    {
+     "name": "AGG_MAX",
+     "params": null
+    },
+    {
+     "name": "AGG_MEDIAN",
+     "params": null
+    },
+    {
+     "name": "AGG_MIN",
+     "params": null
+    },
+    {
+     "name": "AGG_MODE",
+     "params": null
+    },
+    {
+     "name": "AGG_MODE_COUNT",
+     "params": null
+    },
+    {
+     "name": "AGG_NULL_COUNT",
+     "params": null
+    },
+    {
+     "name": "AGG_PERCENTILE",
+     "params": [
+      {
+       "name": "percentile",
+       "required": true,
+       "type": "float"
+      }
+     ]
+    },
+    {
+     "name": "AGG_RANGE",
+     "params": null
+    },
+    {
+     "name": "AGG_RATIO",
+     "params": [
+      {
+       "field_filter": "any",
+       "name": "numerator_field",
+       "required": true,
+       "type": "field"
+      },
+      {
+       "field_filter": "any",
+       "name": "denominator_field",
+       "required": true,
+       "type": "field"
+      }
+     ]
+    },
+    {
+     "name": "AGG_RMSE",
+     "params": [
+      {
+       "field_filter": "numeric",
+       "name": "prediction_field",
+       "required": true,
+       "type": "field"
+      }
+     ]
+    },
+    {
+     "name": "AGG_SET_CARDINALITY_AVG",
+     "params": null
+    },
+    {
+     "name": "AGG_SET_CARDINALITY_SUM",
+     "params": null
+    },
+    {
+     "name": "AGG_SET_DISTINCT_VALUES",
+     "params": null
+    },
+    {
+     "name": "AGG_SET_FREQUENCY",
+     "params": null
+    },
+    {
+     "name": "AGG_SET_INTERSECTION",
+     "params": null
+    },
+    {
+     "name": "AGG_SET_UNION",
+     "params": null
+    },
+    {
+     "name": "AGG_SKEWNESS",
+     "params": null
+    },
+    {
+     "name": "AGG_STDDEV",
+     "params": null
+    },
+    {
+     "name": "AGG_SUM",
+     "params": null
+    },
+    {
+     "name": "AGG_VARIANCE",
+     "params": null
+    },
+    {
+     "name": "AGG_VEC_MEAN",
+     "params": [
+      {
+       "name": "labels",
+       "required": false,
+       "type": "list"
+      },
+      {
+       "name": "expand",
+       "required": false,
+       "type": "bool"
+      }
+     ]
+    },
+    {
+     "name": "AGG_VEC_SUM",
+     "params": [
+      {
+       "name": "labels",
+       "required": false,
+       "type": "list"
+      },
+      {
+       "name": "expand",
+       "required": false,
+       "type": "bool"
+      }
+     ]
+    },
+    {
+     "name": "AGG_WEIGHTED_MEAN",
+     "params": [
+      {
+       "name": "weight_field",
+       "required": false,
+       "type": "string"
+      }
+     ]
+    },
+    {
+     "name": "AGG_WELFORD",
+     "params": null
+    },
+    {
+     "name": "AGG_ZSCORE",
+     "params": null
+    }
+   ],
+   "attributes": [
+    {
+     "name": "ATTR_CODE_IN",
+     "params": [
+      {
+       "name": "codes",
+       "required": true,
+       "type": "list"
+      }
+     ]
+    },
+    {
+     "name": "ATTR_DATE_PART",
+     "params": [
+      {
+       "enum_values": [
+        "day",
+        "hour",
+        "month",
+        "month_day",
+        "year",
+        "year_month",
+        "year_month_day"
+       ],
+       "name": "part",
+       "required": true,
+       "type": "enum"
+      }
+     ]
+    },
+    {
+     "name": "ATTR_FACTOR_SCORE",
+     "params": [
+      {
+       "name": "factor",
+       "required": true,
+       "type": "int"
+      },
+      {
+       "default": "regression",
+       "enum_values": [
+        "regression",
+        "bartlett"
+       ],
+       "name": "method",
+       "required": false,
+       "type": "enum"
+      },
+      {
+       "default": "kaiser",
+       "name": "factors",
+       "required": false,
+       "type": "any"
+      },
+      {
+       "default": "minres",
+       "enum_values": [
+        "minres",
+        "principal_axis",
+        "ml"
+       ],
+       "name": "extraction",
+       "required": false,
+       "type": "enum"
+      },
+      {
+       "default": "none",
+       "enum_values": [
+        "none",
+        "varimax",
+        "promax",
+        "oblimin"
+       ],
+       "name": "rotation",
+       "required": false,
+       "type": "enum"
+      },
+      {
+       "default": 4,
+       "name": "kappa",
+       "required": false,
+       "type": "float"
+      },
+      {
+       "default": 0,
+       "name": "gamma",
+       "required": false,
+       "type": "float"
+      },
+      {
+       "default": "filtered",
+       "name": "fit_on",
+       "required": false,
+       "type": "any"
+      },
+      {
+       "default": "listwise",
+       "enum_values": [
+        "listwise"
+       ],
+       "name": "missing",
+       "required": false,
+       "type": "enum"
+      }
+     ]
+    },
+    {
+     "name": "ATTR_FORMULA",
+     "params": null
+    },
+    {
+     "name": "ATTR_MAHALANOBIS",
+     "params": [
+      {
+       "default": "d2",
+       "enum_values": [
+        "d2",
+        "p"
+       ],
+       "name": "output",
+       "required": false,
+       "type": "enum"
+      },
+      {
+       "default": "filtered",
+       "name": "fit_on",
+       "required": false,
+       "type": "any"
+      },
+      {
+       "default": "listwise",
+       "enum_values": [
+        "listwise"
+       ],
+       "name": "missing",
+       "required": false,
+       "type": "enum"
+      }
+     ]
+    },
+    {
+     "name": "ATTR_NORMALIZED",
+     "params": null
+    },
+    {
+     "name": "ATTR_PC_SCORE",
+     "params": [
+      {
+       "name": "component",
+       "required": true,
+       "type": "int"
+      },
+      {
+       "default": "correlation",
+       "enum_values": [
+        "correlation",
+        "covariance"
+       ],
+       "name": "on",
+       "required": false,
+       "type": "enum"
+      },
+      {
+       "default": "none",
+       "enum_values": [
+        "none",
+        "varimax"
+       ],
+       "name": "rotation",
+       "required": false,
+       "type": "enum"
+      },
+      {
+       "name": "components",
+       "required": false,
+       "type": "int"
+      },
+      {
+       "default": "filtered",
+       "name": "fit_on",
+       "required": false,
+       "type": "any"
+      },
+      {
+       "default": "listwise",
+       "enum_values": [
+        "listwise"
+       ],
+       "name": "missing",
+       "required": false,
+       "type": "enum"
+      }
+     ]
+    },
+    {
+     "name": "ATTR_PERCENTILE",
+     "params": null
+    },
+    {
+     "name": "ATTR_PROFILE_SIMILARITY",
+     "params": [
+      {
+       "enum_values": [
+        "cosine",
+        "correlation",
+        "jaccard",
+        "dice",
+        "overlap"
+       ],
+       "name": "metric",
+       "required": false,
+       "type": "enum"
+      },
+      {
+       "name": "reference",
+       "required": true,
+       "type": "any"
+      },
+      {
+       "default": 1,
+       "name": "min_valid",
+       "required": false,
+       "type": "int"
+      },
+      {
+       "name": "labels",
+       "required": false,
+       "type": "list"
+      }
+     ]
+    },
+    {
+     "name": "ATTR_REG_FITTED",
+     "params": null
+    },
+    {
+     "name": "ATTR_REG_LEVERAGE",
+     "params": null
+    },
+    {
+     "name": "ATTR_REG_PREDICT",
+     "params": [
+      {
+       "name": "fit",
+       "required": true,
+       "type": "string"
+      },
+      {
+       "name": "terms",
+       "required": false,
+       "type": "list"
+      },
+      {
+       "default": "response",
+       "enum_values": [
+        "response",
+        "link"
+       ],
+       "name": "scale",
+       "required": false,
+       "type": "enum"
+      },
+      {
+       "default": "point",
+       "enum_values": [
+        "point",
+        "lower",
+        "upper"
+       ],
+       "name": "bound",
+       "required": false,
+       "type": "enum"
+      }
+     ]
+    },
+    {
+     "name": "ATTR_REG_RESIDUAL",
+     "params": null
+    },
+    {
+     "name": "ATTR_SCALE_SCORE",
+     "params": [
+      {
+       "default": "mean",
+       "enum_values": [
+        "mean",
+        "sum"
+       ],
+       "name": "stat",
+       "required": false,
+       "type": "enum"
+      },
+      {
+       "name": "min_valid",
+       "required": false,
+       "type": "int"
+      },
+      {
+       "name": "reverse",
+       "required": false,
+       "type": "list"
+      },
+      {
+       "name": "scale_min",
+       "required": false,
+       "type": "float"
+      },
+      {
+       "name": "scale_max",
+       "required": false,
+       "type": "float"
+      }
+     ]
+    },
+    {
+     "name": "ATTR_SET_HAS",
+     "params": [
+      {
+       "name": "label",
+       "required": true,
+       "type": "string"
+      }
+     ]
+    },
+    {
+     "name": "ATTR_SET_POPCOUNT",
+     "params": null
+    },
+    {
+     "name": "ATTR_TSCORE",
+     "params": null
+    },
+    {
+     "name": "ATTR_VEC_DISTANCE",
+     "params": [
+      {
+       "enum_values": [
+        "euclidean",
+        "sq_euclidean",
+        "manhattan",
+        "chebyshev",
+        "cosine",
+        "hellinger",
+        "aitchison",
+        "hamming",
+        "std_euclidean",
+        "mahalanobis"
+       ],
+       "name": "metric",
+       "required": false,
+       "type": "enum"
+      },
+      {
+       "name": "reference",
+       "required": true,
+       "type": "any"
+      },
+      {
+       "default": 1,
+       "name": "min_valid",
+       "required": false,
+       "type": "int"
+      },
+      {
+       "name": "labels",
+       "required": false,
+       "type": "list"
+      },
+      {
+       "default": "filtered",
+       "name": "fit_on",
+       "required": false,
+       "type": "any"
+      },
+      {
+       "default": "listwise",
+       "enum_values": [
+        "listwise"
+       ],
+       "name": "missing",
+       "required": false,
+       "type": "enum"
+      }
+     ]
+    },
+    {
+     "name": "ATTR_ZSCORE",
+     "params": null
+    }
+   ],
+   "features": [
+    {
+     "name": "FEAT_BUCKETIZE",
+     "params": [
+      {
+       "exactly_one_of": "cutpoints",
+       "name": "boundaries",
+       "required": false,
+       "type": "list"
+      },
+      {
+       "exactly_one_of": "cutpoints",
+       "name": "quantiles",
+       "required": false,
+       "type": "int"
+      }
+     ]
+    },
+    {
+     "name": "FEAT_DATE_FEATURES",
+     "params": null
+    },
+    {
+     "name": "FEAT_FREQUENCY_ENCODE",
+     "params": null
+    },
+    {
+     "name": "FEAT_LOG",
+     "params": null
+    },
+    {
+     "name": "FEAT_ONE_HOT",
+     "params": null
+    },
+    {
+     "name": "FEAT_POLY",
+     "params": [
+      {
+       "name": "degree",
+       "required": true,
+       "type": "int"
+      }
+     ]
+    },
+    {
+     "name": "FEAT_SQRT",
+     "params": null
+    },
+    {
+     "name": "FEAT_TARGET_ENCODE",
+     "params": [
+      {
+       "field_filter": "numeric",
+       "name": "target",
+       "required": true,
+       "type": "field"
+      },
+      {
+       "default": 0,
+       "name": "smoothing",
+       "required": false,
+       "type": "float"
+      }
+     ]
+    },
+    {
+     "name": "FEAT_TRAIN_TEST_SPLIT",
+     "params": [
+      {
+       "name": "ratios",
+       "required": true,
+       "type": "list"
+      },
+      {
+       "default": 0,
+       "name": "seed",
+       "required": false,
+       "type": "int"
+      },
+      {
+       "field_filter": "categorical",
+       "name": "stratify",
+       "required": false,
+       "type": "field"
+      }
+     ]
+    }
+   ],
+   "filterers": [
+    {
+     "name": "FILTER_DATE_RANGES",
+     "params": null
+    },
+    {
+     "name": "FILTER_EXCLUDE",
+     "params": null
+    },
+    {
+     "name": "FILTER_EXPRESSION",
+     "params": null
+    },
+    {
+     "name": "FILTER_FALSE",
+     "params": null
+    },
+    {
+     "name": "FILTER_INCLUDE",
+     "params": null
+    },
+    {
+     "name": "FILTER_NULL",
+     "params": null
+    },
+    {
+     "name": "FILTER_RANGE",
+     "params": null
+    },
+    {
+     "name": "FILTER_SET_CONTAINS_ALL",
+     "params": null
+    },
+    {
+     "name": "FILTER_SET_CONTAINS_ANY",
+     "params": null
+    },
+    {
+     "name": "FILTER_SET_CONTAINS_NONE",
+     "params": null
+    },
+    {
+     "name": "FILTER_SET_EQUALS",
+     "params": null
+    },
+    {
+     "name": "FILTER_TRUE",
+     "params": null
+    }
+   ],
+   "groupers": [
+    {
+     "name": "GROUP_CATEGORY",
+     "params": null
+    },
+    {
+     "name": "GROUP_DATE",
+     "params": [
+      {
+       "default": "month",
+       "enum_values": [
+        "day",
+        "day_of_week",
+        "hour",
+        "month",
+        "quarter",
+        "week",
+        "year"
+       ],
+       "name": "component",
+       "required": false,
+       "type": "enum"
+      },
+      {
+       "default": "monday",
+       "enum_values": [
+        "friday",
+        "monday",
+        "saturday",
+        "sunday",
+        "thursday",
+        "tuesday",
+        "wednesday"
+       ],
+       "name": "week_start",
+       "required": false,
+       "type": "enum"
+      },
+      {
+       "default": 0,
+       "name": "fiscal_offset",
+       "required": false,
+       "type": "int"
+      }
+     ]
+    },
+    {
+     "name": "GROUP_DATE_RANGES",
+     "params": [
+      {
+       "name": "ranges",
+       "required": true,
+       "type": "array"
+      },
+      {
+       "default": "unmatched",
+       "name": "unmatched_label",
+       "required": false,
+       "type": "string"
+      }
+     ]
+    },
+    {
+     "name": "GROUP_KMEANS",
+     "params": [
+      {
+       "name": "k",
+       "required": true,
+       "type": "int"
+      },
+      {
+       "default": 0,
+       "name": "seed",
+       "required": false,
+       "type": "int"
+      },
+      {
+       "default": 100,
+       "name": "max_iter",
+       "required": false,
+       "type": "int"
+      },
+      {
+       "default": 10,
+       "name": "n_init",
+       "required": false,
+       "type": "int"
+      },
+      {
+       "default": true,
+       "name": "standardize",
+       "required": false,
+       "type": "bool"
+      },
+      {
+       "default": "listwise",
+       "enum_values": [
+        "listwise"
+       ],
+       "name": "missing",
+       "required": false,
+       "type": "enum"
+      }
+     ]
+    },
+    {
+     "name": "GROUP_QUANTILE",
+     "params": [
+      {
+       "default": 4,
+       "name": "interval",
+       "required": false,
+       "type": "int"
+      }
+     ]
+    },
+    {
+     "name": "GROUP_RANGE",
+     "params": [
+      {
+       "name": "interval",
+       "required": true,
+       "type": "float"
+      }
+     ]
+    },
+    {
+     "name": "GROUP_ROUNDED",
+     "params": [
+      {
+       "name": "interval",
+       "required": true,
+       "type": "float"
+      }
+     ]
+    },
+    {
+     "name": "GROUP_SET_PER_ELEMENT",
+     "params": null
+    },
+    {
+     "name": "GROUP_SET_VALUE",
+     "params": null
+    }
+   ],
+   "windows": [
+    {
+     "name": "WIN_DELTA",
+     "params": [
+      {
+       "default": 1,
+       "name": "periods",
+       "required": false,
+       "type": "int"
+      }
+     ]
+    },
+    {
+     "name": "WIN_DENSE_RANK",
+     "params": null
+    },
+    {
+     "name": "WIN_EWMA",
+     "params": [
+      {
+       "exactly_one_of": "smoothing",
+       "name": "alpha",
+       "required": false,
+       "type": "float"
+      },
+      {
+       "exactly_one_of": "smoothing",
+       "name": "decay",
+       "required": false,
+       "type": "float"
+      }
+     ]
+    },
+    {
+     "name": "WIN_LAG",
+     "params": [
+      {
+       "default": 1,
+       "name": "offset",
+       "required": false,
+       "type": "int"
+      },
+      {
+       "name": "default",
+       "required": false,
+       "type": "any"
+      }
+     ]
+    },
+    {
+     "name": "WIN_LEAD",
+     "params": [
+      {
+       "default": 1,
+       "name": "offset",
+       "required": false,
+       "type": "int"
+      },
+      {
+       "name": "default",
+       "required": false,
+       "type": "any"
+      }
+     ]
+    },
+    {
+     "name": "WIN_MOVING_AVG",
+     "params": null
+    },
+    {
+     "name": "WIN_PCT_CHANGE",
+     "params": [
+      {
+       "default": 1,
+       "name": "periods",
+       "required": false,
+       "type": "int"
+      }
+     ]
+    },
+    {
+     "name": "WIN_RANK",
+     "params": null
+    },
+    {
+     "name": "WIN_ROW_NUMBER",
+     "params": null
+    },
+    {
+     "name": "WIN_RUNNING_AVG",
+     "params": null
+    },
+    {
+     "name": "WIN_RUNNING_SUM",
+     "params": null
+    }
+   ]
+  },
+  "matrices": [
+   {
+    "name": "MAT_COLLINEARITY",
+    "params": [
+     {
+      "default": false,
+      "name": "center",
+      "required": false,
+      "type": "bool"
+     },
+     {
+      "enum_values": [
+       "nearest"
+      ],
+      "name": "repair",
+      "required": false,
+      "type": "enum"
+     },
+     {
+      "default": "listwise",
+      "enum_values": [
+       "listwise",
+       "pairwise"
+      ],
+      "name": "missing",
+      "required": false,
+      "type": "enum"
+     },
+     {
+      "name": "max_drop_share",
+      "required": false,
+      "type": "float"
+     }
+    ]
+   },
+   {
+    "name": "MAT_CORRELATION",
+    "params": [
+     {
+      "default": "pearson",
+      "enum_values": [
+       "pearson",
+       "spearman",
+       "kendall"
+      ],
+      "name": "method",
+      "required": false,
+      "type": "enum"
+     },
+     {
+      "default": "listwise",
+      "enum_values": [
+       "listwise",
+       "pairwise"
+      ],
+      "name": "missing",
+      "required": false,
+      "type": "enum"
+     },
+     {
+      "name": "max_drop_share",
+      "required": false,
+      "type": "float"
+     },
+     {
+      "name": "summary",
+      "required": false,
+      "type": "object"
+     }
+    ]
+   },
+   {
+    "name": "MAT_COVARIANCE",
+    "params": [
+     {
+      "default": "1",
+      "enum_values": [
+       "0",
+       "1"
+      ],
+      "name": "ddof",
+      "required": false,
+      "type": "enum"
+     },
+     {
+      "default": "listwise",
+      "enum_values": [
+       "listwise",
+       "pairwise"
+      ],
+      "name": "missing",
+      "required": false,
+      "type": "enum"
+     },
+     {
+      "name": "max_drop_share",
+      "required": false,
+      "type": "float"
+     }
+    ]
+   },
+   {
+    "name": "MAT_DISTANCE",
+    "params": [
+     {
+      "name": "between",
+      "required": true,
+      "type": "object"
+     },
+     {
+      "default": "euclidean",
+      "enum_values": [
+       "euclidean",
+       "sq_euclidean",
+       "manhattan",
+       "chebyshev",
+       "cosine",
+       "hellinger",
+       "aitchison",
+       "mahalanobis"
+      ],
+      "name": "metric",
+      "required": false,
+      "type": "enum"
+     },
+     {
+      "default": 1,
+      "name": "min_valid",
+      "required": false,
+      "type": "int"
+     },
+     {
+      "default": false,
+      "name": "standardize",
+      "required": false,
+      "type": "bool"
+     },
+     {
+      "default": "listwise",
+      "enum_values": [
+       "listwise"
+      ],
+      "name": "missing",
+      "required": false,
+      "type": "enum"
+     },
+     {
+      "name": "max_drop_share",
+      "required": false,
+      "type": "float"
+     }
+    ]
+   },
+   {
+    "name": "MAT_FACTOR",
+    "params": [
+     {
+      "default": "kaiser",
+      "name": "factors",
+      "required": false,
+      "type": "any"
+     },
+     {
+      "default": "minres",
+      "enum_values": [
+       "minres",
+       "principal_axis",
+       "ml"
+      ],
+      "name": "extraction",
+      "required": false,
+      "type": "enum"
+     },
+     {
+      "default": "none",
+      "enum_values": [
+       "none",
+       "varimax",
+       "promax",
+       "oblimin"
+      ],
+      "name": "rotation",
+      "required": false,
+      "type": "enum"
+     },
+     {
+      "default": 4,
+      "name": "kappa",
+      "required": false,
+      "type": "float"
+     },
+     {
+      "default": 0,
+      "name": "gamma",
+      "required": false,
+      "type": "float"
+     },
+     {
+      "default": 0.9,
+      "name": "conf_level",
+      "required": false,
+      "type": "float"
+     },
+     {
+      "enum_values": [
+       "nearest"
+      ],
+      "name": "repair",
+      "required": false,
+      "type": "enum"
+     },
+     {
+      "default": "listwise",
+      "enum_values": [
+       "listwise",
+       "pairwise"
+      ],
+      "name": "missing",
+      "required": false,
+      "type": "enum"
+     },
+     {
+      "name": "max_drop_share",
+      "required": false,
+      "type": "float"
+     }
+    ]
+   },
+   {
+    "name": "MAT_PARTIAL_CORRELATION",
+    "params": [
+     {
+      "default": "all",
+      "name": "control",
+      "required": false,
+      "type": "list"
+     },
+     {
+      "enum_values": [
+       "nearest"
+      ],
+      "name": "repair",
+      "required": false,
+      "type": "enum"
+     },
+     {
+      "default": "listwise",
+      "enum_values": [
+       "listwise",
+       "pairwise"
+      ],
+      "name": "missing",
+      "required": false,
+      "type": "enum"
+     },
+     {
+      "name": "max_drop_share",
+      "required": false,
+      "type": "float"
+     }
+    ]
+   },
+   {
+    "name": "MAT_PCA",
+    "params": [
+     {
+      "default": "correlation",
+      "enum_values": [
+       "correlation",
+       "covariance"
+      ],
+      "name": "on",
+      "required": false,
+      "type": "enum"
+     },
+     {
+      "default": "kaiser",
+      "name": "components",
+      "required": false,
+      "type": "any"
+     },
+     {
+      "default": "none",
+      "enum_values": [
+       "none",
+       "varimax"
+      ],
+      "name": "rotation",
+      "required": false,
+      "type": "enum"
+     },
+     {
+      "enum_values": [
+       "nearest"
+      ],
+      "name": "repair",
+      "required": false,
+      "type": "enum"
+     },
+     {
+      "default": "listwise",
+      "enum_values": [
+       "listwise",
+       "pairwise"
+      ],
+      "name": "missing",
+      "required": false,
+      "type": "enum"
+     },
+     {
+      "name": "max_drop_share",
+      "required": false,
+      "type": "float"
+     }
+    ]
+   },
+   {
+    "name": "MAT_RELIABILITY",
+    "params": [
+     {
+      "name": "reverse",
+      "required": false,
+      "type": "list"
+     },
+     {
+      "name": "scale_min",
+      "required": false,
+      "type": "float"
+     },
+     {
+      "name": "scale_max",
+      "required": false,
+      "type": "float"
+     },
+     {
+      "enum_values": [
+       "nearest"
+      ],
+      "name": "repair",
+      "required": false,
+      "type": "enum"
+     },
+     {
+      "default": "listwise",
+      "enum_values": [
+       "listwise",
+       "pairwise"
+      ],
+      "name": "missing",
+      "required": false,
+      "type": "enum"
+     },
+     {
+      "name": "max_drop_share",
+      "required": false,
+      "type": "float"
+     }
+    ]
+   }
+  ],
+  "overlays": [
+   {
+    "kind": "OVERLAY_CHISQ_COL",
+    "scopes": [
+     "column"
+    ]
+   },
+   {
+    "kind": "OVERLAY_CHISQ_MATRIX",
+    "scopes": [
+     "matrix"
+    ]
+   },
+   {
+    "kind": "OVERLAY_CHISQ_ROW",
+    "scopes": [
+     "row"
+    ]
+   },
+   {
+    "kind": "OVERLAY_CHISQ_VS_POP",
+    "scopes": [
+     "group"
+    ]
+   },
+   {
+    "kind": "OVERLAY_CHISQ_VS_REF",
+    "scopes": [
+     "matrix",
+     "total"
+    ]
+   },
+   {
+    "kind": "OVERLAY_DELTA_VS_BASELINE",
+    "scopes": [
+     "group"
+    ]
+   },
+   {
+    "kind": "OVERLAY_DELTA_VS_MARGIN",
+    "scopes": [
+     "cell"
+    ]
+   },
+   {
+    "kind": "OVERLAY_DELTA_VS_PRIOR",
+    "scopes": [
+     "group"
+    ]
+   },
+   {
+    "kind": "OVERLAY_DELTA_VS_REF",
+    "scopes": [
+     "cell",
+     "group"
+    ]
+   },
+   {
+    "kind": "OVERLAY_DELTA_VS_SIBLING",
+    "scopes": [
+     "group"
+    ]
+   },
+   {
+    "kind": "OVERLAY_DELTA_VS_STAGE",
+    "scopes": [
+     "total"
+    ]
+   },
+   {
+    "kind": "OVERLAY_FISHER_EXACT_CELL",
+    "scopes": [
+     "cell"
+    ]
+   },
+   {
+    "kind": "OVERLAY_FORMULA",
+    "scopes": [
+     "cell",
+     "group",
+     "total"
+    ]
+   },
+   {
+    "kind": "OVERLAY_INDEX_VS_BASELINE",
+    "scopes": [
+     "group"
+    ]
+   },
+   {
+    "kind": "OVERLAY_INDEX_VS_MARGIN",
+    "scopes": [
+     "cell"
+    ]
+   },
+   {
+    "kind": "OVERLAY_INDEX_VS_POP",
+    "scopes": [
+     "group"
+    ]
+   },
+   {
+    "kind": "OVERLAY_INDEX_VS_PRIOR",
+    "scopes": [
+     "group"
+    ]
+   },
+   {
+    "kind": "OVERLAY_INDEX_VS_REF",
+    "scopes": [
+     "cell",
+     "group"
+    ]
+   },
+   {
+    "kind": "OVERLAY_INDEX_VS_ROLLING_MEAN",
+    "scopes": [
+     "group"
+    ]
+   },
+   {
+    "kind": "OVERLAY_INDEX_VS_SIBLING",
+    "scopes": [
+     "group"
+    ]
+   },
+   {
+    "kind": "OVERLAY_INDEX_VS_STAGE",
+    "scopes": [
+     "total"
+    ]
+   },
+   {
+    "kind": "OVERLAY_INDEX_VS_TOTAL",
+    "scopes": [
+     "group"
+    ]
+   },
+   {
+    "kind": "OVERLAY_KS_VS_POP",
+    "scopes": [
+     "group"
+    ]
+   },
+   {
+    "kind": "OVERLAY_PAIRWISE_PROBIT_T",
+    "scopes": [
+     "column",
+     "row"
+    ]
+   },
+   {
+    "kind": "OVERLAY_PAIRWISE_PROP_Z",
+    "scopes": [
+     "column",
+     "row"
+    ]
+   },
+   {
+    "kind": "OVERLAY_PAIRWISE_TWO_MEANS_Z",
+    "scopes": [
+     "column",
+     "row"
+    ]
+   },
+   {
+    "kind": "OVERLAY_PAIRWISE_WEIGHTED_TWO_MEANS_Z",
+    "scopes": [
+     "column",
+     "row"
+    ]
+   },
+   {
+    "kind": "OVERLAY_PAIRWISE_WELCH_T",
+    "scopes": [
+     "column",
+     "row"
+    ]
+   },
+   {
+    "kind": "OVERLAY_PANEL_INDEX_VS_REF",
+    "scopes": [
+     "cell",
+     "group"
+    ]
+   },
+   {
+    "kind": "OVERLAY_PROP_Z_CELL",
+    "scopes": [
+     "cell"
+    ]
+   },
+   {
+    "kind": "OVERLAY_PROP_Z_PANEL",
+    "scopes": [
+     "cell"
+    ]
+   },
+   {
+    "kind": "OVERLAY_RANK",
+    "scopes": [
+     "cell"
+    ]
+   },
+   {
+    "kind": "OVERLAY_SHARE_OF_COL",
+    "scopes": [
+     "cell"
+    ]
+   },
+   {
+    "kind": "OVERLAY_SHARE_OF_ROW",
+    "scopes": [
+     "cell"
+    ]
+   },
+   {
+    "kind": "OVERLAY_SHARE_OF_TOTAL",
+    "scopes": [
+     "cell",
+     "group"
+    ]
+   },
+   {
+    "kind": "OVERLAY_T_CELL",
+    "scopes": [
+     "cell"
+    ]
+   },
+   {
+    "kind": "OVERLAY_T_VS_REF",
+    "scopes": [
+     "group"
+    ]
+   },
+   {
+    "kind": "OVERLAY_YOY",
+    "scopes": [
+     "group"
+    ]
+   },
+   {
+    "kind": "OVERLAY_ZSCORE_VS_MARGIN",
+    "scopes": [
+     "cell"
+    ]
+   },
+   {
+    "kind": "OVERLAY_ZSCORE_VS_POP",
+    "scopes": [
+     "group"
+    ]
+   },
+   {
+    "kind": "OVERLAY_ZSCORE_VS_ROLLING",
+    "scopes": [
+     "group"
+    ]
+   },
+   {
+    "kind": "OVERLAY_ZSCORE_VS_TOTAL",
+    "scopes": [
+     "group"
+    ]
+   },
+   {
+    "kind": "OVERLAY_Z_CELL",
+    "scopes": [
+     "cell"
+    ]
+   },
+   {
+    "kind": "OVERLAY_Z_VS_REF",
+    "scopes": [
+     "group"
+    ]
+   }
+  ],
+  "post_tests": [
+   {
+    "family": "TEST_ANOVA_F",
+    "name": "TEST_ANOVA_F/one_way_from_summary",
+    "params": [
+     {
+      "default": 0.05,
+      "name": "alpha",
+      "required": false,
+      "type": "float"
+     }
+    ],
+    "variant": "one_way_from_summary"
+   },
+   {
+    "family": "TEST_ANOVA_WELCH",
+    "name": "TEST_ANOVA_WELCH/welch_one_way_post",
+    "params": [
+     {
+      "default": 0.05,
+      "name": "alpha",
+      "required": false,
+      "type": "float"
+     }
+    ],
+    "variant": "welch_one_way_post"
+   },
+   {
+    "family": "TEST_BROWN_FORSYTHE",
+    "name": "TEST_BROWN_FORSYTHE/median_post",
+    "params": [
+     {
+      "default": 0.05,
+      "name": "alpha",
+      "required": false,
+      "type": "float"
+     }
+    ],
+    "variant": "median_post"
+   },
+   {
+    "family": "TEST_KENDALL_TAU",
+    "name": "TEST_KENDALL_TAU/tau_b_post",
+    "params": [
+     {
+      "default": 0.05,
+      "name": "alpha",
+      "required": false,
+      "type": "float"
+     }
+    ],
+    "variant": "tau_b_post"
+   },
+   {
+    "family": "TEST_KS",
+    "name": "TEST_KS/two_sample_post",
+    "params": [
+     {
+      "default": 0.05,
+      "name": "alpha",
+      "required": false,
+      "type": "float"
+     }
+    ],
+    "variant": "two_sample_post"
+   },
+   {
+    "family": "TEST_PAIRED_T",
+    "name": "TEST_PAIRED_T/paired_two_sided_post",
+    "params": [
+     {
+      "default": 0.05,
+      "name": "alpha",
+      "required": false,
+      "type": "float"
+     }
+    ],
+    "variant": "paired_two_sided_post"
+   },
+   {
+    "family": "TEST_PEARSON_R",
+    "name": "TEST_PEARSON_R/pearson_post",
+    "params": [
+     {
+      "default": 0.05,
+      "name": "alpha",
+      "required": false,
+      "type": "float"
+     }
+    ],
+    "variant": "pearson_post"
+   },
+   {
+    "family": "TEST_SHAPIRO_WILK",
+    "name": "TEST_SHAPIRO_WILK/shapiro_francia_post",
+    "params": [
+     {
+      "default": 0.05,
+      "name": "alpha",
+      "required": false,
+      "type": "float"
+     }
+    ],
+    "variant": "shapiro_francia_post"
+   },
+   {
+    "family": "TEST_SPEARMAN_R",
+    "name": "TEST_SPEARMAN_R/rank_pearson_post",
+    "params": [
+     {
+      "default": 0.05,
+      "name": "alpha",
+      "required": false,
+      "type": "float"
+     }
+    ],
+    "variant": "rank_pearson_post"
+   },
+   {
+    "family": "TEST_TREND",
+    "name": "TEST_TREND",
+    "params": [
+     {
+      "default": 0.05,
+      "name": "alpha",
+      "required": false,
+      "type": "float"
+     }
+    ],
+    "variant": "mann_kendall"
+   },
+   {
+    "family": "TEST_TUKEY_HSD",
+    "name": "TEST_TUKEY_HSD",
+    "params": [
+     {
+      "default": 0.05,
+      "name": "alpha",
+      "required": false,
+      "type": "float"
+     },
+     {
+      "name": "ms_within",
+      "required": true,
+      "type": "float"
+     },
+     {
+      "name": "df_within",
+      "required": true,
+      "type": "float"
+     }
+    ],
+    "variant": "tukey_kramer"
+   },
+   {
+    "family": "TEST_WILCOXON_SR",
+    "name": "TEST_WILCOXON_SR/asymptotic_post",
+    "params": [
+     {
+      "default": 0.05,
+      "name": "alpha",
+      "required": false,
+      "type": "float"
+     }
+    ],
+    "variant": "asymptotic_post"
+   }
+  ],
+  "regressions": [
+   {
+    "name": "REG_BAYES_LINEAR",
+    "params": [
+     {
+      "field_filter": "numeric",
+      "name": "target",
+      "required": true,
+      "type": "field"
+     },
+     {
+      "name": "predictors",
+      "required": true,
+      "type": "list"
+     },
+     {
+      "default": "nig",
+      "enum_values": [
+       "nig"
+      ],
+      "name": "prior",
+      "required": false,
+      "type": "enum"
+     },
+     {
+      "name": "prior_mu",
+      "required": false,
+      "type": "list"
+     },
+     {
+      "name": "prior_precision",
+      "required": false,
+      "type": "float"
+     },
+     {
+      "name": "prior_shape",
+      "required": false,
+      "type": "float"
+     },
+     {
+      "name": "prior_rate",
+      "required": false,
+      "type": "float"
+     },
+     {
+      "default": 0.95,
+      "name": "credible_level",
+      "required": false,
+      "type": "float"
+     },
+     {
+      "default": 0.95,
+      "name": "conf_level",
+      "required": false,
+      "type": "float"
+     },
+     {
+      "default": false,
+      "name": "vcov",
+      "required": false,
+      "type": "bool"
+     },
+     {
+      "name": "covariance",
+      "required": false,
+      "type": "object"
+     }
+    ]
+   },
+   {
+    "name": "REG_GLM",
+    "params": [
+     {
+      "field_filter": "numeric",
+      "name": "target",
+      "required": true,
+      "type": "field"
+     },
+     {
+      "name": "predictors",
+      "required": true,
+      "type": "list"
+     },
+     {
+      "enum_values": [
+       "binomial",
+       "gamma",
+       "poisson"
+      ],
+      "name": "family",
+      "required": true,
+      "type": "enum"
+     },
+     {
+      "enum_values": [
+       "cloglog",
+       "identity",
+       "inverse",
+       "log",
+       "logit",
+       "probit",
+       "sqrt"
+      ],
+      "name": "link",
+      "required": false,
+      "type": "enum"
+     },
+     {
+      "name": "max_iters",
+      "required": false,
+      "type": "int"
+     },
+     {
+      "name": "tol",
+      "required": false,
+      "type": "float"
+     },
+     {
+      "enum_values": [
+       "",
+       "bootstrap",
+       "jackknife"
+      ],
+      "name": "resample",
+      "required": false,
+      "type": "enum"
+     },
+     {
+      "name": "bootstrap_iters",
+      "required": false,
+      "type": "int"
+     },
+     {
+      "name": "rng_seed",
+      "required": false,
+      "type": "int"
+     },
+     {
+      "enum_values": [
+       "",
+       "backward",
+       "forward",
+       "stepwise"
+      ],
+      "name": "selection",
+      "required": false,
+      "type": "enum"
+     },
+     {
+      "enum_values": [
+       "aic",
+       "bic"
+      ],
+      "name": "criterion",
+      "required": false,
+      "type": "enum"
+     },
+     {
+      "default": 0.95,
+      "name": "conf_level",
+      "required": false,
+      "type": "float"
+     },
+     {
+      "default": false,
+      "name": "vcov",
+      "required": false,
+      "type": "bool"
+     },
+     {
+      "name": "covariance",
+      "required": false,
+      "type": "object"
+     }
+    ]
+   },
+   {
+    "name": "REG_OLS",
+    "params": [
+     {
+      "field_filter": "numeric",
+      "name": "target",
+      "required": true,
+      "type": "field"
+     },
+     {
+      "name": "predictors",
+      "required": true,
+      "type": "list"
+     },
+     {
+      "default": "",
+      "enum_values": [
+       "",
+       "elasticnet",
+       "l1",
+       "l2"
+      ],
+      "name": "penalty",
+      "required": false,
+      "type": "enum"
+     },
+     {
+      "name": "alpha",
+      "required": false,
+      "type": "float"
+     },
+     {
+      "name": "l1_ratio",
+      "required": false,
+      "type": "float"
+     },
+     {
+      "name": "max_iters",
+      "required": false,
+      "type": "int"
+     },
+     {
+      "name": "tol",
+      "required": false,
+      "type": "float"
+     },
+     {
+      "enum_values": [
+       "",
+       "bootstrap",
+       "jackknife"
+      ],
+      "name": "resample",
+      "required": false,
+      "type": "enum"
+     },
+     {
+      "name": "bootstrap_iters",
+      "required": false,
+      "type": "int"
+     },
+     {
+      "name": "rng_seed",
+      "required": false,
+      "type": "int"
+     },
+     {
+      "enum_values": [
+       "",
+       "backward",
+       "forward",
+       "stepwise"
+      ],
+      "name": "selection",
+      "required": false,
+      "type": "enum"
+     },
+     {
+      "enum_values": [
+       "aic",
+       "bic"
+      ],
+      "name": "criterion",
+      "required": false,
+      "type": "enum"
+     },
+     {
+      "default": 0.95,
+      "name": "conf_level",
+      "required": false,
+      "type": "float"
+     },
+     {
+      "default": false,
+      "name": "vcov",
+      "required": false,
+      "type": "bool"
+     },
+     {
+      "name": "covariance",
+      "required": false,
+      "type": "object"
+     }
+    ]
+   }
+  ],
+  "tests": [
+   {
+    "family": "TEST_ANOVA_F",
+    "name": "TEST_ANOVA_F",
+    "params": [
+     {
+      "default": 0.05,
+      "name": "alpha",
+      "required": false,
+      "type": "float"
+     }
+    ]
+   },
+   {
+    "family": "TEST_ANOVA_RM",
+    "name": "TEST_ANOVA_RM",
+    "params": [
+     {
+      "default": 0.05,
+      "name": "alpha",
+      "required": false,
+      "type": "float"
+     }
+    ]
+   },
+   {
+    "family": "TEST_ANOVA_WELCH",
+    "name": "TEST_ANOVA_WELCH",
+    "params": [
+     {
+      "default": 0.05,
+      "name": "alpha",
+      "required": false,
+      "type": "float"
+     }
+    ]
+   },
+   {
+    "family": "TEST_BARTLETT_SPHERICITY",
+    "name": "TEST_BARTLETT_SPHERICITY",
+    "params": [
+     {
+      "default": 0.05,
+      "name": "alpha",
+      "required": false,
+      "type": "float"
+     },
+     {
+      "default": "listwise",
+      "enum_values": [
+       "listwise"
+      ],
+      "name": "missing",
+      "required": false,
+      "type": "enum"
+     }
+    ]
+   },
+   {
+    "family": "TEST_BOX_M",
+    "name": "TEST_BOX_M",
+    "params": [
+     {
+      "default": 0.05,
+      "name": "alpha",
+      "required": false,
+      "type": "float"
+     },
+     {
+      "default": "listwise",
+      "enum_values": [
+       "listwise"
+      ],
+      "name": "missing",
+      "required": false,
+      "type": "enum"
+     }
+    ]
+   },
+   {
+    "family": "TEST_BROWN_FORSYTHE",
+    "name": "TEST_BROWN_FORSYTHE",
+    "params": [
+     {
+      "default": 0.05,
+      "name": "alpha",
+      "required": false,
+      "type": "float"
+     }
+    ]
+   },
+   {
+    "family": "TEST_CHISQ",
+    "name": "TEST_CHISQ",
+    "params": [
+     {
+      "default": 0.05,
+      "name": "alpha",
+      "required": false,
+      "type": "float"
+     }
+    ]
+   },
+   {
+    "family": "TEST_FISHER_EXACT",
+    "name": "TEST_FISHER_EXACT",
+    "params": [
+     {
+      "default": 0.05,
+      "name": "alpha",
+      "required": false,
+      "type": "float"
+     }
+    ]
+   },
+   {
+    "family": "TEST_HOTELLING_T2",
+    "name": "TEST_HOTELLING_T2",
+    "params": [
+     {
+      "default": 0.05,
+      "name": "alpha",
+      "required": false,
+      "type": "float"
+     },
+     {
+      "name": "mu",
+      "required": false,
+      "type": "list"
+     },
+     {
+      "default": "pooled",
+      "enum_values": [
+       "pooled",
+       "unequal"
+      ],
+      "name": "variance",
+      "required": false,
+      "type": "enum"
+     },
+     {
+      "default": "listwise",
+      "enum_values": [
+       "listwise"
+      ],
+      "name": "missing",
+      "required": false,
+      "type": "enum"
+     }
+    ]
+   },
+   {
+    "family": "TEST_KENDALL_TAU",
+    "name": "TEST_KENDALL_TAU",
+    "params": [
+     {
+      "default": 0.05,
+      "name": "alpha",
+      "required": false,
+      "type": "float"
+     }
+    ]
+   },
+   {
+    "family": "TEST_KRUSKAL_WALLIS",
+    "name": "TEST_KRUSKAL_WALLIS",
+    "params": [
+     {
+      "default": 0.05,
+      "name": "alpha",
+      "required": false,
+      "type": "float"
+     }
+    ]
+   },
+   {
+    "family": "TEST_KS",
+    "name": "TEST_KS",
+    "params": [
+     {
+      "default": 0.05,
+      "name": "alpha",
+      "required": false,
+      "type": "float"
+     }
+    ]
+   },
+   {
+    "family": "TEST_MANN_WHITNEY_U",
+    "name": "TEST_MANN_WHITNEY_U",
+    "params": [
+     {
+      "default": 0.05,
+      "name": "alpha",
+      "required": false,
+      "type": "float"
+     }
+    ]
+   },
+   {
+    "family": "TEST_MANOVA",
+    "name": "TEST_MANOVA",
+    "params": [
+     {
+      "default": 0.05,
+      "name": "alpha",
+      "required": false,
+      "type": "float"
+     },
+     {
+      "default": "listwise",
+      "enum_values": [
+       "listwise"
+      ],
+      "name": "missing",
+      "required": false,
+      "type": "enum"
+     }
+    ]
+   },
+   {
+    "family": "TEST_MARDIA",
+    "name": "TEST_MARDIA",
+    "params": [
+     {
+      "default": 0.05,
+      "name": "alpha",
+      "required": false,
+      "type": "float"
+     },
+     {
+      "default": "skewness",
+      "enum_values": [
+       "skewness",
+       "kurtosis"
+      ],
+      "name": "statistic",
+      "required": false,
+      "type": "enum"
+     },
+     {
+      "default": "listwise",
+      "enum_values": [
+       "listwise"
+      ],
+      "name": "missing",
+      "required": false,
+      "type": "enum"
+     }
+    ]
+   },
+   {
+    "family": "TEST_PAIRED_T",
+    "name": "TEST_PAIRED_T",
+    "params": [
+     {
+      "default": 0.05,
+      "name": "alpha",
+      "required": false,
+      "type": "float"
+     }
+    ]
+   },
+   {
+    "family": "TEST_PEARSON_R",
+    "name": "TEST_PEARSON_R",
+    "params": [
+     {
+      "default": 0.05,
+      "name": "alpha",
+      "required": false,
+      "type": "float"
+     }
+    ]
+   },
+   {
+    "family": "TEST_PROP_Z",
+    "name": "TEST_PROP_Z",
+    "params": [
+     {
+      "default": 0.05,
+      "name": "alpha",
+      "required": false,
+      "type": "float"
+     },
+     {
+      "name": "success",
+      "required": true,
+      "type": "string"
+     }
+    ]
+   },
+   {
+    "family": "TEST_SHAPIRO_WILK",
+    "name": "TEST_SHAPIRO_WILK",
+    "params": [
+     {
+      "default": 0.05,
+      "name": "alpha",
+      "required": false,
+      "type": "float"
+     }
+    ]
+   },
+   {
+    "family": "TEST_SPEARMAN_R",
+    "name": "TEST_SPEARMAN_R",
+    "params": [
+     {
+      "default": 0.05,
+      "name": "alpha",
+      "required": false,
+      "type": "float"
+     }
+    ]
+   },
+   {
+    "family": "TEST_T",
+    "name": "TEST_T",
+    "params": [
+     {
+      "default": 0.05,
+      "name": "alpha",
+      "required": false,
+      "type": "float"
+     },
+     {
+      "default": 0,
+      "name": "mu",
+      "required": false,
+      "type": "float"
+     }
+    ]
+   },
+   {
+    "family": "TEST_WELCH",
+    "name": "TEST_WELCH",
+    "params": [
+     {
+      "default": 0.05,
+      "name": "alpha",
+      "required": false,
+      "type": "float"
+     }
+    ]
+   },
+   {
+    "family": "TEST_WILCOXON_SR",
+    "name": "TEST_WILCOXON_SR",
+    "params": [
+     {
+      "default": 0.05,
+      "name": "alpha",
+      "required": false,
+      "type": "float"
+     }
+    ]
+   },
+   {
+    "family": "TEST_Z_TWO_SAMPLE",
+    "name": "TEST_Z_TWO_SAMPLE",
+    "params": [
+     {
+      "default": 0.05,
+      "name": "alpha",
+      "required": false,
+      "type": "float"
+     }
+    ]
+   }
+  ]
+ },
+ "schema": {
+  "$defs": {
+   "Aggregation": {
+    "properties": {
+     "field": {},
+     "fields": {},
+     "label": {},
+     "params": {},
+     "type": {},
+     "vector": {},
+     "weight": {}
+    }
+   },
+   "Attribute": {
+    "properties": {
+     "alpha": {},
+     "expression": {},
+     "field": {},
+     "fields": {},
+     "for_each": {},
+     "l1_ratio": {},
+     "label": {},
+     "params": {},
+     "penalty": {},
+     "predictors": {},
+     "target": {},
+     "type": {},
+     "tz": {},
+     "vector": {},
+     "weight": {}
+    }
+   },
+   "Cohort": {
+    "properties": {
+     "data_dir": {},
+     "filename": {}
+    }
+   },
+   "CrosstabSpec": {
+    "properties": {
+     "cell": {},
+     "columns": {},
+     "margin_aggregations": {},
+     "margins": {},
+     "normalize": {},
+     "normalize_level": {},
+     "normalize_within": {},
+     "rows": {},
+     "shape": {}
+    }
+   },
+   "Feature": {
+    "properties": {
+     "field": {},
+     "for_each": {},
+     "label": {},
+     "params": {},
+     "type": {},
+     "tz": {}
+    }
+   },
+   "Filterer": {
+    "properties": {
+     "expression": {},
+     "field": {},
+     "params": {},
+     "type": {},
+     "tz": {},
+     "values": {}
+    }
+   },
+   "Group": {
+    "properties": {
+     "field": {},
+     "fields": {},
+     "include": {},
+     "interval": {},
+     "params": {},
+     "type": {},
+     "tz": {},
+     "vector": {},
+     "weight": {}
+    }
+   },
+   "JoinSpec": {
+    "properties": {
+     "as": {},
+     "kind": {},
+     "on": {},
+     "right": {}
+    }
+   },
+   "LabelBinding": {
+    "properties": {
+     "field": {},
+     "mode": {},
+     "table": {}
+    }
+   },
+   "MatrixSpec": {
+    "properties": {
+     "encoding": {},
+     "fields": {},
+     "name": {},
+     "params": {},
+     "type": {},
+     "vector": {},
+     "weight": {}
+    }
+   },
+   "ModelRef": {
+    "properties": {
+     "name": {},
+     "path": {}
+    }
+   },
+   "Multiplicity": {
+    "properties": {
+     "alpha": {},
+     "family": {},
+     "method": {}
+    }
+   },
+   "OrderKey": {
+    "properties": {
+     "desc": {},
+     "field": {}
+    }
+   },
+   "Output": {
+    "properties": {
+     "filename": {},
+     "format": {},
+     "include_nil": {},
+     "pretty": {}
+    }
+   },
+   "OverlaySpec": {
+    "properties": {
+     "kind": {},
+     "level": {},
+     "multiplicity": {},
+     "name": {},
+     "params": {},
+     "ref": {},
+     "scope": {},
+     "weight": {},
+     "within": {}
+    }
+   },
+   "RegressionSpec": {
+    "properties": {
+     "alpha": {},
+     "bootstrap_iters": {},
+     "conf_level": {},
+     "covariance": {},
+     "credible_level": {},
+     "criterion": {},
+     "family": {},
+     "l1_ratio": {},
+     "link": {},
+     "max_iters": {},
+     "name": {},
+     "penalty": {},
+     "predictors": {},
+     "prior": {},
+     "prior_mu": {},
+     "prior_precision": {},
+     "prior_rate": {},
+     "prior_shape": {},
+     "resample": {},
+     "rng_seed": {},
+     "save": {},
+     "selection": {},
+     "target": {},
+     "tol": {},
+     "type": {},
+     "vcov": {},
+     "weight": {}
+    }
+   },
+   "Request": {
+    "properties": {
+     "aggregations": {
+      "items": {
+       "$ref": "#/$defs/Aggregation"
+      }
+     },
+     "attributes": {
+      "items": {
+       "$ref": "#/$defs/Attribute"
+      }
+     },
+     "cohort": {
+      "$ref": "#/$defs/Cohort"
+     },
+     "crosstab": {
+      "$ref": "#/$defs/CrosstabSpec"
+     },
+     "disable_components": {},
+     "features": {
+      "items": {
+       "$ref": "#/$defs/Feature"
+      }
+     },
+     "filterers": {
+      "items": {
+       "$ref": "#/$defs/Filterer"
+      }
+     },
+     "groups": {
+      "items": {
+       "$ref": "#/$defs/Group"
+      }
+     },
+     "joins": {
+      "items": {
+       "$ref": "#/$defs/JoinSpec"
+      }
+     },
+     "label": {},
+     "labels": {
+      "items": {
+       "$ref": "#/$defs/LabelBinding"
+      }
+     },
+     "matrices": {
+      "items": {
+       "$ref": "#/$defs/MatrixSpec"
+      }
+     },
+     "models": {
+      "items": {
+       "$ref": "#/$defs/ModelRef"
+      }
+     },
+     "multiplicity": {
+      "$ref": "#/$defs/Multiplicity"
+     },
+     "outputs": {
+      "items": {
+       "$ref": "#/$defs/Output"
+      }
+     },
+     "overlays": {
+      "items": {
+       "$ref": "#/$defs/OverlaySpec"
+      }
+     },
+     "post_tests": {
+      "items": {
+       "$ref": "#/$defs/Test"
+      }
+     },
+     "regressions": {
+      "items": {
+       "$ref": "#/$defs/RegressionSpec"
+      }
+     },
+     "return": {
+      "$ref": "#/$defs/Return"
+     },
+     "sort": {
+      "items": {
+       "$ref": "#/$defs/OrderKey"
+      }
+     },
+     "tests": {
+      "items": {
+       "$ref": "#/$defs/Test"
+      }
+     },
+     "time_zone": {},
+     "vectors": {
+      "items": {
+       "$ref": "#/$defs/VectorSpec"
+      }
+     },
+     "weight": {
+      "$ref": "#/$defs/WeightSpec"
+     },
+     "windows": {
+      "items": {
+       "$ref": "#/$defs/Window"
+      }
+     }
+    }
+   },
+   "Return": {
+    "properties": {
+     "exclude": {},
+     "include": {},
+     "precision": {},
+     "preset": {}
+    }
+   },
+   "Test": {
+    "properties": {
+     "alpha": {},
+     "cols": {},
+     "field": {},
+     "field2": {},
+     "fields": {},
+     "fields2": {},
+     "label": {},
+     "multiplicity": {},
+     "order_by": {},
+     "params": {},
+     "rows": {},
+     "split_by": {},
+     "subject_field": {},
+     "type": {},
+     "vector": {},
+     "vector2": {},
+     "weight": {}
+    }
+   },
+   "VectorSpec": {
+    "properties": {
+     "coerce": {},
+     "fields": {},
+     "kind": {},
+     "labels": {},
+     "name": {},
+     "pattern": {},
+     "scale_max": {},
+     "scale_min": {}
+    }
+   },
+   "WeightSpec": {
+    "properties": {
+     "field": {},
+     "kind": {}
+    }
+   },
+   "Window": {
+    "properties": {
+     "field": {},
+     "for_each": {},
+     "frame": {},
+     "label": {},
+     "order_by": {},
+     "params": {},
+     "partition_by": {},
+     "type": {}
+    }
+   }
+  }
+ }
+}

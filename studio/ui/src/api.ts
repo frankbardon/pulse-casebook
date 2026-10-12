@@ -71,7 +71,27 @@ export async function saveFile(path: string, text: string, signal?: AbortSignal)
 
 // Catalog is /api/catalog. Only the manifest parts the graph reads are typed;
 // the rest passes through untyped.
-export type ManifestOperator = { name?: string; kind?: string; category?: string }
+export type ManifestParam = {
+  name: string
+  type: string
+  required?: boolean
+  default?: unknown
+  enum_values?: string[]
+  exactly_one_of?: string
+  field_filter?: string
+}
+
+export type ManifestOperator = {
+  name?: string
+  kind?: string
+  category?: string
+  // Tier-2 post_tests list one entry per variant, named `<family>/<variant>`.
+  family?: string
+  // null for operators whose params are free-form or absent.
+  params?: ManifestParam[] | null
+  // Overlays: the scopes the kind accepts.
+  scopes?: string[]
+}
 
 export type Manifest = {
   components?: Partial<

@@ -108,6 +108,17 @@ export function emitModel(model: GraphModel): JsonNode {
   return emit(model.root)
 }
 
+// updateNode returns a model with node id's value replaced. The outline
+// is shared; only the node map is copied.
+export function updateNode(model: GraphModel, id: string, value: JsonNode): GraphModel {
+  const n = model.nodes.get(id)
+  if (!n) throw new Error(`model has no node ${id}`)
+  if (n.value === value) return model
+  const nodes = new Map(model.nodes)
+  nodes.set(id, { ...n, value })
+  return { ...model, nodes }
+}
+
 // emitModelText emits compact JSON; the save API applies house style.
 export function emitModelText(model: GraphModel): string {
   return stringifyJson(emitModel(model))

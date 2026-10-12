@@ -133,6 +133,14 @@ const SECTIONS: SectionSpec[] = [
 
 const SECTION_BY_KEY = new Map(SECTIONS.map((s) => [s.key, s]))
 
+// SectionInfo is what the inspector needs about a modeled section: where
+// the operator name and label live and which manifest list describes it.
+export type SectionInfo = Pick<SectionSpec, 'key' | 'title' | 'opKey' | 'nameKey' | 'catalog' | 'single'>
+
+export function sectionInfo(key: string): SectionInfo | undefined {
+  return SECTION_BY_KEY.get(key)
+}
+
 // REQUEST_SECTIONS lists the Request sections drawn as op nodes: array
 // sections (one node per entry) and single-object sections. The graph
 // model (model.ts) uses the same table, so both agree on which keys are

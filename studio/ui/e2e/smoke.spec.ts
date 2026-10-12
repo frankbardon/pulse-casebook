@@ -22,3 +22,19 @@ test('compose files open to a not-yet-supported view', async ({ page }) => {
   await page.getByRole('button', { name: 'req/11_readout.compose.json' }).click()
   await expect(page.getByTestId('unsupported')).toContainText('not yet supported')
 })
+
+// Edits stay unsaved here: the smoke server serves the real showcase dir.
+test('selecting a node opens the inspector and edits mark the file dirty', async ({ page }) => {
+  await page.goto('/')
+  await page.getByRole('button', { name: 'req/04_metric_battery.json' }).click()
+  const graph = page.getByTestId('request-graph')
+  await graph.locator('[data-path="tests[0]"]').click()
+  const inspector = page.getByTestId('inspector')
+  await expect(inspector).toHaveAttribute('data-node', 'tests[0]')
+  const success = inspector.locator('[data-field="success"] input')
+  await expect(success).toHaveValue('yes')
+  await expect(page.getByTestId('dirty-state')).toHaveText('saved')
+  await success.fill('no')
+  await expect(page.getByTestId('dirty-state')).toContainText('unsaved')
+  await expect(graph.locator('[data-path="tests[0]"]')).toContainText('no')
+})

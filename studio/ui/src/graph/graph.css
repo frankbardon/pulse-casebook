@@ -17,9 +17,206 @@
   font-family: var(--font-mono);
 }
 
-.graph .react-flow {
+.graph-body {
+  display: flex;
   flex: 1;
   min-height: 0;
+}
+
+.graph .react-flow {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+}
+
+.graph-bar .dirty {
+  color: var(--stage-filter);
+}
+
+.graph-bar button,
+.inspector button {
+  font: inherit;
+  font-size: var(--text-sm);
+  padding: 1px var(--space-2);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.graph-bar button:disabled,
+.inspector button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.graph-bar button.save:not(:disabled) {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.react-flow__node.selected .gnode {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+/* Inspector */
+.inspector {
+  width: 320px;
+  flex: none;
+  overflow: auto;
+  border-left: 1px solid var(--border);
+  background: var(--surface);
+  font-size: var(--text-sm);
+  padding: var(--space-2) var(--space-3);
+}
+
+.insp-head {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: baseline;
+  column-gap: var(--space-2);
+  margin-bottom: var(--space-2);
+}
+
+.insp-title {
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 11px;
+}
+
+.insp-op {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.insp-op.unknown {
+  color: var(--danger);
+}
+
+.insp-close {
+  grid-column: 3;
+  grid-row: 1;
+}
+
+.insp-path {
+  grid-column: 1 / -1;
+  font-family: var(--font-mono);
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.insp-note {
+  color: var(--muted);
+  margin: 0 0 var(--space-2);
+}
+
+.insp-section {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 0 0 var(--space-2);
+  padding: var(--space-1) 0 0;
+}
+
+.insp-section legend {
+  padding: 0 var(--space-1) 0 0;
+  font-weight: 600;
+}
+
+.insp-field {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: var(--space-2);
+}
+
+.insp-field label {
+  display: flex;
+  gap: var(--space-1);
+  font-family: var(--font-mono);
+}
+
+.insp-field .req {
+  color: var(--danger);
+}
+
+.insp-type {
+  margin-left: auto;
+  color: var(--muted);
+  font-family: var(--font-ui);
+  font-size: 11px;
+}
+
+.inspector input,
+.inspector select,
+.inspector textarea {
+  width: 100%;
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  font-variant-numeric: tabular-nums;
+  padding: 2px var(--space-1);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.inspector textarea {
+  resize: vertical;
+}
+
+.insp-field.invalid input,
+.insp-field.invalid textarea {
+  border-color: var(--danger);
+}
+
+.insp-err,
+.insp-problems {
+  color: var(--danger);
+  font-size: 11px;
+}
+
+.insp-hint {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.insp-problems {
+  margin: 0 0 var(--space-2);
+  padding-left: var(--space-3);
+}
+
+.insp-ranges {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.insp-range {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr auto;
+  gap: 2px;
+}
+
+.insp-add {
+  align-self: flex-start;
+}
+
+.insp-json summary {
+  cursor: pointer;
+  font-weight: 600;
+  margin-bottom: var(--space-1);
+}
+
+.insp-json-bar {
+  display: flex;
+  gap: var(--space-1);
+  align-items: center;
+  margin-top: var(--space-1);
 }
 
 .col-title {
