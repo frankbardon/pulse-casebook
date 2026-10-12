@@ -1,0 +1,211 @@
+1
+00:00:00,250 --> 00:00:06,018
+Pulse tests and regressions. Is the difference real, and what drives it? Taken apart in depth.
+
+2
+00:00:06,818 --> 00:00:13,525
+Tests and regressions read the raw records that survive the filters, during the same scan as everything else.
+
+3
+00:00:14,325 --> 00:00:19,581
+Post-tests are the second tier. They run after windows, on the finished result rows.
+
+4
+00:00:20,381 --> 00:00:26,746
+Each test names a type and a field, and often a split. A regression names a target and its predictors.
+
+5
+00:00:27,546 --> 00:00:36,493
+Results land in their own sections of the response, each carrying its own details. Our cohort here has two hundred and forty illustrative rows.
+
+6
+00:00:37,293 --> 00:00:47,626
+Every test returns the same shape: the statistic, its degrees of freedom, a two-sided p-value, the alpha it was judged against, and whether the null was rejected.
+
+7
+00:00:48,426 --> 00:00:53,682
+The details carry the rest, like the difference, its confidence interval and an effect size.
+
+8
+00:00:54,482 --> 00:00:59,311
+Read both. A tiny p-value with a tiny effect is still a tiny effect.
+
+9
+00:01:00,111 --> 00:01:06,348
+Start from the outcome. A number across two groups, or three or more. The same subjects measured twice.
+
+10
+00:01:07,148 --> 00:01:12,105
+A yes or no rate, two categories, two numbers, or the shape of a distribution.
+
+11
+00:01:12,905 --> 00:01:18,140
+Skewed data pushes you toward the rank tests, and unequal spread toward the Welch forms.
+
+12
+00:01:18,940 --> 00:01:25,967
+Here is spend for arm A and arm B. The t-test asks whether the difference between their means is bigger than chance.
+
+13
+00:01:26,767 --> 00:01:34,498
+It uses Welch's form, so it never assumes equal spread. B spends about seven more, and the effect size is moderate.
+
+14
+00:01:35,298 --> 00:01:43,519
+With skewed values, Mann-Whitney compares ranks instead. It asks a different question, so disagreement is information, not a bug.
+
+15
+00:01:44,319 --> 00:01:48,807
+With three or more groups, one-way ANOVA asks whether any of the means differ.
+
+16
+00:01:49,607 --> 00:01:57,551
+Here it says no: region explains about one percent of spend. A rejection would only say that some means differ, not which.
+
+17
+00:01:58,351 --> 00:02:03,650
+Check normality per group and equal spread first. Those checks are evidence, not proof.
+
+18
+00:02:04,450 --> 00:02:14,933
+Unequal spread calls for Welch's ANOVA, skew for Kruskal-Wallis. To find which pairs differ, run Tukey as a post-test with the ANOVA's within-group mean square.
+
+19
+00:02:15,733 --> 00:02:21,096
+Chi-square tests whether two categorical fields are independent, here region and arm.
+
+20
+00:02:21,896 --> 00:02:25,275
+It compares each count with what independence would predict.
+
+21
+00:02:26,075 --> 00:02:32,419
+The p-value says the pattern is unlikely by chance, but Cramér's V says the association is weak.
+
+22
+00:02:33,219 --> 00:02:40,566
+When an expected count falls under five, Pulse warns. For a small two-by-two table, use Fisher's exact test.
+
+23
+00:02:41,366 --> 00:02:45,790
+Pearson's r measures how tightly two numbers move together in a straight line.
+
+24
+00:02:46,590 --> 00:02:50,438
+Spend and visits correlate strongly, at about point seven eight.
+
+25
+00:02:51,238 --> 00:02:57,710
+Pearson only sees straight lines, and outliers dominate it. Spearman and Kendall use ranks instead.
+
+26
+00:02:58,510 --> 00:03:06,518
+And a correlation of group means can even reverse the raw one. That's Simpson's paradox, so the result says which rows it used.
+
+27
+00:03:07,318 --> 00:03:12,723
+Post-tests run last, on the result rows: after groups, aggregations and windows.
+
+28
+00:03:13,523 --> 00:03:20,699
+The trend test asks whether an ordered series is rising or falling. Running it on a moving average tames the noise.
+
+29
+00:03:21,499 --> 00:03:29,870
+Tukey compares every pair of group means while controlling the family-wise error. Result rows carry no weights, so it never runs weighted.
+
+30
+00:03:30,670 --> 00:03:38,059
+Run many tests and some will look significant by luck. Add a multiplicity block, and Pulse corrects them as a family.
+
+31
+00:03:38,859 --> 00:03:42,899
+The adjusted p-value sits beside the raw one, which never moves.
+
+32
+00:03:43,699 --> 00:03:50,022
+Holm sorts the p-values, multiplies the smallest by four, the next by three, and keeps them in order.
+
+33
+00:03:50,822 --> 00:03:57,401
+Pick a method and a family. If ten or more p-values go uncorrected, predict raises an advisory.
+
+34
+00:03:58,201 --> 00:04:03,798
+Ordinary least squares fits a straight line through the data. Here, spend from visits and tenure.
+
+35
+00:04:04,598 --> 00:04:11,305
+Each residual is the gap between a point and the fit. Least squares makes their squares as small as possible.
+
+36
+00:04:12,105 --> 00:04:21,201
+Each coefficient comes with a standard error and an interval. Each extra visit adds about three point one five to spend, holding tenure fixed.
+
+37
+00:04:22,001 --> 00:04:29,945
+It explains about seventy percent of the variation. A null in any column drops that row, and the fit streams in a single pass.
+
+38
+00:04:30,745 --> 00:04:36,705
+The same fit covers many textbook names. Penalties give ridge, lasso and elastic net.
+
+39
+00:04:37,505 --> 00:04:42,484
+Resampling replaces the standard errors with jackknife or bootstrap estimates.
+
+40
+00:04:43,284 --> 00:04:51,868
+Selection searches the predictors by AIC or BIC. A dropped predictor vanishes from the output: absent is not zero.
+
+41
+00:04:52,668 --> 00:04:58,436
+For a curve, build polynomial columns upstream as features, then fit a straight line through them.
+
+42
+00:04:59,236 --> 00:05:04,385
+For a yes or no outcome, the generalized linear model fits a logistic curve.
+
+43
+00:05:05,185 --> 00:05:12,873
+Its coefficients are on the log-odds scale. Each extra visit multiplies the odds of converting by about one point four.
+
+44
+00:05:13,673 --> 00:05:19,526
+It always buffers, because the fit iterates. Perfectly separated data never converges.
+
+45
+00:05:20,326 --> 00:05:24,537
+The Bayesian linear fit starts from a prior and updates it with the data.
+
+46
+00:05:25,337 --> 00:05:32,150
+It reports credible intervals and no p-values at all. With a vague prior, it lands near the least-squares answer.
+
+47
+00:05:32,950 --> 00:05:38,547
+Tests built on running counts and moments stream, and so do least squares and the Bayesian fit.
+
+48
+00:05:39,347 --> 00:05:44,326
+Rank tests, exact tables, iterative fits, resampling and selection buffer.
+
+49
+00:05:45,126 --> 00:05:51,363
+A mean-based test beside a Welford aggregate on the same field reuses its running state for free.
+
+50
+00:05:52,163 --> 00:06:00,342
+That's the toolkit today: tests that compare, relate and check shape, multivariate tests, and regression engines with their modifiers.
+
+51
+00:06:01,142 --> 00:06:08,745
+More are added over time, and embedders can register their own tests. The manifest always shows what your instance offers.
+
+52
+00:06:09,545 --> 00:06:14,438
+Remember: read the effect size beside the p-value. Next up, matrices.
+
+53
+00:06:15,238 --> 00:06:17,081
+Pulse tests and regressions.
