@@ -14,6 +14,7 @@ import { getIn } from './jsonEdit.ts'
 import { stringValue } from './jsonTree.ts'
 import type { GraphModel } from './model.ts'
 import { isPathPrefix } from './nodePath.ts'
+import { chainRefusal } from './chainRules.ts'
 import { buildForm, formProblems, type Catalog } from './paramForms.ts'
 import { refusal, slotsFor } from './ports.ts'
 import { sectionInfo } from './requestGraph.ts'
@@ -33,7 +34,8 @@ export type NodeValidation = { issues: Issue[]; explain?: string }
 // answers valid:false with a buffered-path hint), missing required params
 // and exactly_one_of groups the manifest declares (the inspector form's
 // own check), and cohort fields wired into inputs that refuse their
-// type. Without a manifest nothing is checked.
+// type, and, in a chain, stage operators the chain gate rejects. Without
+// a manifest nothing is checked.
 export function clientIssues(model: GraphModel, catalog: Catalog, cohortFields?: CohortField[]): Issue[] {
   const manifest = catalog.manifest
   if (!manifest) return []
@@ -56,6 +58,11 @@ export function clientIssues(model: GraphModel, catalog: Catalog, cohortFields?:
         source: 'client',
       })
       continue
+    }
+    // Chain stages run only what the chain gate accepts (chainRules.ts).
+    if (model.kind === 'chain' && node.id.startsWith('stages[')) {
+      const why = chainRefusal(manifest, node.section, op, Number(/^stages\[(\d+)\]/.exec(node.id)?.[1] ?? 0))
+      if (why) out.push({ path: node.id, severity: 'error', code: 'CHAIN_STAGE', message: why, current: op, source: 'client' })
     }
     // Required params as the manifest declares them (generated forms
     // only: hand-written forms mark inputs required that some operators

@@ -17,10 +17,36 @@ test('opens a plain request as a stage-column graph', async ({ page }) => {
   await expect(graph.locator('.react-flow__edge')).toHaveCount(13)
 })
 
-test('facet files open to a not-yet-supported view', async ({ page }) => {
+// Facet edits stay unsaved here: the smoke server serves the real
+// showcase dir (the save round trip is covered by chainFacet.save.test.ts).
+test('facet files open with a live facet preview and editable settings', async ({ page }) => {
   await page.goto('/')
   await page.getByRole('button', { name: 'req/02_srm_gof.facet.json' }).click()
-  await expect(page.getByTestId('unsupported')).toContainText('not yet supported')
+  const graph = page.getByTestId('request-graph')
+  const facet = graph.locator('[data-path="fields"]')
+  await expect(facet).toContainText('FACET')
+  await expect(graph.locator('[data-path="overlays[0]"]')).toContainText('OVERLAY_CHISQ_VS_POP')
+  await expect(graph.locator('.react-flow__edge')).toHaveCount(1)
+  // The facet node previews the facet itself: per-value counts of arm.
+  await expect(facet.getByTestId('facet-result')).toHaveAttribute('data-state', 'ok')
+  await expect(facet.locator('[data-testid="facet-result"] [data-field="arm"] li')).not.toHaveCount(0)
+  await facet.locator('.gnode-head').click()
+  const insp = page.getByTestId('inspector')
+  await expect(insp).toHaveAttribute('data-node', 'fields')
+  await insp.getByLabel('discrete_top_k').fill('5')
+  await insp.getByLabel('discrete_top_k').press('Enter')
+  await expect(facet.locator('[data-row="discrete_top_k"]')).toContainText('5')
+  await expect(page.getByTestId('dirty-state')).toContainText('unsaved')
+  await expect(facet.getByTestId('facet-result')).toHaveAttribute('data-state', 'ok')
+})
+
+test('cohort and non-request files do not open as graphs', async ({ page }) => {
+  await page.goto('/')
+  await page.getByRole('button', { name: 'ab_test.pulse' }).click()
+  await expect(page.getByTestId('cohort-file')).toContainText('New request')
+  const out = page.getByRole('button', { name: 'out/02_srm_gof.json' })
+  await expect(out).toBeDisabled()
+  await expect(out).toHaveAttribute('title', /not a Pulse request/)
 })
 
 test('compose files open as parallel lanes with per-lane previews', async ({ page }) => {

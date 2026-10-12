@@ -23,7 +23,6 @@ import {
   saveLayout,
   type Catalog,
   type CohortField,
-  type FileKind,
   type WorkspaceFile,
 } from '../api.ts'
 import { cohortCandidates } from './cohortPath.ts'
@@ -32,8 +31,12 @@ import { emitModel, emitModelText, parseModel, updateNode, type GraphModel } fro
 import { buildRequestGraph, estimateHeight, LAYOUT, type GraphEdge, type GraphNode, type RequestGraph } from './requestGraph.ts'
 import { emptyLayout, layoutText, moveNode, parseLayout, positionOf, pruneLayout, renameNodes, type Layout } from './layout.ts'
 import { frameOf, isPathPrefix, parsePath, type PathSegment } from './nodePath.ts'
+import { buildChainGraph, type ChainGraph } from './chainGraph.ts'
+import { chainRefusal } from './chainRules.ts'
+import { buildFacetGraph, FACET_NODE, FACET_PROPS } from './facetGraph.ts'
+import { FacetInspector } from './FacetInspector.tsx'
 import { buildComposeGraph, LANE, laneAt, laneOrder, moveLane, ROOT_LANE, stackLanes, type ComposeGraph, type LaneBox } from './composeGraph.ts'
-import { addLane, removable, removeLane, renameLane, renameLaneIds } from './lanes.ts'
+import { addLane, moveStage, removable, removeLane, renameLane, renameLaneIds } from './lanes.ts'
 import { LaneActionsContext, type LaneActions } from './laneActions.ts'
 import {
   checkConnection,
@@ -47,7 +50,7 @@ import {
   type Wire,
   type WireCheck,
 } from './wiring.ts'
-import { CohortNodeView, LaneNodeView, OpNodeView, RawNodeView, type LaneNode } from './nodes.tsx'
+import { CohortNodeView, FacetNodeView, LaneNodeView, OpNodeView, RawNodeView, type LaneNode } from './nodes.tsx'
 import { Inspector } from './Inspector.tsx'
 import { Palette } from './Palette.tsx'
 import { itemsForPort, PALETTE_MIME, paletteItems, placeNode, type PaletteItem, type PortSource } from './palette.ts'
@@ -57,42 +60,41 @@ import { useValidation, ValidationContext } from './useValidation.ts'
 import { proposal, worst, type Issue } from './validation.ts'
 import './graph.css'
 
-const nodeTypes = { op: OpNodeView, cohort: CohortNodeView, raw: RawNodeView, lane: LaneNodeView }
+const nodeTypes = { op: OpNodeView, cohort: CohortNodeView, raw: RawNodeView, facet: FacetNodeView, lane: LaneNodeView }
 
-// FlowNode is what the canvas draws: graph nodes plus compose lanes
-// (parent nodes holding a slot's or fit's graph nodes).
+// FlowNode is what the canvas draws: graph nodes plus lanes (parent
+// nodes holding a compose slot's or fit's, or a chain stage's, nodes).
 type FlowNode = GraphNode | LaneNode
 
-const UNSUPPORTED: Partial<Record<FileKind, string>> = {
-  facet: 'Facet requests',
-  chain: 'Chain requests',
-  cohort: 'Cohort files',
-}
+// The request roots the graph view opens.
+type ViewKind = 'request' | 'compose' | 'chain' | 'facet'
 
 type Props = { file: WorkspaceFile | null; catalog?: Catalog }
 
 // RequestView opens the selected file. Plain requests render as a
 // stage-column graph with an inspector; compose requests as parallel
-// lanes of such graphs (composeGraph.ts); other kinds get a "not yet
-// supported" view.
+// lanes of such graphs (composeGraph.ts); chains as stacked stage lanes
+// (chainGraph.ts); facets as the cohort, filters and a facet output node
+// (facetGraph.ts). A cohort file is data, not a request: it points at
+// New request.
 export function RequestView({ file, catalog }: Props) {
   if (!file) return <Empty title="No file open" body="Pick a request from the sidebar." />
-  const unsupported = UNSUPPORTED[file.kind]
-  if (unsupported) {
+  if (file.kind === 'cohort') {
     return (
       <Empty
-        testId="unsupported"
-        title={`${unsupported} are not yet supported`}
-        body={`${file.path} is a ${file.kind} file. The graph view opens plain and compose requests only for now.`}
+        testId="cohort-file"
+        title="Cohort file"
+        body={`${file.path} is a cohort. Use New request in the sidebar to build a request on it.`}
       />
     )
   }
-  if (file.kind !== 'request' && file.kind !== 'compose') return <Empty title="Cannot open" body={file.reason ?? file.path} />
+  if (file.kind === 'unopenable') return <Empty testId="unopenable" title="Cannot open" body={file.reason ?? file.path} />
   return <RequestGraphView key={file.path} path={file.path} kind={file.kind} catalog={catalog} />
 }
 
-// The canvas graph: a plain request's graph, or a compose root's lanes.
-type ViewGraph = RequestGraph & { compose?: ComposeGraph }
+// The canvas graph: a plain request's or facet's graph, or the lanes of
+// a compose or chain root (inputs: each chain stage's input columns).
+type ViewGraph = RequestGraph & { compose?: ComposeGraph; inputs?: ChainGraph['inputs'] }
 
 // Cohort inspection of one distinct cohort reference (keyed by its JSON).
 type CohortState = { fields?: CohortField[]; error?: string }
@@ -108,7 +110,7 @@ type LayoutDoc = { layout: Layout; saved: string }
 
 const EMPTY_LAYOUT: LayoutDoc = { layout: emptyLayout(), saved: layoutText(emptyLayout()) }
 
-function RequestGraphView({ path, kind, catalog }: { path: string; kind: 'request' | 'compose'; catalog?: Catalog }) {
+function RequestGraphView({ path, kind, catalog }: { path: string; kind: ViewKind; catalog?: Catalog }) {
   const [doc, setDoc] = useState<Doc | null>(null)
   const [error, setError] = useState<string | null>(null)
   // Inspected cohorts by cohort-reference JSON (one per plain request,
@@ -221,8 +223,10 @@ function RequestGraphView({ path, kind, catalog }: { path: string; kind: 'reques
   const cohortStates = laneKeys.map((k) => cohorts.get(k))
   const cohortError = cohortStates.find((c) => c?.error !== undefined)?.error ?? null
   // One cohort shared by the whole document: its fields (plain requests,
-  // and compose files whose lanes all read the same cohort).
-  const fields = laneKeys.length === 1 ? cohorts.get(laneKeys[0])?.fields : undefined
+  // facets, and compose files whose lanes all read the same cohort). A
+  // chain's later stages read stage output, not the cohort, so a chain
+  // gets no document-wide field types.
+  const fields = laneKeys.length === 1 && kind !== 'chain' ? cohorts.get(laneKeys[0])?.fields : undefined
   const previewsOff =
     laneKeys.length === 0
       ? 'no cohort, no preview'
@@ -239,6 +243,11 @@ function RequestGraphView({ path, kind, catalog }: { path: string; kind: 'reques
         const compose = buildComposeGraph(plain, { manifest: catalog?.manifest, fieldsFor })
         return { nodes: compose.nodes, edges: compose.edges, columns: compose.columns, compose }
       }
+      if (kind === 'chain') {
+        const chain = buildChainGraph(plain, { manifest: catalog?.manifest, cohortFields: fieldsFor('') })
+        return { nodes: chain.nodes, edges: chain.edges, columns: chain.columns, compose: chain, inputs: chain.inputs }
+      }
+      if (kind === 'facet') return buildFacetGraph(plain, { manifest: catalog?.manifest, cohortFields: fieldsFor('') })
       return buildRequestGraph(plain, { manifest: catalog?.manifest, cohortFields: fieldsFor('') })
     } catch (e) {
       return String(e)
@@ -249,8 +258,23 @@ function RequestGraphView({ path, kind, catalog }: { path: string; kind: 'reques
   const previews = usePreviews(path, doc?.model ?? null, graph !== null && typeof graph !== 'string' ? graph : null, previewsOff)
 
   const compose = graph !== null && typeof graph !== 'string' ? graph.compose : undefined
-  const order = useMemo(() => (compose ? laneOrder(compose.lanes, lay.layout.lanes) : []), [compose, lay.layout.lanes])
+  // Chain stages run in document order; only compose lanes reorder by
+  // the sidecar.
+  const order = useMemo(
+    () => (compose ? laneOrder(compose.lanes, kind === 'compose' ? lay.layout.lanes : undefined) : []),
+    [compose, kind, lay.layout.lanes],
+  )
   const laneById = useMemo(() => new Map(compose?.lanes.map((l) => [l.id, l]) ?? []), [compose])
+  const inputs = graph !== null && typeof graph !== 'string' ? graph.inputs : undefined
+  // The lane a node is drawn in ('' without lanes).
+  const parentOf = useMemo(
+    () => new Map(graph !== null && typeof graph !== 'string' ? graph.nodes.map((n) => [n.id, n.parentId ?? '']) : []),
+    [graph],
+  )
+  const laneOf = useCallback((id: string) => parentOf.get(id) ?? laneOfId(kind, id), [parentOf, kind])
+  // The fields a lane's entries read: a chain stage's input columns, else
+  // its cohort's fields.
+  const laneFields = useCallback((lane: string) => (inputs ? inputs.get(lane) : fieldsFor(lane)), [inputs, fieldsFor])
 
   // Validation (manifest checks + engine predict / explain of the
   // in-memory document) reaches nodes by context, like previews. Compose
@@ -258,9 +282,14 @@ function RequestGraphView({ path, kind, catalog }: { path: string; kind: 'reques
   const nodeIds = useMemo(
     () =>
       graph !== null && typeof graph !== 'string'
-        ? [...(graph.compose?.lanes.filter((l) => l.role !== 'root').map((l) => l.id) ?? []), ...graph.nodes.map((n) => n.id)]
+        ? [
+            ...(graph.compose?.lanes.filter((l) => l.role !== 'root').map((l) => l.id) ?? []),
+            ...graph.nodes.map((n) => n.id),
+            // A facet node shows the issues of every facet setting.
+            ...(kind === 'facet' ? FACET_PROPS.filter((k) => k !== FACET_NODE) : []),
+          ]
         : [],
-    [graph],
+    [graph, kind],
   )
   const validationCatalog = useMemo(() => catalog ?? {}, [catalog])
   const validation = useValidation(path, doc?.model ?? null, nodeIds, validationCatalog, fields)
@@ -317,12 +346,32 @@ function RequestGraphView({ path, kind, catalog }: { path: string; kind: 'reques
           place: order.indexOf(b.id),
           count: order.length,
           removable: doc !== null && removable(doc.model, b.id),
+          ...(kind === 'chain' && lane.role === 'root' && { roleLabel: 'chain' }),
         },
       }
     })
     // Parents come before their children.
     return [...lanes, ...content]
-  }, [compose, content, boxes, laneById, order, measured, doc])
+  }, [compose, content, boxes, laneById, order, measured, doc, kind])
+
+  // Lanes take their height from measured content, which arrives after
+  // React Flow's initial fitView: fit once more when every node has a
+  // size, so the bottom lane does not start off-screen.
+  const refitted = useRef(false)
+  useEffect(() => {
+    if (refitted.current || !compose || content.length === 0 || !content.every((n) => n.measured)) return
+    let inner = 0
+    const outer = requestAnimationFrame(() => {
+      inner = requestAnimationFrame(() => {
+        refitted.current = true
+        void rf.current?.fitView()
+      })
+    })
+    return () => {
+      cancelAnimationFrame(outer)
+      cancelAnimationFrame(inner)
+    }
+  }, [compose, content])
 
   const edges = useMemo((): GraphEdge[] => {
     if (graph === null || typeof graph === 'string') return []
@@ -370,9 +419,9 @@ function RequestGraphView({ path, kind, catalog }: { path: string; kind: 'reques
   const check = useCallback(
     (w: Wire): WireCheck =>
       placed
-        ? checkConnection(placed, w, { manifest: catalog?.manifest, cohortFields: fieldsFor(laneOfId(kind, w.target ?? '')) })
+        ? checkConnection(placed, w, { manifest: catalog?.manifest, cohortFields: laneFields(laneOf(w.target ?? '')) })
         : { ok: false, reason: 'no graph' },
-    [placed, catalog, fieldsFor, kind],
+    [placed, catalog, laneFields, laneOf],
   )
 
   const show = useCallback((n: { text: string; testId: string } | null) => {
@@ -399,8 +448,8 @@ function RequestGraphView({ path, kind, catalog }: { path: string; kind: 'reques
   const onConnectEnd = useCallback(
     (ev: MouseEvent | TouchEvent, s: FinalConnectionState) => {
       if (!s.toHandle && s.fromHandle?.type === 'source' && onPane(ev)) {
-        const lane = laneOfId(kind, s.fromHandle.nodeId)
-        const src = placed ? portSource(placed.nodes, s.fromHandle, catalog?.manifest, fieldsFor(lane)) : null
+        const lane = laneOf(s.fromHandle.nodeId)
+        const src = placed ? portSource(placed.nodes, s.fromHandle, catalog?.manifest, laneFields(lane)) : null
         const box = flowBox.current?.getBoundingClientRect()
         if (!src || !box || !rf.current) return
         const { clientX, clientY } = pointOf(ev)
@@ -417,7 +466,7 @@ function RequestGraphView({ path, kind, catalog }: { path: string; kind: 'reques
       const r = check(wireOf(s.fromHandle, s.toHandle))
       if (!r.ok) note(r.reason)
     },
-    [check, note, placed, catalog, fieldsFor, kind],
+    [check, note, placed, catalog, laneFields, laneOf],
   )
 
   // Deleting a node removes its JSON (and so its wires); deleting a wire
@@ -467,8 +516,14 @@ function RequestGraphView({ path, kind, catalog }: { path: string; kind: 'reques
   )
 
   // The palette is generated from the catalog: a catalog reload (engine
-  // or feature-set change) regenerates it.
-  const items = useMemo(() => paletteItems(catalog?.manifest), [catalog])
+  // or feature-set change) regenerates it. A chain stage lists only what
+  // the chain gate accepts; a facet takes filters and overlays.
+  const items = useMemo(() => {
+    const all = paletteItems(catalog?.manifest)
+    if (kind === 'chain') return all.filter((it) => chainRefusal(catalog?.manifest, it.section, it.type) === null)
+    if (kind === 'facet') return all.filter((it) => it.section === 'filterers' || it.section === 'overlays')
+    return all
+  }, [catalog, kind])
   const baseOf = useCallback((lane: string): PathSegment[] => laneById.get(lane)?.base ?? [], [laneById])
   const portItems = useMemo(
     () => (portPick && doc ? itemsForPort(items, catalog?.manifest, doc.model, portPick.src, baseOf(portPick.lane)) : []),
@@ -479,10 +534,10 @@ function RequestGraphView({ path, kind, catalog }: { path: string; kind: 'reques
   // node's lane, else the first slot lane.
   const pickLane = useCallback((): string => {
     if (!compose) return ''
-    const own = selected !== null ? laneOfId(kind, selected) : undefined
+    const own = selected !== null ? laneOf(selected) : undefined
     if (own !== undefined && own !== ROOT_LANE && laneById.has(own)) return own
-    return order.find((id) => laneById.get(id)?.role === 'slot') ?? order[0] ?? ''
-  }, [compose, selected, kind, laneById, order])
+    return order.find((id) => ['slot', 'stage'].includes(laneById.get(id)?.role ?? '')) ?? order[0] ?? ''
+  }, [compose, selected, laneOf, laneById, order])
 
   // place appends a new entry for item (wired, when a port drag opened
   // the palette) to the request of lane ('' for a plain request) and
@@ -492,12 +547,17 @@ function RequestGraphView({ path, kind, catalog }: { path: string; kind: 'reques
   const place = useCallback(
     (item: PaletteItem, lane: string, at?: { x: number; y: number }, wire?: { rowKey: string; ref: string }) => {
       if (!doc) return
+      const gate = kind === 'chain' ? chainRefusal(catalog?.manifest, item.section, item.type, laneById.get(lane)?.index) : null
+      if (gate !== null) {
+        show({ text: `Cannot add ${item.op}: ${gate}`, testId: 'place-refused' })
+        return
+      }
       let r: { model: GraphModel; id: string }
       try {
         r = placeNode(doc.model, item, {
           manifest: catalog?.manifest,
           schema: catalog?.schema,
-          cohortFields: fieldsFor(lane),
+          cohortFields: laneFields(lane),
           wire,
           base: baseOf(lane),
         })
@@ -519,7 +579,7 @@ function RequestGraphView({ path, kind, catalog }: { path: string; kind: 'reques
       setSelectedEdge(null)
       show(null)
     },
-    [doc, catalog, fieldsFor, baseOf, placed, boxes, compose, show],
+    [doc, catalog, laneFields, baseOf, placed, boxes, compose, show, kind, laneById],
   )
 
   // A palette item dropped on the canvas lands in its own stage column
@@ -584,10 +644,26 @@ function RequestGraphView({ path, kind, catalog }: { path: string; kind: 'reques
       },
       move: (id, delta) => {
         if (!compose) return
-        setLay((l) => ({ ...l, layout: { ...l.layout, lanes: moveLane(laneOrder(compose.lanes, l.layout.lanes), id, delta) } }))
+        if (kind !== 'chain') {
+          setLay((l) => ({ ...l, layout: { ...l.layout, lanes: moveLane(laneOrder(compose.lanes, l.layout.lanes), id, delta) } }))
+          return
+        }
+        // A chain stage moves in the document; positions follow its nodes.
+        if (!doc) return
+        let r: ReturnType<typeof moveStage>
+        try {
+          r = moveStage(doc.model, id, delta)
+        } catch (e) {
+          fail('move stage', e)
+          return
+        }
+        setDoc({ ...doc, model: r.model })
+        setLay((l) => ({ ...l, layout: renameNodes(l.layout, () => false, r.renames) }))
+        setSelected(null)
+        setSelectedEdge(null)
       },
     }
-  }, [doc, compose, show])
+  }, [doc, compose, show, kind])
 
   const newLane = useCallback(() => {
     if (!doc) return
@@ -671,9 +747,14 @@ function RequestGraphView({ path, kind, catalog }: { path: string; kind: 'reques
         >
           + Node
         </button>
-        {compose && (
+        {compose && kind === 'compose' && (
           <button type="button" data-testid="lane-add" onClick={newLane} title="Add a compose slot (a new lane reading the last lane's cohort)">
             + Lane
+          </button>
+        )}
+        {kind === 'chain' && (
+          <button type="button" data-testid="lane-add" onClick={newLane} title="Add a chain stage (reads the last stage's output)">
+            + Stage
           </button>
         )}
         {saveError && <span className="err">{saveError}</span>}
@@ -783,7 +864,10 @@ function RequestGraphView({ path, kind, catalog }: { path: string; kind: 'reques
             </div>
           )}
         </div>
-        {node && (
+        {node && kind === 'facet' && node.id === FACET_NODE && (
+          <FacetInspector model={doc.model} cohortFields={fields} onChange={(m) => setDoc({ ...doc, model: m })} onClose={() => setSelected(null)} />
+        )}
+        {node && !(kind === 'facet' && node.id === FACET_NODE) && (
           <Inspector
             node={node}
             catalog={catalog ?? {}}
@@ -799,9 +883,15 @@ function RequestGraphView({ path, kind, catalog }: { path: string; kind: 'reques
 
 const DELETE_KEYS = ['Backspace', 'Delete']
 
-// laneOfId is the lane a node id belongs to: '' in a plain request; in a
-// compose, its slot (`requests[1]`), its fit (`fits[0]`) or ROOT_LANE.
-function laneOfId(kind: 'request' | 'compose', id: string): string {
+// laneOfId is the lane a node id belongs to when the graph has no such
+// node: '' without lanes; in a compose, its slot (`requests[1]`), its fit
+// (`fits[0]`) or ROOT_LANE; in a chain, its stage (`stages[2]`) or
+// ROOT_LANE.
+function laneOfId(kind: ViewKind, id: string): string {
+  if (kind === 'chain') {
+    const frame = frameOf(id)
+    return frame === '' ? ROOT_LANE : frame.slice(0, frame.indexOf(']') + 1)
+  }
   if (kind !== 'compose') return ''
   const frame = frameOf(id)
   if (frame === '') return ROOT_LANE
@@ -809,14 +899,15 @@ function laneOfId(kind: 'request' | 'compose', id: string): string {
 }
 
 // cohortRefsOf maps each lane to its cohort reference as JSON (the key
-// cohorts are inspected and cached by): the request's cohort for a plain
-// request (lane ''), each slot's and fit's cohort for a compose.
-function cohortRefsOf(plain: unknown, kind: 'request' | 'compose'): Map<string, string> {
+// cohorts are inspected and cached by): the root's cohort for a plain
+// request, chain or facet (lane ''), each slot's and fit's cohort for a
+// compose.
+function cohortRefsOf(plain: unknown, kind: ViewKind): Map<string, string> {
   const out = new Map<string, string>()
   if (typeof plain !== 'object' || plain === null) return out
   const doc = plain as Record<string, unknown>
   const ref = (v: unknown) => JSON.stringify((typeof v === 'object' && v !== null && (v as { cohort?: unknown }).cohort) || null)
-  if (kind === 'request') {
+  if (kind !== 'compose') {
     out.set('', ref(doc))
     return out
   }

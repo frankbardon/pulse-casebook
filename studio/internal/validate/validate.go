@@ -285,7 +285,13 @@ func frameOf(doc map[string]any, rootKind string, details map[string]any) ([]pre
 			}
 		}
 	case "chain":
-		if i, ok := asInt(details["stage"]); ok {
+		// Most stage errors say "stage"; the chain gate
+		// (PULSE_CHAIN_NOT_MERGEABLE) says "stage_index".
+		i, ok := asInt(details["stage"])
+		if !ok {
+			i, ok = asInt(details["stage_index"])
+		}
+		if ok {
 			segs := []preview.Segment{preview.Key("stages"), preview.Index(i), preview.Key("request")}
 			if f, ok := getAt(doc, segs...); ok {
 				m, _ := f.(map[string]any)

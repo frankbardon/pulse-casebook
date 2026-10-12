@@ -926,3 +926,100 @@
 .gnode-row.fit .k {
   color: var(--stage-derive);
 }
+
+/* Facet root: the facet output node and its live result. */
+.gnode.facet {
+  --stage: var(--accent);
+}
+
+.facet-result {
+  height: 162px;
+  overflow-y: auto;
+  padding: var(--space-1) var(--space-2);
+  border-top: 1px dashed var(--border);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+.facet-result p {
+  margin: 0;
+}
+
+.facet-field + .facet-field {
+  margin-top: var(--space-1);
+  padding-top: var(--space-1);
+  border-top: 1px dotted var(--border);
+}
+
+.facet-field header {
+  display: flex;
+  gap: var(--space-2);
+  font-weight: 600;
+}
+
+.facet-field header .type {
+  color: var(--muted);
+  font-weight: normal;
+}
+
+.facet-values {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.facet-values li {
+  display: grid;
+  grid-template-columns: 70px 1fr auto;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.facet-values .k {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.facet-values li.pv-muted {
+  display: block;
+}
+
+.facet-bar {
+  height: 6px;
+  background: var(--border);
+  border-radius: 1px;
+  overflow: hidden;
+}
+
+.facet-bar > span {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+}
+
+.facet-hist {
+  display: block;
+  width: 100%;
+  height: 24px;
+  fill: var(--accent);
+}
+
+.facet-pick {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-mono);
+}
+
+.facet-pick label {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+/* A chain stage's input wired from the previous stage's aggregation. */
+.react-flow__edge.stage-wire .react-flow__edge-path {
+  stroke-dasharray: 2 3;
+}

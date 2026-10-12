@@ -17,6 +17,7 @@ import { getIn, setIn } from './jsonEdit.ts'
 import type { JsonNode } from './jsonTree.ts'
 import { buildModel, emitModel, updateNode, type GraphModel } from './model.ts'
 import { formatPath, frameOf, parsePath, type PathSegment } from './nodePath.ts'
+import { FACET_NODE } from './facetGraph.ts'
 import { emitsType, refusal, slotFor } from './ports.ts'
 import { canSee, LAYOUT, type ColumnKey, type RequestGraph } from './requestGraph.ts'
 
@@ -64,8 +65,13 @@ export function checkConnection(graph: Pick<RequestGraph, 'nodes'>, wire: Wire, 
   }
   if (rowKey === FIT_ROW) return { ok: false, reason: `${op} fit takes a compose fit: wire it from a fit's regression` }
   // Each lane (compose slot or fit) is its own request: it cannot see
-  // another lane's fields or labels.
-  if (frameOf(src.id) !== frameOf(tgt.id)) return { ok: false, reason: 'lanes cannot see each other\'s fields or labels' }
+  // another lane's fields or labels. A chain stage reads the stage before
+  // it: the first stage the chain cohort, a later stage the previous
+  // stage's aggregation labels.
+  const across = frameOf(src.id) !== frameOf(tgt.id)
+  if (across && !feedsStage(src, tgt)) {
+    return { ok: false, reason: stageOf(tgt.id) !== undefined ? 'a chain stage reads only the stage before it' : 'lanes cannot see each other\'s fields or labels' }
+  }
 
   let ref: string
   let type: string | undefined
@@ -77,7 +83,7 @@ export function checkConnection(graph: Pick<RequestGraph, 'nodes'>, wire: Wire, 
     from = `field ${ref}`
   } else if (src.type === 'op' && wire.sourceHandle === 'out' && src.data.name !== undefined) {
     ref = src.data.name
-    if (!canSee(section, indexOf(tgt.id), src.data.section, indexOf(src.id), role)) {
+    if (!across && !canSee(section, indexOf(tgt.id), src.data.section, indexOf(src.id), role)) {
       return { ok: false, reason: `${tgt.data.title.toLowerCase()} runs before ${src.data.title.toLowerCase()} ${ref} exists` }
     }
     type = emitsType(ctx.manifest, src.data.section, src.data.op)
@@ -90,6 +96,21 @@ export function checkConnection(graph: Pick<RequestGraph, 'nodes'>, wire: Wire, 
   const why = refusal(slot.accept, type)
   if (why) return { ok: false, reason: `${op} ${slot.key} ${why} (${from})` }
   return { ok: true, ref, rowKey, ...(type && { sourceType: type }) }
+}
+
+// stageOf is the chain stage index of a node id (`stages[1].request.…`).
+function stageOf(id: string): number | undefined {
+  const m = /^stages\[(\d+)\]\.request$/.exec(frameOf(id))
+  return m ? Number(m[1]) : undefined
+}
+
+// feedsStage says whether src may wire into tgt across chain stages: the
+// chain cohort into the first stage, or an aggregation into the next.
+function feedsStage(src: RequestGraph['nodes'][number], tgt: RequestGraph['nodes'][number]): boolean {
+  const t = stageOf(tgt.id)
+  if (t === undefined) return false
+  if (src.type === 'cohort') return src.id === 'cohort' && t === 0
+  return src.type === 'op' && src.data.section === 'aggregations' && stageOf(src.id) === t - 1
 }
 
 // connectWire writes ref at rowKey inside entry id. A list item one past
@@ -128,10 +149,11 @@ export function disconnectWires(model: GraphModel, wires: { target: string; rowK
 }
 
 // deletable says whether a node can be deleted from the canvas: section
-// entries and raw sections can, the cohort cannot.
+// entries and raw sections can, the cohort and a facet's fields cannot.
 export function deletable(model: GraphModel, id: string): boolean {
   const n = model.nodes.get(id)
-  return !!n && n.kind !== 'cohort'
+  // A facet's field list is the facet itself (edit it in the inspector).
+  return !!n && n.kind !== 'cohort' && !(model.kind === 'facet' && id === FACET_NODE)
 }
 
 // deleteNode removes a node's JSON from the document and rebuilds the

@@ -72,6 +72,7 @@ func TestLocate(t *testing.T) {
 		{"compose slot", compose, "compose", map[string]any{"aggregation": "AGG_MEAN", "field": "nonexistent", "request": 1}, []string{"requests[1].aggregations[0].field"}},
 		{"compose slot level", compose, "compose", map[string]any{"request": 0, "field": "ghost"}, []string{"requests[0]"}},
 		{"chain stage", chain, "chain", map[string]any{"aggregation": "AGG_SUM", "field": "nope", "stage": 1}, []string{"stages[1].request.aggregations[0].field"}},
+		{"chain gate", chain, "chain", map[string]any{"stage_index": 1, "stage_name": "b"}, []string{"stages[1].request"}},
 		{"facet field list", facet, "facet", map[string]any{"field": "nope"}, []string{"fields[1]"}},
 		{"facet filter", facet, "facet", map[string]any{"filter": "FILTER_INCLUDE", "field": "nopef"}, []string{"filterers[0].field"}},
 	}

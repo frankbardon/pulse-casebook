@@ -87,10 +87,16 @@ export type CohortNodeData = {
 
 export type RawNodeData = { path: string; column: ColumnKey; section: string; json: string }
 
+// FacetNodeData is a Facet root's output node (facetGraph.ts): the
+// fields it summarizes (wired from the cohort) and its settings, with a
+// live preview of the facet result.
+export type FacetNodeData = { path: string; column: ColumnKey; rows: ParamRow[] }
+
 export type OpNode = Node<OpNodeData, 'op'>
 export type CohortNode = Node<CohortNodeData, 'cohort'>
 export type RawNode = Node<RawNodeData, 'raw'>
-export type GraphNode = OpNode | CohortNode | RawNode
+export type FacetNode = Node<FacetNodeData, 'facet'>
+export type GraphNode = OpNode | CohortNode | RawNode | FacetNode
 export type GraphEdge = Edge<{ ref: string; role: string }>
 
 export type RequestGraph = {
@@ -110,6 +116,10 @@ export type BuildOptions = {
   // false leaves out the cohort node (a compose root has no cohort of its
   // own); refs then never wire to it.
   withCohort?: boolean
+  // With withCohort false: refs naming one of cohortFields count as
+  // resolved without a wire (a chain stage reads the previous stage's
+  // rows, not a cohort node).
+  implicitFields?: boolean
 }
 
 type SectionSpec = {
@@ -190,7 +200,7 @@ export const PREVIEW_SECTIONS: ReadonlySet<string> = new Set([
 
 // hasPreview says whether a node carries a preview footer.
 export function hasPreview(n: GraphNode): boolean {
-  return n.type === 'cohort' || (n.type === 'op' && PREVIEW_SECTIONS.has(n.data.section))
+  return n.type === 'cohort' || n.type === 'facet' || (n.type === 'op' && PREVIEW_SECTIONS.has(n.data.section))
 }
 
 // Keys (last named path segment, outside `params`) whose values are field
@@ -212,6 +222,8 @@ export const LAYOUT = {
   // Fixed height of a node's preview footer, so previews arriving never
   // change a node's size or the column stacking.
   previewHeight: 38,
+  // Fixed height of a facet node's result preview (scrolls inside).
+  facetPreviewHeight: 200,
 }
 
 type Producer = { section: string; index: number; name: string; id: string }
@@ -306,7 +318,7 @@ export function buildRequestGraph(req: unknown, opts: BuildOptions = {}): Reques
       if (!src) continue
       if (src === 'cohort') {
         if (opts.withCohort === false) {
-          row.resolved = false
+          row.resolved = !!opts.implicitFields && knownNames.has(ref)
           continue
         }
         if (!referenced.includes(ref)) referenced.push(ref)
@@ -334,7 +346,7 @@ export function buildRequestGraph(req: unknown, opts: BuildOptions = {}): Reques
     },
   }
   const nodes: GraphNode[] = opts.withCohort === false ? [...raws, ...ops] : [cohort, ...raws, ...ops]
-  const columns = layout(nodes)
+  const columns = layoutNodes(nodes)
   return { nodes, edges, columns }
 }
 
@@ -446,9 +458,9 @@ export function rawNode(id: string, section: string, value: unknown): RawNode {
   }
 }
 
-// layout assigns positions: non-empty columns left to right in fixed stage
-// order, nodes stacked top-down in model order.
-function layout(nodes: GraphNode[]): RequestGraph['columns'] {
+// layoutNodes assigns positions: non-empty columns left to right in fixed
+// stage order, nodes stacked top-down in model order.
+export function layoutNodes(nodes: GraphNode[]): RequestGraph['columns'] {
   const used = COLUMNS.filter((c) => nodes.some((n) => n.data.column === c.key))
   const columns = used.map((c, i) => ({ ...c, x: i * (LAYOUT.nodeWidth + LAYOUT.columnGap) }))
   const yByColumn = new Map<ColumnKey, number>()
@@ -471,6 +483,8 @@ export function estimateHeight(n: GraphNode): number {
       return headerHeight + Math.max(1, n.data.fields.length) * rowHeight + padding + preview
     case 'raw':
       return 28 + n.data.json.split('\n').length * rawLineHeight + padding
+    case 'facet':
+      return headerHeight + n.data.rows.length * rowHeight + padding + LAYOUT.facetPreviewHeight
   }
 }
 

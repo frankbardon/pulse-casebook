@@ -1,4 +1,6 @@
-import { useNodeValidation } from './useValidation.ts'
+import { useContext } from 'react'
+import { ValidationContext } from './useValidation.ts'
+import type { NodeValidation } from './validation.ts'
 import { proposal, worst, type Issue } from './validation.ts'
 
 // NodeIssues decorates a node with its validation: a corner badge
@@ -7,8 +9,11 @@ import { proposal, worst, type Issue } from './validation.ts'
 // are absolutely positioned, so they never change the node's measured
 // size, and take no pointer events (the badge's title is for the
 // accessibility tree; the card shows on node hover).
-export function NodeIssues({ id }: { id: string }) {
-  const v = useNodeValidation(id)
+//
+// also lists further ids whose issues the node shows as its own (a facet
+// node carries every facet setting).
+export function NodeIssues({ id, also }: { id: string; also?: readonly string[] }) {
+  const v = useMergedValidation(id, also)
   if (!v) return null
   const sev = worst(v.issues)
   const shown = v.issues.filter((i) => i.severity !== 'hint')
@@ -59,4 +64,12 @@ function IssueLine({ issue }: { issue: Issue }) {
 function line(i: Issue): string {
   const p = proposal(i)
   return p === undefined ? i.message : `${i.message} (try ${p})`
+}
+
+function useMergedValidation(id: string, also: readonly string[] | undefined): NodeValidation | undefined {
+  const ctx = useContext(ValidationContext)
+  const parts = [...new Set([id, ...(also ?? [])])].map((x) => ctx.get(x)).filter((x): x is NodeValidation => x !== undefined)
+  if (parts.length <= 1) return parts[0]
+  const explain = parts.map((p) => p.explain).filter(Boolean).join('\n')
+  return { issues: parts.flatMap((p) => p.issues), ...(explain && { explain }) }
 }

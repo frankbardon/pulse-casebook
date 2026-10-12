@@ -110,6 +110,19 @@ function ProbeBody({
   runButton?: (t: string, title?: string) => ReactNode
 }) {
   switch (probe.kind) {
+    case 'facet': {
+      // A facet root's nodes: the records the facet (up to this node) counts.
+      const r = probe.rows
+      if (!r) return <Line muted>facet ready</Line>
+      return (
+        <Line>
+          <span>
+            {fmtCount(r.filtered)} of {fmtCount(r.total)} records
+          </span>
+          <span className="pv-strong">{fmtPct(r.filtered, r.total)}</span>
+        </Line>
+      )
+    }
     case 'cohort':
       return <Line>{probe.rows ? `${fmtCount(probe.rows.total)} rows` : '–'}</Line>
     case 'filter': {

@@ -6,6 +6,7 @@
 import type { PreviewProbe } from '../api.ts'
 import { stringifyJson } from './jsonTree.ts'
 import type { GraphModel } from './model.ts'
+import { FACET_NODE } from './facetGraph.ts'
 import { frameOf, splitFrame } from './nodePath.ts'
 import { COLUMNS, REQUEST_SECTIONS, hasPreview, sectionInfo, type GraphEdge, type GraphNode } from './requestGraph.ts'
 
@@ -58,6 +59,8 @@ const INDEPENDENT_SECTIONS = new Set(['regressions', 'matrices', 'overlays', 've
 // `requests[1].tests[0]`); null for the cohort, context keys and anything
 // not a modeled entry.
 function placeOf(id: string): Place | null {
+  // A facet's output node (facetGraph.ts) runs after its filters.
+  if (id === FACET_NODE) return { frame: '', section: FACET_NODE, index: 0, column: COLUMN_INDEX.get('analysis') ?? 0 }
   let frame, segs
   try {
     ;({ frame, rest: segs } = splitFrame(id))
@@ -77,6 +80,11 @@ function placeOf(id: string): Place | null {
 // a later stage column, a later entry of a sequential section, any
 // sibling of a test family, or the edit itself, all within one frame.
 function downstreamOf(e: Place, p: Place): boolean {
+  // A chain stage reads the previous stage's rows: everything in a later
+  // stage is downstream of an edit in an earlier one.
+  const es = stageOf(e.frame)
+  const ps = stageOf(p.frame)
+  if (es !== undefined && ps !== undefined && ps > es) return true
   if (p.frame !== e.frame) return false
   if (p.section === e.section) {
     if (p.index === e.index || FAMILY_SECTIONS.has(e.section)) return true
@@ -95,8 +103,9 @@ function downstreamOf(e: Place, p: Place): boolean {
 //
 // Multi-request roots: frames are independent of each other, except that
 // root-frame (compose-level) overlays read every slot, a compose-level
-// multiplicity block is inherited by every slot's tests, and fits feed
-// the slots that bind them (carried by the binding wires).
+// multiplicity block is inherited by every slot's tests, fits feed the
+// slots that bind them (carried by the binding wires), and a chain stage
+// feeds every later stage.
 export function invalidated(changed: Iterable<string>, graph: { nodes: GraphNode[]; edges: GraphEdge[] }): Set<string> {
   const all = () => new Set(graph.nodes.map((n) => n.id))
   const out = new Set<string>()
@@ -112,8 +121,13 @@ export function invalidated(changed: Iterable<string>, graph: { nodes: GraphNode
     const e = placeOf(id)
     if (!e) {
       const frame = frameOf(id)
-      if (!frame.startsWith('requests[')) return all()
-      for (const n of graph.nodes) if (frameOf(n.id) === frame) out.add(n.id)
+      const stage = stageOf(frame)
+      if (!frame.startsWith('requests[') && stage === undefined) return all()
+      for (const n of graph.nodes) {
+        const f = frameOf(n.id)
+        const s = stageOf(f)
+        if (f === frame || (stage !== undefined && s !== undefined && s > stage)) out.add(n.id)
+      }
       rootOverlays()
       continue
     }
@@ -139,6 +153,12 @@ export function invalidated(changed: Iterable<string>, graph: { nodes: GraphNode
   return out
 }
 
+// stageOf is the chain stage index of a frame (`stages[2].request`).
+function stageOf(frame: string): number | undefined {
+  const m = /^stages\[(\d+)\]\.request$/.exec(frame)
+  return m ? Number(m[1]) : undefined
+}
+
 // batches groups the previewable nodes among ids into preview calls: one
 // per frame and section (the API batches only nodes of one request frame
 // and section), in pipeline order so upstream nodes are queued first.
@@ -147,7 +167,7 @@ export function batches(ids: Iterable<string>, nodes: GraphNode[]): string[][] {
   const byKey = new Map<string, { section: string; ids: string[] }>()
   for (const n of nodes) {
     if (!want.has(n.id) || !hasPreview(n)) continue
-    const section = n.type === 'op' ? n.data.section : 'cohort'
+    const section = n.type === 'op' ? n.data.section : n.type === 'facet' ? FACET_NODE : 'cohort'
     const key = `${frameOf(n.id)}|${section}`
     const b = byKey.get(key) ?? { section, ids: [] }
     b.ids.push(n.id)
@@ -255,6 +275,67 @@ export function tableSummary(probe: PreviewProbe, label: string | undefined): { 
   if (vals.length === 0) return { count }
   if (vals.length === 1) return { count, detail: `${label} ${fmtNum(vals[0])}` }
   return { count, detail: `${label} ${fmtNum(Math.min(...vals))}…${fmtNum(Math.max(...vals))}` }
+}
+
+// --- facet results -----------------------------------------------------
+
+export type DiscreteSummary = { values: { value: string; count: number }[]; distinct: number; truncated: number }
+export type NumericSummary = {
+  min?: number
+  max?: number
+  mean?: number
+  stddev?: number
+  count?: number
+  percentiles: [string, number][]
+  bins?: number[]
+}
+export type FieldSummary = { name: string; type: string; nulls: number; discrete?: DiscreteSummary; numeric?: NumericSummary }
+
+// facetFields reads the FacetResult fields map of a facet probe, in name
+// order.
+export function facetFields(probe: PreviewProbe): FieldSummary[] {
+  const fs = probe.facet
+  if (!isObj(fs)) return []
+  return Object.keys(fs)
+    .sort()
+    .map((name): FieldSummary => {
+      const raw = fs[name]
+      const f = isObj(raw) ? raw : {}
+      const out: FieldSummary = { name, type: str(f.type_name), nulls: num(f.null_count) ?? 0 }
+      if (isObj(f.discrete)) {
+        const d = f.discrete
+        out.discrete = {
+          values: (Array.isArray(d.values) ? d.values : []).filter(isObj).map((v) => ({ value: str(v.value), count: num(v.count) ?? 0 })),
+          distinct: num(d.distinct_count) ?? 0,
+          truncated: num(d.truncated_at) ?? 0,
+        }
+      }
+      if (isObj(f.numeric)) {
+        const n = f.numeric
+        const pct = isObj(n.percentiles) ? n.percentiles : {}
+        const hist = isObj(n.histogram) && Array.isArray(n.histogram.bins) ? n.histogram.bins.map((b) => num(b) ?? 0) : undefined
+        out.numeric = {
+          min: num(n.min),
+          max: num(n.max),
+          mean: num(n.mean),
+          stddev: num(n.stddev),
+          count: num(n.count),
+          percentiles: Object.entries(pct)
+            .map(([p, v]): [string, number] => [p, num(v) ?? NaN])
+            .sort((a, b) => Number(a[0]) - Number(b[0])),
+          ...(hist && { bins: hist }),
+        }
+      }
+      return out
+    })
+}
+
+function num(v: unknown): number | undefined {
+  return typeof v === 'number' && Number.isFinite(v) ? v : undefined
+}
+
+function str(v: unknown): string {
+  return typeof v === 'string' ? v : v === undefined || v === null ? '' : String(v)
 }
 
 function isObj(v: unknown): v is Record<string, unknown> {

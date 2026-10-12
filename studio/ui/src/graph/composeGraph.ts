@@ -34,7 +34,7 @@ import { FIT_HANDLE, FIT_ROW } from './wiring.ts'
 
 export const ROOT_LANE = '(compose)'
 
-export type LaneRole = 'root' | 'slot' | 'fit'
+export type LaneRole = 'root' | 'slot' | 'fit' | 'stage'
 
 export type Lane = {
   id: string
@@ -146,7 +146,14 @@ export function buildComposeGraph(req: unknown, opts: ComposeOptions = {}): Comp
     add({ id, role: 'slot', index: i, base: ['requests', i], title: label ?? `request_${i + 1}`, named: label !== undefined }, g)
   })
 
-  // Shared stage columns across lanes, so stages line up vertically.
+  return buildComposeLayout(lanes, nodes, edges)
+}
+
+// buildComposeLayout puts lane content on shared stage columns (so stages
+// line up vertically across lanes) at lane-relative positions below the
+// lane header, and lists each lane's columns. Shared by compose and chain
+// lanes (chainGraph.ts).
+export function buildComposeLayout(lanes: Lane[], nodes: GraphNode[], edges: GraphEdge[]): ComposeGraph {
   const used = COLUMNS.filter((c) => nodes.some((n) => n.data.column === c.key))
   const columns = used.map((c, i) => ({ ...c, x: LANE.pad + i * (LAYOUT.nodeWidth + LAYOUT.columnGap) }))
   const xOf = new Map(columns.map((c) => [c.key, c.x]))

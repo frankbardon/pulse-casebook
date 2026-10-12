@@ -2,7 +2,9 @@ import { use, useState, type KeyboardEvent } from 'react'
 import { Handle, Position, type Node, type NodeProps } from '@xyflow/react'
 import type { LaneRole } from './composeGraph.ts'
 import { LaneActionsContext } from './laneActions.ts'
-import { PREVIEW_SECTIONS, type ColumnKey, type CohortNode, type OpNode, type RawNode } from './requestGraph.ts'
+import { PREVIEW_SECTIONS, type ColumnKey, type CohortNode, type FacetNode, type OpNode, type RawNode } from './requestGraph.ts'
+import { FACET_PROPS } from './facetGraph.ts'
+import { FacetResult } from './FacetPreview.tsx'
 import { FIT_HANDLE } from './wiring.ts'
 import { NodePreview } from './NodePreview.tsx'
 import { NodeIssues } from './NodeIssues.tsx'
@@ -76,6 +78,38 @@ export function CohortNodeView({ data }: NodeProps<CohortNode>) {
   )
 }
 
+// FacetNodeView is a Facet root's output: the fields it summarizes (each
+// a target handle wired from its cohort field), its settings, and the
+// live facet result. Its issues include those on every facet setting.
+export function FacetNodeView({ data }: NodeProps<FacetNode>) {
+  const n = data.rows.filter((r) => r.key.startsWith('fields[')).length
+  return (
+    <div className="gnode op facet" data-path={data.path}>
+      <header className="gnode-head">
+        <span className="gnode-stage">Facet</span>
+        <span className="gnode-op">FACET</span>
+        <span className="gnode-name">
+          {n} field{n === 1 ? '' : 's'}
+        </span>
+      </header>
+      <ul className="gnode-rows">
+        {data.rows.map((r) => (
+          <li key={r.key} className={'gnode-row' + (r.ref !== undefined && !r.resolved ? ' unresolved' : '')} data-row={r.key}>
+            {r.ref !== undefined && <Handle type="target" position={Position.Left} id={`in:${r.key}`} isConnectable={false} title={r.key} />}
+            <span className="k">{r.key}</span>
+            <span className="v" title={r.value}>
+              {r.value}
+            </span>
+          </li>
+        ))}
+      </ul>
+      <NodePreview id={data.path} />
+      <FacetResult id={data.path} />
+      <NodeIssues id={data.path} also={FACET_PROPS} />
+    </div>
+  )
+}
+
 // RawNodeView shows a section the builder does not model as read-only JSON.
 export function RawNodeView({ data }: NodeProps<RawNode>) {
   return (
@@ -101,14 +135,16 @@ export type LaneNodeData = {
   place: number
   count: number
   removable: boolean
+  // Overrides the role label (a chain's root lane says "chain").
+  roleLabel?: string
 }
 
 export type LaneNode = Node<LaneNodeData, 'lane'>
 
-const ROLE_LABEL: Record<LaneRole, string> = { root: 'compose', slot: 'slot', fit: 'fit' }
+const ROLE_LABEL: Record<LaneRole, string> = { root: 'compose', slot: 'slot', fit: 'fit', stage: 'stage' }
 
-// LaneNodeView is one compose lane: a labeled band holding a slot's (or
-// fit's) stage columns. The header renames (double-click the title),
+// LaneNodeView is one compose or chain lane: a labeled band holding a
+// slot's, fit's or chain stage's stage columns. The header renames (double-click the title),
 // reorders and removes the lane; its badge carries lane-level issues.
 export function LaneNodeView({ id, data }: NodeProps<LaneNode>) {
   const actions = use(LaneActionsContext)
@@ -126,7 +162,7 @@ export function LaneNodeView({ id, data }: NodeProps<LaneNode>) {
   return (
     <div className={'lane lane-' + data.role} data-lane={id} data-testid="lane">
       <header className="lane-head nopan">
-        <span className="lane-role">{ROLE_LABEL[data.role]}</span>
+        <span className="lane-role">{data.roleLabel ?? ROLE_LABEL[data.role]}</span>
         {editing !== null ? (
           <input
             className="lane-title-input nodrag"
