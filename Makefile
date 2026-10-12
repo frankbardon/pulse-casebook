@@ -5,7 +5,7 @@
 # which installs the pinned PULSE_VERSION from GitHub instead.
 PULSE_SRC     ?= $(abspath ../pulse)
 PULSE_REF     ?= main
-PULSE_VERSION ?= v1.0.0-alpha.9
+PULSE_VERSION ?= v1.0.0-alpha.10
 
 BIN     := bin
 STUDIO_UI   := studio/ui
@@ -75,10 +75,11 @@ studio: studio-ui ## Build the Studio binary (UI then Go) into bin/studio
 	cd studio && CGO_ENABLED=0 go build -trimpath -o $(abspath $(BIN))/studio .
 	@echo "· installed $(BIN)/studio (run: $(BIN)/studio showcase/ab-test-readout)"
 
-studio-bump: ## Pin studio/go.mod to the Pulse commit PULSE_REF resolves to in PULSE_SRC
-	@set -e; sha=$$(git -C "$(PULSE_SRC)" rev-parse "$(PULSE_REF)^{commit}"); \
-	echo "· pinning github.com/frankbardon/pulse@$$sha ($(PULSE_REF))"; \
-	cd studio && GOWORK=off go get github.com/frankbardon/pulse@$$sha && GOWORK=off go mod tidy; \
+studio-bump: ## Pin studio/go.mod to PULSE_REF in PULSE_SRC (a tag pins that release)
+	@set -e; ver=$$(git -C "$(PULSE_SRC)" describe --tags --exact-match "$(PULSE_REF)^{commit}" 2>/dev/null \
+	  || git -C "$(PULSE_SRC)" rev-parse "$(PULSE_REF)^{commit}"); \
+	echo "· pinning github.com/frankbardon/pulse@$$ver ($(PULSE_REF))"; \
+	cd studio && GOWORK=off go get github.com/frankbardon/pulse@$$ver && GOWORK=off go mod tidy; \
 	grep 'github.com/frankbardon/pulse ' go.mod
 
 studio-check: studio ## Studio gate: go vet, go test, tsc, eslint, vitest, Playwright e2e (temp workspaces)

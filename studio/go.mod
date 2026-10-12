@@ -2,7 +2,7 @@ module github.com/frankbardon/pulse-casebook/studio
 
 go 1.26.1
 
-require github.com/frankbardon/pulse v1.0.0-alpha.9.0.20261012142608-897342c4948f
+require github.com/frankbardon/pulse v1.0.0-alpha.10
 
 require (
 	github.com/andybalholm/brotli v1.2.3 // indirect

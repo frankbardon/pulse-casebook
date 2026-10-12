@@ -22,9 +22,12 @@ still starts but serves a hint page instead of the app.
 
 `studio/` is its own Go module. It pins the Pulse engine in `studio/go.mod`.
 
-- **Move the pin.** `make studio-bump` pins `studio/go.mod` to the commit that `PULSE_REF` (default
-  `main`) resolves to in the local Pulse checkout `PULSE_SRC` (default `../pulse`), then runs
-  `go mod tidy`. Rebuild with `make studio` afterwards.
+- **Move the pin.** The pin is a tagged Pulse release (currently `v1.0.0-alpha.10`).
+  `make studio-bump PULSE_REF=<tag>` pins `studio/go.mod` to that release, for example
+  `make studio-bump PULSE_REF=v1.0.0-alpha.10`. `PULSE_REF` is looked up in the local Pulse checkout
+  `PULSE_SRC` (default `../pulse`). If it names a commit with no tag (the default is `main`), the pin
+  becomes a Go pseudo-version of that commit. The target then runs `go mod tidy`. Rebuild with
+  `make studio` afterwards.
 - **Develop against a local Pulse checkout.** Create an untracked `studio/go.work` that points
   at your Pulse checkout. `studio/go.work` and `studio/go.work.sum` are gitignored. `make studio-bump`
   ignores the workspace file (`GOWORK=off`), so the pin is always written to `go.mod`.
@@ -150,5 +153,5 @@ Tools in this repository that walk the showcase request files skip `*.layout.jso
   protection: if another tool changes a file you have open, Studio overwrites it on Save.
 - **Cohorts are not built or edited.** Results are tables and the raw JSON envelope.
 - **Studio's `go.mod` pin can differ from `bin/pulse`.** `make pulse` builds the CLI from `PULSE_REF`,
-  while Studio uses the commit pinned in `studio/go.mod`. Run `make studio-bump` to align them if the
-  results differ.
+  while Studio uses the version pinned in `studio/go.mod`. To align them if the results differ, run
+  `make pulse` and `make studio-bump` with the same `PULSE_REF`.
