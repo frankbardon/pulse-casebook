@@ -6,6 +6,7 @@
   --muted: #6b6b66;
   --accent: #2b5fd9;
   --danger: #c0392b;
+  --warn: #b7791f;
   --stage-derive: #8e5bd0;
   --stage-filter: #c78a12;
   --stage-aggregate: #2b8a6e;
@@ -29,6 +30,7 @@
     --muted: #9a9a93;
     --accent: #7aa2ff;
     --danger: #ff6b5b;
+    --warn: #f0b429;
     --stage-derive: #b48cf0;
     --stage-filter: #e5ad45;
     --stage-aggregate: #4fbf9c;

@@ -50,6 +50,8 @@ import { Palette } from './Palette.tsx'
 import { itemsForPort, PALETTE_MIME, paletteItems, placeNode, type PaletteItem, type PortSource } from './palette.ts'
 import { emitsType } from './ports.ts'
 import { PreviewContext, usePreviews } from './usePreviews.ts'
+import { useValidation, ValidationContext } from './useValidation.ts'
+import { proposal, worst, type Issue } from './validation.ts'
 import './graph.css'
 
 const nodeTypes = { op: OpNodeView, cohort: CohortNodeView, raw: RawNodeView }
@@ -182,6 +184,12 @@ function RequestGraphView({ path, catalog }: { path: string; catalog?: Catalog }
     graph !== null && typeof graph !== 'string' ? graph : null,
     fields !== undefined ? undefined : cohortError !== null ? 'no cohort, no preview' : 'waiting for cohort',
   )
+
+  // Validation (manifest checks + engine predict / explain of the
+  // in-memory document) reaches nodes by context, like previews.
+  const nodeIds = useMemo(() => (graph !== null && typeof graph !== 'string' ? graph.nodes.map((n) => n.id) : []), [graph])
+  const validationCatalog = useMemo(() => catalog ?? {}, [catalog])
+  const validation = useValidation(path, doc?.model ?? null, nodeIds, validationCatalog, fields)
 
   // Sidecar positions override auto-layout; ids the graph no longer has
   // are simply never looked up.
@@ -457,6 +465,7 @@ function RequestGraphView({ path, catalog }: { path: string; catalog?: Catalog }
         </button>
         {saveError && <span className="err">{saveError}</span>}
         {cohortError && <span className="err">{cohortError}</span>}
+        <RequestIssues issues={validation.request} failed={validation.failed} />
       </div>
       <div className="graph-body">
         {paletteOpen && (
@@ -482,56 +491,58 @@ function RequestGraphView({ path, catalog }: { path: string; catalog?: Catalog }
           onDrop={onDrop}
         >
           <PreviewContext value={previews}>
-            <WireCheckContext value={check}>
-              <ReactFlow
-                nodes={nodes}
-                edges={edges}
-                nodeTypes={nodeTypes}
-                onNodesChange={onNodesChange}
-                isValidConnection={(c) => check(c).ok}
-                onConnect={onConnect}
-                onConnectStart={() => note(null)}
-                onConnectEnd={onConnectEnd}
-                connectionLineComponent={WireLine}
-                connectionRadius={24}
-                deleteKeyCode={DELETE_KEYS}
-                onBeforeDelete={onBeforeDelete}
-                onDelete={onDelete}
-                onNodeClick={(_, n) => {
-                  setSelected(n.id)
-                  setSelectedEdge(null)
-                }}
-                onEdgeClick={(_, e) => {
-                  setSelectedEdge(e.id)
-                  setSelected(null)
-                }}
-                onPaneClick={() => {
-                  // The click that ends a port drag on the pane must not
-                  // close the palette that drag just opened.
-                  if (Date.now() - portOpened.current < 300) return
-                  setSelected(null)
-                  setSelectedEdge(null)
-                  setPortPick(null)
-                }}
-                onInit={(i) => {
-                  rf.current = i
-                }}
-                fitView
-                minZoom={0.2}
-                proOptions={{ hideAttribution: true }}
-              >
-                <ViewportPortal>
-                  {graph.columns.map((c) => (
-                    <div key={c.key} className="col-title" style={{ transform: `translate(${c.x}px, -28px)` }}>
-                      {c.title}
-                    </div>
-                  ))}
-                </ViewportPortal>
-                <Background />
-                <Controls showInteractive={false} />
-                <RemeasureUnready />
-              </ReactFlow>
-            </WireCheckContext>
+            <ValidationContext value={validation}>
+              <WireCheckContext value={check}>
+                <ReactFlow
+                  nodes={nodes}
+                  edges={edges}
+                  nodeTypes={nodeTypes}
+                  onNodesChange={onNodesChange}
+                  isValidConnection={(c) => check(c).ok}
+                  onConnect={onConnect}
+                  onConnectStart={() => note(null)}
+                  onConnectEnd={onConnectEnd}
+                  connectionLineComponent={WireLine}
+                  connectionRadius={24}
+                  deleteKeyCode={DELETE_KEYS}
+                  onBeforeDelete={onBeforeDelete}
+                  onDelete={onDelete}
+                  onNodeClick={(_, n) => {
+                    setSelected(n.id)
+                    setSelectedEdge(null)
+                  }}
+                  onEdgeClick={(_, e) => {
+                    setSelectedEdge(e.id)
+                    setSelected(null)
+                  }}
+                  onPaneClick={() => {
+                    // The click that ends a port drag on the pane must not
+                    // close the palette that drag just opened.
+                    if (Date.now() - portOpened.current < 300) return
+                    setSelected(null)
+                    setSelectedEdge(null)
+                    setPortPick(null)
+                  }}
+                  onInit={(i) => {
+                    rf.current = i
+                  }}
+                  fitView
+                  minZoom={0.2}
+                  proOptions={{ hideAttribution: true }}
+                >
+                  <ViewportPortal>
+                    {graph.columns.map((c) => (
+                      <div key={c.key} className="col-title" style={{ transform: `translate(${c.x}px, -28px)` }}>
+                        {c.title}
+                      </div>
+                    ))}
+                  </ViewportPortal>
+                  <Background />
+                  <Controls showInteractive={false} />
+                  <RemeasureUnready />
+                </ReactFlow>
+              </WireCheckContext>
+            </ValidationContext>
           </PreviewContext>
           {portPick && (
             <Palette
@@ -570,6 +581,26 @@ function RequestGraphView({ path, catalog }: { path: string; catalog?: Catalog }
 }
 
 const DELETE_KEYS = ['Backspace', 'Delete']
+
+// RequestIssues shows, on the request bar, the issues no node covers.
+function RequestIssues({ issues, failed }: { issues: Issue[]; failed?: string }) {
+  const shown = issues.filter((i) => i.severity !== 'hint')
+  const sev = worst(shown)
+  if (failed) {
+    return (
+      <span className="request-issues warning" data-testid="request-issues" title={failed}>
+        validation unavailable
+      </span>
+    )
+  }
+  if (!sev) return null
+  const title = shown.map((i) => (proposal(i) ? `${i.message} (try ${proposal(i)})` : i.message)).join('\n')
+  return (
+    <span className={'request-issues ' + sev} data-testid="request-issues" data-severity={sev} title={title}>
+      {shown.length} request {shown.length === 1 ? 'issue' : 'issues'}
+    </span>
+  )
+}
 
 // WireCheckContext hands the connection check to the connection line,
 // which React Flow renders outside our props.

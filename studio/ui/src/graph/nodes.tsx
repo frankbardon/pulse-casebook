@@ -1,6 +1,7 @@
 import { Handle, Position, type NodeProps } from '@xyflow/react'
 import { PREVIEW_SECTIONS, type CohortNode, type OpNode, type RawNode } from './requestGraph.ts'
 import { NodePreview } from './NodePreview.tsx'
+import { NodeIssues } from './NodeIssues.tsx'
 
 // OpNode renders one section entry: stage title, operator name, label and
 // a compact param list. Rows that reference a field, and inputs the entry
@@ -37,6 +38,7 @@ export function OpNodeView({ data }: NodeProps<OpNode>) {
       </ul>
       {PREVIEW_SECTIONS.has(data.section) && <NodePreview id={data.path} label={data.name} />}
       {data.produces && <Handle type="source" position={Position.Right} id="out" title={`label ${data.name}`} />}
+      <NodeIssues id={data.path} />
     </div>
   )
 }
@@ -62,6 +64,7 @@ export function CohortNodeView({ data }: NodeProps<CohortNode>) {
         ))}
       </ul>
       <NodePreview id={data.path} />
+      <NodeIssues id={data.path} />
     </div>
   )
 }
@@ -75,6 +78,7 @@ export function RawNodeView({ data }: NodeProps<RawNode>) {
         <span className="gnode-op">{data.section}</span>
       </header>
       <pre className="gnode-json">{data.json}</pre>
+      <NodeIssues id={data.path} />
     </div>
   )
 }

@@ -301,3 +301,48 @@ export async function postPreview(q: PreviewQuery, signal?: AbortSignal): Promis
   }
   return out as PreviewResult
 }
+
+// PredictIssue is one finding of POST /api/predict, on the most precise
+// node path the server located ("" = the request as a whole). Warnings
+// and hints are predict suggestions: proposed holds the suggested values.
+export type PredictIssue = {
+  path: string
+  severity: 'error' | 'warning' | 'hint'
+  code?: string
+  message: string
+  current?: unknown
+  proposed?: unknown[]
+  confidence?: number
+}
+
+export type PredictVerdict = { root: string; valid: boolean; issues: PredictIssue[] }
+
+// ExplainStep is one slot of POST /api/explain, keyed by its node path.
+export type ExplainStep = { path: string; operator?: string; fields?: string[]; text: string }
+
+export type ExplainResult = { root: string; summary: string; valid?: boolean; steps: ExplainStep[]; caveats?: string[] }
+
+// The in-memory document (emitModelText) is spliced in verbatim, so the
+// server validates exactly what the editor holds, never the saved file.
+async function postValidate<T>(endpoint: string, path: string, requestText: string, signal?: AbortSignal): Promise<T> {
+  const res = await fetch(endpoint, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: `{"path":${JSON.stringify(path)},"request":${requestText}}`,
+    signal,
+  })
+  const out: unknown = await res.json()
+  if (!res.ok || isApiError(out)) {
+    const msg = isApiError(out) ? `${out.error.code}: ${out.error.message}` : `HTTP ${res.status}`
+    throw new Error(msg)
+  }
+  return out as T
+}
+
+export function postPredict(path: string, requestText: string, signal?: AbortSignal): Promise<PredictVerdict> {
+  return postValidate<PredictVerdict>('/api/predict', path, requestText, signal)
+}
+
+export function postExplain(path: string, requestText: string, signal?: AbortSignal): Promise<ExplainResult> {
+  return postValidate<ExplainResult>('/api/explain', path, requestText, signal)
+}

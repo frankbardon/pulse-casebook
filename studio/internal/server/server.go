@@ -53,6 +53,8 @@ func New(root *scope.Root, engine *pulse.Pulse, cfg Config, ui fs.FS, uiBuilt bo
 	s.mux.HandleFunc("GET /api/cohort/inspect", s.handleCohortInspect)
 	s.mux.HandleFunc("GET /api/catalog", s.handleCatalog)
 	s.mux.HandleFunc("POST /api/preview", s.handlePreview)
+	s.mux.HandleFunc("POST /api/predict", s.handlePredict)
+	s.mux.HandleFunc("POST /api/explain", s.handleExplain)
 	s.mux.HandleFunc("/api/", func(w http.ResponseWriter, r *http.Request) {
 		WriteError(w, http.StatusNotFound, "not_found", "no such API endpoint", map[string]any{"path": r.URL.Path})
 	})

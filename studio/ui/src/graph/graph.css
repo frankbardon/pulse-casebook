@@ -249,6 +249,7 @@
 
 /* Nodes */
 .gnode {
+  position: relative;
   width: 240px;
   background: var(--surface);
   border: 1px solid var(--border);
@@ -684,4 +685,105 @@
 
 .palette-empty {
   margin: var(--space-2);
+}
+
+/* Validation: corner badge and hover card (NodeIssues). Both are
+   absolutely positioned so they never change a node's measured size. */
+.gnode-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 9px;
+  font: 600 11px/18px var(--font-mono);
+  text-align: center;
+  color: #fff;
+  pointer-events: none;
+}
+
+.gnode-badge.error {
+  background: var(--danger);
+}
+
+.gnode-badge.warning {
+  background: var(--warn);
+  color: #1d1d1b;
+}
+
+.gnode-tip {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: calc(100% + 10px);
+  width: 300px;
+  padding: var(--space-2);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  box-shadow: 0 4px 14px rgb(0 0 0 / 0.18);
+  font-size: var(--text-sm);
+  color: var(--text);
+  white-space: normal;
+  /* Never intercepts the pointer: hovering leaves with the node. */
+  pointer-events: none;
+}
+
+.gnode:hover > .gnode-tip {
+  display: block;
+}
+
+/* The hovered node (and its card) draws above its neighbours. */
+.react-flow__node:hover {
+  z-index: 1000 !important;
+}
+
+.tip-explain {
+  margin: 0;
+  white-space: pre-line;
+}
+
+.tip-issues {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.tip-explain + .tip-issues {
+  margin-top: var(--space-2);
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--border);
+}
+
+.tip-issue {
+  padding-left: 10px;
+  border-left: 3px solid var(--muted);
+  margin-bottom: var(--space-1);
+}
+
+.tip-issue.error {
+  border-left-color: var(--danger);
+}
+
+.tip-issue.warning {
+  border-left-color: var(--warn);
+}
+
+.tip-issue.hint {
+  color: var(--muted);
+}
+
+.tip-proposed code {
+  font-family: var(--font-mono);
+  color: var(--accent);
+}
+
+.request-issues {
+  color: var(--danger);
+  cursor: default;
+}
+
+.request-issues.warning {
+  color: var(--warn);
 }

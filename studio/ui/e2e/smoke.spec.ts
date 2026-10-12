@@ -260,3 +260,30 @@ test('palette items dropped on the canvas land only in their own stage column', 
   const column = (await graph.locator('.react-flow__node[data-id="tests[1]"]').boundingBox())!
   expect(Math.abs(placed.x - column.x)).toBeLessThan(2)
 })
+
+// Validation runs on the in-memory document (nothing is saved): a field
+// typo is refused by predict on the node that references it, with the
+// engine's suggestion; hovering a node shows its explain text.
+test('validation badges show predict errors and suggestions; hover shows explain text', async ({ page }) => {
+  await page.goto('/')
+  await page.getByRole('button', { name: 'req/04_metric_battery.json' }).click()
+  const graph = page.getByTestId('request-graph')
+  const node = graph.locator('[data-path="aggregations[0]"]')
+  await expect(node).toContainText('AGG_COUNT')
+  await expect(graph.getByTestId('node-badge')).toHaveCount(0)
+  // Explain text arrives for every slot; hover reveals it.
+  await node.hover()
+  await expect(node.getByTestId('node-tip')).toBeVisible()
+  await expect(node.getByTestId('node-tip')).toContainText('AGG_COUNT')
+  await node.click()
+  await page.getByTestId('inspector').locator('[data-field="field"] input').fill('user_i')
+  await expect(page.getByTestId('dirty-state')).toContainText('unsaved')
+  const badge = node.getByTestId('node-badge')
+  await expect(badge).toHaveAttribute('data-severity', 'error')
+  await node.hover()
+  await expect(node.getByTestId('node-tip')).toContainText('user_i')
+  await expect(node.getByTestId('node-suggestion').first()).toContainText('user_id')
+  // Fixing the field clears the badge.
+  await page.getByTestId('inspector').locator('[data-field="field"] input').fill('user_id')
+  await expect(badge).toHaveCount(0)
+})
