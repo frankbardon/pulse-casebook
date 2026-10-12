@@ -557,3 +557,131 @@
   background: var(--accent);
   color: var(--surface);
 }
+
+.graph-bar button.on {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* Palette: side panel (+ Node) and the popup a port drag opens. */
+.palette {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: var(--surface);
+  font-size: var(--text-sm);
+}
+
+.palette-panel {
+  width: 280px;
+  flex: none;
+  border-right: 1px solid var(--border);
+}
+
+.palette-popup {
+  position: absolute;
+  z-index: 6;
+  width: 300px;
+  max-height: 340px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  box-shadow: 0 4px 16px rgb(0 0 0 / 0.18);
+}
+
+.palette-head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-2);
+}
+
+.palette-title {
+  flex: 1;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.palette-close {
+  border: none;
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+  font: inherit;
+}
+
+.palette-search {
+  margin: 0 var(--space-2) var(--space-1);
+  padding: 2px var(--space-1);
+  font: inherit;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.palette-list {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding-bottom: var(--space-2);
+}
+
+.palette-group h3 {
+  margin: var(--space-2) var(--space-2) 2px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+.palette-item {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  column-gap: var(--space-2);
+  width: 100%;
+  padding: 2px var(--space-2);
+  border: none;
+  background: none;
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.palette-item:hover,
+.palette-item:focus-visible {
+  background: var(--bg);
+  outline: none;
+}
+
+.palette-op {
+  font-family: var(--font-mono);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.palette-hint {
+  color: var(--accent);
+}
+
+.palette-kind {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.palette-desc {
+  grid-column: 1 / -1;
+  color: var(--muted);
+  font-size: 11px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.palette-empty {
+  margin: var(--space-2);
+}

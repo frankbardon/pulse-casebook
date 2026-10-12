@@ -64,6 +64,10 @@ func TestHealthBody(t *testing.T) {
 	if body["preview_timeout_ms"] != float64(10000) || body["auto_preview_rows"] != float64(1_000_000) {
 		t.Fatalf("unexpected health body: %v", body)
 	}
+	// No engine: no version or digest to report.
+	if _, has := body["feature_set_digest"]; has {
+		t.Fatalf("engine-less health reports a digest: %v", body)
+	}
 }
 
 func TestUINotBuilt(t *testing.T) {

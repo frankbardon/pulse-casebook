@@ -16,7 +16,9 @@ type catalogCache struct {
 }
 
 // proseKeys are dropped from the manifest to make the slim form the
-// palette needs (structure only, no descriptions).
+// palette needs: structure only, except each operator's own one-line
+// `description`, which the palette searches and shows (param, schema and
+// component-key prose is dropped).
 var proseKeys = map[string]bool{"description": true, "streamable_hint": true, "emits_type_note": true}
 
 func (s *Server) handleCatalog(w http.ResponseWriter, r *http.Request) {
@@ -57,7 +59,7 @@ func (s *Server) buildCatalog(r *http.Request, digest string) ([]byte, error) {
 	out := map[string]any{
 		"pulse_version":      m.PulseVersion,
 		"feature_set_digest": digest,
-		"manifest":           stripProse(generic),
+		"manifest":           slimManifest(generic),
 		"schema":             json.RawMessage(schema),
 	}
 	body, err := json.Marshal(out)
@@ -86,4 +88,45 @@ func stripProse(v any) any {
 		}
 	}
 	return v
+}
+
+// operatorLists are the manifest arrays whose entries are operators (by
+// name or overlay kind); components nest one level deeper.
+var operatorLists = []string{"tests", "post_tests", "regressions", "matrices", "overlays"}
+
+// slimManifest strips prose from the manifest but keeps every operator's
+// top-level description string.
+func slimManifest(manifest any) any {
+	m, ok := manifest.(map[string]any)
+	if !ok {
+		return stripProse(manifest)
+	}
+	var ops []map[string]any
+	collect := func(v any) {
+		list, _ := v.([]any)
+		for _, o := range list {
+			if op, ok := o.(map[string]any); ok {
+				ops = append(ops, op)
+			}
+		}
+	}
+	for _, k := range operatorLists {
+		collect(m[k])
+	}
+	if comps, ok := m["components"].(map[string]any); ok {
+		for _, v := range comps {
+			collect(v)
+		}
+	}
+	kept := make([]any, len(ops))
+	for i, op := range ops {
+		kept[i] = op["description"]
+	}
+	stripProse(m)
+	for i, op := range ops {
+		if d, ok := kept[i].(string); ok && d != "" {
+			op["description"] = d
+		}
+	}
+	return m
 }

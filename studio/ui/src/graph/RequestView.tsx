@@ -1,4 +1,4 @@
-import { createContext, use, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { createContext, use, useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type DragEvent } from 'react'
 import {
   Background,
   Controls,
@@ -12,6 +12,7 @@ import {
   type Dimensions,
   type FinalConnectionState,
   type NodeChange,
+  type ReactFlowInstance,
   type ReactFlowState,
 } from '@xyflow/react'
 import {
@@ -30,10 +31,12 @@ import { toPlain, type JsonNode } from './jsonTree.ts'
 import { emitModel, emitModelText, parseModel, updateNode, type GraphModel } from './model.ts'
 import { buildRequestGraph, type GraphEdge, type GraphNode } from './requestGraph.ts'
 import { emptyLayout, layoutText, moveNode, parseLayout, positionOf, pruneLayout, renameNodes, type Layout } from './layout.ts'
-import { isPathPrefix } from './nodePath.ts'
+import { isPathPrefix, parsePath } from './nodePath.ts'
 import {
   checkConnection,
   clampToColumn,
+  columnAllows,
+  columnAt,
   connectWire,
   deletable,
   deleteNode,
@@ -43,6 +46,9 @@ import {
 } from './wiring.ts'
 import { CohortNodeView, OpNodeView, RawNodeView } from './nodes.tsx'
 import { Inspector } from './Inspector.tsx'
+import { Palette } from './Palette.tsx'
+import { itemsForPort, PALETTE_MIME, paletteItems, placeNode, type PaletteItem, type PortSource } from './palette.ts'
+import { emitsType } from './ports.ts'
 import { PreviewContext, usePreviews } from './usePreviews.ts'
 import './graph.css'
 
@@ -94,8 +100,16 @@ function RequestGraphView({ path, catalog }: { path: string; catalog?: Catalog }
   const [cohortError, setCohortError] = useState<string | null>(null)
   const [selected, setSelected] = useState<string | null>(null)
   const [selectedEdge, setSelectedEdge] = useState<string | null>(null)
-  // Why the last dropped wire was refused, shown until the next gesture.
-  const [wireNote, setWireNote] = useState<string | null>(null)
+  // Why the last dropped wire (or palette drop) was refused, shown until
+  // the next gesture.
+  const [notice, setNotice] = useState<{ text: string; testId: string } | null>(null)
+  // The side palette, and the palette a field port drag opened on the
+  // pane (at: popup position in the canvas box; flow: drop point).
+  const [paletteOpen, setPaletteOpen] = useState(false)
+  const [portPick, setPortPick] = useState<PortPick | null>(null)
+  const portOpened = useRef(0)
+  const flowBox = useRef<HTMLDivElement>(null)
+  const rf = useRef<ReactFlowInstance<GraphNode, GraphEdge> | null>(null)
   const noteTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
   const [saving, setSaving] = useState(false)
   const [saveError, setSaveError] = useState<string | null>(null)
@@ -226,11 +240,12 @@ function RequestGraphView({ path, catalog }: { path: string; catalog?: Catalog }
     [placed, wireCtx],
   )
 
-  const note = useCallback((text: string | null) => {
+  const show = useCallback((n: { text: string; testId: string } | null) => {
     clearTimeout(noteTimer.current)
-    setWireNote(text)
-    if (text !== null) noteTimer.current = setTimeout(() => setWireNote(null), 6000)
+    setNotice(n)
+    if (n !== null) noteTimer.current = setTimeout(() => setNotice(null), 6000)
   }, [])
+  const note = useCallback((reason: string | null) => show(reason === null ? null : { text: `Wire refused: ${reason}`, testId: 'wire-refused' }), [show])
   useEffect(() => () => clearTimeout(noteTimer.current), [])
 
   // A wire drawn into an input writes the source's field or label name
@@ -247,12 +262,25 @@ function RequestGraphView({ path, catalog }: { path: string; catalog?: Catalog }
 
   // A wire dropped on an input that refuses it leaves the reason on screen.
   const onConnectEnd = useCallback(
-    (_: MouseEvent | TouchEvent, s: FinalConnectionState) => {
+    (ev: MouseEvent | TouchEvent, s: FinalConnectionState) => {
+      if (!s.toHandle && s.fromHandle?.type === 'source' && onPane(ev)) {
+        const src = placed ? portSource(placed.nodes, s.fromHandle, catalog?.manifest, fields) : null
+        const box = flowBox.current?.getBoundingClientRect()
+        if (!src || !box || !rf.current) return
+        const { clientX, clientY } = pointOf(ev)
+        portOpened.current = Date.now()
+        setPortPick({
+          src,
+          at: { left: clientX - box.left, top: clientY - box.top, width: box.width, height: box.height },
+          flow: rf.current.screenToFlowPosition({ x: clientX, y: clientY }),
+        })
+        return
+      }
       if (s.isValid !== false || !s.fromHandle || !s.toHandle) return
       const r = check(wireOf(s.fromHandle, s.toHandle))
       if (!r.ok) note(r.reason)
     },
-    [check, note],
+    [check, note, placed, catalog, fields],
   )
 
   // Deleting a node removes its JSON (and so its wires); deleting a wire
@@ -299,6 +327,61 @@ function RequestGraphView({ path, catalog }: { path: string; catalog?: Catalog }
   const edit = useCallback(
     (id: string, value: JsonNode) => setDoc((d) => (d ? { ...d, model: updateNode(d.model, id, value) } : d)),
     [],
+  )
+
+  // The palette is generated from the catalog: a catalog reload (engine
+  // or feature-set change) regenerates it.
+  const items = useMemo(() => paletteItems(catalog?.manifest), [catalog])
+  const portItems = useMemo(
+    () => (portPick && doc ? itemsForPort(items, catalog?.manifest, doc.model, portPick.src) : []),
+    [portPick, doc, items, catalog],
+  )
+
+  // place appends a new entry for item (wired, when a port drag opened
+  // the palette) and selects it. With a drop point the node sits there,
+  // snapped to its own stage column; without one, or when that column is
+  // not drawn yet, it is auto-laid out.
+  const place = useCallback(
+    (item: PaletteItem, at?: { x: number; y: number }, wire?: { rowKey: string; ref: string }) => {
+      if (!doc) return
+      let r: { model: GraphModel; id: string }
+      try {
+        r = placeNode(doc.model, item, { manifest: catalog?.manifest, schema: catalog?.schema, cohortFields: fields, wire })
+      } catch (e) {
+        show({ text: `Cannot add ${item.op}: ${e instanceof Error ? e.message : String(e)}`, testId: 'place-refused' })
+        return
+      }
+      setDoc({ ...doc, model: r.model })
+      const col = at && placed?.columns.find((c) => c.key === item.column)
+      setLay((l) => {
+        // A stale sidecar entry for the reused id never positions the new node.
+        const layout = renameNodes(l.layout, (x) => x === r.id, new Map())
+        return { ...l, layout: col ? moveNode(layout, r.id, { x: col.x, y: at.y }) : layout }
+      })
+      setSelected(r.id)
+      setSelectedEdge(null)
+      show(null)
+    },
+    [doc, catalog, fields, placed, show],
+  )
+
+  // A palette item dropped on the canvas lands in its own stage column
+  // only (wiring.columnAt / columnAllows).
+  const onDrop = useCallback(
+    (e: DragEvent) => {
+      const key = e.dataTransfer.getData(PALETTE_MIME)
+      const item = key ? items.find((i) => i.key === key) : undefined
+      if (!item || !rf.current || !placed) return
+      e.preventDefault()
+      const pos = rf.current.screenToFlowPosition({ x: e.clientX, y: e.clientY })
+      const own = placed.columns.find((c) => c.key === item.column)
+      if (own && !columnAllows(item.column, columnAt(pos.x, placed.columns))) {
+        show({ text: `${item.op} is a ${item.kind.toLowerCase()}: drop it in the ${own.title} column`, testId: 'place-refused' })
+        return
+      }
+      place(item, own ? pos : undefined)
+    },
+    [items, placed, place, show],
   )
 
   const save = useCallback(async () => {
@@ -362,11 +445,42 @@ function RequestGraphView({ path, catalog }: { path: string; catalog?: Catalog }
         <button type="button" className="save" disabled={!dirty || saving} onClick={() => void save()} title="Save (Cmd/Ctrl+S)">
           Save
         </button>
+        <button
+          type="button"
+          className={paletteOpen ? 'on' : undefined}
+          data-testid="palette-toggle"
+          aria-pressed={paletteOpen}
+          onClick={() => setPaletteOpen((o) => !o)}
+          title="Add a node from the operator palette"
+        >
+          + Node
+        </button>
         {saveError && <span className="err">{saveError}</span>}
         {cohortError && <span className="err">{cohortError}</span>}
       </div>
       <div className="graph-body">
-        <div className="graph-flow">
+        {paletteOpen && (
+          <Palette
+            items={items}
+            heading="Add node"
+            testId="palette"
+            className="palette-panel"
+            draggable
+            onPick={(it) => place(it)}
+            onClose={() => setPaletteOpen(false)}
+          />
+        )}
+        <div
+          className="graph-flow"
+          ref={flowBox}
+          onDragOver={(e) => {
+            if (e.dataTransfer.types.includes(PALETTE_MIME)) {
+              e.preventDefault()
+              e.dataTransfer.dropEffect = 'copy'
+            }
+          }}
+          onDrop={onDrop}
+        >
           <PreviewContext value={previews}>
             <WireCheckContext value={check}>
               <ReactFlow
@@ -392,8 +506,15 @@ function RequestGraphView({ path, catalog }: { path: string; catalog?: Catalog }
                   setSelected(null)
                 }}
                 onPaneClick={() => {
+                  // The click that ends a port drag on the pane must not
+                  // close the palette that drag just opened.
+                  if (Date.now() - portOpened.current < 300) return
                   setSelected(null)
                   setSelectedEdge(null)
+                  setPortPick(null)
+                }}
+                onInit={(i) => {
+                  rf.current = i
                 }}
                 fitView
                 minZoom={0.2}
@@ -412,9 +533,25 @@ function RequestGraphView({ path, catalog }: { path: string; catalog?: Catalog }
               </ReactFlow>
             </WireCheckContext>
           </PreviewContext>
-          {wireNote && (
-            <div className="wire-note" role="status" data-testid="wire-refused">
-              Wire refused: {wireNote}
+          {portPick && (
+            <Palette
+              key={`${portPick.src.ref}@${portPick.at.left},${portPick.at.top}`}
+              items={portItems}
+              heading={`Feed ${portPick.src.ref}${portPick.src.type ? ` (${portPick.src.type})` : ''} into…`}
+              testId="port-palette"
+              className="palette-popup"
+              style={popupStyle(portPick.at)}
+              hint={(it) => it.rowKey}
+              onPick={(it) => {
+                setPortPick(null)
+                place(it, portPick.flow, { rowKey: it.rowKey, ref: portPick.src.ref })
+              }}
+              onClose={() => setPortPick(null)}
+            />
+          )}
+          {notice && (
+            <div className="wire-note" role="status" data-testid={notice.testId}>
+              {notice.text}
             </div>
           )}
         </div>
@@ -464,6 +601,60 @@ function WireLine({ fromX, fromY, toX, toY, fromPosition, toPosition, fromHandle
       )}
     </g>
   )
+}
+
+// PortPick is a palette opened by dropping a field port drag on the pane.
+type PortPick = {
+  src: PortSource
+  at: { left: number; top: number; width: number; height: number }
+  flow: { x: number; y: number }
+}
+
+// portSource describes the port a drag started from: a cohort field (its
+// inspected type) or a producer's label (its manifest emits_type).
+function portSource(
+  nodes: GraphNode[],
+  from: { nodeId: string; id?: string | null },
+  manifest: Catalog['manifest'] | undefined,
+  fields: CohortField[] | undefined,
+): PortSource | null {
+  const n = nodes.find((x) => x.id === from.nodeId)
+  if (n?.type === 'cohort' && from.id?.startsWith('field:')) {
+    const ref = from.id.slice('field:'.length)
+    const type = fields?.find((f) => f.name === ref)?.type
+    return { ref, ...(type && { type }) }
+  }
+  if (n?.type === 'op' && from.id === 'out' && n.data.name !== undefined) {
+    const last = parsePath(n.id).at(-1)
+    const type = emitsType(manifest, n.data.section, n.data.op)
+    return {
+      ref: n.data.name,
+      ...(type && { type }),
+      producer: { section: n.data.section, index: typeof last === 'number' ? last : 0 },
+    }
+  }
+  return null
+}
+
+// onPane says whether a gesture ended on the empty canvas (not a node).
+function onPane(ev: MouseEvent | TouchEvent): boolean {
+  const { clientX, clientY } = pointOf(ev)
+  const el = document.elementFromPoint(clientX, clientY)
+  return !!el?.closest('.react-flow') && !el.closest('.react-flow__node, .react-flow__controls, .react-flow__handle')
+}
+
+function pointOf(ev: MouseEvent | TouchEvent): { clientX: number; clientY: number } {
+  return 'changedTouches' in ev ? ev.changedTouches[0] : ev
+}
+
+const POPUP = { width: 300, height: 340 }
+
+// popupStyle keeps the port palette inside the canvas box.
+function popupStyle(at: PortPick['at']): CSSProperties {
+  return {
+    left: Math.max(4, Math.min(at.left, at.width - POPUP.width - 4)),
+    top: Math.max(4, Math.min(at.top, at.height - POPUP.height - 4)),
+  }
 }
 
 // byPathDesc orders node ids so later array items come first.

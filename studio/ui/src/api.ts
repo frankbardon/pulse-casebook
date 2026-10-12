@@ -3,6 +3,10 @@ export type Health = {
   dir: string
   preview_timeout_ms: number
   auto_preview_rows: number
+  // Present when the engine is running; a change from the catalog's
+  // values means the catalog is stale (see catalog.ts).
+  pulse_version?: string
+  feature_set_digest?: string
 }
 
 export type ApiError = { error: { code: string; message: string; details?: unknown } }
@@ -103,8 +107,13 @@ export type ManifestOperator = {
   name?: string
   kind?: string
   category?: string
+  // The operator's one-line description (the only prose the slim
+  // catalog keeps); the palette searches and shows it.
+  description?: string
   // Tier-2 post_tests list one entry per variant, named `<family>/<variant>`.
   family?: string
+  // Tier-2 post_tests: the variant written to params.variant.
+  variant?: string
   // null for operators whose params are free-form or absent.
   params?: ManifestParam[] | null
   // Overlays: the scopes the kind accepts.

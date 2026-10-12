@@ -1,30 +1,15 @@
-import { useEffect, useState } from 'react'
-import { getCatalog, getJSON, type Catalog, type Health, type WorkspaceFile } from './api.ts'
+import { useState } from 'react'
+import type { WorkspaceFile } from './api.ts'
+import { useCatalog } from './catalog.ts'
 import { Sidebar } from './Sidebar.tsx'
 import { RequestView } from './graph/RequestView.tsx'
 import './App.css'
 
 export function App() {
-  const [health, setHealth] = useState<Health | null>(null)
-  const [error, setError] = useState<string | null>(null)
   const [selected, setSelected] = useState<WorkspaceFile | null>(null)
-  const [catalog, setCatalog] = useState<Catalog | undefined>(undefined)
-
-  useEffect(() => {
-    const ctl = new AbortController()
-    getJSON<Health>('/api/health', ctl.signal)
-      .then(setHealth)
-      .catch((e: unknown) => {
-        if (!ctl.signal.aborted) setError(String(e))
-      })
-    // The catalog annotates nodes (known operators) and drives inspector
-    // forms; the graph renders without it, so a failure is not surfaced
-    // as an error.
-    getCatalog(ctl.signal)
-      .then(setCatalog)
-      .catch(() => {})
-    return () => ctl.abort()
-  }, [])
+  // The catalog annotates nodes (known operators), drives inspector forms
+  // and the palette, and is reloaded when the engine changes.
+  const { health, catalog, error } = useCatalog()
 
   return (
     <div className="shell">

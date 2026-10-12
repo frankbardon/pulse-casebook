@@ -73,13 +73,22 @@ func (s *Server) Handle(pattern string, h http.Handler) { s.mux.Handle(pattern, 
 
 func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) { s.mux.ServeHTTP(w, r) }
 
+// handleHealth reports liveness and, with an engine, the Pulse version
+// and feature_set_digest. The UI polls it and reloads /api/catalog when
+// either differs from the catalog it holds (an engine bump or a changed
+// feature set), so the palette follows the engine without a page reload.
 func (s *Server) handleHealth(w http.ResponseWriter, _ *http.Request) {
-	WriteJSON(w, http.StatusOK, map[string]any{
+	body := map[string]any{
 		"status":             "ok",
 		"dir":                filepath.Base(s.root.Dir()),
 		"preview_timeout_ms": s.cfg.PreviewTimeout.Milliseconds(),
 		"auto_preview_rows":  s.cfg.AutoPreviewRows,
-	})
+	}
+	if s.engine != nil {
+		body["pulse_version"] = pulse.Version()
+		body["feature_set_digest"] = s.engine.FeatureSetDigest()
+	}
+	WriteJSON(w, http.StatusOK, body)
 }
 
 const notBuiltPage = `<!doctype html><meta charset="utf-8"><title>Pulse Studio</title>

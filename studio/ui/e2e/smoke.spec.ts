@@ -144,3 +144,117 @@ test('deleting a node removes it and its wires; drags stay in the stage column',
   await expect(graph.locator('[data-path="tests[1]"] [data-row="field"]')).toHaveClass(/unresolved/)
   await expect(page.getByTestId('dirty-state')).toContainText('unsaved')
 })
+
+// Palette placements stay unsaved too.
+test('the palette lists every manifest operator, searches, and places a node', async ({ page }) => {
+  const catalog = (await (await page.request.get('/api/catalog')).json()) as { manifest: Record<string, unknown> }
+  const m = catalog.manifest as { components: Record<string, unknown[]> } & Record<string, unknown[]>
+  const total =
+    ['features', 'filterers', 'attributes', 'groupers', 'aggregators', 'windows'].reduce((n, k) => n + (m.components[k]?.length ?? 0), 0) +
+    ['tests', 'regressions', 'matrices', 'post_tests', 'overlays'].reduce((n, k) => n + (m[k]?.length ?? 0), 0)
+
+  await page.goto('/')
+  await page.getByRole('button', { name: 'req/08_cuped_welch.json' }).click()
+  const graph = page.getByTestId('request-graph')
+  await expect(graph.locator('[data-path="tests[1]"]')).toBeVisible()
+  await page.getByTestId('palette-toggle').click()
+  const palette = page.getByTestId('palette')
+  await expect(palette.getByTestId('palette-item')).toHaveCount(total)
+
+  // By description words, then by name.
+  await palette.getByTestId('palette-search').fill('two-sample alias')
+  await expect(palette.locator('[data-op="TEST_WELCH"]')).toBeVisible()
+  await palette.getByTestId('palette-search').fill('feat log')
+  await expect(palette.locator('[data-op="FEAT_LOG"]')).toBeVisible()
+  await expect(palette.locator('[data-op="TEST_WELCH"]')).toHaveCount(0)
+
+  await palette.locator('[data-op="FEAT_LOG"]').click()
+  await expect(graph.locator('[data-path="features[0]"]')).toContainText('FEAT_LOG')
+  await expect(page.getByTestId('inspector')).toHaveAttribute('data-node', 'features[0]')
+  await expect(page.getByTestId('dirty-state')).toContainText('unsaved')
+})
+
+test('dragging a field port to the canvas offers only compatible operators and wires the new node', async ({ page }) => {
+  await page.goto('/')
+  await page.getByRole('button', { name: 'req/08_cuped_welch.json' }).click()
+  const graph = page.getByTestId('request-graph')
+  await expect(graph.locator('[data-path="cohort"]')).toContainText('categorical_u8')
+  const edges = graph.locator('.react-flow__edge')
+  await expect(edges).toHaveCount(6)
+
+  // Drop the categorical `arm` port on empty canvas (bottom-right corner).
+  const armOut = graph.locator('[data-path="cohort"] .react-flow__handle[data-handleid="field:arm"]')
+  const a = (await armOut.boundingBox())!
+  const box = (await graph.locator('.react-flow').boundingBox())!
+  await page.mouse.move(a.x + a.width / 2, a.y + a.height / 2)
+  await page.mouse.down()
+  await page.mouse.move(box.x + box.width - 24, box.y + box.height - 24, { steps: 12 })
+  await page.mouse.up()
+
+  const picker = page.getByTestId('port-palette')
+  await expect(picker).toContainText('arm (categorical_u8)')
+  await expect(picker.locator('[data-op="FEAT_ONE_HOT"]')).toBeVisible()
+  await expect(picker.locator('[data-op="FEAT_LOG"]')).toHaveCount(0)
+  await expect(picker.locator('[data-section="overlays"]')).toHaveCount(0)
+  await picker.getByTestId('palette-search').fill('TEST_WELCH')
+  const welch = picker.locator('[data-op="TEST_WELCH"]')
+  await expect(welch).toContainText('split_by')
+  await welch.click()
+
+  await expect(picker).toHaveCount(0)
+  await expect(graph.locator('[data-path="tests[2]"] [data-row="split_by"]')).toContainText('arm')
+  await expect(edges).toHaveCount(7)
+  await expect(page.getByTestId('dirty-state')).toContainText('unsaved')
+})
+
+// Simulates an engine change: health reports a new digest and the catalog
+// gains an operator; a focus poll reloads it into the open palette.
+test('a changed feature_set_digest reloads the catalog and the palette', async ({ page }) => {
+  await page.goto('/')
+  await page.getByRole('button', { name: 'req/08_cuped_welch.json' }).click()
+  await expect(page.getByTestId('request-graph').locator('[data-path="tests[1]"]')).toBeVisible()
+  await page.getByTestId('palette-toggle').click()
+  const palette = page.getByTestId('palette')
+  await palette.getByTestId('palette-search').fill('simulated')
+  await expect(palette.getByTestId('palette-item')).toHaveCount(0)
+
+  await page.route('**/api/health', async (route) => {
+    const body = (await (await route.fetch()).json()) as Record<string, unknown>
+    await route.fulfill({ json: { ...body, feature_set_digest: 'simulated-digest' } })
+  })
+  await page.route('**/api/catalog', async (route) => {
+    const body = (await (await route.fetch()).json()) as { manifest: { tests: unknown[] } } & Record<string, unknown>
+    body.feature_set_digest = 'simulated-digest'
+    body.manifest.tests.push({ name: 'TEST_SIMULATED', description: 'A simulated engine operator.', requires: ['Field'] })
+    await route.fulfill({ json: body })
+  })
+  await page.evaluate(() => window.dispatchEvent(new Event('focus')))
+  await expect(palette.locator('[data-op="TEST_SIMULATED"]')).toBeVisible()
+})
+
+test('palette items dropped on the canvas land only in their own stage column', async ({ page }) => {
+  await page.goto('/')
+  await page.getByRole('button', { name: 'req/08_cuped_welch.json' }).click()
+  const graph = page.getByTestId('request-graph')
+  await expect(graph.locator('[data-path="tests[1]"]')).toBeVisible()
+  await page.getByTestId('palette-toggle').click()
+  const palette = page.getByTestId('palette')
+  // The panel narrows the canvas: fit the graph back into view.
+  await graph.locator('.react-flow__controls-fitview').click()
+  await palette.getByTestId('palette-search').fill('TEST_WELCH')
+  const welch = palette.locator('[data-op="TEST_WELCH"]')
+  const cohort = graph.locator('[data-path="cohort"]')
+  const analysis = graph.locator('[data-path="tests[1]"]')
+
+  // Over the Cohort column: refused.
+  await welch.dragTo(cohort, { targetPosition: { x: 20, y: 10 } })
+  await expect(page.getByTestId('place-refused')).toContainText('Analysis column')
+  await expect(graph.locator('[data-path="tests[2]"]')).toHaveCount(0)
+
+  // Over the Analysis column: placed there.
+  await welch.dragTo(analysis, { targetPosition: { x: 20, y: 10 } })
+  await expect(graph.locator('[data-path="tests[2]"]')).toContainText('TEST_WELCH')
+  const placed = (await graph.locator('.react-flow__node[data-id="tests[2]"]').boundingBox())!
+  const column = (await graph.locator('.react-flow__node[data-id="tests[1]"]').boundingBox())!
+  expect(Math.abs(placed.x - column.x)).toBeLessThan(2)
+})

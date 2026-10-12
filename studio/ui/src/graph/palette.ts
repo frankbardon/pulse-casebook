@@ -1,0 +1,225 @@
+// palette is the node palette's model: every manifest operator as a
+// placeable item, grouped by stage column, searchable by name and
+// description, and narrowed to the operators a dragged field port can
+// feed. Placing an item appends a new section entry to the request and
+// rebuilds the lossless model from the emitted tree (the same route
+// wiring.deleteNode takes); the wire from a dragged port is then written
+// with wiring.connectWire and default params with jsonEdit.setIn +
+// model.updateNode, so nothing is ever round-tripped through
+// JSON.parse/stringify.
+//
+// The palette is derived from the catalog alone, so a catalog reload (a
+// Pulse bump or a changed feature set, see catalog.ts) regenerates it
+// without code changes. Pure: no React.
+
+import type { CohortField, Manifest, ManifestOperator } from '../api.ts'
+import { getIn, setIn } from './jsonEdit.ts'
+import { fromPlain, stringValue, type JsonNode } from './jsonTree.ts'
+import { buildModel, emitModel, updateNode, type GraphModel } from './model.ts'
+import { formatPath } from './nodePath.ts'
+import { paramField, topLevelKeys } from './paramForms.ts'
+import { compatibleOperators, refusal, slotsFor, type Slot } from './ports.ts'
+import { canSee, COLUMNS, sectionInfo, type ColumnKey } from './requestGraph.ts'
+import { connectWire } from './wiring.ts'
+
+// PALETTE_MIME carries a palette item's key in a drag onto the canvas.
+export const PALETTE_MIME = 'application/x-pulse-palette'
+
+// PALETTE_SECTIONS are the request sections whose operators the manifest
+// lists, in stage order. Sections without manifest operators (sort,
+// vectors, crosstab, multiplicity, return) are not in the palette.
+export const PALETTE_SECTIONS = [
+  'features',
+  'filterers',
+  'attributes',
+  'groups',
+  'aggregations',
+  'windows',
+  'tests',
+  'regressions',
+  'matrices',
+  'post_tests',
+  'overlays',
+] as const
+
+// PaletteItem is one placeable operator. op is the manifest name (or
+// overlay kind); type is what the entry's operator key gets (a tier-2
+// post-test variant `TEST_X/v` is written as type TEST_X with
+// params.variant v).
+export type PaletteItem = {
+  key: string
+  section: string
+  column: ColumnKey
+  // Section title (`Feature`, `Post-test`).
+  kind: string
+  op: string
+  type: string
+  variant?: string
+  description?: string
+}
+
+// paletteItems lists every manifest operator in stage order, manifest
+// order within a section.
+export function paletteItems(manifest: Manifest | undefined): PaletteItem[] {
+  if (!manifest) return []
+  const out: PaletteItem[] = []
+  for (const section of PALETTE_SECTIONS) {
+    const info = sectionInfo(section)
+    if (!info?.catalog) continue
+    for (const o of info.catalog(manifest) ?? []) {
+      const op = o.name ?? o.kind
+      if (!op) continue
+      const split = splitVariant(o, op)
+      out.push({
+        key: `${section}/${op}`,
+        section,
+        column: info.column,
+        kind: info.title,
+        op,
+        ...split,
+        ...(o.description && { description: o.description }),
+      })
+    }
+  }
+  return out
+}
+
+function splitVariant(o: ManifestOperator, op: string): { type: string; variant?: string } {
+  const slash = op.indexOf('/')
+  if (slash < 0) return { type: op }
+  return { type: o.family ?? op.slice(0, slash), variant: o.variant ?? op.slice(slash + 1) }
+}
+
+// searchPalette keeps the items matching every whitespace-separated word
+// of query (case-insensitive) in the operator name, description or
+// section title. An empty query keeps everything.
+export function searchPalette<T extends PaletteItem>(items: readonly T[], query: string): T[] {
+  const words = query.toLowerCase().split(/\s+/).filter(Boolean)
+  if (words.length === 0) return [...items]
+  return items.filter((it) => {
+    const hay = `${it.op} ${it.op.replace(/_/g, ' ')} ${it.kind} ${it.description ?? ''}`.toLowerCase()
+    return words.every((w) => hay.includes(w))
+  })
+}
+
+export type PaletteGroup<T extends PaletteItem> = { column: ColumnKey; title: string; items: T[] }
+
+// paletteGroups groups items by stage column, in column order.
+export function paletteGroups<T extends PaletteItem>(items: readonly T[]): PaletteGroup<T>[] {
+  return COLUMNS.map((c) => ({ column: c.key, title: c.title, items: items.filter((it) => it.column === c.key) })).filter(
+    (g) => g.items.length > 0,
+  )
+}
+
+// PortSource is the field port a drag started from: a cohort field, or a
+// producer's label output (producer = its section and index).
+export type PortSource = { ref: string; type?: string; producer?: { section: string; index: number } }
+
+// PortItem is a palette item a port can feed, with the input the wire
+// goes into.
+export type PortItem = PaletteItem & { slot: Slot; rowKey: string }
+
+// itemsForPort narrows the palette to the operators a dragged port can
+// feed: the operator has a field input that takes the port's type
+// (ports.compatibleOperators, then the first such input), and, for a
+// label, the new entry (appended to its section) runs after the
+// producer. Operators without field inputs (overlays) are left out.
+export function itemsForPort(
+  items: readonly PaletteItem[],
+  manifest: Manifest | undefined,
+  model: GraphModel,
+  src: PortSource,
+): PortItem[] {
+  const compatible = new Map<string, Set<string>>()
+  const out: PortItem[] = []
+  for (const it of items) {
+    let ok = compatible.get(it.section)
+    if (!ok) {
+      ok = new Set(compatibleOperators(manifest, it.section, src.type).map((o) => o.name ?? o.kind ?? ''))
+      compatible.set(it.section, ok)
+    }
+    if (!ok.has(it.op)) continue
+    const slot = slotsFor(manifest, it.section, it.op).find((s) => refusal(s.accept, src.type) === null)
+    if (!slot) continue
+    if (src.producer && !canSee(it.section, nextIndex(model, it.section), src.producer.section, src.producer.index, slot.key)) {
+      continue
+    }
+    out.push({ ...it, slot, rowKey: slot.list ? formatPath([slot.key, 0]) : slot.key })
+  }
+  return out
+}
+
+// nextIndex is the index a new entry of section gets (appended).
+export function nextIndex(model: GraphModel, section: string): number {
+  const arr = getIn(emitModel(model), [section])
+  return arr?.type === 'array' ? arr.items.length : 0
+}
+
+export type PlaceOptions = {
+  manifest?: Manifest
+  schema?: unknown
+  // Cohort fields: generated labels avoid their names too.
+  cohortFields?: CohortField[]
+  // Wire the new entry's input rowKey to ref (a drag from a port).
+  wire?: { rowKey: string; ref: string }
+}
+
+// placeNode appends a new entry for item to its section and returns the
+// rebuilt model and the new node's id. The entry gets the operator, a
+// unique label where the section names its entries, the wire (if any),
+// required params that have a manifest default, a post-test variant and
+// an overlay's only scope. Required params without a default are left
+// for the inspector to flag.
+export function placeNode(model: GraphModel, item: PaletteItem, opts: PlaceOptions = {}): { model: GraphModel; id: string } {
+  const info = sectionInfo(item.section)
+  if (!info) throw new Error(`${item.section} is not a palette section`)
+  const root = emitModel(model)
+  const arr = getIn(root, [item.section])
+  if (arr !== undefined && arr.type !== 'array') throw new Error(`${item.section} is not a list in this request`)
+  const index = arr ? arr.items.length : 0
+
+  let value: JsonNode = { type: 'object', members: [] }
+  const str = (s: string): JsonNode => ({ type: 'string', raw: JSON.stringify(s) })
+  if (info.opKey) value = setIn(value, [info.opKey], str(item.type))
+  if (info.nameKey) value = setIn(value, [info.nameKey], str(uniqueLabel(model, item, opts)))
+
+  const next = setIn(root, arr ? [item.section, index] : [item.section], arr ? value : { type: 'array', items: [value] })
+  let out = buildModel(next, model.kind)
+  const id = formatPath([item.section, index])
+  if (opts.wire) out = connectWire(out, id, opts.wire.rowKey, opts.wire.ref)
+
+  let v = out.nodes.get(id)!.value
+  const op = (manifestOps(opts.manifest, item.section) ?? []).find((o) => (o.name ?? o.kind) === item.op)
+  const top = topLevelKeys(opts.schema, item.section)
+  for (const p of op?.params ?? []) {
+    if (!p.required || p.default === undefined) continue
+    const rel = paramField(p, v, top).rel
+    if (getIn(v, rel) === undefined) v = setIn(v, rel, fromPlain(p.default))
+  }
+  if (item.variant !== undefined) v = setIn(v, ['params', 'variant'], str(item.variant))
+  if (item.section === 'overlays' && op?.scopes?.length === 1) v = setIn(v, ['scope'], str(op.scopes[0]))
+  out = updateNode(out, id, v)
+  return { model: out, id }
+}
+
+function manifestOps(manifest: Manifest | undefined, section: string): ManifestOperator[] | undefined {
+  const info = sectionInfo(section)
+  return manifest && info?.catalog ? info.catalog(manifest) : undefined
+}
+
+// uniqueLabel derives a label from the operator (FEAT_BUCKETIZE ->
+// bucketize, prefixed with the wired field: tenure_bucketize) that no
+// entry label, entry name or cohort field already uses.
+export function uniqueLabel(model: GraphModel, item: PaletteItem, opts: Pick<PlaceOptions, 'wire' | 'cohortFields'> = {}): string {
+  const taken = new Set<string>(opts.cohortFields?.map((f) => f.name))
+  for (const n of model.nodes.values()) {
+    if (n.kind !== 'entry') continue
+    const key = sectionInfo(n.section)?.nameKey
+    const name = key ? stringValue(getIn(n.value, [key])) : undefined
+    if (name !== undefined) taken.add(name)
+  }
+  const short = item.type.replace(/^[A-Z]+_/, '').toLowerCase()
+  const base = opts.wire ? `${opts.wire.ref}_${short}` : short
+  if (!taken.has(base)) return base
+  for (let i = 2; ; i++) if (!taken.has(`${base}_${i}`)) return `${base}_${i}`
+}

@@ -160,11 +160,29 @@ func TestCatalog(t *testing.T) {
 	if len(aggs) == 0 {
 		t.Fatal("manifest has no aggregators")
 	}
-	if _, has := aggs[0].(map[string]any)["description"]; has {
-		t.Fatal("slim manifest still carries descriptions")
+	// Operators keep their own description (the palette searches it);
+	// nested prose (params, component keys) is stripped.
+	agg := aggs[0].(map[string]any)
+	if d, _ := agg["description"].(string); d == "" {
+		t.Fatalf("operator %v lost its description", agg["name"])
+	}
+	params, _ := agg["params"].([]any)
+	for _, p := range params {
+		if _, has := p.(map[string]any)["description"]; has {
+			t.Fatalf("param of %v still carries a description", agg["name"])
+		}
+	}
+	if _, has := agg["streamable_hint"]; has {
+		t.Fatal("slim manifest still carries streamable_hint")
 	}
 	if sch, _ := body["schema"].(map[string]any); sch["$defs"] == nil {
 		t.Fatal("schema has no $defs")
+	}
+	// Health reports the same version and digest, so the UI can tell
+	// when its catalog is stale.
+	_, health := get(t, s, "/api/health")
+	if health["feature_set_digest"] != digest || health["pulse_version"] != body["pulse_version"] {
+		t.Fatalf("health version/digest = %v / %v", health["pulse_version"], health["feature_set_digest"])
 	}
 	// Second call is served from the cache.
 	first := s.catalog.body
