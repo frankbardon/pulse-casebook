@@ -32,6 +32,7 @@ cd pulse-anatomy/films/build
 | 7. Windows in depth | `pulse-windows` |
 | 8. Tests and regressions in depth | `pulse-tests` |
 | 9. Matrices in depth | `pulse-matrices` |
+| 10. Overlays in depth | `pulse-overlays` |
 
 A full 1080p render takes a few minutes per film. To check something fast, render a short preview:
 
