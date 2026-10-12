@@ -1,0 +1,55 @@
+# OS and editors
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*~
+.idea/
+.vscode/
+*.code-workspace
+
+# Claude Code local settings
+.claude/settings.local.json
+
+# Dependencies and caches
+node_modules/
+.npm/
+.cache/
+.playwright/
+__pycache__/
+.venv/
+
+# Logs and temp files
+*.log
+npm-debug.log*
+tmp/
+*.tmp
+
+# Secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Rendered media and intermediates. Sources, narration MP3s and subtitles are
+# committed; rendered video and working audio are not.
+*.mp4
+*.mov
+*.m4v
+*.webm
+*.mkv
+*.wav
+*.aiff
+*.flac
+
+# Model weights and binary data
+*.onnx
+*.bin
+*.pulse
+
+# Film renders (films/<film>/render/)
+render/
+
+# Local tools installed by make
+bin/

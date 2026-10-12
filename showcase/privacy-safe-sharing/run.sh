@@ -2,7 +2,7 @@
 # Runs the whole privacy-safe sharing walkthrough with the Pulse CLI only.
 # Usage (from this directory):  PULSE=/path/to/pulse ./run.sh
 set -euo pipefail
-PULSE=${PULSE:-pulse}
+ROOT=$(cd "$(dirname "$0")/../.." && pwd); PULSE=${PULSE:-$([ -x "$ROOT/bin/pulse" ] && echo "$ROOT/bin/pulse" || echo pulse)}   # `make pulse` builds bin/pulse
 mkdir -p out
 
 echo "== 1. import the source table"

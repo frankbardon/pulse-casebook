@@ -2,13 +2,13 @@
 
 Every figure in [README.md](README.md) comes from the Pulse CLI. These steps rebuild them from a fresh checkout.
 
-Requirements: Go (the version in the repo's `go.mod`), `jq` and `bash`.
+Requirements: Go (the version in Pulse's `go.mod`, to build it), `jq` and `bash`.
 
 ## 1. Build Pulse
 
 ```bash
-cd <repo root>
-go build -o /tmp/pulse ./cmd/pulse
+cd <casebook repo root>
+make pulse && cp bin/pulse /tmp/pulse     # builds Pulse from the local checkout (root Makefile)
 ```
 
 ## 2. Copy the showcase to a scratch location
@@ -16,7 +16,7 @@ go build -o /tmp/pulse ./cmd/pulse
 The run writes `.pulse` cohorts and an `out/` directory next to the requests, so work on a copy:
 
 ```bash
-rm -rf /tmp/tz-ops && cp -r docs/showcase/multi-timezone-ops /tmp/tz-ops
+rm -rf /tmp/tz-ops && cp -r showcase/multi-timezone-ops /tmp/tz-ops
 cd /tmp/tz-ops
 ```
 

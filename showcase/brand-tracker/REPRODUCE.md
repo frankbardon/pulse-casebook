@@ -6,10 +6,10 @@ Everything runs through the `pulse` CLI. `jq` is used only to read figures out o
 
 ```sh
 # 1. Build the CLI
-go build -o /tmp/pulse ./cmd/pulse
+make pulse && cp bin/pulse /tmp/pulse     # builds Pulse from the local checkout (root Makefile)
 
 # 2. Copy the example somewhere disposable (it writes brand_tracker.pulse, out/ and deliver/)
-rm -rf /tmp/brand-tracker && cp -r docs/showcase/brand-tracker /tmp/brand-tracker
+rm -rf /tmp/brand-tracker && cp -r showcase/brand-tracker /tmp/brand-tracker
 cd /tmp/brand-tracker
 
 # 3. Regenerate the cohort and run every step (predict first, then execute)

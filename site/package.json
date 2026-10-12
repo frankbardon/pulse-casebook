@@ -1,0 +1,21 @@
+{
+  "name": "pulse-casebook-site",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "sync": "node scripts/sync.mjs",
+    "predev": "npm run sync",
+    "prebuild": "npm run sync"
+  },
+  "dependencies": {
+    "@astrojs/starlight": "0.42.6",
+    "astro": "7.3.8",
+    "sharp": "0.35.5"
+  },
+  "private": true
+}

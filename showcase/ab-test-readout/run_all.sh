@@ -3,7 +3,7 @@
 # Pulse JSON envelope to out/. Run from this directory:
 #   PULSE=/tmp/pulse ./run_all.sh
 set -euo pipefail
-PULSE=${PULSE:-pulse}
+ROOT=$(cd "$(dirname "$0")/../.." && pwd); PULSE=${PULSE:-$([ -x "$ROOT/bin/pulse" ] && echo "$ROOT/bin/pulse" || echo pulse)}   # `make pulse` builds bin/pulse
 cd "$(dirname "$0")"
 mkdir -p out
 

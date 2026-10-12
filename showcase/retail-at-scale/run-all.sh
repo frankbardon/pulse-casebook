@@ -4,7 +4,7 @@
 # Every number is computed by Pulse; this script only invokes Pulse and records
 # wall-clock time and peak resident memory (VmHWM from /proc) per command.
 set -euo pipefail
-PULSE=${PULSE:-pulse}
+ROOT=$(cd "$(dirname "$0")/../.." && pwd); PULSE=${PULSE:-$([ -x "$ROOT/bin/pulse" ] && echo "$ROOT/bin/pulse" || echo pulse)}   # `make pulse` builds bin/pulse
 # Opening a shard archive reads the whole archive into memory; capping the Go
 # heap keeps peak RSS near 3.7 GB instead of ~7.3 GB for the 1.26 GB archive.
 ARCHIVE_MEM=${ARCHIVE_MEM:-3500MiB}

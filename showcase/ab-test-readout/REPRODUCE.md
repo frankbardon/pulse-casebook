@@ -7,8 +7,8 @@ committed. The commands use `jq` only to pull numbers out of the Pulse JSON enve
 
 ```bash
 # from a fresh checkout of the repo root
-go build -o /tmp/pulse ./cmd/pulse
-rm -rf /tmp/ab-test-readout && cp -r docs/showcase/ab-test-readout /tmp/ab-test-readout
+make pulse && cp bin/pulse /tmp/pulse     # builds Pulse from the local checkout (root Makefile)
+rm -rf /tmp/ab-test-readout && cp -r showcase/ab-test-readout /tmp/ab-test-readout
 cd /tmp/ab-test-readout
 ```
 

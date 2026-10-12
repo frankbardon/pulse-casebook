@@ -7,11 +7,11 @@ regenerates the `.pulse` cohorts (they are git-ignored) and writes the responses
 
 ```bash
 # 1. build the CLI
-cd <repo root>
-go build -o /tmp/pulse ./cmd/pulse
+cd <casebook repo root>
+make pulse && cp bin/pulse /tmp/pulse     # builds Pulse from the local checkout (root Makefile)
 
 # 2. work on a scratch copy so nothing is written into the repo
-rm -rf /tmp/pss && cp -r docs/showcase/privacy-safe-sharing /tmp/pss && cd /tmp/pss
+rm -rf /tmp/pss && cp -r showcase/privacy-safe-sharing /tmp/pss && cd /tmp/pss
 
 # 3. run every step (about 25 s)
 PULSE=/tmp/pulse ./run.sh

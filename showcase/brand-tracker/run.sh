@@ -2,7 +2,7 @@
 # Rebuilds the brand-tracker cohort and runs every step of the walkthrough.
 # Usage: PULSE=/path/to/pulse ./run.sh   (run from anywhere; outputs land in ./out and ./deliver)
 set -euo pipefail
-PULSE=${PULSE:-pulse}
+ROOT=$(cd "$(dirname "$0")/../.." && pwd); PULSE=${PULSE:-$([ -x "$ROOT/bin/pulse" ] && echo "$ROOT/bin/pulse" || echo pulse)}   # `make pulse` builds bin/pulse
 cd "$(dirname "$0")"
 export PULSE_LABEL_TABLES_DIR=./labels
 mkdir -p out deliver

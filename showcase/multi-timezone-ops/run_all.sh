@@ -3,7 +3,7 @@
 #   PULSE=/tmp/pulse ./run_all.sh
 # Responses land in ./out/ (one JSON envelope per step).
 set -euo pipefail
-PULSE=${PULSE:-pulse}
+ROOT=$(cd "$(dirname "$0")/../.." && pwd); PULSE=${PULSE:-$([ -x "$ROOT/bin/pulse" ] && echo "$ROOT/bin/pulse" || echo pulse)}   # `make pulse` builds bin/pulse
 mkdir -p out
 
 # Step 0 - import the delivery feed (UTC instants with a Z suffix, so no source zone is needed).

@@ -5,14 +5,14 @@ Everything runs through the `pulse` CLI. The cohort is regenerated from its synt
 ## 1. Build Pulse (from a fresh checkout)
 
 ```sh
-git clone https://github.com/frankbardon/pulse.git && cd pulse
-go build -o /tmp/pulse ./cmd/pulse
+cd <casebook repo root>
+make pulse && cp bin/pulse /tmp/pulse     # builds Pulse from the local checkout (root Makefile)
 ```
 
 ## 2. Copy the example to a scratch location
 
 ```sh
-rm -rf /tmp/credit-risk && cp -r docs/showcase/credit-risk-model /tmp/credit-risk
+rm -rf /tmp/credit-risk && cp -r showcase/credit-risk-model /tmp/credit-risk
 cd /tmp/credit-risk
 ```
 

@@ -9,18 +9,18 @@ vCPUs.
 ## 1. Build Pulse and the bench helper
 
 ```sh
-cd /path/to/pulse                       # fresh checkout
-go build -o /tmp/pulse ./cmd/pulse
-go build -o /tmp/retail-bench docs/showcase/retail-at-scale/bench/main.go   # optional, step 9
+cd <casebook repo root>
+make pulse && cp bin/pulse /tmp/pulse     # builds Pulse from the local checkout (root Makefile)
+make retail-bench && cp bin/retail-bench /tmp/retail-bench   # optional, step 9
 ```
 
-`bench/main.go` carries a `//go:build ignore` tag. It is not part of
-`go build ./...` and builds only when named explicitly.
+`bench/main.go` carries a `//go:build ignore` tag and imports Pulse as a library, so
+`make retail-bench` compiles it inside the same Pulse source tree that `make pulse` builds from.
 
 ## 2. Copy the showcase to a scratch directory and run it
 
 ```sh
-cp -r docs/showcase/retail-at-scale /tmp/retail && cd /tmp/retail
+cp -r showcase/retail-at-scale /tmp/retail && cd /tmp/retail
 PULSE=/tmp/pulse BENCH=/tmp/retail-bench ./run-all.sh
 ```
 

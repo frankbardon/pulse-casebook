@@ -4,7 +4,7 @@
 # Responses land in results/NN_*.json; the cohort (loans.pulse) is written next to this script.
 set -euo pipefail
 cd "$(dirname "$0")"
-PULSE=${PULSE:-pulse}
+ROOT=$(cd "$(dirname "$0")/../.." && pwd); PULSE=${PULSE:-$([ -x "$ROOT/bin/pulse" ] && echo "$ROOT/bin/pulse" || echo pulse)}   # `make pulse` builds bin/pulse
 mkdir -p results
 
 "$PULSE" synth from-schema --spec data/loans.synth.json --output loans.pulse --seed 20240630
