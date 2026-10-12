@@ -11,6 +11,7 @@ Infographics and a series of narrated films that explain how Pulse works. This b
 | Film 4 | `films/pulse-filters.html` + `.js`: filters in depth | `films/pulse-filters-narration.mp3` |
 | Film 5 | `films/pulse-attributes.html` + `.js`: attributes in depth | `films/pulse-attributes-narration.mp3` |
 | Film 6 | `films/pulse-aggregators.html` + `.js`: aggregators in depth | `films/pulse-aggregators-narration.mp3` |
+| Film 7 | `films/pulse-windows.html` + `.js`: windows in depth | `films/pulse-windows-narration.mp3` |
 
 - **Playing a film:** open any page in a browser and press **Play with narration**. Each page needs its narration MP3 beside it, as committed.
 - **Rendering a film:** to produce an MP4, follow **[RENDERING.md](RENDERING.md)**. In short:
