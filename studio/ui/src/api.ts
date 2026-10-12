@@ -62,6 +62,38 @@ export function saveFile(path: string, text: string, signal?: AbortSignal): Prom
   return putJSON<FileContent>(`/api/file?path=${encodeURIComponent(path)}`, text, signal)
 }
 
+// NewRoot is the request root a new file is created with.
+export type NewRoot = 'request' | 'compose' | 'facet' | 'chain'
+
+// CreatedFile is POST /api/file/new: the new file (GET /api/file shape),
+// the cohort object written into it and the engine's predict verdict.
+export type CreatedFile = FileContent & {
+  cohort: { filename: string; data_dir: string }
+  predict: { valid: boolean; errors?: { code: string; message: string }[] }
+}
+
+// createFile creates a new request file of the given root bound to a
+// workspace cohort. The server refuses to overwrite (409 exists).
+export async function createFile(
+  path: string,
+  root: NewRoot,
+  cohort: string,
+  signal?: AbortSignal,
+): Promise<CreatedFile> {
+  const res = await fetch('/api/file/new', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ path, root, cohort }),
+    signal,
+  })
+  const body: unknown = await res.json()
+  if (!res.ok || isApiError(body)) {
+    const msg = isApiError(body) ? `${body.error.code}: ${body.error.message}` : `HTTP ${res.status}`
+    throw new Error(msg)
+  }
+  return body as CreatedFile
+}
+
 // LayoutFile is /api/layout: the sidecar of a request (foo.layout.json
 // beside foo.json). layout is null when there is none or it is unusable
 // (invalid says why); see graph/layout.ts for the schema.

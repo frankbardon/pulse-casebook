@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { listFiles, type FileListing, type WorkspaceFile } from './api.ts'
 import { groupFiles, isOpenable } from './files.ts'
+import { NewRequest } from './NewRequest.tsx'
 import './Sidebar.css'
 
 type Props = {
@@ -14,6 +15,10 @@ export function Sidebar({ selected, onSelect }: Props) {
   const [listing, setListing] = useState<FileListing | null>(null)
   const [error, setError] = useState<string | null>(null)
 
+  // Bumped to re-list after a file is created.
+  const [reload, setReload] = useState(0)
+  const [creating, setCreating] = useState(false)
+
   useEffect(() => {
     const ctl = new AbortController()
     listFiles(ctl.signal)
@@ -22,15 +27,32 @@ export function Sidebar({ selected, onSelect }: Props) {
         if (!ctl.signal.aborted) setError(String(e))
       })
     return () => ctl.abort()
-  }, [])
+  }, [reload])
 
   if (error) return <p className="err">{error}</p>
   if (!listing) return <p className="muted">Loading files…</p>
   const groups = groupFiles(listing.files)
-  if (groups.length === 0) return <p className="muted">No request or cohort files.</p>
+  const selectedCohort = listing.files.find((f) => f.path === selected && f.kind === 'cohort')
 
   return (
     <nav className="files" aria-label="Files">
+      {creating ? (
+        <NewRequest
+          files={listing.files}
+          initialCohort={selectedCohort?.path}
+          onCancel={() => setCreating(false)}
+          onCreated={(f) => {
+            setCreating(false)
+            setReload((n) => n + 1)
+            onSelect(f)
+          }}
+        />
+      ) : (
+        <button type="button" className="new-request-open" data-testid="new-request-open" onClick={() => setCreating(true)}>
+          New request
+        </button>
+      )}
+      {groups.length === 0 && <p className="muted">No request or cohort files.</p>}
       {groups.map((g) => (
         <section key={g.kind} className="file-group" data-kind={g.kind}>
           <h2>

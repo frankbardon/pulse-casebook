@@ -55,3 +55,71 @@
   opacity: 0.6;
   cursor: default;
 }
+
+.new-request-open,
+.new-request button {
+  align-self: flex-start;
+  padding: 2px var(--space-2);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: var(--surface);
+  color: var(--text);
+  font: var(--text-sm) / 1.4 var(--font-ui);
+  cursor: pointer;
+}
+
+.new-request button[type='submit']:not(:disabled) {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--surface);
+}
+
+.new-request button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.new-request {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--surface);
+}
+
+.new-request label {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: var(--text-sm);
+  color: var(--muted);
+}
+
+.new-request input,
+.new-request select {
+  min-width: 0;
+  padding: 2px var(--space-1);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: var(--bg);
+  color: var(--text);
+  font: var(--text-sm) / 1.4 var(--font-mono);
+}
+
+.new-request .new-path {
+  margin: 0;
+  font: var(--text-sm) / 1.4 var(--font-mono);
+  overflow-wrap: anywhere;
+}
+
+.new-request .err {
+  margin: 0;
+  font-size: var(--text-sm);
+}
+
+.new-actions {
+  display: flex;
+  gap: var(--space-2);
+}

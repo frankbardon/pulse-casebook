@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { WorkspaceFile } from './api.ts'
-import { groupFiles, isOpenable } from './files.ts'
+import { defaultNewDir, groupFiles, isOpenable, newFilePath } from './files.ts'
 
 const files: WorkspaceFile[] = [
   { path: 'data.pulse', kind: 'cohort' },
@@ -31,5 +31,28 @@ describe('isOpenable', () => {
     ['unopenable', false],
   ] as const)('%s -> %s', (kind, want) => {
     expect(isOpenable({ path: 'x', kind })).toBe(want)
+  })
+})
+
+describe('newFilePath', () => {
+  it('adds the root suffix unless the name is already .json', () => {
+    expect(newFilePath('case/req', 'readout', 'request')).toBe('case/req/readout.json')
+    expect(newFilePath('case/req', 'readout', 'compose')).toBe('case/req/readout.compose.json')
+    expect(newFilePath('case/req', 'srm', 'facet')).toBe('case/req/srm.facet.json')
+    expect(newFilePath('case/req', 'roll', 'chain')).toBe('case/req/roll.json')
+    expect(newFilePath('', 'x.JSON', 'compose')).toBe('x.JSON')
+  })
+  it('refuses empty names and names leaving the directory', () => {
+    expect(newFilePath('req', '  ', 'request')).toBeNull()
+    expect(newFilePath('req', '../x', 'request')).toBeNull()
+    expect(newFilePath('req', '..', 'request')).toBeNull()
+  })
+})
+
+describe('defaultNewDir', () => {
+  it('prefers the req/ directory beside the cohort', () => {
+    expect(defaultNewDir('data.pulse', files)).toBe('req')
+    expect(defaultNewDir('case/c.pulse', files)).toBe('case')
+    expect(defaultNewDir('case/c.pulse', [{ path: 'case/req/a.json', kind: 'request' }])).toBe('case/req')
   })
 })

@@ -1,4 +1,4 @@
-import type { FileKind, WorkspaceFile } from './api.ts'
+import type { FileKind, NewRoot, WorkspaceFile } from './api.ts'
 
 export type FileGroup = { kind: FileKind; title: string; files: WorkspaceFile[] }
 
@@ -23,4 +23,34 @@ export function groupFiles(files: WorkspaceFile[]): FileGroup[] {
 // isOpenable reports whether the builder can open a file from the sidebar.
 export function isOpenable(f: WorkspaceFile): boolean {
   return f.kind !== 'unopenable'
+}
+
+// Suffix a new file of each root gets (the casebook naming convention;
+// the server classifies by keys, so this is for people, not detection).
+const ROOT_SUFFIX: Record<NewRoot, string> = {
+  request: '.json',
+  compose: '.compose.json',
+  facet: '.facet.json',
+  chain: '.json',
+}
+
+// newFilePath joins a directory and a typed file name into the path to
+// create, adding the root's suffix unless the name already ends in .json.
+// Returns null for an empty name or one with path separators or dots
+// that would leave the directory.
+export function newFilePath(dir: string, name: string, root: NewRoot): string | null {
+  const n = name.trim()
+  if (n === '' || n.includes('/') || n.includes('\\') || n === '.' || n === '..') return null
+  const file = n.toLowerCase().endsWith('.json') ? n : n + ROOT_SUFFIX[root]
+  return dir === '' ? file : `${dir}/${file}`
+}
+
+// defaultNewDir is where a request for a cohort goes by default: the
+// cohort's own req/ directory when the workspace has one (cohort beside
+// req/, the casebook layout), else the cohort's directory.
+export function defaultNewDir(cohortPath: string, files: WorkspaceFile[]): string {
+  const i = cohortPath.lastIndexOf('/')
+  const dir = i < 0 ? '' : cohortPath.slice(0, i)
+  const req = dir === '' ? 'req' : `${dir}/req`
+  return files.some((f) => f.path.startsWith(req + '/')) ? req : dir
 }
