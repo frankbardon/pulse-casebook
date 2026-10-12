@@ -1,0 +1,1842 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`buildRequestGraph > maps 04_metric_battery 1`] = `
+{
+  "columns": [
+    {
+      "key": "source",
+      "title": "Cohort",
+      "x": 0,
+    },
+    {
+      "key": "aggregations",
+      "title": "Aggregate",
+      "x": 312,
+    },
+    {
+      "key": "analysis",
+      "title": "Analysis",
+      "x": 624,
+    },
+    {
+      "key": "output",
+      "title": "Output",
+      "x": 936,
+    },
+  ],
+  "edges": [
+    {
+      "data": {
+        "ref": "user_id",
+        "role": "field",
+      },
+      "id": "cohort|field:user_id->aggregations[0]|in:field",
+      "source": "cohort",
+      "sourceHandle": "field:user_id",
+      "target": "aggregations[0]",
+      "targetHandle": "in:field",
+    },
+    {
+      "data": {
+        "ref": "trial_started",
+        "role": "field",
+      },
+      "id": "cohort|field:trial_started->tests[0]|in:field",
+      "source": "cohort",
+      "sourceHandle": "field:trial_started",
+      "target": "tests[0]",
+      "targetHandle": "in:field",
+    },
+    {
+      "data": {
+        "ref": "arm",
+        "role": "split_by",
+      },
+      "id": "cohort|field:arm->tests[0]|in:split_by",
+      "source": "cohort",
+      "sourceHandle": "field:arm",
+      "target": "tests[0]",
+      "targetHandle": "in:split_by",
+    },
+    {
+      "data": {
+        "ref": "paid_converted",
+        "role": "field",
+      },
+      "id": "cohort|field:paid_converted->tests[1]|in:field",
+      "source": "cohort",
+      "sourceHandle": "field:paid_converted",
+      "target": "tests[1]",
+      "targetHandle": "in:field",
+    },
+    {
+      "data": {
+        "ref": "arm",
+        "role": "split_by",
+      },
+      "id": "cohort|field:arm->tests[1]|in:split_by",
+      "source": "cohort",
+      "sourceHandle": "field:arm",
+      "target": "tests[1]",
+      "targetHandle": "in:split_by",
+    },
+    {
+      "data": {
+        "ref": "revenue",
+        "role": "field",
+      },
+      "id": "cohort|field:revenue->tests[2]|in:field",
+      "source": "cohort",
+      "sourceHandle": "field:revenue",
+      "target": "tests[2]",
+      "targetHandle": "in:field",
+    },
+    {
+      "data": {
+        "ref": "arm",
+        "role": "split_by",
+      },
+      "id": "cohort|field:arm->tests[2]|in:split_by",
+      "source": "cohort",
+      "sourceHandle": "field:arm",
+      "target": "tests[2]",
+      "targetHandle": "in:split_by",
+    },
+    {
+      "data": {
+        "ref": "pages_viewed",
+        "role": "field",
+      },
+      "id": "cohort|field:pages_viewed->tests[3]|in:field",
+      "source": "cohort",
+      "sourceHandle": "field:pages_viewed",
+      "target": "tests[3]",
+      "targetHandle": "in:field",
+    },
+    {
+      "data": {
+        "ref": "arm",
+        "role": "split_by",
+      },
+      "id": "cohort|field:arm->tests[3]|in:split_by",
+      "source": "cohort",
+      "sourceHandle": "field:arm",
+      "target": "tests[3]",
+      "targetHandle": "in:split_by",
+    },
+    {
+      "data": {
+        "ref": "days_to_convert",
+        "role": "field",
+      },
+      "id": "cohort|field:days_to_convert->tests[4]|in:field",
+      "source": "cohort",
+      "sourceHandle": "field:days_to_convert",
+      "target": "tests[4]",
+      "targetHandle": "in:field",
+    },
+    {
+      "data": {
+        "ref": "arm",
+        "role": "split_by",
+      },
+      "id": "cohort|field:arm->tests[4]|in:split_by",
+      "source": "cohort",
+      "sourceHandle": "field:arm",
+      "target": "tests[4]",
+      "targetHandle": "in:split_by",
+    },
+    {
+      "data": {
+        "ref": "retained_30d",
+        "role": "field",
+      },
+      "id": "cohort|field:retained_30d->tests[5]|in:field",
+      "source": "cohort",
+      "sourceHandle": "field:retained_30d",
+      "target": "tests[5]",
+      "targetHandle": "in:field",
+    },
+    {
+      "data": {
+        "ref": "arm",
+        "role": "split_by",
+      },
+      "id": "cohort|field:arm->tests[5]|in:split_by",
+      "source": "cohort",
+      "sourceHandle": "field:arm",
+      "target": "tests[5]",
+      "targetHandle": "in:split_by",
+    },
+  ],
+  "nodes": [
+    {
+      "data": {
+        "column": "source",
+        "dataDir": ".",
+        "fields": [
+          {
+            "name": "user_id",
+            "type": "u32",
+            "used": true,
+          },
+          {
+            "name": "arm",
+            "type": "categorical_u8",
+            "used": true,
+          },
+          {
+            "name": "is_variant",
+            "type": "u8",
+            "used": false,
+          },
+          {
+            "name": "assign_week",
+            "type": "categorical_u8",
+            "used": false,
+          },
+          {
+            "name": "device",
+            "type": "categorical_u8",
+            "used": false,
+          },
+          {
+            "name": "plan_tier",
+            "type": "categorical_u8",
+            "used": false,
+          },
+          {
+            "name": "region",
+            "type": "categorical_u8",
+            "used": false,
+          },
+          {
+            "name": "user_type",
+            "type": "categorical_u8",
+            "used": false,
+          },
+          {
+            "name": "prior_sessions",
+            "type": "u16",
+            "used": false,
+          },
+          {
+            "name": "pages_viewed",
+            "type": "u16",
+            "used": true,
+          },
+          {
+            "name": "u_trial",
+            "type": "f32",
+            "used": false,
+          },
+          {
+            "name": "u_paid",
+            "type": "f32",
+            "used": false,
+          },
+          {
+            "name": "u_ret",
+            "type": "f32",
+            "used": false,
+          },
+          {
+            "name": "trial_started",
+            "type": "categorical_u8",
+            "used": true,
+          },
+          {
+            "name": "paid_converted",
+            "type": "categorical_u8",
+            "used": true,
+          },
+          {
+            "name": "order_value",
+            "type": "f64",
+            "used": false,
+          },
+          {
+            "name": "revenue",
+            "type": "f64",
+            "used": true,
+          },
+          {
+            "name": "days_to_convert",
+            "type": "f32",
+            "used": true,
+          },
+          {
+            "name": "retained_30d",
+            "type": "categorical_u8",
+            "used": true,
+          },
+        ],
+        "fieldsKnown": true,
+        "filename": "ab_test.pulse",
+        "path": "cohort",
+      },
+      "id": "cohort",
+      "position": {
+        "x": 0,
+        "y": 0,
+      },
+      "type": "cohort",
+    },
+    {
+      "data": {
+        "column": "aggregations",
+        "name": "users",
+        "op": "AGG_COUNT",
+        "opKnown": true,
+        "path": "aggregations[0]",
+        "produces": true,
+        "rows": [
+          {
+            "key": "field",
+            "ref": "user_id",
+            "resolved": true,
+            "value": "user_id",
+          },
+        ],
+        "section": "aggregations",
+        "title": "Aggregate",
+      },
+      "id": "aggregations[0]",
+      "position": {
+        "x": 312,
+        "y": 0,
+      },
+      "type": "op",
+    },
+    {
+      "data": {
+        "column": "analysis",
+        "name": "trial_start",
+        "op": "TEST_PROP_Z",
+        "opKnown": true,
+        "path": "tests[0]",
+        "produces": false,
+        "rows": [
+          {
+            "key": "field",
+            "ref": "trial_started",
+            "resolved": true,
+            "value": "trial_started",
+          },
+          {
+            "key": "split_by",
+            "ref": "arm",
+            "resolved": true,
+            "value": "arm",
+          },
+          {
+            "key": "params.success",
+            "value": "yes",
+          },
+        ],
+        "section": "tests",
+        "title": "Test",
+      },
+      "id": "tests[0]",
+      "position": {
+        "x": 624,
+        "y": 0,
+      },
+      "type": "op",
+    },
+    {
+      "data": {
+        "column": "analysis",
+        "name": "paid_conversion",
+        "op": "TEST_PROP_Z",
+        "opKnown": true,
+        "path": "tests[1]",
+        "produces": false,
+        "rows": [
+          {
+            "key": "field",
+            "ref": "paid_converted",
+            "resolved": true,
+            "value": "paid_converted",
+          },
+          {
+            "key": "split_by",
+            "ref": "arm",
+            "resolved": true,
+            "value": "arm",
+          },
+          {
+            "key": "params.success",
+            "value": "yes",
+          },
+        ],
+        "section": "tests",
+        "title": "Test",
+      },
+      "id": "tests[1]",
+      "position": {
+        "x": 624,
+        "y": 122,
+      },
+      "type": "op",
+    },
+    {
+      "data": {
+        "column": "analysis",
+        "name": "revenue_per_user",
+        "op": "TEST_WELCH",
+        "opKnown": false,
+        "path": "tests[2]",
+        "produces": false,
+        "rows": [
+          {
+            "key": "field",
+            "ref": "revenue",
+            "resolved": true,
+            "value": "revenue",
+          },
+          {
+            "key": "split_by",
+            "ref": "arm",
+            "resolved": true,
+            "value": "arm",
+          },
+        ],
+        "section": "tests",
+        "title": "Test",
+      },
+      "id": "tests[2]",
+      "position": {
+        "x": 624,
+        "y": 244,
+      },
+      "type": "op",
+    },
+    {
+      "data": {
+        "column": "analysis",
+        "name": "pages_viewed",
+        "op": "TEST_WELCH",
+        "opKnown": false,
+        "path": "tests[3]",
+        "produces": false,
+        "rows": [
+          {
+            "key": "field",
+            "ref": "pages_viewed",
+            "resolved": true,
+            "value": "pages_viewed",
+          },
+          {
+            "key": "split_by",
+            "ref": "arm",
+            "resolved": true,
+            "value": "arm",
+          },
+        ],
+        "section": "tests",
+        "title": "Test",
+      },
+      "id": "tests[3]",
+      "position": {
+        "x": 624,
+        "y": 348,
+      },
+      "type": "op",
+    },
+    {
+      "data": {
+        "column": "analysis",
+        "name": "days_to_convert",
+        "op": "TEST_WELCH",
+        "opKnown": false,
+        "path": "tests[4]",
+        "produces": false,
+        "rows": [
+          {
+            "key": "field",
+            "ref": "days_to_convert",
+            "resolved": true,
+            "value": "days_to_convert",
+          },
+          {
+            "key": "split_by",
+            "ref": "arm",
+            "resolved": true,
+            "value": "arm",
+          },
+        ],
+        "section": "tests",
+        "title": "Test",
+      },
+      "id": "tests[4]",
+      "position": {
+        "x": 624,
+        "y": 452,
+      },
+      "type": "op",
+    },
+    {
+      "data": {
+        "column": "analysis",
+        "name": "retention_30d",
+        "op": "TEST_PROP_Z",
+        "opKnown": true,
+        "path": "tests[5]",
+        "produces": false,
+        "rows": [
+          {
+            "key": "field",
+            "ref": "retained_30d",
+            "resolved": true,
+            "value": "retained_30d",
+          },
+          {
+            "key": "split_by",
+            "ref": "arm",
+            "resolved": true,
+            "value": "arm",
+          },
+          {
+            "key": "params.success",
+            "value": "yes",
+          },
+        ],
+        "section": "tests",
+        "title": "Test",
+      },
+      "id": "tests[5]",
+      "position": {
+        "x": 624,
+        "y": 556,
+      },
+      "type": "op",
+    },
+    {
+      "data": {
+        "column": "output",
+        "op": "holm",
+        "path": "multiplicity",
+        "produces": false,
+        "rows": [
+          {
+            "key": "family",
+            "value": "request",
+          },
+        ],
+        "section": "multiplicity",
+        "title": "Multiplicity",
+      },
+      "id": "multiplicity",
+      "position": {
+        "x": 936,
+        "y": 0,
+      },
+      "type": "op",
+    },
+  ],
+}
+`;
+
+exports[`buildRequestGraph > maps 08_cuped_welch with a label wire from the attribute 1`] = `
+{
+  "columns": [
+    {
+      "key": "source",
+      "title": "Cohort",
+      "x": 0,
+    },
+    {
+      "key": "attributes",
+      "title": "Attributes",
+      "x": 312,
+    },
+    {
+      "key": "aggregations",
+      "title": "Aggregate",
+      "x": 624,
+    },
+    {
+      "key": "analysis",
+      "title": "Analysis",
+      "x": 936,
+    },
+  ],
+  "edges": [
+    {
+      "data": {
+        "ref": "pages_viewed",
+        "role": "field",
+      },
+      "id": "cohort|field:pages_viewed->attributes[0]|in:field",
+      "source": "cohort",
+      "sourceHandle": "field:pages_viewed",
+      "target": "attributes[0]",
+      "targetHandle": "in:field",
+    },
+    {
+      "data": {
+        "ref": "user_id",
+        "role": "field",
+      },
+      "id": "cohort|field:user_id->aggregations[0]|in:field",
+      "source": "cohort",
+      "sourceHandle": "field:user_id",
+      "target": "aggregations[0]",
+      "targetHandle": "in:field",
+    },
+    {
+      "data": {
+        "ref": "pages_viewed",
+        "role": "field",
+      },
+      "id": "cohort|field:pages_viewed->tests[0]|in:field",
+      "source": "cohort",
+      "sourceHandle": "field:pages_viewed",
+      "target": "tests[0]",
+      "targetHandle": "in:field",
+    },
+    {
+      "data": {
+        "ref": "arm",
+        "role": "split_by",
+      },
+      "id": "cohort|field:arm->tests[0]|in:split_by",
+      "source": "cohort",
+      "sourceHandle": "field:arm",
+      "target": "tests[0]",
+      "targetHandle": "in:split_by",
+    },
+    {
+      "data": {
+        "ref": "pages_cuped",
+        "role": "field",
+      },
+      "id": "attributes[0]|out->tests[1]|in:field",
+      "source": "attributes[0]",
+      "sourceHandle": "out",
+      "target": "tests[1]",
+      "targetHandle": "in:field",
+    },
+    {
+      "data": {
+        "ref": "arm",
+        "role": "split_by",
+      },
+      "id": "cohort|field:arm->tests[1]|in:split_by",
+      "source": "cohort",
+      "sourceHandle": "field:arm",
+      "target": "tests[1]",
+      "targetHandle": "in:split_by",
+    },
+  ],
+  "nodes": [
+    {
+      "data": {
+        "column": "source",
+        "dataDir": ".",
+        "fields": [
+          {
+            "name": "user_id",
+            "type": "u32",
+            "used": true,
+          },
+          {
+            "name": "arm",
+            "type": "categorical_u8",
+            "used": true,
+          },
+          {
+            "name": "is_variant",
+            "type": "u8",
+            "used": false,
+          },
+          {
+            "name": "assign_week",
+            "type": "categorical_u8",
+            "used": false,
+          },
+          {
+            "name": "device",
+            "type": "categorical_u8",
+            "used": false,
+          },
+          {
+            "name": "plan_tier",
+            "type": "categorical_u8",
+            "used": false,
+          },
+          {
+            "name": "region",
+            "type": "categorical_u8",
+            "used": false,
+          },
+          {
+            "name": "user_type",
+            "type": "categorical_u8",
+            "used": false,
+          },
+          {
+            "name": "prior_sessions",
+            "type": "u16",
+            "used": false,
+          },
+          {
+            "name": "pages_viewed",
+            "type": "u16",
+            "used": true,
+          },
+          {
+            "name": "u_trial",
+            "type": "f32",
+            "used": false,
+          },
+          {
+            "name": "u_paid",
+            "type": "f32",
+            "used": false,
+          },
+          {
+            "name": "u_ret",
+            "type": "f32",
+            "used": false,
+          },
+          {
+            "name": "trial_started",
+            "type": "categorical_u8",
+            "used": false,
+          },
+          {
+            "name": "paid_converted",
+            "type": "categorical_u8",
+            "used": false,
+          },
+          {
+            "name": "order_value",
+            "type": "f64",
+            "used": false,
+          },
+          {
+            "name": "revenue",
+            "type": "f64",
+            "used": false,
+          },
+          {
+            "name": "days_to_convert",
+            "type": "f32",
+            "used": false,
+          },
+          {
+            "name": "retained_30d",
+            "type": "categorical_u8",
+            "used": false,
+          },
+        ],
+        "fieldsKnown": true,
+        "filename": "ab_test.pulse",
+        "path": "cohort",
+      },
+      "id": "cohort",
+      "position": {
+        "x": 0,
+        "y": 0,
+      },
+      "type": "cohort",
+    },
+    {
+      "data": {
+        "column": "attributes",
+        "name": "pages_cuped",
+        "op": "ATTR_FORMULA",
+        "opKnown": true,
+        "path": "attributes[0]",
+        "produces": true,
+        "rows": [
+          {
+            "key": "field",
+            "ref": "pages_viewed",
+            "resolved": true,
+            "value": "pages_viewed",
+          },
+          {
+            "key": "expression",
+            "value": "pages_viewed - 0.7601 * (prior_sessions…",
+          },
+        ],
+        "section": "attributes",
+        "title": "Attribute",
+      },
+      "id": "attributes[0]",
+      "position": {
+        "x": 312,
+        "y": 0,
+      },
+      "type": "op",
+    },
+    {
+      "data": {
+        "column": "aggregations",
+        "name": "users",
+        "op": "AGG_COUNT",
+        "opKnown": true,
+        "path": "aggregations[0]",
+        "produces": true,
+        "rows": [
+          {
+            "key": "field",
+            "ref": "user_id",
+            "resolved": true,
+            "value": "user_id",
+          },
+        ],
+        "section": "aggregations",
+        "title": "Aggregate",
+      },
+      "id": "aggregations[0]",
+      "position": {
+        "x": 624,
+        "y": 0,
+      },
+      "type": "op",
+    },
+    {
+      "data": {
+        "column": "analysis",
+        "name": "pages_raw",
+        "op": "TEST_WELCH",
+        "opKnown": false,
+        "path": "tests[0]",
+        "produces": false,
+        "rows": [
+          {
+            "key": "field",
+            "ref": "pages_viewed",
+            "resolved": true,
+            "value": "pages_viewed",
+          },
+          {
+            "key": "split_by",
+            "ref": "arm",
+            "resolved": true,
+            "value": "arm",
+          },
+        ],
+        "section": "tests",
+        "title": "Test",
+      },
+      "id": "tests[0]",
+      "position": {
+        "x": 936,
+        "y": 0,
+      },
+      "type": "op",
+    },
+    {
+      "data": {
+        "column": "analysis",
+        "name": "pages_cuped",
+        "op": "TEST_WELCH",
+        "opKnown": false,
+        "path": "tests[1]",
+        "produces": false,
+        "rows": [
+          {
+            "key": "field",
+            "ref": "pages_cuped",
+            "resolved": true,
+            "value": "pages_cuped",
+          },
+          {
+            "key": "split_by",
+            "ref": "arm",
+            "resolved": true,
+            "value": "arm",
+          },
+        ],
+        "section": "tests",
+        "title": "Test",
+      },
+      "id": "tests[1]",
+      "position": {
+        "x": 936,
+        "y": 104,
+      },
+      "type": "op",
+    },
+  ],
+}
+`;
+
+exports[`buildRequestGraph > maps 13_holdout_deciles without inspect data 1`] = `
+{
+  "columns": [
+    {
+      "key": "source",
+      "title": "Cohort",
+      "x": 0,
+    },
+    {
+      "key": "features",
+      "title": "Features",
+      "x": 312,
+    },
+    {
+      "key": "filterers",
+      "title": "Filters",
+      "x": 624,
+    },
+    {
+      "key": "attributes",
+      "title": "Attributes",
+      "x": 936,
+    },
+    {
+      "key": "groups",
+      "title": "Group",
+      "x": 1248,
+    },
+    {
+      "key": "aggregations",
+      "title": "Aggregate",
+      "x": 1560,
+    },
+    {
+      "key": "windows",
+      "title": "Windows",
+      "x": 1872,
+    },
+    {
+      "key": "sort",
+      "title": "Sort",
+      "x": 2184,
+    },
+  ],
+  "edges": [
+    {
+      "data": {
+        "ref": "annual_income",
+        "role": "field",
+      },
+      "id": "cohort|field:annual_income->features[1]|in:field",
+      "source": "cohort",
+      "sourceHandle": "field:annual_income",
+      "target": "features[1]",
+      "targetHandle": "in:field",
+    },
+    {
+      "data": {
+        "ref": "loan_amount",
+        "role": "field",
+      },
+      "id": "cohort|field:loan_amount->features[2]|in:field",
+      "source": "cohort",
+      "sourceHandle": "field:loan_amount",
+      "target": "features[2]",
+      "targetHandle": "in:field",
+    },
+    {
+      "data": {
+        "ref": "credit_band",
+        "role": "field",
+      },
+      "id": "cohort|field:credit_band->features[3]|in:field",
+      "source": "cohort",
+      "sourceHandle": "field:credit_band",
+      "target": "features[3]",
+      "targetHandle": "in:field",
+    },
+    {
+      "data": {
+        "ref": "home_ownership",
+        "role": "field",
+      },
+      "id": "cohort|field:home_ownership->features[4]|in:field",
+      "source": "cohort",
+      "sourceHandle": "field:home_ownership",
+      "target": "features[4]",
+      "targetHandle": "in:field",
+    },
+    {
+      "data": {
+        "ref": "purpose",
+        "role": "field",
+      },
+      "id": "cohort|field:purpose->features[5]|in:field",
+      "source": "cohort",
+      "sourceHandle": "field:purpose",
+      "target": "features[5]",
+      "targetHandle": "in:field",
+    },
+    {
+      "data": {
+        "ref": "split",
+        "role": "field",
+      },
+      "id": "features[0]|out->filterers[0]|in:field",
+      "source": "features[0]",
+      "sourceHandle": "out",
+      "target": "filterers[0]",
+      "targetHandle": "in:field",
+    },
+    {
+      "data": {
+        "ref": "pd_score",
+        "role": "field",
+      },
+      "id": "attributes[7]|out->groups[0]|in:field",
+      "source": "attributes[7]",
+      "sourceHandle": "out",
+      "target": "groups[0]",
+      "targetHandle": "in:field",
+    },
+    {
+      "data": {
+        "ref": "loan_id",
+        "role": "field",
+      },
+      "id": "cohort|field:loan_id->aggregations[0]|in:field",
+      "source": "cohort",
+      "sourceHandle": "field:loan_id",
+      "target": "aggregations[0]",
+      "targetHandle": "in:field",
+    },
+    {
+      "data": {
+        "ref": "default_12m",
+        "role": "field",
+      },
+      "id": "cohort|field:default_12m->aggregations[1]|in:field",
+      "source": "cohort",
+      "sourceHandle": "field:default_12m",
+      "target": "aggregations[1]",
+      "targetHandle": "in:field",
+    },
+    {
+      "data": {
+        "ref": "default_12m",
+        "role": "field",
+      },
+      "id": "cohort|field:default_12m->aggregations[2]|in:field",
+      "source": "cohort",
+      "sourceHandle": "field:default_12m",
+      "target": "aggregations[2]",
+      "targetHandle": "in:field",
+    },
+    {
+      "data": {
+        "ref": "pd_score",
+        "role": "field",
+      },
+      "id": "attributes[7]|out->aggregations[3]|in:field",
+      "source": "attributes[7]",
+      "sourceHandle": "out",
+      "target": "aggregations[3]",
+      "targetHandle": "in:field",
+    },
+    {
+      "data": {
+        "ref": "gt_true_pd",
+        "role": "field",
+      },
+      "id": "cohort|field:gt_true_pd->aggregations[4]|in:field",
+      "source": "cohort",
+      "sourceHandle": "field:gt_true_pd",
+      "target": "aggregations[4]",
+      "targetHandle": "in:field",
+    },
+    {
+      "data": {
+        "ref": "loan_amount",
+        "role": "field",
+      },
+      "id": "cohort|field:loan_amount->aggregations[5]|in:field",
+      "source": "cohort",
+      "sourceHandle": "field:loan_amount",
+      "target": "aggregations[5]",
+      "targetHandle": "in:field",
+    },
+    {
+      "data": {
+        "ref": "defaults",
+        "role": "field",
+      },
+      "id": "aggregations[1]|out->windows[0]|in:field",
+      "source": "aggregations[1]",
+      "sourceHandle": "out",
+      "target": "windows[0]",
+      "targetHandle": "in:field",
+    },
+    {
+      "data": {
+        "ref": "mean_pd",
+        "role": "order_by[0].field",
+      },
+      "id": "aggregations[3]|out->windows[0]|in:order_by[0].field",
+      "source": "aggregations[3]",
+      "sourceHandle": "out",
+      "target": "windows[0]",
+      "targetHandle": "in:order_by[0].field",
+    },
+    {
+      "data": {
+        "ref": "loans",
+        "role": "field",
+      },
+      "id": "aggregations[0]|out->windows[1]|in:field",
+      "source": "aggregations[0]",
+      "sourceHandle": "out",
+      "target": "windows[1]",
+      "targetHandle": "in:field",
+    },
+    {
+      "data": {
+        "ref": "mean_pd",
+        "role": "order_by[0].field",
+      },
+      "id": "aggregations[3]|out->windows[1]|in:order_by[0].field",
+      "source": "aggregations[3]",
+      "sourceHandle": "out",
+      "target": "windows[1]",
+      "targetHandle": "in:order_by[0].field",
+    },
+    {
+      "data": {
+        "ref": "mean_pd",
+        "role": "field",
+      },
+      "id": "aggregations[3]|out->sort[0]|in:field",
+      "source": "aggregations[3]",
+      "sourceHandle": "out",
+      "target": "sort[0]",
+      "targetHandle": "in:field",
+    },
+  ],
+  "nodes": [
+    {
+      "data": {
+        "column": "source",
+        "dataDir": ".",
+        "fields": [
+          {
+            "name": "annual_income",
+            "type": "",
+            "used": true,
+          },
+          {
+            "name": "loan_amount",
+            "type": "",
+            "used": true,
+          },
+          {
+            "name": "credit_band",
+            "type": "",
+            "used": true,
+          },
+          {
+            "name": "home_ownership",
+            "type": "",
+            "used": true,
+          },
+          {
+            "name": "purpose",
+            "type": "",
+            "used": true,
+          },
+          {
+            "name": "loan_id",
+            "type": "",
+            "used": true,
+          },
+          {
+            "name": "default_12m",
+            "type": "",
+            "used": true,
+          },
+          {
+            "name": "gt_true_pd",
+            "type": "",
+            "used": true,
+          },
+        ],
+        "fieldsKnown": false,
+        "filename": "loans.pulse",
+        "path": "cohort",
+      },
+      "id": "cohort",
+      "position": {
+        "x": 0,
+        "y": 0,
+      },
+      "type": "cohort",
+    },
+    {
+      "data": {
+        "column": "features",
+        "name": "split",
+        "op": "FEAT_TRAIN_TEST_SPLIT",
+        "path": "features[0]",
+        "produces": true,
+        "rows": [
+          {
+            "key": "params.ratios",
+            "value": "[0.7, 0.3]",
+          },
+          {
+            "key": "params.seed",
+            "value": "42",
+          },
+          {
+            "key": "params.stratify",
+            "value": "outcome",
+          },
+        ],
+        "section": "features",
+        "title": "Feature",
+      },
+      "id": "features[0]",
+      "position": {
+        "x": 312,
+        "y": 0,
+      },
+      "type": "op",
+    },
+    {
+      "data": {
+        "column": "features",
+        "name": "log_income",
+        "op": "FEAT_LOG",
+        "path": "features[1]",
+        "produces": true,
+        "rows": [
+          {
+            "key": "field",
+            "ref": "annual_income",
+            "resolved": true,
+            "value": "annual_income",
+          },
+        ],
+        "section": "features",
+        "title": "Feature",
+      },
+      "id": "features[1]",
+      "position": {
+        "x": 312,
+        "y": 122,
+      },
+      "type": "op",
+    },
+    {
+      "data": {
+        "column": "features",
+        "name": "log_loan",
+        "op": "FEAT_LOG",
+        "path": "features[2]",
+        "produces": true,
+        "rows": [
+          {
+            "key": "field",
+            "ref": "loan_amount",
+            "resolved": true,
+            "value": "loan_amount",
+          },
+        ],
+        "section": "features",
+        "title": "Feature",
+      },
+      "id": "features[2]",
+      "position": {
+        "x": 312,
+        "y": 208,
+      },
+      "type": "op",
+    },
+    {
+      "data": {
+        "column": "features",
+        "name": "band",
+        "op": "FEAT_ONE_HOT",
+        "path": "features[3]",
+        "produces": true,
+        "rows": [
+          {
+            "key": "field",
+            "ref": "credit_band",
+            "resolved": true,
+            "value": "credit_band",
+          },
+        ],
+        "section": "features",
+        "title": "Feature",
+      },
+      "id": "features[3]",
+      "position": {
+        "x": 312,
+        "y": 294,
+      },
+      "type": "op",
+    },
+    {
+      "data": {
+        "column": "features",
+        "name": "home",
+        "op": "FEAT_ONE_HOT",
+        "path": "features[4]",
+        "produces": true,
+        "rows": [
+          {
+            "key": "field",
+            "ref": "home_ownership",
+            "resolved": true,
+            "value": "home_ownership",
+          },
+        ],
+        "section": "features",
+        "title": "Feature",
+      },
+      "id": "features[4]",
+      "position": {
+        "x": 312,
+        "y": 380,
+      },
+      "type": "op",
+    },
+    {
+      "data": {
+        "column": "features",
+        "name": "purpose_freq",
+        "op": "FEAT_FREQUENCY_ENCODE",
+        "path": "features[5]",
+        "produces": true,
+        "rows": [
+          {
+            "key": "field",
+            "ref": "purpose",
+            "resolved": true,
+            "value": "purpose",
+          },
+        ],
+        "section": "features",
+        "title": "Feature",
+      },
+      "id": "features[5]",
+      "position": {
+        "x": 312,
+        "y": 466,
+      },
+      "type": "op",
+    },
+    {
+      "data": {
+        "column": "filterers",
+        "op": "FILTER_INCLUDE",
+        "path": "filterers[0]",
+        "produces": false,
+        "rows": [
+          {
+            "key": "field",
+            "ref": "split",
+            "resolved": true,
+            "value": "split",
+          },
+          {
+            "key": "values",
+            "value": "[1]",
+          },
+        ],
+        "section": "filterers",
+        "title": "Filter",
+      },
+      "id": "filterers[0]",
+      "position": {
+        "x": 624,
+        "y": 0,
+      },
+      "type": "op",
+    },
+    {
+      "data": {
+        "column": "attributes",
+        "name": "lti",
+        "op": "ATTR_FORMULA",
+        "path": "attributes[0]",
+        "produces": true,
+        "rows": [
+          {
+            "key": "expression",
+            "value": "2.718281828459045 ** (log_loan - log_in…",
+          },
+        ],
+        "section": "attributes",
+        "title": "Attribute",
+      },
+      "id": "attributes[0]",
+      "position": {
+        "x": 936,
+        "y": 0,
+      },
+      "type": "op",
+    },
+    {
+      "data": {
+        "column": "attributes",
+        "name": "term60",
+        "op": "ATTR_FORMULA",
+        "path": "attributes[1]",
+        "produces": true,
+        "rows": [
+          {
+            "key": "expression",
+            "value": "term_months == 60 ? 1 : 0",
+          },
+        ],
+        "section": "attributes",
+        "title": "Attribute",
+      },
+      "id": "attributes[1]",
+      "position": {
+        "x": 936,
+        "y": 86,
+      },
+      "type": "op",
+    },
+    {
+      "data": {
+        "column": "attributes",
+        "name": "emp_missing",
+        "op": "ATTR_FORMULA",
+        "path": "attributes[2]",
+        "produces": true,
+        "rows": [
+          {
+            "key": "expression",
+            "value": "emp_length_years == nil ? 1 : 0",
+          },
+        ],
+        "section": "attributes",
+        "title": "Attribute",
+      },
+      "id": "attributes[2]",
+      "position": {
+        "x": 936,
+        "y": 172,
+      },
+      "type": "op",
+    },
+    {
+      "data": {
+        "column": "attributes",
+        "name": "emp_years",
+        "op": "ATTR_FORMULA",
+        "path": "attributes[3]",
+        "produces": true,
+        "rows": [
+          {
+            "key": "expression",
+            "value": "emp_length_years ?? 0",
+          },
+        ],
+        "section": "attributes",
+        "title": "Attribute",
+      },
+      "id": "attributes[3]",
+      "position": {
+        "x": 936,
+        "y": 258,
+      },
+      "type": "op",
+    },
+    {
+      "data": {
+        "column": "attributes",
+        "name": "revol_missing",
+        "op": "ATTR_FORMULA",
+        "path": "attributes[4]",
+        "produces": true,
+        "rows": [
+          {
+            "key": "expression",
+            "value": "revol_util == nil ? 1 : 0",
+          },
+        ],
+        "section": "attributes",
+        "title": "Attribute",
+      },
+      "id": "attributes[4]",
+      "position": {
+        "x": 936,
+        "y": 344,
+      },
+      "type": "op",
+    },
+    {
+      "data": {
+        "column": "attributes",
+        "name": "revol_util_filled",
+        "op": "ATTR_FORMULA",
+        "path": "attributes[5]",
+        "produces": true,
+        "rows": [
+          {
+            "key": "expression",
+            "value": "revol_util ?? 50",
+          },
+        ],
+        "section": "attributes",
+        "title": "Attribute",
+      },
+      "id": "attributes[5]",
+      "position": {
+        "x": 936,
+        "y": 430,
+      },
+      "type": "op",
+    },
+    {
+      "data": {
+        "column": "attributes",
+        "name": "purpose_te_train",
+        "op": "ATTR_FORMULA",
+        "path": "attributes[6]",
+        "produces": true,
+        "rows": [
+          {
+            "key": "expression",
+            "value": "(({"adoption": 8, "appliances": 20, "bo…",
+          },
+        ],
+        "section": "attributes",
+        "title": "Attribute",
+      },
+      "id": "attributes[6]",
+      "position": {
+        "x": 936,
+        "y": 516,
+      },
+      "type": "op",
+    },
+    {
+      "data": {
+        "column": "attributes",
+        "name": "pd_score",
+        "op": "ATTR_FORMULA",
+        "path": "attributes[7]",
+        "produces": true,
+        "rows": [
+          {
+            "key": "expression",
+            "value": "1 / (1 + 2.718281828459045 ** (-(-2.014…",
+          },
+        ],
+        "section": "attributes",
+        "title": "Attribute",
+      },
+      "id": "attributes[7]",
+      "position": {
+        "x": 936,
+        "y": 602,
+      },
+      "type": "op",
+    },
+    {
+      "data": {
+        "column": "groups",
+        "op": "GROUP_QUANTILE",
+        "path": "groups[0]",
+        "produces": false,
+        "rows": [
+          {
+            "key": "field",
+            "ref": "pd_score",
+            "resolved": true,
+            "value": "pd_score",
+          },
+          {
+            "key": "interval",
+            "value": "10",
+          },
+        ],
+        "section": "groups",
+        "title": "Group",
+      },
+      "id": "groups[0]",
+      "position": {
+        "x": 1248,
+        "y": 0,
+      },
+      "type": "op",
+    },
+    {
+      "data": {
+        "column": "aggregations",
+        "name": "loans",
+        "op": "AGG_COUNT",
+        "path": "aggregations[0]",
+        "produces": true,
+        "rows": [
+          {
+            "key": "field",
+            "ref": "loan_id",
+            "resolved": true,
+            "value": "loan_id",
+          },
+        ],
+        "section": "aggregations",
+        "title": "Aggregate",
+      },
+      "id": "aggregations[0]",
+      "position": {
+        "x": 1560,
+        "y": 0,
+      },
+      "type": "op",
+    },
+    {
+      "data": {
+        "column": "aggregations",
+        "name": "defaults",
+        "op": "AGG_SUM",
+        "path": "aggregations[1]",
+        "produces": true,
+        "rows": [
+          {
+            "key": "field",
+            "ref": "default_12m",
+            "resolved": true,
+            "value": "default_12m",
+          },
+        ],
+        "section": "aggregations",
+        "title": "Aggregate",
+      },
+      "id": "aggregations[1]",
+      "position": {
+        "x": 1560,
+        "y": 86,
+      },
+      "type": "op",
+    },
+    {
+      "data": {
+        "column": "aggregations",
+        "name": "observed_rate",
+        "op": "AGG_AVERAGE",
+        "path": "aggregations[2]",
+        "produces": true,
+        "rows": [
+          {
+            "key": "field",
+            "ref": "default_12m",
+            "resolved": true,
+            "value": "default_12m",
+          },
+        ],
+        "section": "aggregations",
+        "title": "Aggregate",
+      },
+      "id": "aggregations[2]",
+      "position": {
+        "x": 1560,
+        "y": 172,
+      },
+      "type": "op",
+    },
+    {
+      "data": {
+        "column": "aggregations",
+        "name": "mean_pd",
+        "op": "AGG_AVERAGE",
+        "path": "aggregations[3]",
+        "produces": true,
+        "rows": [
+          {
+            "key": "field",
+            "ref": "pd_score",
+            "resolved": true,
+            "value": "pd_score",
+          },
+        ],
+        "section": "aggregations",
+        "title": "Aggregate",
+      },
+      "id": "aggregations[3]",
+      "position": {
+        "x": 1560,
+        "y": 258,
+      },
+      "type": "op",
+    },
+    {
+      "data": {
+        "column": "aggregations",
+        "name": "mean_true_pd",
+        "op": "AGG_AVERAGE",
+        "path": "aggregations[4]",
+        "produces": true,
+        "rows": [
+          {
+            "key": "field",
+            "ref": "gt_true_pd",
+            "resolved": true,
+            "value": "gt_true_pd",
+          },
+        ],
+        "section": "aggregations",
+        "title": "Aggregate",
+      },
+      "id": "aggregations[4]",
+      "position": {
+        "x": 1560,
+        "y": 344,
+      },
+      "type": "op",
+    },
+    {
+      "data": {
+        "column": "aggregations",
+        "name": "principal_usd",
+        "op": "AGG_SUM",
+        "path": "aggregations[5]",
+        "produces": true,
+        "rows": [
+          {
+            "key": "field",
+            "ref": "loan_amount",
+            "resolved": true,
+            "value": "loan_amount",
+          },
+        ],
+        "section": "aggregations",
+        "title": "Aggregate",
+      },
+      "id": "aggregations[5]",
+      "position": {
+        "x": 1560,
+        "y": 430,
+      },
+      "type": "op",
+    },
+    {
+      "data": {
+        "column": "windows",
+        "name": "cum_defaults",
+        "op": "WIN_RUNNING_SUM",
+        "path": "windows[0]",
+        "produces": true,
+        "rows": [
+          {
+            "key": "field",
+            "ref": "defaults",
+            "resolved": true,
+            "value": "defaults",
+          },
+          {
+            "key": "order_by[0].field",
+            "ref": "mean_pd",
+            "resolved": true,
+            "value": "mean_pd",
+          },
+          {
+            "key": "order_by[0].desc",
+            "value": "true",
+          },
+          {
+            "key": "frame.mode",
+            "value": "rows",
+          },
+          {
+            "key": "frame.preceding",
+            "value": "null",
+          },
+          {
+            "key": "frame.following",
+            "value": "0",
+          },
+        ],
+        "section": "windows",
+        "title": "Window",
+      },
+      "id": "windows[0]",
+      "position": {
+        "x": 1872,
+        "y": 0,
+      },
+      "type": "op",
+    },
+    {
+      "data": {
+        "column": "windows",
+        "name": "cum_loans",
+        "op": "WIN_RUNNING_SUM",
+        "path": "windows[1]",
+        "produces": true,
+        "rows": [
+          {
+            "key": "field",
+            "ref": "loans",
+            "resolved": true,
+            "value": "loans",
+          },
+          {
+            "key": "order_by[0].field",
+            "ref": "mean_pd",
+            "resolved": true,
+            "value": "mean_pd",
+          },
+          {
+            "key": "order_by[0].desc",
+            "value": "true",
+          },
+          {
+            "key": "frame.mode",
+            "value": "rows",
+          },
+          {
+            "key": "frame.preceding",
+            "value": "null",
+          },
+          {
+            "key": "frame.following",
+            "value": "0",
+          },
+        ],
+        "section": "windows",
+        "title": "Window",
+      },
+      "id": "windows[1]",
+      "position": {
+        "x": 1872,
+        "y": 176,
+      },
+      "type": "op",
+    },
+    {
+      "data": {
+        "column": "sort",
+        "op": "SORT",
+        "path": "sort[0]",
+        "produces": false,
+        "rows": [
+          {
+            "key": "field",
+            "ref": "mean_pd",
+            "resolved": true,
+            "value": "mean_pd",
+          },
+          {
+            "key": "desc",
+            "value": "true",
+          },
+        ],
+        "section": "sort",
+        "title": "Sort",
+      },
+      "id": "sort[0]",
+      "position": {
+        "x": 2184,
+        "y": 0,
+      },
+      "type": "op",
+    },
+  ],
+}
+`;

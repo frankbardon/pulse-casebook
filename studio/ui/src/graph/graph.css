@@ -1,0 +1,180 @@
+.graph {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.graph-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-1) var(--space-3);
+  border-bottom: 1px solid var(--border);
+  font-size: var(--text-sm);
+}
+
+.graph-path {
+  font-family: var(--font-mono);
+}
+
+.graph .react-flow {
+  flex: 1;
+  min-height: 0;
+}
+
+.col-title {
+  position: absolute;
+  width: 240px;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+.empty {
+  padding: var(--space-3) calc(var(--space-3) * 2);
+}
+
+.empty h2 {
+  font-size: var(--text-md);
+  margin: var(--space-3) 0 var(--space-1);
+}
+
+/* Nodes */
+.gnode {
+  width: 240px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--stage, var(--border));
+  border-radius: 4px;
+  color: var(--text);
+  font-size: var(--text-sm);
+}
+
+.gnode.cohort {
+  --stage: var(--accent);
+}
+
+.gnode.raw {
+  --stage: var(--muted);
+  border-style: dashed;
+}
+
+.gnode.col-features,
+.gnode.col-attributes {
+  --stage: var(--stage-derive);
+}
+
+.gnode.col-filterers {
+  --stage: var(--stage-filter);
+}
+
+.gnode.col-groups,
+.gnode.col-aggregations,
+.gnode.col-windows,
+.gnode.col-sort {
+  --stage: var(--stage-aggregate);
+}
+
+.gnode.col-analysis,
+.gnode.col-output {
+  --stage: var(--stage-analysis);
+}
+
+.gnode-head {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: var(--space-2);
+  padding: var(--space-1) var(--space-2);
+  border-bottom: 1px solid var(--border);
+}
+
+.gnode-stage {
+  color: var(--muted);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.gnode-op {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: right;
+}
+
+.gnode-op.unknown {
+  color: var(--danger);
+}
+
+.gnode-name {
+  grid-column: 1 / -1;
+  font-family: var(--font-mono);
+  color: var(--accent);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.gnode-rows {
+  list-style: none;
+  margin: 0;
+  padding: 2px 0;
+}
+
+.gnode-row {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: 0 var(--space-2);
+  line-height: 18px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.gnode-row .k {
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.gnode-row .v {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: right;
+}
+
+.gnode-row.unresolved .v {
+  color: var(--danger);
+}
+
+.gnode.cohort .gnode-row.used .k {
+  color: var(--text);
+}
+
+.gnode-row .type {
+  color: var(--muted);
+}
+
+.gnode .react-flow__handle {
+  width: 6px;
+  height: 6px;
+  min-width: 0;
+  min-height: 0;
+  background: var(--muted);
+  border: none;
+}
+
+.gnode-json {
+  margin: 0;
+  padding: var(--space-1) var(--space-2);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 15px;
+  white-space: pre;
+  overflow: hidden;
+}

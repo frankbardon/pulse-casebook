@@ -1,0 +1,78 @@
+[
+  {
+    "name": "user_id",
+    "type": "u32"
+  },
+  {
+    "name": "arm",
+    "type": "categorical_u8"
+  },
+  {
+    "name": "is_variant",
+    "type": "u8"
+  },
+  {
+    "name": "assign_week",
+    "type": "categorical_u8"
+  },
+  {
+    "name": "device",
+    "type": "categorical_u8"
+  },
+  {
+    "name": "plan_tier",
+    "type": "categorical_u8"
+  },
+  {
+    "name": "region",
+    "type": "categorical_u8"
+  },
+  {
+    "name": "user_type",
+    "type": "categorical_u8"
+  },
+  {
+    "name": "prior_sessions",
+    "type": "u16"
+  },
+  {
+    "name": "pages_viewed",
+    "type": "u16"
+  },
+  {
+    "name": "u_trial",
+    "type": "f32"
+  },
+  {
+    "name": "u_paid",
+    "type": "f32"
+  },
+  {
+    "name": "u_ret",
+    "type": "f32"
+  },
+  {
+    "name": "trial_started",
+    "type": "categorical_u8"
+  },
+  {
+    "name": "paid_converted",
+    "type": "categorical_u8"
+  },
+  {
+    "name": "order_value",
+    "type": "f64"
+  },
+  {
+    "name": "revenue",
+    "type": "f64"
+  },
+  {
+    "name": "days_to_convert",
+    "type": "f32"
+  },
+  {
+    "name": "retained_30d",
+    "type": "categorical_u8"
+  }
+]

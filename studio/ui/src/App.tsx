@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react'
-import { Background, Controls, ReactFlow } from '@xyflow/react'
-import { getJSON, type Health, type WorkspaceFile } from './api.ts'
+import { getCatalog, getJSON, type Health, type Manifest, type WorkspaceFile } from './api.ts'
 import { Sidebar } from './Sidebar.tsx'
+import { RequestView } from './graph/RequestView.tsx'
 import './App.css'
 
 export function App() {
   const [health, setHealth] = useState<Health | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [selected, setSelected] = useState<WorkspaceFile | null>(null)
+  const [manifest, setManifest] = useState<Manifest | undefined>(undefined)
 
   useEffect(() => {
     const ctl = new AbortController()
@@ -16,6 +17,11 @@ export function App() {
       .catch((e: unknown) => {
         if (!ctl.signal.aborted) setError(String(e))
       })
+    // The catalog only annotates nodes (known operators); the graph renders
+    // without it, so a failure is not surfaced as an error.
+    getCatalog(ctl.signal)
+      .then((c) => setManifest(c.manifest))
+      .catch(() => {})
     return () => ctl.abort()
   }, [])
 
@@ -32,10 +38,7 @@ export function App() {
         <Sidebar selected={selected?.path ?? null} onSelect={setSelected} />
       </aside>
       <main className="canvas">
-        <ReactFlow nodes={[]} edges={[]} proOptions={{ hideAttribution: true }}>
-          <Background />
-          <Controls />
-        </ReactFlow>
+        <RequestView file={selected} manifest={manifest} />
       </main>
     </div>
   )

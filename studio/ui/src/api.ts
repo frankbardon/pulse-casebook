@@ -50,3 +50,47 @@ export function listFiles(signal?: AbortSignal): Promise<FileListing> {
 export function readFile(path: string, signal?: AbortSignal): Promise<FileContent> {
   return getJSON<FileContent>(`/api/file?path=${encodeURIComponent(path)}`, signal)
 }
+
+// Catalog is /api/catalog. Only the manifest parts the graph reads are typed;
+// the rest passes through untyped.
+export type ManifestOperator = { name?: string; kind?: string; category?: string }
+
+export type Manifest = {
+  components?: Partial<
+    Record<'aggregators' | 'attributes' | 'features' | 'filterers' | 'groupers' | 'windows', ManifestOperator[]>
+  >
+  tests?: ManifestOperator[]
+  post_tests?: ManifestOperator[]
+  regressions?: ManifestOperator[]
+  matrices?: ManifestOperator[]
+  overlays?: ManifestOperator[]
+  [key: string]: unknown
+}
+
+export type Catalog = {
+  pulse_version: string
+  feature_set_digest: string
+  manifest: Manifest
+  schema: unknown
+}
+
+export function getCatalog(signal?: AbortSignal): Promise<Catalog> {
+  return getJSON<Catalog>('/api/catalog', signal)
+}
+
+export type CohortField = {
+  name: string
+  type: string
+  categorical?: boolean
+  description?: string
+}
+
+export type CohortInspect = {
+  field_count: number
+  record_count?: number
+  fields: CohortField[]
+}
+
+export function inspectCohort(path: string, signal?: AbortSignal): Promise<CohortInspect> {
+  return getJSON<CohortInspect>(`/api/cohort/inspect?path=${encodeURIComponent(path)}`, signal)
+}
