@@ -1,5 +1,9 @@
-import { Handle, Position, type NodeProps } from '@xyflow/react'
-import { PREVIEW_SECTIONS, type CohortNode, type OpNode, type RawNode } from './requestGraph.ts'
+import { use, useState, type KeyboardEvent } from 'react'
+import { Handle, Position, type Node, type NodeProps } from '@xyflow/react'
+import type { LaneRole } from './composeGraph.ts'
+import { LaneActionsContext } from './laneActions.ts'
+import { PREVIEW_SECTIONS, type ColumnKey, type CohortNode, type OpNode, type RawNode } from './requestGraph.ts'
+import { FIT_HANDLE } from './wiring.ts'
 import { NodePreview } from './NodePreview.tsx'
 import { NodeIssues } from './NodeIssues.tsx'
 
@@ -23,7 +27,7 @@ export function OpNodeView({ data }: NodeProps<OpNode>) {
         {data.rows.map((r) => (
           <li
             key={r.key}
-            className={'gnode-row' + (r.ref !== undefined && !r.resolved ? ' unresolved' : '') + (r.port ? ' port' : '')}
+            className={'gnode-row' + (r.ref !== undefined && !r.resolved ? ' unresolved' : '') + (r.port ? ' port' : '') + (r.fit ? ' fit' : '')}
             data-row={r.key}
           >
             {(r.ref !== undefined || r.port) && (
@@ -31,13 +35,16 @@ export function OpNodeView({ data }: NodeProps<OpNode>) {
             )}
             <span className="k">{r.key}</span>
             <span className="v" title={r.value}>
-              {r.port === 'append' ? '+ wire to add' : r.port === 'empty' ? 'wire a field' : r.value}
+              {r.port === 'append' ? '+ wire to add' : r.port === 'empty' ? (r.fit ? 'bind a fit' : 'wire a field') : r.value}
             </span>
           </li>
         ))}
       </ul>
       {PREVIEW_SECTIONS.has(data.section) && <NodePreview id={data.path} label={data.name} />}
       {data.produces && <Handle type="source" position={Position.Right} id="out" title={`label ${data.name}`} />}
+      {data.fit !== undefined && (
+        <Handle type="source" position={Position.Bottom} id={FIT_HANDLE} className="fit-handle" title={`fit ${data.fit}: wire into a slot's fit input`} />
+      )}
       <NodeIssues id={data.path} />
     </div>
   )
@@ -79,6 +86,96 @@ export function RawNodeView({ data }: NodeProps<RawNode>) {
       </header>
       <pre className="gnode-json">{data.json}</pre>
       <NodeIssues id={data.path} />
+    </div>
+  )
+}
+
+export type LaneNodeData = {
+  role: LaneRole
+  title: string
+  named: boolean
+  save?: string
+  // Lane's stage column titles, lane-relative x.
+  columns: { key: ColumnKey; title: string; x: number }[]
+  // Position in the drawing order (root lane: -1) and lane count.
+  place: number
+  count: number
+  removable: boolean
+}
+
+export type LaneNode = Node<LaneNodeData, 'lane'>
+
+const ROLE_LABEL: Record<LaneRole, string> = { root: 'compose', slot: 'slot', fit: 'fit' }
+
+// LaneNodeView is one compose lane: a labeled band holding a slot's (or
+// fit's) stage columns. The header renames (double-click the title),
+// reorders and removes the lane; its badge carries lane-level issues.
+export function LaneNodeView({ id, data }: NodeProps<LaneNode>) {
+  const actions = use(LaneActionsContext)
+  const [editing, setEditing] = useState<string | null>(null)
+  const canEdit = data.role !== 'root' && actions !== null
+  const commit = () => {
+    if (editing !== null && editing.trim() !== data.title) actions?.rename(id, editing.trim())
+    setEditing(null)
+  }
+  const onKey = (e: KeyboardEvent<HTMLInputElement>) => {
+    e.stopPropagation()
+    if (e.key === 'Enter') commit()
+    if (e.key === 'Escape') setEditing(null)
+  }
+  return (
+    <div className={'lane lane-' + data.role} data-lane={id} data-testid="lane">
+      <header className="lane-head nopan">
+        <span className="lane-role">{ROLE_LABEL[data.role]}</span>
+        {editing !== null ? (
+          <input
+            className="lane-title-input nodrag"
+            aria-label="Lane name"
+            data-testid="lane-title-input"
+            value={editing}
+            autoFocus
+            onChange={(e) => setEditing(e.target.value)}
+            onBlur={commit}
+            onKeyDown={onKey}
+          />
+        ) : (
+          <span
+            className={'lane-title' + (data.named ? '' : ' muted')}
+            data-testid="lane-title"
+            title={canEdit ? 'Double-click to rename' : undefined}
+            onDoubleClick={canEdit ? () => setEditing(data.named ? data.title : '') : undefined}
+          >
+            {data.title}
+          </span>
+        )}
+        {data.save !== undefined && <span className="lane-save muted">save {data.save}</span>}
+        {canEdit && (
+          <span className="lane-tools nodrag">
+            <button type="button" title="Move lane up" aria-label="Move lane up" data-testid="lane-up" disabled={data.place <= 0} onClick={() => actions.move(id, -1)}>
+              ↑
+            </button>
+            <button
+              type="button"
+              title="Move lane down"
+              aria-label="Move lane down"
+              data-testid="lane-down"
+              disabled={data.place >= data.count - 1}
+              onClick={() => actions.move(id, 1)}
+            >
+              ↓
+            </button>
+            <button type="button" title="Remove lane" aria-label="Remove lane" data-testid="lane-remove" disabled={!data.removable} onClick={() => actions.remove(id)}>
+              ×
+            </button>
+          </span>
+        )}
+      </header>
+      {data.columns.map((c) => (
+        <div key={c.key} className="lane-col-title" style={{ left: c.x }}>
+          {c.title}
+        </div>
+      ))}
+      <NodeIssues id={id} />
     </div>
   )
 }

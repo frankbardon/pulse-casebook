@@ -55,6 +55,8 @@ export type ParamRow = {
   resolved?: boolean
   port?: 'empty' | 'append'
   accepts?: string
+  // The row binds a compose fit by name (`params.fit`), not a field.
+  fit?: true
 }
 
 export type OpNodeData = {
@@ -67,6 +69,9 @@ export type OpNodeData = {
   name?: string
   rows: ParamRow[]
   produces: boolean
+  // Set on a compose fit's regression: the fit name it binds, drawn as a
+  // `fit` source handle (composeGraph.ts).
+  fit?: string
 }
 
 export type CohortFieldRow = { name: string; type: string; used: boolean }
@@ -102,6 +107,9 @@ export type BuildOptions = {
   cohortFields?: CohortField[]
   // Prefix for every node id, e.g. ['requests', 1] for a compose slot.
   basePath?: PathSegment[]
+  // false leaves out the cohort node (a compose root has no cohort of its
+  // own); refs then never wire to it.
+  withCohort?: boolean
 }
 
 type SectionSpec = {
@@ -297,6 +305,10 @@ export function buildRequestGraph(req: unknown, opts: BuildOptions = {}): Reques
       row.resolved = src !== null
       if (!src) continue
       if (src === 'cohort') {
+        if (opts.withCohort === false) {
+          row.resolved = false
+          continue
+        }
         if (!referenced.includes(ref)) referenced.push(ref)
         edges.push(edge(cohortId, `field:${ref}`, node.id, row.key, ref))
       } else {
@@ -321,7 +333,7 @@ export function buildRequestGraph(req: unknown, opts: BuildOptions = {}): Reques
       fieldsKnown: !!known,
     },
   }
-  const nodes: GraphNode[] = [cohort, ...raws, ...ops]
+  const nodes: GraphNode[] = opts.withCohort === false ? [...raws, ...ops] : [cohort, ...raws, ...ops]
   const columns = layout(nodes)
   return { nodes, edges, columns }
 }
@@ -423,7 +435,7 @@ function flatten(v: unknown, segs: PathSegment[], rows: ParamRow[]): void {
   rows.push(row)
 }
 
-function rawNode(id: string, section: string, value: unknown): RawNode {
+export function rawNode(id: string, section: string, value: unknown): RawNode {
   let lines = (JSON.stringify(value, null, 2) ?? 'undefined').split('\n')
   if (lines.length > LAYOUT.rawMaxLines) lines = [...lines.slice(0, LAYOUT.rawMaxLines - 1), '…']
   return {

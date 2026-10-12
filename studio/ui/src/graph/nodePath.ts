@@ -122,3 +122,29 @@ export function getAtPath(doc: unknown, id: string): unknown {
   }
   return cur
 }
+
+// splitFrame splits a node id into the request frame it lives in and the
+// path inside that frame. Frames are the nested requests of the
+// multi-request roots: compose slots (`requests[1]`), compose fits
+// (`fits[0].request`) and chain stages (`stages[2].request`). Anything
+// else, including every node of a plain request, lives in the root frame
+// "". Throws on malformed ids, like parsePath.
+export function splitFrame(id: string): { frame: string; rest: PathSegment[] } {
+  const segs = parsePath(id)
+  if (segs[0] === 'requests' && typeof segs[1] === 'number') {
+    return { frame: formatPath(segs.slice(0, 2)), rest: segs.slice(2) }
+  }
+  if ((segs[0] === 'fits' || segs[0] === 'stages') && typeof segs[1] === 'number' && segs[2] === 'request') {
+    return { frame: formatPath(segs.slice(0, 3)), rest: segs.slice(3) }
+  }
+  return { frame: '', rest: segs }
+}
+
+// frameOf is splitFrame's frame, or "" for an id that does not parse.
+export function frameOf(id: string): string {
+  try {
+    return splitFrame(id).frame
+  } catch {
+    return ''
+  }
+}

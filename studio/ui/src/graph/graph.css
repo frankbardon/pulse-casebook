@@ -787,3 +787,142 @@
 .request-issues.warning {
   color: var(--warn);
 }
+
+/* Compose lanes: one band per slot or fit, holding its stage columns.
+   The band itself takes no pointer events (the canvas pans and port
+   drags drop "on the pane" through it); only its header does. */
+.react-flow__node-lane {
+  pointer-events: none !important;
+}
+
+.react-flow__node.react-flow__node-lane:hover {
+  z-index: auto !important;
+}
+
+.lane {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--surface) 55%, transparent);
+}
+
+.lane.lane-fit {
+  border-style: dashed;
+  border-color: var(--stage-derive);
+}
+
+.lane.lane-root {
+  background: transparent;
+}
+
+.lane-head {
+  pointer-events: all;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  height: 30px;
+  padding: 0 var(--space-3);
+  border-bottom: 1px solid var(--border);
+  font-size: var(--text-md);
+}
+
+.lane-role {
+  font-size: var(--text-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+.lane-fit .lane-role {
+  color: var(--stage-derive);
+}
+
+.lane-title {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  cursor: text;
+}
+
+.lane-title-input {
+  font: inherit;
+  font-family: var(--font-mono);
+  width: 220px;
+  padding: 0 var(--space-1);
+  border: 1px solid var(--accent);
+  border-radius: 3px;
+  background: var(--surface);
+  color: var(--text);
+}
+
+.lane-save {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+}
+
+.lane-tools {
+  margin-left: auto;
+  display: flex;
+  gap: var(--space-1);
+}
+
+.lane-tools button {
+  font: inherit;
+  font-size: var(--text-sm);
+  min-width: 22px;
+  padding: 0 var(--space-1);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.lane-tools button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.lane-col-title {
+  position: absolute;
+  top: 38px;
+  width: 240px;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+.lane > .gnode-badge {
+  top: 6px;
+  right: auto;
+  left: -9px;
+}
+
+.lane > .gnode-tip {
+  top: 32px;
+  left: var(--space-3);
+}
+
+.lane-head:hover ~ .gnode-tip {
+  display: block;
+}
+
+/* Fit bindings: a compose fit's regression feeding the slots that read
+   it, across lanes. */
+.react-flow__edge.fit-binding .react-flow__edge-path {
+  stroke: var(--stage-derive);
+  stroke-dasharray: 6 4;
+  stroke-width: 1.5;
+}
+
+.react-flow__handle.fit-handle {
+  background: var(--stage-derive);
+  border-color: var(--stage-derive);
+}
+
+.gnode-row.fit .k {
+  color: var(--stage-derive);
+}

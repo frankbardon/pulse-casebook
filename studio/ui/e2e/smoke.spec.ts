@@ -17,10 +17,45 @@ test('opens a plain request as a stage-column graph', async ({ page }) => {
   await expect(graph.locator('.react-flow__edge')).toHaveCount(13)
 })
 
-test('compose files open to a not-yet-supported view', async ({ page }) => {
+test('facet files open to a not-yet-supported view', async ({ page }) => {
+  await page.goto('/')
+  await page.getByRole('button', { name: 'req/02_srm_gof.facet.json' }).click()
+  await expect(page.getByTestId('unsupported')).toContainText('not yet supported')
+})
+
+test('compose files open as parallel lanes with per-lane previews', async ({ page }) => {
   await page.goto('/')
   await page.getByRole('button', { name: 'req/11_readout.compose.json' }).click()
-  await expect(page.getByTestId('unsupported')).toContainText('not yet supported')
+  const graph = page.getByTestId('request-graph')
+  await expect(graph.getByTestId('lane-title')).toHaveText(['guardrails', 'scorecard', 'revenue_sensitivity', 'regression_adjustment'])
+  await expect(graph.locator('[data-path="requests[1].tests[3]"]')).toContainText('TEST_WELCH')
+  await expect(graph.locator('[data-path="requests[2].tests[0]"]')).toContainText('TEST_MANN_WHITNEY_U')
+  const preview = (id: string) => graph.locator(`[data-path="${id}"] [data-testid="preview"]`)
+  await expect(preview('requests[0].aggregations[0]')).toContainText('users 40,000')
+  await expect(preview('requests[3].regressions[1]')).toHaveAttribute('data-state', 'ok')
+  await expect(preview('requests[1].attributes[0]')).toHaveAttribute('data-state', 'ok')
+  await expect(page.getByTestId('dirty-state')).toHaveText('saved')
+})
+
+// Lane edits stay unsaved here: the smoke server serves the real showcase
+// dir (the save round trip is covered by compose.save.test.ts).
+test('compose lanes reorder, rename and add', async ({ page }) => {
+  await page.goto('/')
+  await page.getByRole('button', { name: 'req/11_readout.compose.json' }).click()
+  const graph = page.getByTestId('request-graph')
+  const titles = graph.getByTestId('lane-title')
+  await expect(titles).toHaveCount(4)
+  await graph.locator('[data-lane="requests[0]"] [data-testid="lane-down"]').click()
+  await expect(titles).toHaveText(['scorecard', 'guardrails', 'revenue_sensitivity', 'regression_adjustment'])
+  await expect(page.getByTestId('dirty-state')).toContainText('unsaved')
+  await graph.locator('[data-lane="requests[2]"] [data-testid="lane-title"]').dblclick()
+  await page.getByTestId('lane-title-input').fill('mann_whitney')
+  await page.getByTestId('lane-title-input').press('Enter')
+  await expect(titles.nth(2)).toHaveText('mann_whitney')
+  await page.getByTestId('lane-add').click()
+  await expect(titles).toHaveCount(5)
+  await expect(titles.nth(4)).toHaveText('slot_5')
+  await expect(graph.locator('[data-path="requests[4].cohort"]')).toContainText('ab_test.pulse')
 })
 
 // Edits stay unsaved here: the smoke server serves the real showcase dir.

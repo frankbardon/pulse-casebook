@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { childPath, formatPath, getAtPath, isPathPrefix, parsePath, type PathSegment } from './nodePath.ts'
+import { childPath, formatPath, frameOf, getAtPath, isPathPrefix, parsePath, splitFrame, type PathSegment } from './nodePath.ts'
 
 const cases: [PathSegment[], string][] = [
   [[], ''],
@@ -54,5 +54,17 @@ describe('node paths', () => {
     expect(getAtPath(doc, 'tests[5]')).toBeUndefined()
     expect(getAtPath(doc, 'tests.label')).toBeUndefined()
     expect(getAtPath(doc, '')).toBe(doc)
+  })
+})
+
+describe('splitFrame', () => {
+  it('finds the request frame a node lives in', () => {
+    expect(splitFrame('requests[1].tests[0]')).toEqual({ frame: 'requests[1]', rest: ['tests', 0] })
+    expect(splitFrame('fits[0].request.regressions[0]')).toEqual({ frame: 'fits[0].request', rest: ['regressions', 0] })
+    expect(splitFrame('stages[2].request.cohort')).toEqual({ frame: 'stages[2].request', rest: ['cohort'] })
+    expect(splitFrame('tests[3]')).toEqual({ frame: '', rest: ['tests', 3] })
+    expect(splitFrame('fits[0].name')).toEqual({ frame: '', rest: ['fits', 0, 'name'] })
+    expect(frameOf('requests[0]')).toBe('requests[0]')
+    expect(frameOf('(compose)')).toBe('')
   })
 })

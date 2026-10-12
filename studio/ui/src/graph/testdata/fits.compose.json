@@ -1,0 +1,29 @@
+{
+  "requests": [
+    {
+      "label": "train",
+      "cohort": {"filename": "ab_test.pulse", "data_dir": "."},
+      "attributes": [
+        {"type": "ATTR_REG_PREDICT", "label": "pred", "params": {"fit": "pages_model"}},
+        {"type": "ATTR_FORMULA", "label": "miss", "expression": "pages_viewed - pred"}
+      ],
+      "aggregations": [{"type": "AGG_AVERAGE", "field": "miss", "label": "mean_miss"}]
+    },
+    {
+      "label": "holdout",
+      "cohort": {"filename": "ab_test.pulse", "data_dir": "."},
+      "attributes": [{"type": "ATTR_REG_PREDICT", "label": "pred"}],
+      "aggregations": [{"type": "AGG_COUNT", "field": "user_id", "label": "users"}]
+    }
+  ],
+  "fits": [
+    {
+      "name": "pages_model",
+      "request": {
+        "cohort": {"filename": "ab_test.pulse", "data_dir": "."},
+        "regressions": [{"type": "REG_OLS", "name": "pages_model", "target": "pages_viewed", "predictors": ["prior_sessions"]}]
+      }
+    }
+  ],
+  "multiplicity": {"method": "holm", "family": "compose"}
+}

@@ -6,7 +6,7 @@
 import type { PreviewProbe } from '../api.ts'
 import { stringifyJson } from './jsonTree.ts'
 import type { GraphModel } from './model.ts'
-import { parsePath } from './nodePath.ts'
+import { frameOf, splitFrame } from './nodePath.ts'
 import { COLUMNS, REQUEST_SECTIONS, hasPreview, sectionInfo, type GraphEdge, type GraphNode } from './requestGraph.ts'
 
 // PreviewState is what a node's preview footer shows.
@@ -39,8 +39,11 @@ export function changedIds(prev: ReadonlyMap<string, string>, next: ReadonlyMap<
   return out
 }
 
-// Where an entry sits in the pipeline.
-type Place = { section: string; index: number; column: number }
+// Where an entry sits in the pipeline. frame is the request frame the
+// entry belongs to (nodePath.splitFrame): "" for a plain request and the
+// compose root, `requests[1]` for a compose slot, `fits[0].request` for a
+// fit. Pipeline order only holds inside one frame.
+type Place = { frame: string; section: string; index: number; column: number }
 
 const COLUMN_INDEX = new Map(COLUMNS.map((c, i) => [c.key, i]))
 
@@ -51,12 +54,13 @@ const FAMILY_SECTIONS = new Set(['tests', 'post_tests'])
 // Sections whose entries are independent of their siblings.
 const INDEPENDENT_SECTIONS = new Set(['regressions', 'matrices', 'overlays', 'vectors'])
 
-// placeOf locates a section entry id (`filterers[2]`, `crosstab`); null for
-// the cohort, top-level context keys and anything not a modeled entry.
+// placeOf locates a section entry id (`filterers[2]`, `crosstab`,
+// `requests[1].tests[0]`); null for the cohort, context keys and anything
+// not a modeled entry.
 function placeOf(id: string): Place | null {
-  let segs
+  let frame, segs
   try {
-    segs = parsePath(id)
+    ;({ frame, rest: segs } = splitFrame(id))
   } catch {
     return null
   }
@@ -66,13 +70,14 @@ function placeOf(id: string): Place | null {
   const info = sectionInfo(head)
   if (!spec || !info) return null
   if (spec.single ? segs.length !== 1 : segs.length !== 2 || typeof idx !== 'number') return null
-  return { section: head, index: typeof idx === 'number' ? idx : 0, column: COLUMN_INDEX.get(info.column) ?? 0 }
+  return { frame, section: head, index: typeof idx === 'number' ? idx : 0, column: COLUMN_INDEX.get(info.column) ?? 0 }
 }
 
 // downstreamOf says whether node at p is affected by an edit at e:
 // a later stage column, a later entry of a sequential section, any
-// sibling of a test family, or the edit itself.
+// sibling of a test family, or the edit itself, all within one frame.
 function downstreamOf(e: Place, p: Place): boolean {
+  if (p.frame !== e.frame) return false
   if (p.section === e.section) {
     if (p.index === e.index || FAMILY_SECTIONS.has(e.section)) return true
     if (INDEPENDENT_SECTIONS.has(e.section)) return false
@@ -85,7 +90,13 @@ function downstreamOf(e: Place, p: Place): boolean {
 // for each changed id, the nodes downstream of it (later stage columns,
 // later entries of the same section) plus everything wired, transitively,
 // from those nodes' outputs. A change outside the modeled sections (the
-// cohort, weight, joins, time_zone, a raw section) stales every node.
+// cohort, weight, joins, time_zone, a raw section) stales every node of
+// its frame; outside any compose slot it stales every node.
+//
+// Multi-request roots: frames are independent of each other, except that
+// root-frame (compose-level) overlays read every slot, a compose-level
+// multiplicity block is inherited by every slot's tests, and fits feed
+// the slots that bind them (carried by the binding wires).
 export function invalidated(changed: Iterable<string>, graph: { nodes: GraphNode[]; edges: GraphEdge[] }): Set<string> {
   const all = () => new Set(graph.nodes.map((n) => n.id))
   const out = new Set<string>()
@@ -94,14 +105,24 @@ export function invalidated(changed: Iterable<string>, graph: { nodes: GraphNode
     const p = placeOf(n.id)
     if (p) places.set(n.id, p)
   }
+  const rootOverlays = () => {
+    for (const [nid, p] of places) if (p.frame === '' && p.section === 'overlays') out.add(nid)
+  }
   for (const id of changed) {
     const e = placeOf(id)
-    if (!e) return all()
+    if (!e) {
+      const frame = frameOf(id)
+      if (!frame.startsWith('requests[')) return all()
+      for (const n of graph.nodes) if (frameOf(n.id) === frame) out.add(n.id)
+      rootOverlays()
+      continue
+    }
     if (e.section === 'multiplicity') {
-      for (const [nid, p] of places) if (FAMILY_SECTIONS.has(p.section)) out.add(nid)
+      for (const [nid, p] of places) if (FAMILY_SECTIONS.has(p.section) && (e.frame === '' || p.frame === e.frame)) out.add(nid)
       continue
     }
     for (const [nid, p] of places) if (downstreamOf(e, p)) out.add(nid)
+    if (e.frame !== '') rootOverlays()
   }
   // Wires carry an edit to every consumer of the edited node's output.
   const next = new Map<string, string[]>()
@@ -119,21 +140,24 @@ export function invalidated(changed: Iterable<string>, graph: { nodes: GraphNode
 }
 
 // batches groups the previewable nodes among ids into preview calls: one
-// per section (the API batches only nodes of one section), in pipeline
-// order so upstream nodes are queued first.
+// per frame and section (the API batches only nodes of one request frame
+// and section), in pipeline order so upstream nodes are queued first.
 export function batches(ids: Iterable<string>, nodes: GraphNode[]): string[][] {
   const want = new Set(ids)
-  const bySection = new Map<string, string[]>()
+  const byKey = new Map<string, { section: string; ids: string[] }>()
   for (const n of nodes) {
     if (!want.has(n.id) || !hasPreview(n)) continue
-    const key = n.type === 'op' ? n.data.section : 'cohort'
-    bySection.set(key, [...(bySection.get(key) ?? []), n.id])
+    const section = n.type === 'op' ? n.data.section : 'cohort'
+    const key = `${frameOf(n.id)}|${section}`
+    const b = byKey.get(key) ?? { section, ids: [] }
+    b.ids.push(n.id)
+    byKey.set(key, b)
   }
   const rank = (key: string) => {
     if (key === 'cohort') return -1
     return COLUMN_INDEX.get(sectionInfo(key)?.column ?? 'output') ?? 0
   }
-  return [...bySection.entries()].sort((a, b) => rank(a[0]) - rank(b[0])).map(([, v]) => v)
+  return [...byKey.values()].sort((a, b) => rank(a.section) - rank(b.section)).map((b) => b.ids)
 }
 
 // --- formatting -----------------------------------------------------------

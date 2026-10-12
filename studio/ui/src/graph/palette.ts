@@ -16,7 +16,7 @@ import type { CohortField, Manifest, ManifestOperator } from '../api.ts'
 import { getIn, setIn } from './jsonEdit.ts'
 import { fromPlain, stringValue, type JsonNode } from './jsonTree.ts'
 import { buildModel, emitModel, updateNode, type GraphModel } from './model.ts'
-import { formatPath } from './nodePath.ts'
+import { formatPath, isPathPrefix, type PathSegment } from './nodePath.ts'
 import { paramField, topLevelKeys } from './paramForms.ts'
 import { compatibleOperators, refusal, slotsFor, type Slot } from './ports.ts'
 import { canSee, COLUMNS, sectionInfo, type ColumnKey } from './requestGraph.ts'
@@ -129,6 +129,7 @@ export function itemsForPort(
   manifest: Manifest | undefined,
   model: GraphModel,
   src: PortSource,
+  base: readonly PathSegment[] = [],
 ): PortItem[] {
   const compatible = new Map<string, Set<string>>()
   const out: PortItem[] = []
@@ -141,7 +142,7 @@ export function itemsForPort(
     if (!ok.has(it.op)) continue
     const slot = slotsFor(manifest, it.section, it.op).find((s) => refusal(s.accept, src.type) === null)
     if (!slot) continue
-    if (src.producer && !canSee(it.section, nextIndex(model, it.section), src.producer.section, src.producer.index, slot.key)) {
+    if (src.producer && !canSee(it.section, nextIndex(model, it.section, base), src.producer.section, src.producer.index, slot.key)) {
       continue
     }
     out.push({ ...it, slot, rowKey: slot.list ? formatPath([slot.key, 0]) : slot.key })
@@ -149,9 +150,11 @@ export function itemsForPort(
   return out
 }
 
-// nextIndex is the index a new entry of section gets (appended).
-export function nextIndex(model: GraphModel, section: string): number {
-  const arr = getIn(emitModel(model), [section])
+// nextIndex is the index a new entry of section gets (appended) in the
+// request at base ([] for a plain request, ['requests', 1] for a compose
+// slot).
+export function nextIndex(model: GraphModel, section: string, base: readonly PathSegment[] = []): number {
+  const arr = getIn(emitModel(model), [...base, section])
   return arr?.type === 'array' ? arr.items.length : 0
 }
 
@@ -162,6 +165,10 @@ export type PlaceOptions = {
   cohortFields?: CohortField[]
   // Wire the new entry's input rowKey to ref (a drag from a port).
   wire?: { rowKey: string; ref: string }
+  // The request the entry goes into: [] (the default) for a plain
+  // request, ['requests', 1] for a compose slot, ['fits', 0, 'request']
+  // for a compose fit.
+  base?: readonly PathSegment[]
 }
 
 // placeNode appends a new entry for item to its section and returns the
@@ -173,8 +180,10 @@ export type PlaceOptions = {
 export function placeNode(model: GraphModel, item: PaletteItem, opts: PlaceOptions = {}): { model: GraphModel; id: string } {
   const info = sectionInfo(item.section)
   if (!info) throw new Error(`${item.section} is not a palette section`)
+  const base = opts.base ?? []
   const root = emitModel(model)
-  const arr = getIn(root, [item.section])
+  if (base.length > 0 && getIn(root, base)?.type !== 'object') throw new Error(`${formatPath(base)} is not a request`)
+  const arr = getIn(root, [...base, item.section])
   if (arr !== undefined && arr.type !== 'array') throw new Error(`${item.section} is not a list in this request`)
   const index = arr ? arr.items.length : 0
 
@@ -183,9 +192,9 @@ export function placeNode(model: GraphModel, item: PaletteItem, opts: PlaceOptio
   if (info.opKey) value = setIn(value, [info.opKey], str(item.type))
   if (info.nameKey) value = setIn(value, [info.nameKey], str(uniqueLabel(model, item, opts)))
 
-  const next = setIn(root, arr ? [item.section, index] : [item.section], arr ? value : { type: 'array', items: [value] })
+  const next = setIn(root, arr ? [...base, item.section, index] : [...base, item.section], arr ? value : { type: 'array', items: [value] })
   let out = buildModel(next, model.kind)
-  const id = formatPath([item.section, index])
+  const id = formatPath([...base, item.section, index])
   if (opts.wire) out = connectWire(out, id, opts.wire.rowKey, opts.wire.ref)
 
   let v = out.nodes.get(id)!.value
@@ -210,10 +219,14 @@ function manifestOps(manifest: Manifest | undefined, section: string): ManifestO
 // uniqueLabel derives a label from the operator (FEAT_BUCKETIZE ->
 // bucketize, prefixed with the wired field: tenure_bucketize) that no
 // entry label, entry name or cohort field already uses.
-export function uniqueLabel(model: GraphModel, item: PaletteItem, opts: Pick<PlaceOptions, 'wire' | 'cohortFields'> = {}): string {
+// With a base, only that request's entries count (each compose slot is
+// its own label namespace).
+export function uniqueLabel(model: GraphModel, item: PaletteItem, opts: Pick<PlaceOptions, 'wire' | 'cohortFields' | 'base'> = {}): string {
   const taken = new Set<string>(opts.cohortFields?.map((f) => f.name))
+  const scope = opts.base && opts.base.length > 0 ? formatPath(opts.base) : ''
   for (const n of model.nodes.values()) {
     if (n.kind !== 'entry') continue
+    if (scope !== '' && !isPathPrefix(scope, n.id)) continue
     const key = sectionInfo(n.section)?.nameKey
     const name = key ? stringValue(getIn(n.value, [key])) : undefined
     if (name !== undefined) taken.add(name)

@@ -16,9 +16,16 @@ import type { CohortField, Manifest } from '../api.ts'
 import { getIn, setIn } from './jsonEdit.ts'
 import type { JsonNode } from './jsonTree.ts'
 import { buildModel, emitModel, updateNode, type GraphModel } from './model.ts'
-import { formatPath, parsePath, type PathSegment } from './nodePath.ts'
+import { formatPath, frameOf, parsePath, type PathSegment } from './nodePath.ts'
 import { emitsType, refusal, slotFor } from './ports.ts'
 import { canSee, LAYOUT, type ColumnKey, type RequestGraph } from './requestGraph.ts'
+
+// FIT_HANDLE is the source handle of a compose fit's regression; a wire
+// from it into an entry's `params.fit` input binds the fit by name.
+export const FIT_HANDLE = 'fit'
+
+// FIT_ROW is the input row a fit binding writes (ATTR_REG_PREDICT `fit`).
+export const FIT_ROW = 'params.fit'
 
 // Wire is a connection as React Flow reports it.
 export type Wire = {
@@ -46,6 +53,19 @@ export function checkConnection(graph: Pick<RequestGraph, 'nodes'>, wire: Wire, 
   const rowKey = wire.targetHandle.slice(3)
   const role = lastName(rowKey)
   const { section, op } = tgt.data
+
+  // Compose fits bind across lanes: a fit's regression into a slot
+  // entry's fit input, and nothing else into that input.
+  if (wire.sourceHandle === FIT_HANDLE) {
+    if (src.type !== 'op' || src.data.fit === undefined) return { ok: false, reason: 'not a compose fit' }
+    if (rowKey !== FIT_ROW) return { ok: false, reason: `fit ${src.data.fit} binds only a fit input` }
+    if (!frameOf(tgt.id).startsWith('requests[')) return { ok: false, reason: 'only compose slots read fits' }
+    return { ok: true, ref: src.data.fit, rowKey }
+  }
+  if (rowKey === FIT_ROW) return { ok: false, reason: `${op} fit takes a compose fit: wire it from a fit's regression` }
+  // Each lane (compose slot or fit) is its own request: it cannot see
+  // another lane's fields or labels.
+  if (frameOf(src.id) !== frameOf(tgt.id)) return { ok: false, reason: 'lanes cannot see each other\'s fields or labels' }
 
   let ref: string
   let type: string | undefined

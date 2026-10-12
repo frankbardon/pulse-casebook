@@ -9,9 +9,12 @@
 //
 // - nodes: keyed by the JSON-path node id (nodePath.ts). Only nodes the
 //   user placed are listed; every other node keeps its auto-layout
-//   position. x/y are React Flow positions (px, integers). collapsed is
-//   optional and reserved for collapsible nodes.
-// - lanes: optional lane order for multi-lane roots (compose), by lane id.
+//   position. x/y are React Flow positions (px, integers); inside a
+//   compose lane they are relative to the lane, so nodes move with their
+//   lane. collapsed is optional and reserved for collapsible nodes.
+// - lanes: optional lane order for multi-lane roots (compose), by lane id
+//   (`requests[1]`, `fits[0]`; see composeGraph.ts). Written once the
+//   user reorders lanes; lanes it does not list follow in default order.
 // - Unknown top-level keys and unknown per-node keys are kept as-is.
 //
 // Loading is forgiving: a missing, broken or wrong-version sidecar means
