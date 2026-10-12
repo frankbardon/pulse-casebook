@@ -60,3 +60,6 @@ studio/go.work
 studio/go.work.sum
 studio/web/dist/*
 !studio/web/dist/.gitkeep
+
+# flow workflow scratch
+.planning/
