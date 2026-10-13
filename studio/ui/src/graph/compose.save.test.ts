@@ -73,7 +73,7 @@ describe.skipIf(!hasGo)('compose lanes through the save API', () => {
     expect(body.kind).toBe('compose')
     const doc = JSON.parse(body.text)
     expect(doc.requests).toHaveLength(5)
-    expect(doc.requests[4].label).toBe('slot_5')
+    expect(doc.requests[4].label).toBe('request_5')
     // Only the new slot was added: the first four are untouched on disk.
     expect(body.text.startsWith(original.slice(0, original.lastIndexOf('    }\n  ]')))).toBe(true)
     if (!hasCohort) return

@@ -146,7 +146,7 @@ test('compose lanes reorder, rename and add', async ({ page }) => {
   await expect(titles.nth(2)).toHaveText('mann_whitney')
   await page.getByTestId('lane-add').click()
   await expect(titles).toHaveCount(5)
-  await expect(titles.nth(4)).toHaveText('slot_5')
+  await expect(titles.nth(4)).toHaveText('request_5')
   await expect(graph.locator('[data-path="requests[4].cohort"]')).toContainText('ab_test.pulse')
 })
 

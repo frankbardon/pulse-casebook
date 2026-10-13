@@ -295,7 +295,7 @@ func newRequestDoc(kind workspace.Kind, ref cohortRef, fields []cohortField) ([]
 	q := func(s string) string { b, _ := json.Marshal(s); return string(b) }
 	switch kind {
 	case workspace.KindCompose:
-		return []byte(`{"requests": [{"label": "slot_1", "cohort": ` + c + `}]}`), nil
+		return []byte(`{"requests": [{"label": "request_1", "cohort": ` + c + `}]}`), nil
 	case workspace.KindFacet:
 		f, err := first(true)
 		if err != nil {

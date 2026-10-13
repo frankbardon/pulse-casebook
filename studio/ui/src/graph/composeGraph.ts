@@ -156,8 +156,8 @@ export function buildComposeGraph(req: unknown, opts: ComposeOptions = {}): Comp
     const g = buildRequestGraph(body, { ...graphOpts(id, ['requests', i]), result: true, inheritedMultiplicity: req.multiplicity })
     for (const n of g.nodes) if (n.type === 'op') bindFit(n, opts.manifest, fitSources, edges)
     const label = typeof slot.label === 'string' ? slot.label : undefined
-    add({ id, role: 'slot', index: i, base: ['requests', i], title: label ?? `slot_${i + 1}`, named: label !== undefined }, g)
-    slotParts.push({ title: label ?? `slot_${i + 1}`, result: g.nodes.find((n): n is ResultNode => n.type === 'result') })
+    add({ id, role: 'slot', index: i, base: ['requests', i], title: label ?? `request_${i + 1}`, named: label !== undefined }, g)
+    slotParts.push({ title: label ?? `request_${i + 1}`, result: g.nodes.find((n): n is ResultNode => n.type === 'result') })
   })
 
   // The compose response: slots, Compose-host overlays, fits, ranking.

@@ -159,7 +159,7 @@ A request is drawn as a set of nodes, one node per entry in the request JSON:
 - **Raw JSON nodes.** Anything Studio does not model (unknown keys, odd shapes, templated values) is
   kept as a raw node whose JSON you edit as text. Nothing in your file is dropped.
 - **Other request kinds.** Compose requests draw each **slot** (an entry of `requests[]`)
-  and each **fit** as a parallel band; an unlabelled slot is shown as `slot_<n>` (1-based) and
+  and each **fit** as a parallel band; an unlabelled slot is shown as `request_<n>` (1-based) and
   **+ Slot** adds one. A regression's fit is shown as a dashed link to the slots that use it. Chain
   requests draw each **stage** as a band (an unnamed stage is `stage_<n>`) with dashed wires carrying
   outputs to later stages. Facet requests are a single node with

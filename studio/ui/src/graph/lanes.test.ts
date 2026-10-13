@@ -11,7 +11,7 @@ describe('compose lane edits', () => {
     expect(r.id).toBe('requests[4]')
     const doc = JSON.parse(emitModelText(r.model))
     expect(doc.requests).toHaveLength(5)
-    expect(doc.requests[4]).toEqual({ label: 'slot_5', cohort: { filename: 'ab_test.pulse', data_dir: '.' } })
+    expect(doc.requests[4]).toEqual({ label: 'request_5', cohort: { filename: 'ab_test.pulse', data_dir: '.' } })
     expect(r.model.nodes.get('requests[4].cohort')?.kind).toBe('cohort')
     // The other slots are untouched, byte for byte.
     expect(emitModelText(r.model).startsWith(emitModelText(parseModel(readout)).slice(0, -2))).toBe(true)

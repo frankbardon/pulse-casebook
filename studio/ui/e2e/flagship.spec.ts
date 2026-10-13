@@ -164,7 +164,7 @@ test('the flagship readout rebuilds from an empty canvas and saves equal to the 
   await page.getByTestId('new-name').fill('readout_rebuilt')
   await page.getByTestId('new-create').click()
   const s = new Studio(page)
-  await expect(s.graph.getByTestId('lane-title')).toHaveText(['slot_1'])
+  await expect(s.graph.getByTestId('lane-title')).toHaveText(['request_1'])
   expect(studio.exists(REBUILT)).toBe(true)
 
   // 2. Four lanes, named as the readout's slots.

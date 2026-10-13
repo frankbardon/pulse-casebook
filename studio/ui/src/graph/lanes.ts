@@ -43,7 +43,7 @@ function slotLabels(root: JsonNode): string[] {
   return reqs.items.map((r) => stringValue(getIn(r, ['label']))).filter((l): l is string => l !== undefined)
 }
 
-// addLane appends a compose slot labelled slot_<n> (unique) that reads
+// addLane appends a compose slot labelled request_<n> (unique) that reads
 // the last slot's cohort (copied verbatim), and returns its lane id.
 export function addLane(model: GraphModel): { model: GraphModel; id: string } {
   if (model.kind === 'chain') return addStage(model)
@@ -54,8 +54,8 @@ export function addLane(model: GraphModel): { model: GraphModel; id: string } {
   const items = reqs?.items ?? []
   const n = items.length
   const taken = new Set(slotLabels(root))
-  let label = `slot_${n + 1}`
-  for (let k = 2; taken.has(label); k++) label = `slot_${n + 1}_${k}`
+  let label = `request_${n + 1}`
+  for (let k = 2; taken.has(label); k++) label = `request_${n + 1}_${k}`
   let slot: JsonNode = setIn({ type: 'object', members: [] }, ['label'], str(label))
   const cohort = n > 0 ? getIn(items[n - 1], ['cohort']) : undefined
   if (cohort !== undefined) slot = setIn(slot, ['cohort'], cohort)

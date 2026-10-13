@@ -67,7 +67,7 @@ func TestCreateFile(t *testing.T) {
 		{
 			name: "compose",
 			path: "case/req/new.compose.json", root: "compose", cohort: "case/ab_test.pulse",
-			wantText:     "{\n  \"requests\": [{\"label\": \"slot_1\", \"cohort\": {\"filename\": \"ab_test.pulse\", \"data_dir\": \".\"}}]\n}\n",
+			wantText:     "{\n  \"requests\": [{\"label\": \"request_1\", \"cohort\": {\"filename\": \"ab_test.pulse\", \"data_dir\": \".\"}}]\n}\n",
 			wantResolved: "case/ab_test.pulse",
 		},
 		{

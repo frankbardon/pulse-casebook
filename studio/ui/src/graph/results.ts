@@ -65,7 +65,7 @@ export function readRun(root: string, text: string, doc: unknown): RunView {
     const reqs = arr(d.requests)
     arr(data.responses).forEach((resp, i) => {
       const r = reqs[i]
-      const label = isObj(r) && typeof r.label === 'string' ? r.label : `slot_${i + 1}`
+      const label = isObj(r) && typeof r.label === 'string' ? r.label : `request_${i + 1}`
       const base: PathSegment[] = ['requests', i]
       view.sections.push(responseSection(formatPath(base), label, resp))
       responseHeadlines(view.headlines, base, r, resp)
