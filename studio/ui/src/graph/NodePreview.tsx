@@ -1,6 +1,6 @@
 import type { MouseEvent, ReactNode } from 'react'
 import type { PreviewProbe, PreviewStats } from '../api.ts'
-import { fmtCount, fmtNum, fmtPct, headlines, tableSummary, type PreviewState } from './previews.ts'
+import { fmtCount, fmtNum, fmtPct, headlines, tableSummary, vectorSummary, type PreviewState } from './previews.ts'
 import { usePreview } from './usePreviews.ts'
 
 // NodePreview is a node's fixed-height preview footer: two lines of
@@ -161,6 +161,30 @@ function ProbeBody({
             <span>n {fmtCount(s.n)}</span>
             {s.n_null !== undefined && s.n_null > 0 && <span className="pv-muted">null {fmtCount(s.n_null)}</span>}
             <span>μ {fmtNum(s.mean)}</span>
+          </Line>
+        </>
+      )
+    }
+    case 'vector': {
+      const v = vectorSummary(probe)
+      if (!v) return <Line muted>no member stats</Line>
+      return (
+        <>
+          <Line>
+            <span className="pv-strong">
+              {v.members} member{v.members === 1 ? '' : 's'}
+            </span>
+            <span title="per-member means">μ {v.means || '–'}</span>
+          </Line>
+          <Line>
+            {v.worst ? (
+              <span>
+                <span className="pv-muted">most null</span> {v.worst.name} <span className="pv-strong">{v.worst.pct}</span>
+              </span>
+            ) : (
+              <span className="pv-muted">no nulls</span>
+            )}
+            {v.rows !== undefined && <span className="pv-muted">of {fmtCount(v.rows)} rows</span>}
           </Line>
         </>
       )

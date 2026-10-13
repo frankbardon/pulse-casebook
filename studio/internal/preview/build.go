@@ -25,6 +25,7 @@ const (
 	KindMatrix      = "matrix"
 	KindCrosstab    = "crosstab"
 	KindOverlay     = "overlay"
+	KindVector      = "vector"
 	KindFacet       = "facet"
 	KindNone        = "none"
 )
@@ -154,6 +155,20 @@ type NodePlan struct {
 	Stats   *StatsPlan
 	// CountLabel is the hidden AGG_COUNT label of a group probe.
 	CountLabel string
+	// Vector is a vector probe's hidden aggregations (nil when the vector
+	// cannot be probed; Reason says why).
+	Vector *VectorPlan
+}
+
+// VectorPlan maps a vector probe's hidden aggregations back to its
+// members. A vector of literal fields gets one AGG_AVERAGE per member
+// (Members[i] -> Labels[i]: packed_bool members included, which
+// AGG_VEC_MEAN refuses); a pattern or glob vector gets one AGG_VEC_MEAN
+// over the vector (Mean), its members read from the component.
+type VectorPlan struct {
+	Members []string
+	Labels  []string
+	Mean    string
 }
 
 // StatsPlan maps the hidden aggregations of an attribute or feature
@@ -196,6 +211,7 @@ var sectionKind = map[string]string{
 	"regressions":  KindRegression,
 	"matrices":     KindMatrix,
 	"overlays":     KindOverlay,
+	"vectors":      KindVector,
 }
 
 // Build parses the node ids, checks they form one batch (same request
@@ -436,6 +452,17 @@ func (b *builder) requestFrame(section string, ids []string, indices []int) (*Pl
 			}
 		}
 		include = append(include, "data")
+	case KindVector:
+		// One streaming pass over the row-level pipeline, no groups.
+		keepThrough("groups", -1)
+		for _, np := range plan.Nodes {
+			entry, _ := frame["vectors"].([]any)[np.Index].(map[string]any)
+			hidden = b.vectorProbe(np, entry, inChain, weighted, hidden)
+		}
+		if len(hidden) == 0 {
+			return none(ids, section, indices, plan.Nodes[0].Reason), nil
+		}
+		include = append(include, "data")
 	case KindGroup:
 		keepThrough("groups", maxIdx)
 		for _, np := range plan.Nodes {
@@ -634,6 +661,56 @@ func (b *builder) statsProbe(entry map[string]any, idx int, inChain, weighted bo
 		}
 	}
 	return sp, hidden
+}
+
+// vectorProbe appends the hidden aggregations describing one vector's
+// members (see VectorPlan); on a weighted request they carry
+// "weight": null, like statsProbe's, so the means describe the columns.
+func (b *builder) vectorProbe(np *NodePlan, entry map[string]any, inChain, weighted bool, hidden []any) []any {
+	usable := func(agg string) bool { return b.cat.Aggregators[agg] && (!inChain || b.cat.Mergeable[agg]) }
+	add := func(a map[string]any) {
+		if weighted {
+			a["weight"] = nil
+		}
+		hidden = append(hidden, a)
+	}
+	name, _ := entry["name"].(string)
+	var members []string
+	literal := entry["pattern"] == nil
+	if list, ok := entry["fields"].([]any); ok && literal {
+		for _, f := range list {
+			s, ok := f.(string)
+			if !ok || s == "" || strings.ContainsAny(s, "*?[") {
+				literal = false
+				break
+			}
+			members = append(members, s)
+		}
+	}
+	switch {
+	case literal && len(members) == 0:
+		np.Reason = "vector has no members yet"
+	case literal && usable("AGG_AVERAGE"):
+		vp := &VectorPlan{Members: members}
+		for j, m := range members {
+			l := fmt.Sprintf("__probe%d_m%d", np.Index, j)
+			vp.Labels = append(vp.Labels, l)
+			add(map[string]any{"type": "AGG_AVERAGE", "field": m, "label": l})
+		}
+		np.Vector = vp
+	case literal:
+		np.Reason = "engine has no AGG_AVERAGE to probe vector members with"
+	case name == "":
+		np.Reason = "vector has no name to probe"
+	case entry["coerce"] != nil:
+		np.Reason = "a pattern or glob vector with coerce has no preview"
+	case usable("AGG_VEC_MEAN"):
+		np.Vector = &VectorPlan{Mean: fmt.Sprintf("__probe%d_vec", np.Index)}
+		add(map[string]any{"type": "AGG_VEC_MEAN", "vector": name, "label": np.Vector.Mean})
+	default:
+		np.Reason = "engine has no AGG_VEC_MEAN to probe a vector with"
+	}
+	return hidden
 }
 
 // requestFacet runs a FacetSchema over the request's cohort with the

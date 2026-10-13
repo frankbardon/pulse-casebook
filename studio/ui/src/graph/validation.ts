@@ -16,8 +16,8 @@ import type { GraphModel } from './model.ts'
 import { frameOf, isPathPrefix, parsePath } from './nodePath.ts'
 import { groupKeysOfModel, partitionDepth, partitionProblem, PARTITION_KEY, PARTITION_PATH } from './partition.ts'
 import { chainRefusal } from './chainRules.ts'
-import { buildForm, formProblems, type Catalog } from './paramForms.ts'
-import { refusal, slotsFor } from './ports.ts'
+import { buildForm, formProblems, type Catalog, type NodeForm } from './paramForms.ts'
+import { isGlob, refusal, slotsFor, vectorMemberRefusal } from './ports.ts'
 import { sectionInfo } from './requestGraph.ts'
 
 export type Severity = 'error' | 'warning' | 'hint'
@@ -51,6 +51,10 @@ export function clientIssues(model: GraphModel, catalog: Catalog, cohortFields?:
   for (const node of model.nodes.values()) {
     if (node.kind !== 'entry' || node.value.type !== 'object') continue
     const form = buildForm(node, catalog)
+    if (node.section === 'vectors') {
+      out.push(...vectorIssues(node.id, node.value, form, types))
+      continue
+    }
     const op = form.op
     if (op === undefined) continue
     if (form.opKnown === false) {
@@ -99,6 +103,41 @@ export function clientIssues(model: GraphModel, catalog: Catalog, cohortFields?:
       }
     }
   }
+  return out
+}
+
+// vectorIssues checks a vectors entry the way pulse predict does before
+// any record is read (PULSE_VECTOR_*): exactly one of fields / pattern,
+// members of an integer or float type (packed_bool only with coerce
+// binary), one label per literal member, and a scale range only beside
+// kind scale. Glob members are not checked (they expand on the engine).
+function vectorIssues(id: string, value: JsonNode, form: NodeForm, types: ReadonlyMap<string, string>): Issue[] {
+  const out: Issue[] = []
+  const issue = (path: string, message: string, current?: string): Issue => ({
+    path,
+    severity: 'error',
+    code: 'VECTOR',
+    message,
+    ...(current !== undefined && { current }),
+    source: 'client',
+  })
+  for (const p of formProblems(form, value)) out.push(issue(id, p))
+  const fields = getIn(value, ['fields'])
+  const coerce = stringValue(getIn(value, ['coerce']))
+  const members = fields?.type === 'array' ? fields.items.map((x) => stringValue(x)) : []
+  if (types.size > 0) {
+    members.forEach((name, i) => {
+      if (name === undefined || isGlob(name)) return
+      const why = vectorMemberRefusal(types.get(name), coerce)
+      if (why) out.push(issue(`${id}.fields[${i}]`, `fields[${i}] ${why} (${name})`, name))
+    })
+  }
+  const labels = getIn(value, ['labels'])
+  if (labels?.type === 'array' && fields?.type === 'array' && !members.some((m) => m === undefined || isGlob(m)) && labels.items.length !== members.length) {
+    out.push(issue(`${id}.labels`, `labels has ${labels.items.length} entries for ${members.length} members`))
+  }
+  const scaled = getIn(value, ['scale_min']) !== undefined || getIn(value, ['scale_max']) !== undefined
+  if (scaled && stringValue(getIn(value, ['kind'])) !== 'scale') out.push(issue(id, 'scale_min / scale_max are accepted only beside kind: "scale"'))
   return out
 }
 

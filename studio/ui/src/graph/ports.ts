@@ -10,6 +10,9 @@
 //   - Regressions: `target` and `predictors` take the operator's
 //     `accepts_types`.
 //   - Matrices: `fields` take the operator's `accepts_types`.
+//   - Vectors (`vectors[i].fields`, no manifest operator): integer and
+//     float columns (pulse payload-schema "Vector slot"); packed_bool
+//     only beside `coerce: "binary"` (vectorMemberRefusal).
 //   - Tests and post-tests declare no accepts_types; their inputs come
 //     from `requires` and follow the engine's predict rules
 //     (pulse internal/guide testSlot): `field`/`field2` numeric
@@ -69,6 +72,29 @@ const ANY: Accept = { what: 'any field' }
 const NUMERIC: Accept = { kinds: ['numeric'], what: 'a numeric field' }
 const GROUPING: Accept = { kinds: ['categorical', 'bool'], integers: true, what: 'a categorical (grouping) field' }
 const CATEGORICAL: Accept = { kinds: ['categorical', 'bool'], what: 'a categorical field' }
+
+// VECTOR_MEMBER is what a vector's `fields` take: integer or float
+// columns, plus packed_bool, which the vector admits only with
+// `coerce: "binary"` (vectorMemberRefusal adds that rule).
+export const VECTOR_MEMBER: Accept = {
+  types: ['u4', 'u8', 'u16', 'u32', 'u64', 'f32', 'f64', 'packed_bool'],
+  what: 'an integer or float field (packed_bool with coerce binary)',
+}
+
+// vectorMemberRefusal checks a vector member's type against the vector's
+// coerce: VECTOR_MEMBER, and packed_bool only when coerce is binary.
+export function vectorMemberRefusal(type: string | undefined, coerce: string | undefined): string | null {
+  const why = refusal(VECTOR_MEMBER, type)
+  if (why) return why
+  if (type === 'packed_bool' && coerce !== 'binary') return 'takes packed_bool only with coerce: "binary"'
+  return null
+}
+
+// isGlob says whether a vector member entry is a glob (`q_*`), which
+// expands over the cohort's columns rather than naming one.
+export function isGlob(name: string): boolean {
+  return /[*?[]/.test(name)
+}
 
 // Go field names of test `requires` -> entry key and accept rule.
 const REQUIRES: Record<string, { key: string; accept: Accept }> = {
@@ -170,6 +196,8 @@ export function slotsFor(manifest: Manifest | undefined, section: string, op: st
     case 'matrices':
       if (!o) return []
       return [{ key: 'fields', list: true, required: true, accept: typed(`a ${op} input type`) }]
+    case 'vectors':
+      return [{ key: 'fields', list: true, required: true, accept: VECTOR_MEMBER }]
   }
   if (componentOf(section)) return [{ key: 'field', list: false, required: false, accept: typed(`a ${op} input type`) }]
   return []

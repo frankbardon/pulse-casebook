@@ -209,6 +209,30 @@ export function fmtPct(part: number, whole: number): string {
   return `${pct >= 99.95 || pct === 0 ? pct.toFixed(0) : pct.toFixed(1)}%`
 }
 
+// VectorSummary is a vector preview's two lines: member count and the
+// first means; the member with the most nulls (over the rows reaching
+// the vector) and its null rate.
+export type VectorSummary = { members: number; means: string; worst?: { name: string; pct: string }; rows?: number }
+
+export function vectorSummary(probe: PreviewProbe): VectorSummary | undefined {
+  const v = probe.vector
+  if (!v) return undefined
+  const means = Array.isArray(v.means) ? v.means : []
+  const shown = means.slice(0, 3).map((m) => fmtNum(m, 3))
+  const out: VectorSummary = { members: v.members.length || means.length, means: shown.join(', ') + (means.length > 3 ? ', …' : '') }
+  const rows = probe.rows?.filtered
+  if (rows !== undefined) out.rows = rows
+  if (rows && v.element_n && v.element_n.length > 0) {
+    let at = 0
+    v.element_n.forEach((n, i) => {
+      if (n < v.element_n![at]) at = i
+    })
+    const nulls = rows - v.element_n[at]
+    if (nulls > 0) out.worst = { name: v.members[at] ?? `#${at + 1}`, pct: fmtPct(nulls, rows) }
+  }
+  return out
+}
+
 // Headline is one `k v` pair of a terminal node's preview.
 export type Headline = { k: string; v: string }
 

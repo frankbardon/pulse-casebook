@@ -13,7 +13,7 @@
 import type { Edge, Node } from '@xyflow/react'
 import type { CohortField, Manifest, ManifestOperator } from '../api.ts'
 import { formatPath, type PathSegment } from './nodePath.ts'
-import { describeAccept, slotFor, slotsFor } from './ports.ts'
+import { describeAccept, isGlob, slotFor, slotsFor } from './ports.ts'
 import { groupKeyColumn, type GroupEntry } from './partition.ts'
 
 export type ColumnKey =
@@ -182,7 +182,7 @@ export const REQUEST_SECTIONS: ReadonlyMap<string, { single: boolean }> = new Ma
 
 // PREVIEW_SECTIONS are the sections whose entries get a live preview
 // (POST /api/preview has a probe for them). The cohort node is previewed
-// too; vectors, multiplicity and return have no probe.
+// too; multiplicity and return have no probe.
 export const PREVIEW_SECTIONS: ReadonlySet<string> = new Set([
   'features',
   'filterers',
@@ -195,6 +195,7 @@ export const PREVIEW_SECTIONS: ReadonlySet<string> = new Set([
   'post_tests',
   'regressions',
   'matrices',
+  'vectors',
   'crosstab',
   'overlays',
 ])
@@ -281,6 +282,8 @@ export function buildRequestGraph(req: unknown, opts: BuildOptions = {}): Reques
       const rows: ParamRow[] = []
       const paramRefs = PARAM_REF_KEYS[key]
       for (const [k, v] of Object.entries(e)) if (!omit.has(k)) flatten(v, [k], rows, paramRefs)
+      // A vector's glob members (`q_*`) expand over the schema: no wire.
+      if (key === 'vectors') for (const r of rows) if (r.ref !== undefined && isGlob(r.ref)) delete r.ref
       if (opts.manifest) addPorts(opts.manifest, key, op, e, rows, groupKeys)
       const list = opts.manifest && spec.catalog ? spec.catalog(opts.manifest) : undefined
       const opKnown =
@@ -397,6 +400,8 @@ function addPorts(manifest: Manifest, section: string, op: string, e: Record<str
       continue
     }
     if (!slot.required) continue
+    // A vector names its members by fields or by pattern, never both.
+    if (section === 'vectors' && e.pattern !== undefined) continue
     const accepts = slot.accept.types || slot.accept.kinds ? { accepts: describeAccept(slot) } : {}
     if (!slot.list) {
       if (v === undefined) rows.push({ key: slot.key, value: '', port: 'empty', ...accepts })

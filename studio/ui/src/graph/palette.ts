@@ -27,8 +27,8 @@ export const PALETTE_MIME = 'application/x-pulse-palette'
 
 // PALETTE_SECTIONS are the request sections whose operators the manifest
 // lists, in stage order. Sections without manifest operators (sort,
-// vectors, crosstab, return) are not in the palette; multiplicity is, as
-// a fixed BLOCK_ITEMS entry.
+// crosstab, return) are not in the palette; multiplicity and vectors
+// are, as fixed BLOCK_ITEMS entries.
 export const PALETTE_SECTIONS = [
   'features',
   'filterers',
@@ -60,10 +60,20 @@ export type PaletteItem = {
 }
 
 // BLOCK_ITEMS are request blocks the manifest lists no operators for,
-// placed as fixed items after the manifest's: the multiplicity block
-// (one per request, method written to `method`; family and alpha are set
-// in the inspector).
+// placed as fixed items after the manifest's: a vector (a named member
+// set, `{"name": <unique>, "fields": []}`; members are wired in) and the
+// multiplicity block (one per request, method written to `method`;
+// family and alpha are set in the inspector).
 export const BLOCK_ITEMS: readonly PaletteItem[] = [
+  {
+    key: 'vectors/VECTOR',
+    section: 'vectors',
+    column: 'analysis',
+    kind: 'Vector',
+    op: 'VECTOR',
+    type: 'VECTOR',
+    description: 'A named set of numeric member fields that matrices, k-means groups and vector aggregations read.',
+  },
   {
     key: 'multiplicity/MULTIPLICITY',
     section: 'multiplicity',
@@ -216,6 +226,8 @@ export function placeNode(model: GraphModel, item: PaletteItem, opts: PlaceOptio
   const str = (s: string): JsonNode => ({ type: 'string', raw: JSON.stringify(s) })
   if (info.opKey) value = setIn(value, [info.opKey], str(item.type))
   if (info.nameKey) value = setIn(value, [info.nameKey], str(uniqueLabel(model, item, opts)))
+  // A vector starts with no members; they are wired in.
+  if (item.section === 'vectors') value = setIn(value, ['fields'], { type: 'array', items: [] })
 
   const next = setIn(root, arr ? [...base, item.section, index] : [...base, item.section], arr ? value : { type: 'array', items: [value] })
   let out = buildModel(next, model.kind)

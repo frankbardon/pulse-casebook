@@ -18,7 +18,7 @@ import type { JsonNode } from './jsonTree.ts'
 import { buildModel, emitModel, updateNode, type GraphModel } from './model.ts'
 import { formatPath, frameOf, parsePath, type PathSegment } from './nodePath.ts'
 import { FACET_NODE } from './facetGraph.ts'
-import { emitsType, findOperator, refusal, slotFor } from './ports.ts'
+import { emitsType, findOperator, refusal, slotFor, vectorMemberRefusal } from './ports.ts'
 import { groupKeyColumn, PARTITION_PATH, removePartitionItem, wireRefusal, type GroupEntry } from './partition.ts'
 import { canSee, LAYOUT, type ColumnKey, type RequestGraph } from './requestGraph.ts'
 
@@ -106,7 +106,10 @@ export function checkConnection(graph: Pick<RequestGraph, 'nodes'>, wire: Wire, 
   }
 
   const slot = slotFor(ctx.manifest, section, op, rowKey)
-  const why = refusal(slot.accept, type)
+  const why =
+    section === 'vectors' && slot.key === 'fields'
+      ? vectorMemberRefusal(type, tgt.data.rows.find((r) => r.key === 'coerce')?.value)
+      : refusal(slot.accept, type)
   if (why) return { ok: false, reason: `${op} ${slot.key} ${why} (${from})` }
   if (slot.groupKey) {
     const keys = groupKeysOfGraph(graph.nodes, frameOf(tgt.id))

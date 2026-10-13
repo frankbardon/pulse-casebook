@@ -269,9 +269,10 @@ test('the palette lists every manifest operator, searches, and places a node', a
   await expect(graph.locator('[data-path="tests[1]"]')).toBeVisible()
   await page.getByTestId('palette-toggle').click()
   const palette = page.getByTestId('palette')
-  // Plus the fixed multiplicity block (no manifest operator list).
-  await expect(palette.getByTestId('palette-item')).toHaveCount(total + 1)
+  // Plus the fixed vector and multiplicity blocks (no manifest operator list).
+  await expect(palette.getByTestId('palette-item')).toHaveCount(total + 2)
   await expect(palette.locator('[data-op="MULTIPLICITY"]')).toBeVisible()
+  await expect(palette.locator('[data-op="VECTOR"]')).toBeVisible()
 
   // By description words, then by name.
   await palette.getByTestId('palette-search').fill('two-sample alias')

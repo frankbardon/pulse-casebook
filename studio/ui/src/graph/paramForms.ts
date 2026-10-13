@@ -126,6 +126,11 @@ export function buildForm(node: ModelNode, catalog: Catalog = {}, ctx: FormConte
     sections.push({ title: 'Correction', fields: MULTIPLICITY_FIELDS })
     return { mode: 'handwritten', ...base, sections }
   }
+  if (node.section === 'vectors') {
+    // A vector has no manifest operator: pulse types.VectorSpec.
+    sections.push({ title: 'Members', fields: VECTOR_MEMBER_FIELDS }, { title: 'Meaning', fields: VECTOR_MEANING_FIELDS })
+    return { mode: 'handwritten', ...base, sections }
+  }
   const hand = op ? HANDWRITTEN[op] ?? (node.section === 'overlays' ? overlayForm : undefined) : undefined
   if (hand) {
     const fields = hand(ops ?? [])
@@ -259,6 +264,34 @@ const MULTIPLICITY_FIELDS: FormField[] = [
   { key: 'method', rel: ['method'], type: 'enum', options: ['holm', 'bonferroni', 'bh', 'by', 'none'], hint: 'empty inherits' },
   { key: 'family', rel: ['family'], type: 'enum', options: ['request', 'compose', 'layer', 'row', 'column'], hint: 'which p-values are corrected together' },
   { key: 'alpha', rel: ['alpha'], type: 'number', hint: 'overlay significance level, in (0, 1)' },
+]
+
+// VECTOR_COERCES and VECTOR_KINDS are pulse's closed VectorCoerce and
+// VectorKind enums (types/vector.go, payload-schema "Vector slot").
+export const VECTOR_COERCES = ['binary'] as const
+export const VECTOR_KINDS = ['measure', 'scale', 'composition', 'binary'] as const
+
+// VECTOR_MEMBER_FIELDS edit which columns a vector holds: exactly one of
+// fields (names and globs) and pattern (a Go regular expression).
+const VECTOR_MEMBER_FIELDS: FormField[] = [
+  {
+    key: 'fields',
+    rel: ['fields'],
+    type: 'strings',
+    oneOf: 'members',
+    hint: 'integer or float columns, one per line (or wire fields into the node); globs like q_* expand in schema order',
+  },
+  { key: 'pattern', rel: ['pattern'], type: 'string', oneOf: 'members', hint: 'Go regular expression over column names, schema order' },
+  { key: 'coerce', rel: ['coerce'], type: 'enum', options: [...VECTOR_COERCES], hint: 'binary admits packed_bool members, read as 0 / 1' },
+  { key: 'labels', rel: ['labels'], type: 'strings', hint: 'one display label per member, in member order' },
+]
+
+// VECTOR_MEANING_FIELDS say what the members' values mean (the default
+// metric of distance and similarity operators) and a scale's range.
+const VECTOR_MEANING_FIELDS: FormField[] = [
+  { key: 'kind', rel: ['kind'], type: 'enum', options: [...VECTOR_KINDS], hint: 'what the values mean; fills a metric operator\'s default metric' },
+  { key: 'scale_min', rel: ['scale_min'], type: 'number', hint: 'kind scale only; both or neither, min below max' },
+  { key: 'scale_max', rel: ['scale_max'], type: 'number', hint: 'kind scale only; both or neither, min below max' },
 ]
 
 type Handwritten = (ops: ManifestOperator[]) => FormField[]

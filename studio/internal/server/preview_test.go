@@ -415,8 +415,21 @@ func TestPreviewProbes(t *testing.T) {
 			check: nonEmpty("result"), parity: resultParity("regressions", 1)},
 		{name: "matrix", path: "ab/req/matrix.json", nodes: []string{"matrices[0]"}, kind: "matrix", cost: "expensive", verb: "process",
 			check: nonEmpty("result"), parity: resultParity("matrices", 0)},
-		{name: "vector has no probe", path: "ab/req/matrix.json", nodes: []string{"vectors[0]"}, kind: "none", cost: "cheap", verb: "none",
-			check: nonEmpty("reason")},
+		{name: "vector", path: "ab/req/matrix.json", nodes: []string{"vectors[0]"}, kind: "vector", cost: "cheap", verb: "process",
+			check: func(t *testing.T, p map[string]any) {
+				members, _ := at(p, "vector", "members").([]any)
+				means, _ := at(p, "vector", "means").([]any)
+				counts, _ := at(p, "vector", "element_n").([]any)
+				if len(members) != 3 || members[0] != "pages_viewed" || len(means) != 3 || len(counts) != 3 {
+					t.Fatalf("vector probe = %v", at(p, "vector"))
+				}
+			},
+			parity: func(t *testing.T, p, d map[string]any) {
+				for j := range 3 {
+					equal(t, "mean", at(p, "vector", "means", j), at(d, "data", 0, fmt.Sprintf("__probe0_m%d", j)))
+					equal(t, "element_n", at(p, "vector", "element_n", j), at(d, "metadata", "filtered_rows"))
+				}
+			}},
 		{name: "compose slot attribute", path: "ab/req/11_readout.compose.json", nodes: []string{"requests[1].attributes[0]"}, kind: "attribute", cost: "expensive", verb: "process",
 			check: nonEmpty("stats"), parity: statsParity(0, true)},
 		{name: "compose slot crosstab", path: "brand/req/06_q4_banner.json", nodes: []string{"requests[9].crosstab"}, kind: "crosstab", cost: "expensive", verb: "process",

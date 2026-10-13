@@ -236,6 +236,14 @@ export type PreviewStats = {
   note?: string
 }
 
+export type PreviewVector = {
+  members: string[]
+  means?: (number | null)[] | null
+  element_n?: number[]
+  n?: number
+  n_null?: number
+}
+
 export type PreviewProbe = {
   node: string
   kind: string
@@ -243,6 +251,8 @@ export type PreviewProbe = {
   rows?: { total: number; filtered: number }
   filter?: { n_in: number; n_out: number; n_null_input: number }
   stats?: PreviewStats
+  // Vector probes: per-member means and answered counts, member order.
+  vector?: PreviewVector
   table?: { rows: Record<string, unknown>[]; total_rows: number; truncated?: boolean }
   component?: unknown
   facet?: unknown

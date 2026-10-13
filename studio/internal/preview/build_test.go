@@ -209,7 +209,7 @@ func TestBuildRequestProbes(t *testing.T) {
 }
 
 func TestBuildNoProbe(t *testing.T) {
-	for _, node := range []string{"vectors[0]", "multiplicity", "return", "outputs[0]", "label"} {
+	for _, node := range []string{"multiplicity", "return", "outputs[0]", "label"} {
 		plan, err := Build(decode(t, fullRequest), "request", []string{node}, testCatalog(), Options{})
 		if err != nil {
 			t.Fatalf("%s: %v", node, err)
@@ -572,6 +572,56 @@ func TestCatalogBufferedFromManifest(t *testing.T) {
 	for _, agg := range []string{"AGG_COUNT", "AGG_SUM", "AGG_AVERAGE", "AGG_MIN", "AGG_STDDEV"} {
 		if cat.Buffered[agg] {
 			t.Errorf("%s buffered", agg)
+		}
+	}
+}
+
+func TestBuildVectorProbe(t *testing.T) {
+	cat := testCatalog()
+	cat.Aggregators["AGG_VEC_MEAN"] = true
+	build := func(vectors string) *Plan {
+		t.Helper()
+		doc := decode(t, `{"cohort": {"filename": "c.pulse"}, "weight": {"field": "w"},
+			"groups": [{"type": "GROUP_CATEGORY", "field": "g"}], "vectors": [`+vectors+`]}`)
+		plan, err := Build(doc, "request", []string{"vectors[0]"}, cat, Options{})
+		if err != nil {
+			t.Fatal(err)
+		}
+		return plan
+	}
+
+	// Literal members: one AGG_AVERAGE each (packed_bool members too).
+	plan := build(`{"name": "v", "fields": ["x", "flag"], "coerce": "binary"}`)
+	np := plan.Nodes[0]
+	if plan.Verb != VerbProcess || plan.Cost != CostCheap || np.Kind != KindVector || np.Vector == nil {
+		t.Fatalf("plan %+v node %+v", plan, np)
+	}
+	want := []any{
+		map[string]any{"type": "AGG_AVERAGE", "field": "x", "label": "__probe0_m0", "weight": nil},
+		map[string]any{"type": "AGG_AVERAGE", "field": "flag", "label": "__probe0_m1", "weight": nil},
+	}
+	if !reflect.DeepEqual(plan.Request["aggregations"], want) || !reflect.DeepEqual(np.Vector.Members, []string{"x", "flag"}) {
+		t.Fatalf("hidden aggregations = %v, plan %+v", plan.Request["aggregations"], np.Vector)
+	}
+	if _, grouped := plan.Request["groups"]; grouped {
+		t.Fatal("vector probe keeps the request's groups")
+	}
+
+	// A pattern (or glob) vector: one AGG_VEC_MEAN over the vector.
+	plan = build(`{"name": "v", "pattern": "^q"}`)
+	want = []any{map[string]any{"type": "AGG_VEC_MEAN", "vector": "v", "label": "__probe0_vec", "weight": nil}}
+	if !reflect.DeepEqual(plan.Request["aggregations"], want) || plan.Nodes[0].Vector.Mean != "__probe0_vec" {
+		t.Fatalf("hidden aggregations = %v", plan.Request["aggregations"])
+	}
+	if got := build(`{"name": "v", "fields": ["q_*"]}`).Nodes[0].Vector; got == nil || got.Mean == "" {
+		t.Fatalf("glob vector plan = %+v", got)
+	}
+
+	// Nothing to probe yet, or a coerced pattern AGG_VEC_MEAN refuses.
+	for _, v := range []string{`{"name": "v", "fields": []}`, `{"name": "v", "pattern": "^q", "coerce": "binary"}`} {
+		plan = build(v)
+		if plan.Verb != VerbNone || plan.Nodes[0].Kind != KindNone || plan.Nodes[0].Reason == "" {
+			t.Fatalf("%s: plan %+v node %+v", v, plan, plan.Nodes[0])
 		}
 	}
 }

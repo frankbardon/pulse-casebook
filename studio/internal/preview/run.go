@@ -45,6 +45,7 @@ type Result struct {
 //	regression, matrix,
 //	crosstab, overlay       rows, result (the engine's result entry)
 //	facet                   rows, facet (per-field facet results)
+//	vector                  rows, vector (per-member means and counts)
 //	none                    reason
 type Probe struct {
 	Node      string          `json:"node"`
@@ -53,6 +54,7 @@ type Probe struct {
 	Rows      *Rows           `json:"rows,omitempty"`
 	Filter    *FilterCounts   `json:"filter,omitempty"`
 	Stats     *Stats          `json:"stats,omitempty"`
+	Vector    *VectorStats    `json:"vector,omitempty"`
 	Table     *Table          `json:"table,omitempty"`
 	Component json.RawMessage `json:"component,omitempty"`
 	Facet     json.RawMessage `json:"facet,omitempty"`
@@ -84,6 +86,19 @@ type Stats struct {
 	StdDev    any        `json:"stddev,omitempty"`
 	Quantiles []Quantile `json:"quantiles,omitempty"`
 	Note      string     `json:"note,omitempty"`
+}
+
+// VectorStats summarize a vector's members over the rows that reach
+// it: each member's mean (null when no row answered it) and answered
+// count, in member order, plus the rows where any member answered (N)
+// or none did (NNull). Values pass through from the engine's
+// AGG_VEC_MEAN result and components.
+type VectorStats struct {
+	Members  []string `json:"members"`
+	Means    any      `json:"means"`
+	ElementN []int64  `json:"element_n,omitempty"`
+	N        *int64   `json:"n,omitempty"`
+	NNull    *int64   `json:"n_null,omitempty"`
 }
 
 // Quantile is one percentile (P in percent).
@@ -287,6 +302,12 @@ func summarize(res *Result, plan *Plan, raw []byte) error {
 			}
 		case KindFeature, KindAttribute:
 			p.Stats = statsFrom(np.Stats, first, resp)
+		case KindVector:
+			if np.Vector == nil {
+				p.Kind, p.Reason = KindNone, np.Reason
+			} else {
+				p.Vector = vectorFrom(np.Vector, first, resp)
+			}
 		case KindGroup:
 			p.Table = table(resp.Data)
 			if resp.Components != nil {
@@ -381,6 +402,60 @@ func statsFrom(sp *StatsPlan, row map[string]any, resp *wireResponse) *Stats {
 		}
 	}
 	return st
+}
+
+// vectorFrom reads a vector probe's hidden aggregations: per-member
+// AGG_AVERAGE means and answered counts (component n), or one
+// AGG_VEC_MEAN's means with members and counts from its component.
+func vectorFrom(vp *VectorPlan, row map[string]any, resp *wireResponse) *VectorStats {
+	type component struct {
+		Label    string `json:"label"`
+		N        *int64 `json:"n"`
+		NNull    *int64 `json:"n_null"`
+		Operator struct {
+			Labels   []string `json:"labels"`
+			ElementN []int64  `json:"element_n"`
+		} `json:"operator"`
+	}
+	comps := map[string]component{}
+	if resp.Components != nil {
+		for _, c := range resp.Components.Aggregations {
+			var ac component
+			if json.Unmarshal(c, &ac) == nil && ac.Label != "" {
+				comps[ac.Label] = ac
+			}
+		}
+	}
+	get := func(label string) any {
+		if row == nil {
+			return nil
+		}
+		return row[label]
+	}
+	if vp.Mean != "" {
+		vs := &VectorStats{Members: []string{}, Means: get(vp.Mean)}
+		if ac, ok := comps[vp.Mean]; ok {
+			if ac.Operator.Labels != nil {
+				vs.Members = ac.Operator.Labels
+			}
+			vs.ElementN, vs.N, vs.NNull = ac.Operator.ElementN, ac.N, ac.NNull
+		}
+		return vs
+	}
+	vs := &VectorStats{Members: vp.Members}
+	means := make([]any, len(vp.Labels))
+	counts := make([]int64, 0, len(vp.Labels))
+	for j, l := range vp.Labels {
+		means[j] = get(l)
+		if ac, ok := comps[l]; ok && ac.N != nil {
+			counts = append(counts, *ac.N)
+		}
+	}
+	vs.Means = means
+	if len(counts) == len(vp.Labels) {
+		vs.ElementN = counts
+	}
+	return vs
 }
 
 func table(rows []json.RawMessage) *Table {

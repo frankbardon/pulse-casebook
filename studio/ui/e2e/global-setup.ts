@@ -40,6 +40,18 @@ export const TEMPLATE_SPECS: Record<string, Template> = {
     only: ['req/'],
     cohorts: [['showcase/retail-at-scale/synth/orders-2025-01.synth.json', 'orders.pulse', 202501, 20_000]],
   },
+  // Privacy-safe sharing's vector and join requests over small cohorts
+  // synthesized from the case's emitted twin spec (the real
+  // customers.pulse is imported from CSV): a source and a twin, 2,000
+  // rows each.
+  'privacy-safe-sharing': {
+    from: 'showcase/privacy-safe-sharing',
+    only: ['req/'],
+    cohorts: [
+      ['showcase/privacy-safe-sharing/synth/spec.json', 'customers.pulse', 7, 2_000],
+      ['showcase/privacy-safe-sharing/synth/spec.json', 'twin.pulse', 11, 2_000],
+    ],
+  },
 }
 
 export default function globalSetup(): void {
