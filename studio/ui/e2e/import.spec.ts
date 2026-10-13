@@ -1,7 +1,9 @@
 // The import wizard (G2) and schema reuse (G3), against a temp copy of
 // ab-test-readout kept in git: upload a CSV, edit a type, save the
-// schema, import, open the cohort and start a request on it; Rebuild of
-// an imported cohort whose source changed or went missing.
+// schema, import, open the cohort and start a request on it; a file
+// with a saved schema's columns matches it exactly, and a file with one
+// extra column gets it as a suggestion to apply; Rebuild of an imported
+// cohort whose source changed or went missing.
 import { appendFileSync, readFileSync, rmSync } from 'node:fs'
 import { join } from 'node:path'
 import { expect, test } from './harness.ts'
@@ -80,6 +82,61 @@ test('upload, edit a type, save the schema, import, and start a request on the c
   const graph = page.getByTestId('request-graph')
   await expect(graph.locator('[data-path="cohort"]')).toContainText('retail.pulse')
   await expect(graph.locator('[data-path="cohort"] [data-testid="preview"]')).toContainText('8 rows')
+})
+
+// The saved schema retail_orders: orders.csv's six columns, qty widened
+// to u16 (Pulse infers u4).
+const RETAIL_ORDERS = [
+  { name: 'order_id', type: 'u16', description: '', nullable: false },
+  { name: 'region', type: 'categorical_u8', description: '', nullable: false },
+  { name: 'amount', type: 'f64', description: '', nullable: true },
+  { name: 'qty', type: 'u16', description: '', nullable: false },
+  { name: 'ordered_on', type: 'date', description: '', nullable: false },
+  { name: 'returned', type: 'packed_bool', description: '', nullable: false },
+]
+
+test('a saved schema is matched exactly, or suggested with a diff and applied', async ({ page, studio, request }) => {
+  expect((await request.post('/api/schemas', { data: { name: 'retail_orders', schema: RETAIL_ORDERS } })).status()).toBe(201)
+
+  // Same columns: the saved schema is matched and applied.
+  await page.goto('/')
+  await page.getByTestId('import-open').click()
+  const wizard = page.getByTestId('import-wizard')
+  const table = page.getByTestId('schema-table')
+  const row = (name: string) => table.locator(`tr[data-col="${name}"]`)
+  await page.getByTestId('import-file-input').setInputFiles(fixture('orders_feb.csv'))
+  const banner = page.getByTestId('match-banner')
+  await expect(banner).toContainText('Matches saved schema retail_orders — 100%')
+  await expect(banner).toHaveAttribute('data-exact', 'true')
+  await expect(row('qty').getByTestId('col-type')).toHaveValue('u16')
+  await page.getByTestId('schema-next').click()
+  await expect(page.getByTestId('schema-name')).toHaveValue('retail_orders')
+  // Unchanged: saving reuses the schema without a conflict.
+  await page.getByTestId('schema-save').click()
+  await expect(wizard).toHaveAttribute('data-step', 'import')
+  await page.getByTestId('import-close').click()
+
+  // One more column: a close match, offered with its diff, applied.
+  await page.getByTestId('import-open').click()
+  await page.getByTestId('import-file-input').setInputFiles(fixture('orders_channel.csv'))
+  const suggestions = page.getByTestId('match-suggestions')
+  await expect(suggestions.locator('[data-match="retail_orders"]')).toContainText('86%')
+  await expect(row('qty').getByTestId('col-type')).toHaveValue('u4')
+  await suggestions.getByTestId('match-diff-toggle').click()
+  await expect(suggestions.getByTestId('match-diff')).toContainText('channel')
+  await suggestions.getByTestId('match-apply').click()
+  await expect(page.getByTestId('match-banner')).toContainText('Applied saved schema retail_orders')
+  await expect(row('qty').getByTestId('col-type')).toHaveValue('u16')
+  await expect(row('channel')).toHaveAttribute('data-match', 'new')
+  await expect(row('region')).toHaveAttribute('data-match', 'matched')
+
+  // Updating the saved schema shows what changes first.
+  await page.getByTestId('schema-next').click()
+  await page.getByTestId('schema-save').click()
+  await expect(page.getByTestId('schema-diff')).toContainText('+ channel')
+  await page.getByTestId('schema-overwrite').click()
+  await expect(wizard).toHaveAttribute('data-step', 'import')
+  expect(JSON.parse(studio.read('schemas/retail_orders.schema.json'))).toHaveLength(7)
 })
 
 test('Rebuild asks before using a changed source and explains a missing one', async ({ page, studio, request }) => {

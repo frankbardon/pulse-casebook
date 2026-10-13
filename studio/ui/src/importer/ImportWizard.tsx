@@ -15,10 +15,13 @@ import {
   type ImportResult,
   type PredictBody,
   type SchemaField,
+  type SchemaMatch,
   type UploadedSource,
   type WorkspaceFile,
 } from '../api.ts'
 import { formatBytes, formatCount, formatPct } from './format.ts'
+import { applyMatch, rankMatches } from './match.ts'
+import { MatchPanel, type Applied } from './MatchPanel.tsx'
 import {
   columnsFromPredict,
   compactNudge,
@@ -97,6 +100,7 @@ export function ImportWizard({ start, onImported, onClose }: Props) {
   const [checkedKey, setCheckedKey] = useState<string | null>(null)
   const [predicting, setPredicting] = useState(!!start.source)
   const [predictError, setPredictError] = useState<string | null>(null)
+  const [applied, setApplied] = useState<Applied | null>(null)
   const [filter, setFilter] = useState('')
 
   const [schemaName, setSchemaName] = useState(start.schema ?? '')
@@ -120,14 +124,14 @@ export function ImportWizard({ start, onImported, onClose }: Props) {
   // look at a source, or another sheet); otherwise the editor's types
   // go along as overrides and the answer is merged into it. then runs
   // after a valid answer (Next's re-check).
-  const predict = (src: UploadedSource, s: Settings, base: EditColumn[] | null, then?: () => void) => {
+  const predict = (src: UploadedSource, s: Settings, base: EditColumn[] | null, prefer?: string, then?: () => void) => {
     setPredicting(true)
     setPredictError(null)
-    sendPredict(src, s, base, then)
+    sendPredict(src, s, base, prefer, then)
   }
 
   // sendPredict is predict's request; it sets state only in callbacks.
-  const sendPredict = (src: UploadedSource, s: Settings, base: EditColumn[] | null, then?: () => void) => {
+  const sendPredict = (src: UploadedSource, s: Settings, base: EditColumn[] | null, prefer?: string, then?: () => void) => {
     predictCtl.current?.abort()
     const ctl = new AbortController()
     predictCtl.current = ctl
@@ -144,7 +148,17 @@ export function ImportWizard({ start, onImported, onClose }: Props) {
           next = mergeRerun(base, p)
         } else {
           next = columnsFromPredict(p)
-          setSchemaName((n) => n || nameFromSource(src.path))
+          // Reuse: an exact match (or the schema asked for) is applied
+          // straight away; closer looks are offered as suggestions.
+          const m = (prefer && p.matches.find((x) => x.name === prefer)) || rankMatches(p.matches).exact
+          if (m) {
+            next = applyMatch(next, m)
+            setApplied({ name: m.name, score: m.score, exact: m.exact })
+            setSchemaName(m.name)
+          } else {
+            setApplied(null)
+            setSchemaName((n) => n || nameFromSource(src.path))
+          }
           setTarget((t) => t || nameFromSource(src.path))
         }
         setCols(next)
@@ -165,7 +179,7 @@ export function ImportWizard({ start, onImported, onClose }: Props) {
     setSettings(s)
     setSaved(null)
     setStep('schema')
-    predict(up, s, null)
+    predict(up, s, null, start.schema)
   }
 
   const doUpload = (file: File) => {
@@ -190,7 +204,7 @@ export function ImportWizard({ start, onImported, onClose }: Props) {
     if (started.current) return
     started.current = true
     if (start.file) sendUpload(start.file)
-    else if (start.source) sendPredict(sourceOf(start.source), DEFAULT_SETTINGS, null)
+    else if (start.source) sendPredict(sourceOf(start.source), DEFAULT_SETTINGS, null, start.schema)
     // Runs once per wizard (the app remounts it for a new start).
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -228,10 +242,23 @@ export function ImportWizard({ start, onImported, onClose }: Props) {
 
   const edit = (f: (c: EditColumn[]) => EditColumn[]) => setCols((c) => f(c))
 
+  const applySuggestion = (m: SchemaMatch, dropNew = false) => {
+    edit((c) => applyMatch(c, m, dropNew))
+    setApplied({ name: m.name, score: m.score, exact: m.exact })
+    setSchemaName(m.name)
+  }
+
+  const revertMatch = () => {
+    if (!pred || !source) return
+    setApplied(null)
+    setSchemaName(nameFromSource(source.path))
+    predict(source, settings, null)
+  }
+
   const next = () => {
     if (!source) return
     if (checked) return setStep('save')
-    predict(source, settings, cols, () => setStep('save'))
+    predict(source, settings, cols, undefined, () => setStep('save'))
   }
 
   const doSave = (overwrite: boolean) => {
@@ -403,6 +430,13 @@ export function ImportWizard({ start, onImported, onClose }: Props) {
               {predictError}
             </p>
           )}
+
+          <MatchPanel
+            matches={pred?.matches ?? []}
+            applied={applied}
+            onApply={applySuggestion}
+            onRevert={revertMatch}
+          />
 
           {refusal && (
             <div className="notice error" data-testid="import-refusal">
@@ -603,6 +637,7 @@ export function ImportWizard({ start, onImported, onClose }: Props) {
           {!validName(schemaName) && <p className="err">Use letters, digits, ".", "_" or "-", starting with a letter or digit.</p>}
           <p className="muted">
             {schema.length} fields
+            {applied && applied.name === schemaName && ` · updates saved schema ${applied.name} if anything changed`}
           </p>
           {conflict && (
             <div className="notice warn" data-testid="schema-conflict">
