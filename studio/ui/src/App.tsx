@@ -1,12 +1,24 @@
 import { useEffect, useState } from 'react'
-import { getStatus, type GitStatus, type WorkspaceFile } from './api.ts'
+import { getStatus, type GitStatus, type ImportResult, type WorkspaceFile } from './api.ts'
 import { useCatalog } from './catalog.ts'
-import { Sidebar } from './Sidebar.tsx'
+import { Sidebar, type NewRequestOpen } from './Sidebar.tsx'
 import { RequestView } from './graph/RequestView.tsx'
+import { ImportWizard, type WizardStart } from './importer/ImportWizard.tsx'
+import { CohortView, ImportSpecView, SchemaView, type Recheck } from './importer/views.tsx'
 import './App.css'
+
+// The canvas shows the selected file, or the import wizard (n remounts
+// it for each new start).
+type Main = { mode: 'file' } | { mode: 'import'; start: WizardStart; n: number }
 
 export function App() {
   const [selected, setSelected] = useState<WorkspaceFile | null>(null)
+  const [main, setMain] = useState<Main>({ mode: 'file' })
+  // Bumps make the sidebar re-list (imports and rebuilds add files).
+  const [reload, setReload] = useState(0)
+  const [seq, setSeq] = useState(0)
+  const [newRequest, setNewRequest] = useState<NewRequestOpen | null>(null)
+  const [justImported, setJustImported] = useState<ImportResult | null>(null)
   // The catalog annotates nodes (known operators), drives inspector forms
   // and the palette, and is reloaded when the engine changes.
   const { health, catalog, error } = useCatalog()
@@ -21,12 +33,65 @@ export function App() {
     return () => ctl.abort()
   }, [])
 
+  const startImport = (start: WizardStart) => {
+    setSeq((n) => n + 1)
+    setMain({ mode: 'import', start, n: seq + 1 })
+  }
+  const select = (f: WorkspaceFile) => {
+    setSelected(f)
+    // A source opens the wizard on it; everything else opens as a file.
+    if (f.kind === 'source') return startImport({ source: f.path })
+    setMain({ mode: 'file' })
+  }
+  const openNewRequest = (open: { cohort?: string } | null) => {
+    setSeq((n) => n + 1)
+    setNewRequest(open ? { ...open, n: seq + 1 } : null)
+  }
+  const recheck = (r: Recheck) => startImport({ source: r.source, schema: r.schema, target: r.target })
+  const filesChanged = () => setReload((n) => n + 1)
+  const dir = health?.dir ?? ''
+
+  let canvas: React.ReactNode
+  if (main.mode === 'import') {
+    canvas = (
+      <ImportWizard
+        key={main.n}
+        start={main.start}
+        onClose={() => setMain({ mode: 'file' })}
+        onImported={(r) => {
+          setJustImported(r)
+          filesChanged()
+          setSelected(r.file)
+          setMain({ mode: 'file' })
+        }}
+      />
+    )
+  } else if (selected?.kind === 'cohort') {
+    canvas = (
+      <CohortView
+        key={selected.path}
+        file={selected}
+        dir={dir}
+        justImported={justImported ?? undefined}
+        onNewRequest={(cohort) => openNewRequest({ cohort })}
+        onFilesChanged={filesChanged}
+        onRecheck={recheck}
+      />
+    )
+  } else if (selected?.kind === 'import') {
+    canvas = <ImportSpecView key={selected.path} file={selected} dir={dir} onOpen={select} onFilesChanged={filesChanged} onRecheck={recheck} />
+  } else if (selected?.kind === 'schema') {
+    canvas = <SchemaView key={selected.path} file={selected} />
+  } else {
+    canvas = <RequestView file={selected} catalog={catalog} history={git?.enabled ?? false} />
+  }
+
   return (
     <div className="shell">
       <header className="topbar">
         <h1>Pulse Studio</h1>
         <span className="dir" data-testid="studio-dir">
-          {health?.dir ?? ''}
+          {dir}
         </span>
         {error && <span className="err">{error}</span>}
         {git && !git.enabled && (
@@ -36,11 +101,16 @@ export function App() {
         )}
       </header>
       <aside className="sidebar">
-        <Sidebar selected={selected?.path ?? null} onSelect={setSelected} />
+        <Sidebar
+          selected={main.mode === 'file' ? (selected?.path ?? null) : null}
+          onSelect={select}
+          reload={reload}
+          newRequest={newRequest}
+          onNewRequest={openNewRequest}
+          onImport={(file) => startImport({ file })}
+        />
       </aside>
-      <main className="canvas">
-        <RequestView file={selected} catalog={catalog} history={git?.enabled ?? false} />
-      </main>
+      <main className="canvas">{canvas}</main>
     </div>
   )
 }

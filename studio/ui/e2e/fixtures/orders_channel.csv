@@ -1,0 +1,5 @@
+order_id,region,amount,qty,ordered_on,returned,channel
+3001,north,22.00,2,2025-03-01,false,web
+3002,south,9.50,1,2025-03-01,false,store
+3003,east,70.10,8,2025-03-02,true,web
+3004,west,13.30,3,2025-03-03,false,app

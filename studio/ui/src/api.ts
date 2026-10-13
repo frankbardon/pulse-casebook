@@ -27,12 +27,33 @@ export async function getJSON<T>(path: string, signal?: AbortSignal): Promise<T>
   return body as T
 }
 
-export type FileKind = 'request' | 'compose' | 'facet' | 'chain' | 'cohort' | 'unopenable'
+export type FileKind =
+  | 'request'
+  | 'compose'
+  | 'facet'
+  | 'chain'
+  | 'cohort'
+  | 'source'
+  | 'schema'
+  | 'import'
+  | 'unopenable'
+
+// ImportState is an import spec's state: ok (its cohort is on disk),
+// needs_rebuild (the spec is there, the .pulse is not) or invalid.
+export type ImportState = 'ok' | 'needs_rebuild' | 'invalid'
 
 export type WorkspaceFile = {
   path: string
   kind: FileKind
   reason?: string
+  // source: detected format ("" if unrecognised) and size in bytes.
+  format?: string
+  size?: number
+  // import: the cohort the spec builds and its state.
+  target?: string
+  state?: ImportState
+  // cohort: the import spec that built it (offer Rebuild).
+  spec?: string
 }
 
 export type FileListing = {
@@ -457,4 +478,248 @@ export type Restored = FileContent & { rev: string; commit?: HistoryCommit }
 
 export function restoreHistory(path: string, rev: string, signal?: AbortSignal): Promise<Restored> {
   return postJSON<Restored>('/api/history/restore', JSON.stringify({ path, rev }), signal)
+}
+
+// ---------------------------------------------------------------- import (G1)
+
+// SchemaField is one entry of a schema document, the format `pulse
+// import schema-template` writes. precision/scale apply to decimal128.
+export type SchemaField = {
+  name: string
+  type: string
+  description: string
+  nullable: boolean
+  precision?: number
+  scale?: number
+}
+
+export type GroupDecl = { key?: string[]; members: string[] }
+
+// ImportOptions is the options object of predict/import requests (also
+// stored in import specs). Only the options the wizard edits are named.
+export type ImportOptions = {
+  sheet?: string
+  sample_rows?: number
+  float_width?: 'f64' | 'f32'
+  overrides?: Record<string, string>
+  set_delimiters?: Record<string, string>
+  source_tz?: string
+  ignore_extra?: boolean
+  groups?: GroupDecl[]
+  suggest_groups?: boolean
+  [key: string]: unknown
+}
+
+export type UploadedSource = {
+  path: string
+  name: string
+  size: number
+  sha256: string
+  format: string
+  sheets?: string[]
+  existing?: boolean
+}
+
+// uploadSource posts a file to /api/sources (multipart, part `file`)
+// with upload progress (fetch has none, hence XHR). Errors are
+// ApiCallError with the server's code.
+export function uploadSource(
+  file: Blob & { name?: string },
+  onProgress?: (loaded: number, total: number) => void,
+  signal?: AbortSignal,
+): Promise<UploadedSource> {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest()
+    xhr.open('POST', '/api/sources')
+    xhr.responseType = 'json'
+    if (onProgress) xhr.upload.onprogress = (e) => onProgress(e.loaded, e.lengthComputable ? e.total : file.size)
+    xhr.onload = () => {
+      const out: unknown = xhr.response
+      if (xhr.status >= 200 && xhr.status < 300 && !isApiError(out)) return resolve(out as UploadedSource)
+      if (isApiError(out)) return reject(new ApiCallError(xhr.status, out.error.code, out.error.message, out.error.details))
+      reject(new ApiCallError(xhr.status, 'http_error', `HTTP ${xhr.status}`))
+    }
+    xhr.onerror = () => reject(new ApiCallError(0, 'network', 'upload failed'))
+    xhr.onabort = () => reject(new DOMException('aborted', 'AbortError'))
+    signal?.addEventListener('abort', () => xhr.abort())
+    const form = new FormData()
+    form.append('file', file, file.name ?? 'upload')
+    xhr.send(form)
+  })
+}
+
+export type ColumnStats = {
+  sampled: number
+  nulls: number
+  null_pct: number
+  distinct: number
+  distinct_capped?: boolean
+  min?: number
+  max?: number
+}
+
+export type PredictColumn = {
+  name: string
+  index: number
+  included: boolean
+  generated?: boolean
+  type?: string
+  nullable?: boolean
+  description?: string
+  precision?: number
+  scale?: number
+  stats?: ColumnStats
+  samples: (string | null)[]
+  warnings: string[]
+}
+
+export type CodedWarning = { code: string; message: string; details?: Record<string, unknown>; column?: string }
+
+export type MatchDiff = { added: string[]; missing: string[]; retyped: { name: string; saved: string; input: string }[] }
+
+export type MergedField = SchemaField & { new?: boolean }
+
+// SchemaMatch is a saved schema ranked against the source's columns.
+export type SchemaMatch = {
+  name: string
+  path: string
+  score: number
+  exact: boolean
+  suggest: boolean
+  diff: MatchDiff
+  merged: MergedField[]
+}
+
+export type GroupCandidate = {
+  label: string
+  key: string[]
+  members: string[]
+  declaration: string
+  suggested: boolean
+  overlaps_with?: string
+}
+
+export type ImportPredict = {
+  source: string
+  format: string
+  sheet?: string
+  sheets?: string[]
+  valid: boolean
+  refusal?: CodedWarning
+  header: string[]
+  rows: (string | null)[][]
+  sample: { rows: number; more: boolean; sample_rows: number }
+  estimated_rows: number
+  columns: PredictColumn[]
+  schema: SchemaField[]
+  schema_ref?: { ref?: string; path?: string; sha256?: string }
+  warnings: { column: string; message: string }[]
+  coded_warnings: CodedWarning[]
+  group_candidates?: { candidates: GroupCandidate[]; suggested: string[] }
+  matches: SchemaMatch[]
+  field_types: string[]
+  options: ImportOptions
+}
+
+// PredictBody is POST /api/import/predict: schema is a saved schema's
+// name, an inline document, or absent (infer).
+export type PredictBody = {
+  source: string
+  schema?: string | SchemaField[]
+  overrides?: Record<string, string>
+  options?: ImportOptions
+  preview_rows?: number
+}
+
+export function predictImport(body: PredictBody, signal?: AbortSignal): Promise<ImportPredict> {
+  return postJSON<ImportPredict>('/api/import/predict', JSON.stringify(body), signal)
+}
+
+export type SavedSchemaInfo = {
+  name: string
+  path: string
+  sha256: string
+  fields: number
+  fingerprint: { name: string; type: string }[]
+  invalid?: string
+}
+
+export function listSchemas(signal?: AbortSignal): Promise<{ schemas: SavedSchemaInfo[]; field_types: string[] }> {
+  return getJSON('/api/schemas', signal)
+}
+
+export type SavedSchema = {
+  name: string
+  path: string
+  sha256: string
+  text: string
+  created: boolean
+  commit?: HistoryCommit
+}
+
+// saveSchema writes schemas/<name>.schema.json. An existing schema is
+// refused with ApiCallError code "exists" (details.text = the file now)
+// unless overwrite.
+export function saveSchema(name: string, schema: SchemaField[], overwrite: boolean, signal?: AbortSignal): Promise<SavedSchema> {
+  return postJSON<SavedSchema>('/api/schemas', JSON.stringify({ name, schema, overwrite }), signal)
+}
+
+export type ImportReport = {
+  rows_imported: number
+  row_error_count: number
+  row_errors: { row: number; message: string; code?: string }[]
+  promoted_fields: string[]
+  elided_constants?: string[]
+  warnings: CodedWarning[]
+  schema: SchemaField[]
+  cohort_bytes: number
+  elapsed_ms: number
+}
+
+export type ImportSpecDoc = {
+  version: number
+  target: string
+  source: { path: string; sha256: string; size: number; format: string }
+  schema?: { ref?: string; path?: string; sha256?: string; inline?: SchemaField[] }
+  options: ImportOptions
+  last_import?: {
+    at: string
+    pulse_version: string
+    rows_imported: number
+    row_errors: number
+    warnings: number
+    fields: number
+    promoted_fields?: string[]
+    cohort_bytes?: number
+  }
+}
+
+export type ImportResult = {
+  target: string
+  spec: string
+  spec_doc: ImportSpecDoc
+  report: ImportReport
+  file: WorkspaceFile
+  commit?: HistoryCommit
+  source_changed?: boolean
+  schema_changed?: boolean
+}
+
+export type ImportBody = {
+  source: string
+  schema?: string | SchemaField[]
+  options?: ImportOptions
+  target: string
+  overwrite?: boolean
+}
+
+export function runImport(body: ImportBody, signal?: AbortSignal): Promise<ImportResult> {
+  return postJSON<ImportResult>('/api/import', JSON.stringify(body), signal)
+}
+
+// rebuildImport re-runs an import spec. A changed source is refused
+// (ApiCallError source_changed) unless force; a missing one is
+// source_missing.
+export function rebuildImport(spec: string, force: boolean, signal?: AbortSignal): Promise<ImportResult> {
+  return postJSON<ImportResult>('/api/import/rebuild', JSON.stringify({ spec, force }), signal)
 }

@@ -1,7 +1,34 @@
 .files {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
+  min-height: 100%;
+}
+
+/* Dropping a file on the sidebar starts an import. */
+.files.dropping {
+  outline: 2px dashed var(--accent);
+  outline-offset: -2px;
+  border-radius: 4px;
+}
+
+.drop-hint {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  background: color-mix(in srgb, var(--accent) 10%, var(--surface));
+  color: var(--accent);
+  font-weight: 600;
+  pointer-events: none;
+}
+
+.sidebar-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
 }
 
 .file-group h2 {
@@ -25,7 +52,9 @@
 }
 
 .file {
-  display: block;
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-1);
   width: 100%;
   padding: 2px var(--space-1);
   border: 0;
@@ -38,6 +67,37 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   cursor: pointer;
+}
+
+.file-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.file-badge {
+  flex: none;
+  margin-left: auto;
+  padding: 0 4px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  color: var(--muted);
+  font: 10px / 14px var(--font-ui);
+}
+
+.file-badge.warn {
+  border-color: color-mix(in srgb, var(--warn) 60%, transparent);
+  color: var(--warn);
+}
+
+.file-badge.danger {
+  border-color: color-mix(in srgb, var(--danger) 60%, transparent);
+  color: var(--danger);
+}
+
+.file.selected .file-badge {
+  border-color: currentColor;
+  color: inherit;
 }
 
 .file:hover:not(:disabled) {

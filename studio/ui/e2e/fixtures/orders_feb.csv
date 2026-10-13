@@ -1,0 +1,6 @@
+order_id,region,amount,qty,ordered_on,returned
+2001,west,18.40,2,2025-02-01,false
+2002,north,5.00,1,2025-02-02,false
+2003,south,61.20,9,2025-02-02,true
+2004,east,11.11,3,2025-02-03,false
+2005,north,,5,2025-02-04,false

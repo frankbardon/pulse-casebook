@@ -104,6 +104,8 @@ export function RequestView({ file, catalog, history = false }: Props) {
     )
   }
   if (file.kind === 'unopenable') return <Empty testId="unopenable" title="Cannot open" body={file.reason ?? file.path} />
+  // Import files have their own views (importer/views.tsx).
+  if (file.kind === 'source' || file.kind === 'schema' || file.kind === 'import') return <Empty title="Not a request" body={file.path} />
   return <RequestGraphView key={file.path} path={file.path} kind={file.kind} catalog={catalog} history={history} />
 }
 

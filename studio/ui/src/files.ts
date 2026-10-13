@@ -9,6 +9,9 @@ const GROUPS: { kind: FileKind; title: string }[] = [
   { kind: 'facet', title: 'Facet' },
   { kind: 'chain', title: 'Chain' },
   { kind: 'cohort', title: 'Cohorts' },
+  { kind: 'source', title: 'Sources' },
+  { kind: 'schema', title: 'Schemas' },
+  { kind: 'import', title: 'Imports' },
   { kind: 'unopenable', title: 'Other' },
 ]
 
@@ -18,6 +21,35 @@ export function groupFiles(files: WorkspaceFile[]): FileGroup[] {
   return GROUPS.map((g) => ({ ...g, files: files.filter((f) => f.kind === g.kind) })).filter(
     (g) => g.files.length > 0,
   )
+}
+
+// fileLabel is how the sidebar names a file: sources, schemas and
+// import specs drop their fixed directory and suffix (the section says
+// what they are); everything else shows its path.
+export function fileLabel(f: WorkspaceFile): string {
+  switch (f.kind) {
+    case 'source':
+      return f.path.replace(/^sources\//, '')
+    case 'schema':
+      return f.path.replace(/^schemas\//, '').replace(/\.schema\.json$/, '')
+    case 'import':
+      return f.path.replace(/^imports\//, '').replace(/\.import\.json$/, '')
+    default:
+      return f.path
+  }
+}
+
+// fileBadge is the short state tag a sidebar row carries: an import
+// spec's state other than ok, and "imported" on cohorts an import spec
+// builds (they can be rebuilt).
+export function fileBadge(f: WorkspaceFile): { text: string; tone: 'muted' | 'warn' | 'danger' } | null {
+  if (f.kind === 'import') {
+    if (f.state === 'needs_rebuild') return { text: 'needs rebuild', tone: 'warn' }
+    if (f.state === 'invalid') return { text: 'invalid', tone: 'danger' }
+    return null
+  }
+  if (f.kind === 'cohort' && f.spec) return { text: 'imported', tone: 'muted' }
+  return null
 }
 
 // isOpenable reports whether the builder can open a file from the sidebar.
