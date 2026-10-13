@@ -723,3 +723,9 @@ label.inline {
 .state-invalid {
   color: var(--danger);
 }
+
+.file-view-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}

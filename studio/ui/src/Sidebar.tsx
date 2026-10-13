@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import { listFiles, type FileListing, type WorkspaceFile } from './api.ts'
+import { exportDownloadUrl, listFiles, type FileListing, type WorkspaceFile } from './api.ts'
+import { formatBytes } from './importer/format.ts'
 import { fileBadge, fileLabel, groupFiles, isOpenable } from './files.ts'
 import { NewRequest } from './NewRequest.tsx'
 import './Sidebar.css'
@@ -18,12 +19,14 @@ type Props = {
   onNewRequest: (open: { cohort?: string } | null) => void
   // Starts the import wizard, with a dropped file when there is one.
   onImport: (file?: File) => void
+  // Opens the export dialog on a cohort.
+  onExport: (cohort: string) => void
 }
 
 // Sidebar lists the scoped directory's files grouped by type. Unopenable
 // files are shown greyed out and cannot be selected. Dropping a file on
 // it starts an import.
-export function Sidebar({ selected, onSelect, reload, newRequest, onNewRequest, onImport }: Props) {
+export function Sidebar({ selected, onSelect, reload, newRequest, onNewRequest, onImport, onExport }: Props) {
   const [listing, setListing] = useState<FileListing | null>(null)
   const [error, setError] = useState<string | null>(null)
   // Bumped to re-list after a file is created.
@@ -111,8 +114,18 @@ export function Sidebar({ selected, onSelect, reload, newRequest, onNewRequest, 
             {g.files.map((f) => {
               const open = isOpenable(f)
               const badge = fileBadge(f)
+              if (f.kind === 'export') {
+                return (
+                  <li key={f.path}>
+                    <a className="file" href={exportDownloadUrl(f.path)} download title={`Download ${f.path}`} data-path={f.path} data-testid="export-link">
+                      <span className="file-name">{fileLabel(f)}</span>
+                      {f.size !== undefined && <span className="file-size">{formatBytes(f.size)}</span>}
+                    </a>
+                  </li>
+                )
+              }
               return (
-                <li key={f.path}>
+                <li key={f.path} className={f.kind === 'cohort' ? 'file-row' : undefined}>
                   <button
                     type="button"
                     className={'file' + (f.path === selected ? ' selected' : '')}
@@ -129,6 +142,18 @@ export function Sidebar({ selected, onSelect, reload, newRequest, onNewRequest, 
                       </span>
                     )}
                   </button>
+                  {f.kind === 'cohort' && (
+                    <button
+                      type="button"
+                      className="file-action"
+                      title={`Export ${f.path}…`}
+                      data-testid="cohort-export"
+                      data-path={f.path}
+                      onClick={() => onExport(f.path)}
+                    >
+                      Export…
+                    </button>
+                  )}
                 </li>
               )
             })}

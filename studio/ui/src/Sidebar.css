@@ -183,3 +183,55 @@
   display: flex;
   gap: var(--space-2);
 }
+
+/* Export downloads are links styled as rows; cohort rows carry an
+   Export… action shown on hover / focus. */
+a.file {
+  text-decoration: none;
+}
+
+.file-size {
+  flex: none;
+  margin-left: auto;
+  color: var(--muted);
+  font: 10px / 14px var(--font-ui);
+}
+
+.file-row {
+  display: flex;
+  align-items: center;
+}
+
+.file-row .file {
+  flex: 1;
+  min-width: 0;
+}
+
+.file-action {
+  flex: none;
+  padding: 0 4px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: var(--surface);
+  color: var(--muted);
+  font: 10px / 14px var(--font-ui);
+  cursor: pointer;
+  opacity: 0;
+}
+
+.file-row:hover .file-action,
+.file-row:focus-within .file-action,
+.file-row .file.selected + .file-action {
+  opacity: 1;
+}
+
+.file-action:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+@media (hover: none) {
+  .file-action {
+    opacity: 1;
+  }
+}

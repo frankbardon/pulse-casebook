@@ -1,0 +1,225 @@
+/* Export dialog (ExportDialog.tsx): a modal over the canvas. Notices,
+   report figures and .mono come from importer/import.css. */
+.export-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: start center;
+  padding: 5vh var(--space-3);
+  overflow: auto;
+  background: color-mix(in srgb, var(--text) 28%, transparent);
+}
+
+.export-dialog {
+  width: min(640px, 100%);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  box-shadow: 0 12px 40px rgb(0 0 0 / 0.25);
+  font-size: var(--text-md);
+}
+
+.export-head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--border);
+}
+
+.export-head h2 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.export-close {
+  margin-left: auto;
+  border: 0;
+  background: none;
+  color: var(--muted);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.export-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-3);
+}
+
+.export-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
+.export-section h3,
+.export-section legend {
+  margin: 0 0 var(--space-1);
+  padding: 0;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+.export-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.export-label {
+  flex: none;
+  width: 80px;
+  color: var(--muted);
+}
+
+.export-body input[type='text'],
+.export-body input[type='search'],
+.export-body input[type='number'],
+.export-body select {
+  min-width: 0;
+  padding: 3px var(--space-1);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: var(--surface);
+  color: var(--text);
+  font: var(--text-sm) / 1.4 var(--font-ui);
+}
+
+.export-row input[type='text'],
+.export-row select {
+  flex: 1;
+}
+
+.export-body input[aria-invalid='true'] {
+  border-color: var(--danger);
+}
+
+.export-body button {
+  padding: 3px var(--space-2);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: var(--surface);
+  color: var(--text);
+  font: var(--text-sm) / 1.4 var(--font-ui);
+  cursor: pointer;
+}
+
+.export-body button:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.export-body button.primary:not(:disabled) {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--surface);
+}
+
+.export-field-tools {
+  display: flex;
+  gap: var(--space-1);
+}
+
+.export-field-tools input {
+  flex: 1;
+}
+
+.export-field-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 0 var(--space-2);
+  max-height: 180px;
+  margin: 0;
+  padding: var(--space-1);
+  overflow: auto;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  list-style: none;
+}
+
+.export-field-list label,
+.export-check {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.export-options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.export-option label:not(.export-check) {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.export-option label > span {
+  flex: none;
+  width: 80px;
+  color: var(--muted);
+}
+
+.opt-help {
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--text-sm);
+}
+
+.export-label-table {
+  border-collapse: collapse;
+  font-size: var(--text-sm);
+}
+
+.export-label-table td {
+  padding: 2px var(--space-2) 2px 0;
+}
+
+.export-preflight p {
+  margin: 0;
+}
+
+.export-actions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.export-result .report-figures {
+  margin: var(--space-1) 0;
+}
+
+.export-download {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+@media (max-width: 480px) {
+  .export-label,
+  .export-option label > span {
+    width: auto;
+  }
+
+  .export-row,
+  .export-option label:not(.export-check) {
+    flex-wrap: wrap;
+  }
+}

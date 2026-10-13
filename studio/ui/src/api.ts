@@ -36,6 +36,7 @@ export type FileKind =
   | 'source'
   | 'schema'
   | 'import'
+  | 'export'
   | 'unopenable'
 
 // ImportState is an import spec's state: ok (its cohort is on disk),
@@ -46,7 +47,8 @@ export type WorkspaceFile = {
   path: string
   kind: FileKind
   reason?: string
-  // source: detected format ("" if unrecognised) and size in bytes.
+  // source / export: detected format ("" if unrecognised; "transfer"
+  // for a .pulse.zst export) and size in bytes.
   format?: string
   size?: number
   // import: the cohort the spec builds and its state.
@@ -726,4 +728,109 @@ export function runImport(body: ImportBody, signal?: AbortSignal): Promise<Impor
 // source_missing.
 export function rebuildImport(spec: string, force: boolean, signal?: AbortSignal): Promise<ImportResult> {
   return postJSON<ImportResult>('/api/import/rebuild', JSON.stringify({ spec, force }), signal)
+}
+
+// Cohort export (X1, studio/internal/server/exports.go). Format
+// descriptors come from the server so a new Pulse writer option needs
+// no UI change: ExportOptionFields renders them generically.
+export type ExportOptionType = 'bool' | 'string' | 'enum' | 'int'
+
+export type ExportOption = {
+  key: string
+  title: string
+  type: ExportOptionType
+  default: boolean | string | number
+  help: string
+  enum?: string[]
+  min?: number
+  max?: number
+  placeholder?: string
+}
+
+export type ExportFormat = {
+  id: string
+  title: string
+  extension: string
+  help?: string
+  options: ExportOption[]
+  supports: { fields: boolean; time_zone: boolean; labels: boolean }
+  // The format refuses a non-UTC time zone (SPSS).
+  utc_only?: boolean
+}
+
+export type ExportCommon = { fields: string; time_zone: string; labels: string; label_modes: string[] }
+
+export function getExportFormats(signal?: AbortSignal): Promise<{ formats: ExportFormat[]; common: ExportCommon }> {
+  return getJSON('/api/export/formats', signal)
+}
+
+export type ExportOptionValue = boolean | string | number
+
+export type LabelBinding = { field: string; table: string; mode?: 'replace' | 'augment' }
+
+export type ExportBody = {
+  cohort: string
+  format: string
+  options?: Record<string, ExportOptionValue>
+  fields?: string[]
+  time_zone?: string
+  labels?: LabelBinding[]
+  name?: string
+  overwrite?: boolean
+}
+
+export type LabelTableInfo = { name: string; row_count: number; enumerable: boolean }
+
+export type ExportPredict = {
+  cohort: string
+  format: string
+  valid: boolean
+  refusal?: CodedWarning
+  rows: number
+  cohort_bytes: number
+  fields: { name: string; type: string; categorical?: boolean }[]
+  exported_fields: number
+  warnings: CodedWarning[]
+  label_tables: LabelTableInfo[]
+  // The resolved file name (default "<cohort>.<ext>") and whether
+  // exports/<name> already exists.
+  name: string
+  path: string
+  exists: boolean
+}
+
+export function predictExport(body: ExportBody, signal?: AbortSignal): Promise<ExportPredict> {
+  return postJSON<ExportPredict>('/api/export/predict', JSON.stringify(body), signal)
+}
+
+export type ExportReport = {
+  rows: number
+  fields?: number
+  bytes: number
+  elapsed_ms: number
+  row_error_count: number
+  row_errors: { row: number; message: string; code?: string }[]
+  warnings: CodedWarning[]
+}
+
+export type ExportResult = {
+  path: string
+  format: string
+  cohort: string
+  report: ExportReport
+  transfer?: { codec: string; level?: number; cohort_bytes: number; compressed_bytes: number; ratio: number; sha256: string }
+  file: WorkspaceFile
+  replaced?: boolean
+}
+
+// runExport writes exports/<name>. An existing file is refused
+// (ApiCallError "exists") unless overwrite; a Pulse refusal carries its
+// Pulse code.
+export function runExport(body: ExportBody, signal?: AbortSignal): Promise<ExportResult> {
+  return postJSON<ExportResult>('/api/export', JSON.stringify(body), signal)
+}
+
+// exportDownloadUrl is the attachment URL of an exports/ file.
+export function exportDownloadUrl(path: string): string {
+  return `/api/export/download?path=${encodeURIComponent(path)}`
 }

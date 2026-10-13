@@ -5,6 +5,7 @@ import { Sidebar, type NewRequestOpen } from './Sidebar.tsx'
 import { RequestView } from './graph/RequestView.tsx'
 import { ImportWizard, type WizardStart } from './importer/ImportWizard.tsx'
 import { CohortView, ImportSpecView, SchemaView, type Recheck } from './importer/views.tsx'
+import { ExportDialog } from './exporter/ExportDialog.tsx'
 import './App.css'
 
 // The canvas shows the selected file, or the import wizard (n remounts
@@ -19,6 +20,8 @@ export function App() {
   const [seq, setSeq] = useState(0)
   const [newRequest, setNewRequest] = useState<NewRequestOpen | null>(null)
   const [justImported, setJustImported] = useState<ImportResult | null>(null)
+  // The open export dialog (n remounts it for each open).
+  const [exporting, setExporting] = useState<{ cohort: string; n: number } | null>(null)
   // The catalog annotates nodes (known operators), drives inspector forms
   // and the palette, and is reloaded when the engine changes.
   const { health, catalog, error } = useCatalog()
@@ -47,6 +50,10 @@ export function App() {
     setSeq((n) => n + 1)
     setNewRequest(open ? { ...open, n: seq + 1 } : null)
   }
+  const openExport = (cohort: string) => {
+    setSeq((n) => n + 1)
+    setExporting({ cohort, n: seq + 1 })
+  }
   const recheck = (r: Recheck) => startImport({ source: r.source, schema: r.schema, target: r.target })
   const filesChanged = () => setReload((n) => n + 1)
   const dir = health?.dir ?? ''
@@ -74,6 +81,7 @@ export function App() {
         dir={dir}
         justImported={justImported ?? undefined}
         onNewRequest={(cohort) => openNewRequest({ cohort })}
+        onExport={openExport}
         onFilesChanged={filesChanged}
         onRecheck={recheck}
       />
@@ -108,9 +116,11 @@ export function App() {
           newRequest={newRequest}
           onNewRequest={openNewRequest}
           onImport={(file) => startImport({ file })}
+          onExport={openExport}
         />
       </aside>
       <main className="canvas">{canvas}</main>
+      {exporting && <ExportDialog key={exporting.n} cohort={exporting.cohort} onClose={() => setExporting(null)} onExported={filesChanged} />}
     </div>
   )
 }

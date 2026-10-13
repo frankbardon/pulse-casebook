@@ -12,6 +12,7 @@ const GROUPS: { kind: FileKind; title: string }[] = [
   { kind: 'source', title: 'Sources' },
   { kind: 'schema', title: 'Schemas' },
   { kind: 'import', title: 'Imports' },
+  { kind: 'export', title: 'Exports' },
   { kind: 'unopenable', title: 'Other' },
 ]
 
@@ -23,9 +24,9 @@ export function groupFiles(files: WorkspaceFile[]): FileGroup[] {
   )
 }
 
-// fileLabel is how the sidebar names a file: sources, schemas and
-// import specs drop their fixed directory and suffix (the section says
-// what they are); everything else shows its path.
+// fileLabel is how the sidebar names a file: sources, schemas, import
+// specs and exports drop their fixed directory (and suffix; the section
+// says what they are); everything else shows its path.
 export function fileLabel(f: WorkspaceFile): string {
   switch (f.kind) {
     case 'source':
@@ -34,6 +35,8 @@ export function fileLabel(f: WorkspaceFile): string {
       return f.path.replace(/^schemas\//, '').replace(/\.schema\.json$/, '')
     case 'import':
       return f.path.replace(/^imports\//, '').replace(/\.import\.json$/, '')
+    case 'export':
+      return f.path.replace(/^exports\//, '')
     default:
       return f.path
   }
@@ -52,9 +55,10 @@ export function fileBadge(f: WorkspaceFile): { text: string; tone: 'muted' | 'wa
   return null
 }
 
-// isOpenable reports whether the builder can open a file from the sidebar.
+// isOpenable reports whether the builder can open a file from the
+// sidebar. Exports are not opened: their rows are download links.
 export function isOpenable(f: WorkspaceFile): boolean {
-  return f.kind !== 'unopenable'
+  return f.kind !== 'unopenable' && f.kind !== 'export'
 }
 
 // Suffix a new file of each root gets (the casebook naming convention;

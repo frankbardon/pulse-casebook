@@ -81,13 +81,14 @@ type CohortProps = {
   // The import that just created this cohort (shown as a report).
   justImported?: ImportResult
   onNewRequest: (cohort: string) => void
+  onExport: (cohort: string) => void
   onFilesChanged: () => void
   onRecheck: (r: Recheck) => void
 }
 
 // CohortView inspects a cohort: record count and fields; for an
 // imported cohort, its import spec and Rebuild.
-export function CohortView({ file, dir, justImported, onNewRequest, onFilesChanged, onRecheck }: CohortProps) {
+export function CohortView({ file, dir, justImported, onNewRequest, onExport, onFilesChanged, onRecheck }: CohortProps) {
   const [version, setVersion] = useState(0)
   const [inspect, setInspect] = useState<{ data?: CohortInspect; error?: string }>({})
   useEffect(() => {
@@ -113,9 +114,14 @@ export function CohortView({ file, dir, justImported, onNewRequest, onFilesChang
             {data && <> · {data.field_count} fields</>}
           </p>
         </div>
-        <button type="button" className="primary" onClick={() => onNewRequest(file.path)} data-testid="cohort-new-request">
-          New request on this cohort
-        </button>
+        <div className="file-view-actions">
+          <button type="button" onClick={() => onExport(file.path)} data-testid="cohort-export-open">
+            Export…
+          </button>
+          <button type="button" className="primary" onClick={() => onNewRequest(file.path)} data-testid="cohort-new-request">
+            New request on this cohort
+          </button>
+        </div>
       </header>
       {justImported && justImported.file.path === file.path && version === 0 && (
         <section className="notice ok" data-testid="import-done">
