@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"maps"
 	"net/http"
 	"os"
 	"slices"
@@ -176,6 +177,24 @@ func writePreviewError(w http.ResponseWriter, err error) {
 // the root, then the request's directory, then its parent.
 func (s *Server) cohortResolver(requestPath string) func(any) (any, error) {
 	return func(c any) (any, error) {
+		// A shard anchor (`archive.pulse#shard.pulse`) resolves by its
+		// archive; the engine opens the shard inside it.
+		if obj, ok := c.(map[string]any); ok {
+			if name, _ := obj["filename"].(string); name != "" {
+				if archive, anchor, ok := splitAnchor(name); ok {
+					obj = maps.Clone(obj)
+					obj["filename"] = archive
+					c = obj
+					got, err := s.cohortResolver(requestPath)(c)
+					if err != nil {
+						return nil, err
+					}
+					m := got.(map[string]any)
+					m["filename"] = m["filename"].(string) + "#" + anchor
+					return m, nil
+				}
+			}
+		}
 		cands := cohortCandidates(requestPath, c)
 		for _, cand := range cands {
 			abs, err := s.root.Resolve(cand)
@@ -189,6 +208,13 @@ func (s *Server) cohortResolver(requestPath string) func(any) (any, error) {
 		return nil, &preview.Error{Code: "cohort_not_found", Message: "the request's cohort file was not found in the workspace",
 			Details: map[string]any{"candidates": cands}}
 	}
+}
+
+// splitAnchor splits a shard anchor path `archive.pulse#shard.pulse` at
+// its first '#' (pulse service.SplitAnchorPath).
+func splitAnchor(path string) (archive, anchor string, ok bool) {
+	archive, anchor, ok = strings.Cut(path, "#")
+	return archive, anchor, ok && archive != "" && anchor != ""
 }
 
 func cohortCandidates(requestPath string, cohort any) []string {

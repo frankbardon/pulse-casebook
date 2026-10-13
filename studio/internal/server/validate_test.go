@@ -2,11 +2,52 @@ package server
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
+	"path/filepath"
 	"testing"
 )
+
+// shardArchive writes case/arch.pulse, a shard archive of two small
+// cohorts (shards s1.pulse and s2.pulse), into the fixture workspace.
+func shardArchive(t *testing.T, s *Server, dir string) {
+	t.Helper()
+	spec := filepath.Join(showcaseDir(), "ab-test-readout/data/ab_test.synth.json")
+	synthCohort(t, spec, filepath.Join(dir, "case/s1.pulse"), 100, 5)
+	synthCohort(t, spec, filepath.Join(dir, "case/s2.pulse"), 100, 6)
+	if _, err := s.engine.CreateShardArchive(context.Background(), "case/arch.pulse", []string{"case/s1.pulse", "case/s2.pulse"}); err != nil {
+		t.Fatal(err)
+	}
+}
+
+// An anchored shard is inspected inside its archive; an anchor naming
+// no shard is an inspect failure (422), not a missing file (404).
+func TestCohortInspectAnchor(t *testing.T) {
+	s, dir := newCreateFixture(t)
+	shardArchive(t, s, dir)
+	get := func(path string) (int, map[string]any) {
+		rec := httptest.NewRecorder()
+		s.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, "/api/cohort/inspect?path="+url.QueryEscape(path), nil))
+		var out map[string]any
+		if err := json.Unmarshal(rec.Body.Bytes(), &out); err != nil {
+			t.Fatalf("decode %q: %v", rec.Body.String(), err)
+		}
+		return rec.Code, out
+	}
+	code, out := get("case/arch.pulse#s1.pulse")
+	if fields, _ := out["fields"].([]any); code != http.StatusOK || len(fields) == 0 {
+		t.Fatalf("anchored inspect: %d %v", code, out)
+	}
+	if code, out = get("case/arch.pulse#nope.pulse"); code != http.StatusUnprocessableEntity {
+		t.Fatalf("missing shard: %d %v", code, out)
+	}
+	if code, out = get("case/ghost.pulse#s1.pulse"); code != http.StatusNotFound {
+		t.Fatalf("missing archive: %d %v", code, out)
+	}
+}
 
 func postValidate(t *testing.T, s *Server, endpoint, path, request string) (int, map[string]any) {
 	t.Helper()
@@ -47,7 +88,7 @@ func hasSeverity(list []map[string]any, sev string) bool {
 }
 
 func TestPredictMapsIssuesToNodes(t *testing.T) {
-	s, _ := newCreateFixture(t)
+	s, dir := newCreateFixture(t)
 	cohort := `{"filename": "ab_test.pulse", "data_dir": "."}`
 
 	t.Run("valid request", func(t *testing.T) {
@@ -110,6 +151,32 @@ func TestPredictMapsIssuesToNodes(t *testing.T) {
 		_, out = postValidate(t, s, "/api/predict", "case/req/x.json", join("ghost.pulse"))
 		if out["valid"] != false {
 			t.Fatalf("unknown right cohort predicted valid: %v", out)
+		}
+		// The engine's "opening cohort file" error lands on the join.
+		by := issuesAt(out)
+		if !hasSeverity(by["joins[0].right"], "error") || hasSeverity(by[""], "error") {
+			t.Fatalf("missing right not located to joins[0].right: %v", out["issues"])
+		}
+	})
+
+	t.Run("a shard anchor resolves by its archive", func(t *testing.T) {
+		shardArchive(t, s, dir)
+		join := func(right string) string {
+			return `{"cohort": ` + cohort + `, "joins": [{"right": ` + mustJSON(right) + `, "kind": "inner", "as": "r_",
+			  "on": [{"left_field": "user_id", "right_field": "user_id"}]}],
+			  "aggregations": [{"type": "AGG_AVERAGE", "field": "r_revenue", "label": "m"}]}`
+		}
+		code, out := postValidate(t, s, "/api/predict", "case/req/x.json", join("arch.pulse#s1.pulse"))
+		if code != http.StatusOK || out["valid"] != true {
+			t.Fatalf("anchored right: got %d %v", code, out)
+		}
+		_, out = postValidate(t, s, "/api/predict", "case/req/x.json", join("arch.pulse#nope.pulse"))
+		if !hasSeverity(issuesAt(out)["joins[0].right"], "error") {
+			t.Fatalf("missing shard not located to joins[0].right: %v", out["issues"])
+		}
+		_, out = postValidate(t, s, "/api/predict", "case/req/x.json", join("ghost.pulse#s1.pulse"))
+		if !hasSeverity(issuesAt(out)["joins[0].right"], "error") {
+			t.Fatalf("missing archive not located to joins[0].right: %v", out["issues"])
 		}
 	})
 

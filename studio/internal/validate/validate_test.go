@@ -128,3 +128,43 @@ func TestSuggestionSeverity(t *testing.T) {
 		t.Errorf("typo = %q, want warning", got)
 	}
 }
+
+// The engine reports a cohort it could not open by message only
+// (SERVICE_RESOURCE "opening cohort file: X"); a join's right lands on
+// joins[i].right of its own request frame.
+func TestLocateJoinRight(t *testing.T) {
+	join := func(right string) string {
+		return `{"cohort": {"filename": "a.pulse"}, "joins": [{"right": "` + right + `", "kind": "inner", "on": [{"left_field": "id", "right_field": "id"}]}]}`
+	}
+	request := decode(t, join("data/twin.pulse"))
+	resolved := decode(t, join("case/data/twin.pulse"))
+	compose := decode(t, `{"requests": [{"label": "a", "cohort": {"filename": "a.pulse"}}, `+join("twin.pulse")+`]}`)
+	chain := decode(t, `{"cohort": {"filename": "a.pulse"}, "stages": [{"name": "s", "request": `+join("arch.pulse#s1.pulse")+`}]}`)
+	fits := decode(t, `{"requests": [], "fits": [{"name": "f", "request": `+join("fit.pulse")+`}]}`)
+
+	tests := []struct {
+		name      string
+		doc, edoc map[string]any
+		message   string
+		want      string
+		ok        bool
+	}{
+		{"as written", request, request, "opening cohort file: data/twin.pulse", "joins[0].right", true},
+		{"as the engine resolved it", request, resolved, "opening cohort file: case/data/twin.pulse", "joins[0].right", true},
+		{"wrapped message", request, request, "SERVICE_RESOURCE: opening cohort file: data/twin.pulse", "joins[0].right", true},
+		{"compose slot", compose, compose, "opening cohort file: twin.pulse", "requests[1].joins[0].right", true},
+		{"compose fit", fits, fits, "opening cohort file: fit.pulse", "fits[0].request.joins[0].right", true},
+		{"chain stage anchor archive", chain, chain, "opening cohort file for anchor: arch.pulse", "stages[0].request.joins[0].right", true},
+		{"chain stage anchor shard", chain, chain, `shard "s1.pulse" not present in archive central directory`, "stages[0].request.joins[0].right", true},
+		{"the request's own cohort", request, request, "opening cohort file: a.pulse", "", false},
+		{"another error", request, request, "unknown field data/twin.pulse", "", false},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			got, ok := LocateJoinRight(tc.doc, tc.edoc, tc.message)
+			if got != tc.want || ok != tc.ok {
+				t.Fatalf("LocateJoinRight = %q, %v; want %q, %v", got, ok, tc.want, tc.ok)
+			}
+		})
+	}
+}

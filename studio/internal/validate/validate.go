@@ -18,6 +18,7 @@ import (
 	"encoding/json"
 	"errors"
 	"reflect"
+	"regexp"
 	"slices"
 	"strconv"
 	"strings"
@@ -483,4 +484,94 @@ func sortedKeys[V any](m map[string]V) []string {
 	}
 	slices.Sort(keys)
 	return keys
+}
+
+// Messages of the engine's SERVICE_RESOURCE error for a cohort file it
+// could not open (pulse internal/service Open / OpenAnchor). They carry
+// no details, only the path the engine tried: the request's cohort or a
+// join's right side, as the engine saw it (resolved root-relative, or as
+// written when it resolved to no workspace file), and for an anchor
+// (`archive.pulse#shard.pulse`) the archive part alone.
+var openPrefixes = []string{"opening cohort file for anchor: ", "opening cohort file: "}
+
+// shardMissing is PULSE_SHARD_MISSING's message: an anchor naming a
+// shard its archive lacks. It names the shard, not the archive.
+var shardMissing = regexp.MustCompile(`shard "([^"]+)" not present in archive`)
+
+// LocateJoinRight maps the engine's "opening cohort file: X" error (and
+// PULSE_SHARD_MISSING, by the anchor's shard name) to
+// the join whose right side names X: `joins[i].right` of the request,
+// a Compose slot or fit (`requests[1].joins[0].right`) or a chain stage
+// (`stages[0].request.joins[0].right`). doc is the document as written,
+// edoc the copy the engine ran (rights resolved, see the server's
+// engineDoc); X matches either form, and an anchored right by its
+// archive part. ok is false when the message is no such error or X
+// names no join's right (the request's own cohort, say).
+func LocateJoinRight(doc, edoc map[string]any, message string) (path string, ok bool) {
+	var target, shard string
+	for _, p := range openPrefixes {
+		if i := strings.Index(message, p); i >= 0 {
+			target = strings.TrimSpace(message[i+len(p):])
+			break
+		}
+	}
+	if m := shardMissing.FindStringSubmatch(message); m != nil {
+		shard = m[1]
+	}
+	if target == "" && shard == "" {
+		return "", false
+	}
+	matches := func(right string) bool {
+		if right == "" {
+			return false
+		}
+		archive, anchor, anchored := strings.Cut(right, "#")
+		if shard != "" {
+			return anchored && anchor == shard
+		}
+		return right == target || (anchored && archive == target)
+	}
+	for _, frame := range requestFrames(doc) {
+		obj, _ := getAt(doc, frame...)
+		eobj, _ := getAt(edoc, frame...)
+		joins, _ := asMap(obj)["joins"].([]any)
+		ejoins, _ := asMap(eobj)["joins"].([]any)
+		for i, j := range joins {
+			right, _ := asMap(j)["right"].(string)
+			eright := ""
+			if i < len(ejoins) {
+				eright, _ = asMap(ejoins[i])["right"].(string)
+			}
+			if matches(right) || matches(eright) {
+				return preview.FormatPath(append(slices.Clone(frame), preview.Key("joins"), preview.Index(i), preview.Key("right"))), true
+			}
+		}
+	}
+	return "", false
+}
+
+// requestFrames lists the request objects of doc that may carry joins:
+// the root, each Compose slot and fit request, each chain stage request.
+func requestFrames(doc map[string]any) [][]preview.Segment {
+	out := [][]preview.Segment{{}}
+	if list, ok := doc["requests"].([]any); ok {
+		for i := range list {
+			out = append(out, []preview.Segment{preview.Key("requests"), preview.Index(i)})
+		}
+	}
+	for _, key := range []string{"fits", "stages"} {
+		list, _ := doc[key].([]any)
+		for i := range list {
+			seg := []preview.Segment{preview.Key(key), preview.Index(i), preview.Key("request")}
+			if _, ok := getAt(doc, seg...); ok {
+				out = append(out, seg)
+			}
+		}
+	}
+	return out
+}
+
+func asMap(v any) map[string]any {
+	m, _ := v.(map[string]any)
+	return m
 }

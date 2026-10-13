@@ -68,12 +68,24 @@ func (s *Server) handleFile(w http.ResponseWriter, r *http.Request) {
 
 // handleCohortInspect returns the engine's header-only Inspect result for
 // a .pulse cohort. ?full_dict=1 returns untruncated dictionaries.
+//
+// A shard anchor `archive.pulse#shard.pulse` (a join's right side, say)
+// inspects that one shard: the archive must be a workspace file; the
+// engine opens the shard inside it (pulse Inspect resolves anchors).
 func (s *Server) handleCohortInspect(w http.ResponseWriter, r *http.Request) {
+	q := r.URL.Query().Get("path")
+	archive, anchor, anchored := splitAnchor(q)
+	if anchored {
+		r = r.Clone(r.Context())
+		vals := r.URL.Query()
+		vals.Set("path", archive)
+		r.URL.RawQuery = vals.Encode()
+	}
 	rel, abs, ok := s.resolveQueryPath(w, r)
 	if !ok {
 		return
 	}
-	if !strings.HasSuffix(strings.ToLower(rel), ".pulse") {
+	if !strings.HasSuffix(strings.ToLower(rel), ".pulse") || (anchored && !strings.HasSuffix(strings.ToLower(anchor), ".pulse")) {
 		WriteError(w, http.StatusBadRequest, "not_cohort", "only .pulse cohorts can be inspected", map[string]any{"path": rel})
 		return
 	}
@@ -91,6 +103,9 @@ func (s *Server) handleCohortInspect(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		WriteError(w, http.StatusInternalServerError, "inspect_failed", err.Error(), map[string]any{"path": rel})
 		return
+	}
+	if anchored {
+		enginePath = filepath.ToSlash(enginePath) + "#" + anchor
 	}
 	opts := &descriptor.InspectOptions{FullDict: r.URL.Query().Get("full_dict") == "1"}
 	env, err := s.engine.InspectEnvelope(r.Context(), enginePath, opts)

@@ -222,14 +222,21 @@ func (s *Server) predictIssues(ctx context.Context, eng *pulse.Pulse, kind works
 		if errors.As(err, &ce) {
 			code = string(ce.Code)
 		}
-		issues = append(issues, validate.Issue{Path: "", Severity: validate.Error, Code: code, Message: err.Error()})
+		// A join's right cohort the engine could not open belongs to
+		// that join's right, not the request.
+		path, _ := validate.LocateJoinRight(doc, edoc, err.Error())
+		issues = append(issues, validate.Issue{Path: path, Severity: validate.Error, Code: code, Message: err.Error()})
 	}
 	located := func(entries []*descriptor.EnvelopeEntry, severity string) {
 		for _, e := range entries {
 			if e == nil {
 				continue
 			}
-			for _, p := range validate.Locate(doc, string(kind), e.Details) {
+			paths := validate.Locate(doc, string(kind), e.Details)
+			if p, ok := validate.LocateJoinRight(doc, edoc, e.Message); ok {
+				paths = []string{p}
+			}
+			for _, p := range paths {
 				issues = append(issues, validate.Issue{Path: p, Severity: severity, Code: e.Code, Message: e.Message})
 			}
 		}

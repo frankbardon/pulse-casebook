@@ -208,7 +208,11 @@ func (s *Server) handleRun(w http.ResponseWriter, r *http.Request) {
 		case ctx.Err() != nil:
 			WriteError(w, 499, "cancelled", "run was cancelled", nil)
 		default:
-			WriteError(w, http.StatusInternalServerError, "run_failed", err.Error(), nil)
+			var details map[string]any
+			if p, ok := validate.LocateJoinRight(doc, edoc, err.Error()); ok {
+				details = map[string]any{"path": p}
+			}
+			WriteError(w, http.StatusInternalServerError, "run_failed", err.Error(), details)
 		}
 		return
 	}
