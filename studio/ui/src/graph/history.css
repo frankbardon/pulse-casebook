@@ -1,0 +1,142 @@
+/* History panel (HistoryPanel.tsx): right-hand side panel beside the
+   graph, like the inspector. */
+.history-panel {
+  width: 340px;
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: auto;
+  border-left: 1px solid var(--border);
+  background: var(--surface);
+  font-size: var(--text-sm);
+  padding: var(--space-2) var(--space-3);
+}
+
+.history-head {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: baseline;
+  column-gap: var(--space-2);
+  margin-bottom: var(--space-2);
+}
+
+.history-path {
+  font-family: var(--font-mono);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.history-list {
+  list-style: none;
+  margin: 0 0 var(--space-2);
+  padding: 0;
+  max-height: 40%;
+  overflow: auto;
+  flex: none;
+  border: 1px solid var(--border);
+}
+
+.history-list li + li {
+  border-top: 1px solid var(--border);
+}
+
+.history-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+  text-align: left;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  padding: var(--space-1) var(--space-2);
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+.history-item:hover {
+  background: color-mix(in srgb, var(--accent) 6%, transparent);
+}
+
+.history-item.selected {
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+}
+
+.history-msg {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.history-meta {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.history-meta code,
+.history-diff-head code {
+  font-family: var(--font-mono);
+}
+
+.history-diff {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1;
+}
+
+.history-diff-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin-bottom: var(--space-1);
+}
+
+.history-stats .add {
+  color: var(--stage-aggregate);
+}
+
+.history-stats .del {
+  color: var(--danger);
+}
+
+.history-lines {
+  margin: 0;
+  flex: 1;
+  min-height: 80px;
+  overflow: auto;
+  border: 1px solid var(--border);
+  font: 11px / 1.45 var(--font-mono);
+  background: var(--bg);
+}
+
+.history-lines .dl {
+  white-space: pre;
+  padding: 0 var(--space-1);
+}
+
+.history-lines .dl-op {
+  display: inline-block;
+  width: 1.4em;
+  color: var(--muted);
+  user-select: none;
+}
+
+.history-lines .dl.add {
+  background: var(--diff-add);
+}
+
+.history-lines .dl.del {
+  background: var(--diff-del);
+}
+
+.history-lines .dl.skip {
+  color: var(--muted);
+  font-style: italic;
+  padding: 2px var(--space-1);
+  border-block: 1px dashed var(--border);
+}

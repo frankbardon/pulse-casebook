@@ -48,3 +48,13 @@
   min-width: 0;
   min-height: 0;
 }
+
+.history-off {
+  margin-left: auto;
+  padding: 1px var(--space-2);
+  border: 1px solid color-mix(in srgb, var(--warn) 50%, transparent);
+  border-radius: 3px;
+  background: color-mix(in srgb, var(--warn) 12%, transparent);
+  color: var(--text);
+  font-size: var(--text-sm);
+}

@@ -421,3 +421,40 @@ export type SavedRun = { path: string; bytes: number; overwritten: boolean }
 export function saveRun(runId: string, name: string, overwrite: boolean, signal?: AbortSignal): Promise<SavedRun> {
   return postJSON<SavedRun>('/api/run/save', JSON.stringify({ run_id: runId, name, overwrite }), signal)
 }
+
+// GitStatus is /api/status `git`: whether the workspace is kept in git
+// (studio writes auto-commit) and, when not, why.
+export type GitStatus = {
+  available: boolean
+  enabled: boolean
+  repo_root?: string
+  prefix?: string
+  initialized?: boolean
+  reason?: string
+}
+
+export function getStatus(signal?: AbortSignal): Promise<{ git: GitStatus }> {
+  return getJSON<{ git: GitStatus }>('/api/status', signal)
+}
+
+// HistoryCommit is one commit touching a file (newest first); time is the
+// author date in RFC 3339.
+export type HistoryCommit = { rev: string; short: string; time: string; author: string; email: string; message: string }
+
+export function getHistory(path: string, signal?: AbortSignal): Promise<{ path: string; commits: HistoryCommit[] }> {
+  return getJSON(`/api/history?path=${encodeURIComponent(path)}`, signal)
+}
+
+// getHistoryFile is the file's text at rev (404 not_found when it did not
+// exist then).
+export function getHistoryFile(path: string, rev: string, signal?: AbortSignal): Promise<{ path: string; rev: string; text: string }> {
+  return getJSON(`/api/history/file?path=${encodeURIComponent(path)}&rev=${encodeURIComponent(rev)}`, signal)
+}
+
+// Restored is POST /api/history/restore: the file as now on disk (GET
+// /api/file shape) and the restore commit (absent when nothing changed).
+export type Restored = FileContent & { rev: string; commit?: HistoryCommit }
+
+export function restoreHistory(path: string, rev: string, signal?: AbortSignal): Promise<Restored> {
+  return postJSON<Restored>('/api/history/restore', JSON.stringify({ path, rev }), signal)
+}

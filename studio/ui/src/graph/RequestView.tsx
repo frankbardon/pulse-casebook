@@ -24,6 +24,7 @@ import {
   saveLayout,
   type Catalog,
   type CohortField,
+  type FileContent,
   type WorkspaceFile,
 } from '../api.ts'
 import { cohortCandidates } from './cohortPath.ts'
@@ -56,6 +57,7 @@ import {
 } from './wiring.ts'
 import { CohortNodeView, FacetNodeView, LaneNodeView, OpNodeView, RawNodeView, type LaneNode } from './nodes.tsx'
 import { Inspector } from './Inspector.tsx'
+import { HistoryPanel } from './HistoryPanel.tsx'
 import { groupKeysOfModel } from './partition.ts'
 import { vectorNamesOfModel } from './paramForms.ts'
 import { Palette } from './Palette.tsx'
@@ -81,7 +83,8 @@ type FlowNode = GraphNode | LaneNode
 // The request roots the graph view opens.
 type ViewKind = 'request' | 'compose' | 'chain' | 'facet'
 
-type Props = { file: WorkspaceFile | null; catalog?: Catalog }
+// history: the workspace is kept in git, so the History panel is offered.
+type Props = { file: WorkspaceFile | null; catalog?: Catalog; history?: boolean }
 
 // RequestView opens the selected file. Plain requests render as a
 // stage-column graph with an inspector; compose requests as parallel
@@ -89,7 +92,7 @@ type Props = { file: WorkspaceFile | null; catalog?: Catalog }
 // (chainGraph.ts); facets as the cohort, filters and a facet output node
 // (facetGraph.ts). A cohort file is data, not a request: it points at
 // New request.
-export function RequestView({ file, catalog }: Props) {
+export function RequestView({ file, catalog, history = false }: Props) {
   if (!file) return <Empty title="No file open" body="Pick a request from the sidebar." />
   if (file.kind === 'cohort') {
     return (
@@ -101,7 +104,7 @@ export function RequestView({ file, catalog }: Props) {
     )
   }
   if (file.kind === 'unopenable') return <Empty testId="unopenable" title="Cannot open" body={file.reason ?? file.path} />
-  return <RequestGraphView key={file.path} path={file.path} kind={file.kind} catalog={catalog} />
+  return <RequestGraphView key={file.path} path={file.path} kind={file.kind} catalog={catalog} history={history} />
 }
 
 // The canvas graph: a plain request's or facet's graph, or the lanes of
@@ -125,8 +128,12 @@ type LayoutDoc = { layout: Layout; saved: string }
 
 const EMPTY_LAYOUT: LayoutDoc = { layout: emptyLayout(), saved: layoutText(emptyLayout()) }
 
-function RequestGraphView({ path, kind, catalog }: { path: string; kind: ViewKind; catalog?: Catalog }) {
+function RequestGraphView({ path, kind, catalog, history }: { path: string; kind: ViewKind; catalog?: Catalog; history: boolean }) {
   const [doc, setDoc] = useState<Doc | null>(null)
+  // The history panel, and a counter bumped by every save or restore so
+  // it refetches the file's commits.
+  const [historyOpen, setHistoryOpen] = useState(false)
+  const [historyVersion, setHistoryVersion] = useState(0)
   const [error, setError] = useState<string | null>(null)
   // Inspected cohorts by cohort-reference JSON (one per plain request,
   // one per distinct cohort across compose lanes).
@@ -817,12 +824,27 @@ function RequestGraphView({ path, kind, catalog }: { path: string; kind: ViewKin
         const savedText = layoutText(onDisk)
         setLay((l) => (layoutText(l.layout) === sent ? { layout: onDisk, saved: savedText } : { ...l, saved: savedText }))
       }
+      setHistoryVersion((v) => v + 1)
     } catch (e) {
       setSaveError(`save failed: ${String(e)}`)
     } finally {
       setSaving(false)
     }
   }, [doc, saving, dirty, textDirty, layoutDirty, text, lay, graph, path, kind])
+
+  // A restore from the history panel replaces the document the way a
+  // save's response does: the restored bytes become the saved model, and
+  // any unsaved text edits are dropped (the panel confirmed that).
+  const restored = useCallback(
+    (f: FileContent) => {
+      const model = parseModel(f.text, kind)
+      setDoc({ model, saved: emitModelText(model) })
+      setSelected(null)
+      setSelectedEdge(null)
+      setHistoryVersion((v) => v + 1)
+    },
+    [kind],
+  )
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -913,6 +935,18 @@ function RequestGraphView({ path, kind, catalog }: { path: string; kind: ViewKin
         {kind === 'chain' && (
           <button type="button" data-testid="lane-add" onClick={newLane} title="Add a chain stage (reads the last stage's output)">
             + Stage
+          </button>
+        )}
+        {history && (
+          <button
+            type="button"
+            className={historyOpen ? 'on' : undefined}
+            data-testid="history-toggle"
+            aria-pressed={historyOpen}
+            onClick={() => setHistoryOpen((o) => !o)}
+            title="Commits that touched this file: diff and restore"
+          >
+            History
           </button>
         )}
         {saveError && <span className="err">{saveError}</span>}
@@ -1048,6 +1082,9 @@ function RequestGraphView({ path, kind, catalog }: { path: string; kind: ViewKin
             cohortOptions={node.section === 'joins' ? cohortChoices : undefined}
             vectorNames={selectedVectorNames}
           />
+        )}
+        {history && historyOpen && (
+          <HistoryPanel path={path} version={historyVersion} dirty={textDirty} onRestored={restored} onClose={() => setHistoryOpen(false)} />
         )}
       </div>
       {resultsOpen && (

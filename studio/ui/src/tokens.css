@@ -16,6 +16,9 @@
   --wire-focus: #e8590c;
   --wire-focus-row: color-mix(in srgb, #e8590c 14%, transparent);
   --wire-dim: 0.15;
+  /* History diff rows. */
+  --diff-add: color-mix(in srgb, #2b8a3e 16%, transparent);
+  --diff-del: color-mix(in srgb, #c0392b 14%, transparent);
   --space-1: 4px;
   --space-2: 8px;
   --space-3: 12px;
@@ -42,6 +45,8 @@
     --stage-analysis: #ec7aa8;
     --wire-focus: #ffa94d;
     --wire-focus-row: color-mix(in srgb, #ffa94d 18%, transparent);
+    --diff-add: color-mix(in srgb, #51cf66 18%, transparent);
+    --diff-del: color-mix(in srgb, #ff6b5b 18%, transparent);
   }
 }
 
