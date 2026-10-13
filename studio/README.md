@@ -106,8 +106,11 @@ A request is drawn as a set of nodes, one node per entry in the request JSON:
   - **Table**: the `data` rows, one per group key combination. Its columns are listed in order (group
     key columns marked `key`, then aggregation labels, then window labels), each wired from the node
     that produces it. The header reads `Table · N rows` once a preview knows the count, and the
-    footer previews the first rows. With no groups, no aggregations and no analysis it says
-    **Row-level output**.
+    footer previews the first rows. Pulse returns `data` only for groups, aggregations, windows or a
+    long crosstab. Windows with no groups or aggregations return one row per record (**Row-level
+    output**). A `"shape": "long"` crosstab puts its cells in the table (row keys, column keys, cell
+    label). A request with none of these (tests, regressions or matrices only, or just filters,
+    attributes or sort) has no Table. With no parts at all the node reads **No output**.
   - **Tests**, **Regressions**, **Matrices**, **Crosstab**, **Post-tests**, **Overlays**: one row per
     entry (its label, or the operator), wired from that entry. Tests and matrices in a grouped request
     read `× N groups`; post-tests that run per partition read `× N partitions`. Overlays note where
@@ -115,16 +118,32 @@ A request is drawn as a set of nodes, one node per entry in the request JSON:
     part.
   - Once a preview or a Run has the result, a row shows a headline: `p = 0.031` for tests and
     post-tests (the largest p over the groups when grouped, `×4`), `R² 0.41` for regressions, the
-    shape (`5×5`) for matrices and the crosstab. A grouped test's preview carries one group's result,
-    so its headline comes from Run.
-  - A `multiplicity` block wires into the Tests (and Post-tests) header and tags those rows `adj.`.
+    shape (`5×5`) for matrices and the crosstab. A grouped test, matrix or post-test previews every
+    group. Its node footer reads `p = 0.31 ×4 · 1/4 sig.` over a list of each group's p (or each
+    matrix's first correlation).
+  - A row reads `adj.` when a `multiplicity` block corrects its p-values. Each key falls through on
+    its own: the test's own block, then the request's, then (in a compose slot) the compose root's.
+    `method: none` opts out, and `TEST_TUKEY_HSD` is never adjusted. The request's block wires into
+    the Tests (and Post-tests) header. A compose root's block wires into the header of every slot
+    whose tests inherit it. Hover `adj.` to see which block applies.
   - A `return` block wires into the node header. Parts, rows and table columns it drops (by the
     documented `include` / `exclude` paths) are struck through with "trimmed by return". A `return`
     Studio cannot read is left alone: nothing is struck.
 
   The Response node is not part of the request JSON: it has no inspector and cannot be deleted (you
   can move it; its position is saved like any node's, under the same id the earlier Result node
-  used). A compose file's root lane has none: its overlays and `return` act on the compose response.
+  used).
+- **Compose Response node.** A compose file's root lane (drawn when the root has its own sections or
+  any fits) ends in a Response node for the compose response:
+  - **Slots** lists `responses[i]`, one row per slot (each slot's own Response node has the details).
+  - **Overlays** has one row per compose overlay, wired from it. The root `return` only shapes this
+    part.
+  - **Fits** has one row per fit, wired from the fit lane's regression. Pulse returns each fit's
+    result under `fits.<name>`, outside `return`.
+  - **Ranking** appears for a ranked sweep.
+
+  The root `multiplicity` wires into the Overlays header, and the root `return` wires into the node
+  header. After a Run, rows show headlines (a slot's row count, a fit's R²).
 - **Group fan-out.** A group's bottom handle draws thick dotted "scope" wires to everything that runs
   once per group bucket: aggregations, tests and matrices, plus post-tests when there are two or more
   groupers. The first wire is labelled `per <key>` and, once the group's preview has run, the bucket
@@ -199,8 +218,10 @@ Tools in this repository that walk the showcase request files skip `*.layout.jso
   has to be added in the JSON.
 - **`coef("fit", ...)` references inside `ATTR_FORMULA` expressions are not drawn as wires.**
   Formula expressions are not parsed, so only fields named in explicit slots are wired.
-- **The Response table preview needs an aggregation, window, sort or group to preview.** It reuses that
-  node's preview, so a request with none of them shows only its columns. Run shows the full result.
+- **The Response table preview needs an aggregation, window, sort, group or long crosstab to preview.**
+  It reuses that node's preview. Run shows the full result.
+- **Slot Response nodes are not wired into the compose Response node.** Both sit in the same column,
+  so the root lists the slots by name instead.
 - **Renaming a Compose slot label does not update overlays that name it.**
 - **Some inspectors are incomplete.** The test inspector lacks `split_by`, `rows` and `cols` fields
   (set them in the JSON), and `ATTR_FORMULA` has no field port row until a field is set.

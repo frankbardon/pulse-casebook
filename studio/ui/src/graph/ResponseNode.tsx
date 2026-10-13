@@ -12,6 +12,11 @@ import { usePreview } from './usePreviews.ts'
 import { RunContext } from './useRun.ts'
 
 const TRIMMED = 'trimmed by return'
+const ADJ_TITLE = {
+  entry: "p-values adjusted by this test's own multiplicity block",
+  request: "p-values adjusted by this request's multiplicity block",
+  compose: "p-values adjusted by the compose root's multiplicity block",
+} as const
 
 // ResultNodeView is a frame's view-only Response node: what the frame
 // returns, part by part in Response order. The table first (its columns:
@@ -101,7 +106,7 @@ function Part({ part, frame }: { part: ResponsePart; frame: string }) {
         <Handle type="target" position={Position.Left} id={sectionHandle(part.key)} isConnectable={false} />
         <span className="k">{part.title}</span>
         {part.rows.some((r) => r.adjusted) && (
-          <span className="v response-adj" title="p-values adjusted by this request's multiplicity block">
+          <span className="v response-adj" title="p-values adjusted by a multiplicity block (the test's own, this request's or the compose root's)">
             adj.
           </span>
         )}
@@ -151,7 +156,7 @@ function PartRow({ part, row, frame }: { part: ResponsePart; row: ResponseRow; f
           </span>
         )}
         {row.adjusted && (
-          <span className="response-adj" data-testid="response-adj">
+          <span className="response-adj" data-testid="response-adj" data-by={row.adjusted} title={ADJ_TITLE[row.adjusted]}>
             {' '}
             adj.
           </span>

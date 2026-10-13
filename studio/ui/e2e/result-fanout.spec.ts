@@ -231,6 +231,32 @@ test('every compose slot lane gets its own Result node', async ({ page }) => {
   }
 })
 
+test('the compose root lane gets a Response node; its multiplicity reaches every slot', async ({ page, studio }) => {
+  const file = 'req/09_segments.compose.json'
+  const before = studio.read(file)
+  await page.goto('/')
+  await page.getByRole('button', { name: file }).click()
+  const graph = page.getByTestId('request-graph')
+  const root = graph.locator(`[data-path='${RESULT}']`)
+  await expect(root).toHaveCount(1)
+  // The compose response lists every slot (responses[i]).
+  await expect(root.getByTestId('response-part')).toHaveText([/^Slots/])
+  const slots = root.locator('[data-testid="response-row"][data-part="responses"]')
+  await expect(slots).toHaveCount(12)
+  await expect(slots.first().locator('.k')).toHaveText('device=desktop')
+  // The root block is every slot's default: a wire into each slot's
+  // Tests header, and each test tagged adj. by the compose root.
+  await expect(graph.locator('.react-flow__edge.multiplicity-wire')).toHaveCount(12)
+  await expect(graph.locator(`.react-flow__edge[data-id='multiplicity|response->requests[3]${RESULT}|sec:tests']`)).toHaveCount(1)
+  const adj = graph.locator(`[data-path='requests[0]${RESULT}'] [data-testid="response-adj"]`)
+  await expect(adj).toHaveAttribute('data-by', 'compose')
+  // A run fills the slots' headlines from the compose response.
+  await page.getByTestId('run-button').click()
+  await expect(page.getByTestId('run-status')).toHaveAttribute('data-phase', 'done', { timeout: 60_000 })
+  await expect(slots.first().getByTestId('response-headline')).toHaveText(/\d+ rows?|tests/)
+  expect(studio.read(file)).toBe(before)
+})
+
 test.describe('chain', () => {
   test.use({ workspace: 'retail-chain', viewport: { width: 1600, height: 1000 } })
 

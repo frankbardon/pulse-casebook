@@ -26,9 +26,18 @@
 // imports this module (through resultGraph.ts).
 
 // Response parts the Response node lists below its table, in order.
-export type PartKey = 'tests' | 'regressions' | 'matrices' | 'crosstab' | 'post_tests' | 'overlays'
-export const PART_KEYS: readonly PartKey[] = ['tests', 'regressions', 'matrices', 'crosstab', 'post_tests', 'overlays']
+// A Compose root's response (types.ComposedResponse) has its own parts:
+// `responses` (one per slot), `overlays` (Compose-host layers, the only
+// part its `return` shapes), `fits` (keyed by fit name, never shaped)
+// and `ranking` (a ranked sweep, never shaped).
+export type RequestPartKey = 'tests' | 'regressions' | 'matrices' | 'crosstab' | 'post_tests' | 'overlays'
+export type PartKey = RequestPartKey | 'responses' | 'fits' | 'ranking'
+export const PART_KEYS: readonly RequestPartKey[] = ['tests', 'regressions', 'matrices', 'crosstab', 'post_tests', 'overlays']
+export const COMPOSE_PART_KEYS: readonly PartKey[] = ['responses', 'overlays', 'fits', 'ranking']
 export const PART_TITLES: Readonly<Record<PartKey | 'data', string>> = {
+  responses: 'Slots',
+  fits: 'Fits',
+  ranking: 'Ranking',
   data: 'Table',
   tests: 'Tests',
   regressions: 'Regressions',
@@ -118,7 +127,8 @@ export function partHeadline(key: PartKey, results: readonly unknown[], total?: 
       if (ps.length === 0) return undefined
       return `p = ${fmtP(Math.max(...ps))}${many}`
     }
-    case 'regressions': {
+    case 'regressions':
+    case 'fits': {
       const r = rs[0]
       const fit = [r.r2, r.adj_r2, r.pseudo_r2].find((v) => typeof v === 'number')
       return typeof fit === 'number' ? `R² ${String(Number(fit.toPrecision(2)))}` : undefined
@@ -129,6 +139,15 @@ export function partHeadline(key: PartKey, results: readonly unknown[], total?: 
     }
     case 'crosstab':
       return shapeOf(rs[0].matrix)
+    case 'responses': {
+      // A slot's response: its table's row count, else its parts.
+      const r = rs[0]
+      if (Array.isArray(r.data)) return `${r.data.length} row${r.data.length === 1 ? '' : 's'}`
+      const parts = PART_KEYS.filter((k) => r[k] !== undefined && r[k] !== null)
+      return parts.length > 0 ? parts.join(', ') : undefined
+    }
+    case 'ranking':
+      return `${rs.length} ranked`
     case 'overlays':
       return undefined
   }
@@ -151,6 +170,15 @@ export function fmtP(p: number): string {
 export function partResults(key: PartKey, index: number, req: unknown, resp: unknown): unknown[] {
   if (!isObject(req) || !isObject(resp)) return []
   if (key === 'crosstab') return isObject(resp.crosstab) ? [resp.crosstab] : []
+  // Compose root parts: a slot's response by position, a fit's result
+  // by name, the whole ranking.
+  if (key === 'responses') return Array.isArray(resp.responses) && isObject(resp.responses[index]) ? [resp.responses[index]] : []
+  if (key === 'ranking') return Array.isArray(resp.ranking) ? resp.ranking : []
+  if (key === 'fits') {
+    const fit = Array.isArray(req.fits) ? req.fits[index] : undefined
+    const name = isObject(fit) ? fit.name : undefined
+    return typeof name === 'string' && isObject(resp.fits) && isObject(resp.fits[name]) ? [resp.fits[name]] : []
+  }
   const specs = Array.isArray(req[key]) ? req[key] : []
   const results = Array.isArray(resp[key]) ? resp[key].filter(isObject) : []
   const spec = specs[index]
@@ -169,21 +197,30 @@ export function partResults(key: PartKey, index: number, req: unknown, resp: unk
 
 // --- frame helpers -----------------------------------------------------------
 
-// multiplicityOn says whether a frame's own `multiplicity` block corrects
-// its tests: a method other than none.
-export function multiplicityOn(doc: Record<string, unknown>): boolean {
-  const m = doc.multiplicity
-  return isObject(m) && typeof m.method === 'string' && m.method !== 'none'
-}
+// Adjuster is where an entry's multiple-comparison correction comes
+// from: its own block, its request's, or (a Compose slot) the
+// ComposedRequest's.
+export type Adjuster = 'entry' | 'request' | 'compose'
 
-// testAdjusted says whether one test or post-test entry joins the frame's
-// correction: TEST_TUKEY_HSD is already family-wise and never does; an
-// entry whose own block says `method: none` opts out.
-export function testAdjusted(entry: unknown): boolean {
-  if (!isObject(entry)) return true
-  if (entry.type === 'TEST_TUKEY_HSD') return false
-  const own = entry.multiplicity
-  return !(isObject(own) && own.method === 'none')
+// adjustedBy resolves whether a test or post-test entry's p-values get
+// p_adjusted, and from which block (multiplicity-correction.md: each key
+// falls through on its own, slot → request → ComposedRequest → engine
+// default; `{"method":"none"}` is the explicit opt-out). The method is
+// the first one set on the entry's block, the frame's, then compose's;
+// TEST_TUKEY_HSD is already family-wise and never joins a family. The
+// engine-wide default is not visible here and counts as none.
+export function adjustedBy(entry: unknown, doc: Record<string, unknown>, compose?: unknown): Adjuster | undefined {
+  if (isObject(entry) && entry.type === 'TEST_TUKEY_HSD') return undefined
+  const levels: [Adjuster, unknown][] = [
+    ['entry', isObject(entry) ? entry.multiplicity : undefined],
+    ['request', doc.multiplicity],
+    ['compose', compose],
+  ]
+  for (const [by, m] of levels) {
+    const method = isObject(m) ? m.method : undefined
+    if (typeof method === 'string' && method !== '') return method === 'none' ? undefined : by
+  }
+  return undefined
 }
 
 // crosstabLong says whether a crosstab lands its cells on `data` rows

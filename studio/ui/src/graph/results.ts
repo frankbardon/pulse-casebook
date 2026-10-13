@@ -71,6 +71,9 @@ export function readRun(root: string, text: string, doc: unknown): RunView {
       responseHeadlines(view.headlines, base, r, resp)
       view.responses.set(formatPath(base), { request: r, response: resp })
     })
+    // The root frame: the whole compose response (slots, overlays, fits,
+    // ranking) for the root lane's Response node.
+    view.responses.set('', { request: d, response: data })
     const other = otherParts(data, ['overlays', 'ranking', 'returned'])
     if (other.length > 0) view.sections.push({ id: 'compose', title: 'compose', tables: [], other })
   } else if (root === 'chain') {

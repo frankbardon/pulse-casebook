@@ -221,7 +221,7 @@ describe('attribute output columns', () => {
 })
 
 describe('lanes', () => {
-  it('gives every compose slot a Result node, never a fit or the root', () => {
+  it('gives every compose slot a Result node and the root a compose one, never a fit', () => {
     const doc = {
       requests: [
         { label: 'a', ...grouped },
@@ -235,9 +235,41 @@ describe('lanes', () => {
     expect(results.map((n) => [n.id, n.parentId])).toEqual([
       ['requests[0]["(result)"]', 'requests[0]'],
       ['requests[1]["(result)"]', 'requests[1]'],
+      ['["(result)"]', '(compose)'],
     ])
     // Fan-out stays inside its slot.
     expect(c.edges.filter((e) => e.data?.role === 'scope').every((e) => frameOf(e.target) === 'requests[0]')).toBe(true)
+  })
+
+  it('lists slots, fits and ranking in the compose Response; the fit regression wires in', () => {
+    const doc = {
+      requests: [{ label: 'a', cohort, aggregations: [{ type: 'AGG_COUNT', field: 'user_id', label: 'n' }] }, { cohort, tests: grouped.tests }],
+      fits: [{ name: 'mmm', request: { cohort, regressions: grouped.regressions } }],
+      sweep: { rank: { by: 'components.aggregations.n.n' } },
+    }
+    const c = buildComposeGraph(doc)
+    expect(c.lanes.map((l) => l.id)).toEqual(['(compose)', 'fits[0]', 'requests[0]', 'requests[1]'])
+    const root = c.nodes.find((n): n is ResultNode => n.type === 'result' && n.id === '["(result)"]')!
+    expect(root.parentId).toBe('(compose)')
+    expect(root.data.parts.map((p) => [p.title, p.rows.map((r) => r.label)])).toEqual([
+      ['Slots', ['a', 'request_2']],
+      ['Fits', ['mmm']],
+      ['Ranking', ['sweep.rank']],
+    ])
+    expect(root.data.parts[1].rows[0]).toMatchObject({ id: 'fits[0]', source: 'fits[0].request.regressions[0]' })
+    expect(c.edges.find((e) => e.source === 'fits[0].request.regressions[0]' && e.data?.role === 'result')).toMatchObject({
+      sourceHandle: 'response',
+      target: '["(result)"]',
+      targetHandle: 'part:fits[0]',
+    })
+    const reg = c.nodes.find((n) => n.id === 'fits[0].request.regressions[0]')!
+    expect(reg.type === 'op' && reg.data.response).toBe(true)
+  })
+
+  it('draws no root lane for a compose of slots alone', () => {
+    const c = buildComposeGraph({ requests: [{ label: 'a', cohort, aggregations: [{ type: 'AGG_COUNT', field: 'user_id', label: 'n' }] }] })
+    expect(c.lanes.map((l) => l.id)).toEqual(['requests[0]'])
+    expect(c.nodes.filter((n) => n.type === 'result')).toHaveLength(1)
   })
 
   it('gives every chain stage a Result node and keeps the stage wires', () => {

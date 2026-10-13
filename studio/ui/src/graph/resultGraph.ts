@@ -24,7 +24,7 @@
 import { formatPath, parsePath, splitFrame, type PathSegment } from './nodePath.ts'
 import { groupKeyColumn, type GroupEntry } from './partition.ts'
 import type { GraphEdge, OpNode, ResponsePart, ResponseRow, ResultColumn, ResultNode } from './requestGraph.ts'
-import { crosstabLong, multiplicityOn, PART_KEYS, PART_TITLES, returnTrim, testAdjusted, type PartKey } from './responseParts.ts'
+import { adjustedBy, crosstabLong, PART_KEYS, PART_TITLES, returnTrim, type PartKey } from './responseParts.ts'
 
 // RESULT_KEY is the last segment of a Result node's id: a quoted key no
 // request section uses (`["(result)"]`, `requests[1]["(result)"]`), so
@@ -133,6 +133,9 @@ export function addDerived(
   edges: GraphEdge[],
   base: readonly PathSegment[],
   result: boolean,
+  // A Compose slot: the ComposedRequest's multiplicity block, which the
+  // slot's tests inherit after their own and the slot's.
+  inherited?: unknown,
 ): ResultNode | null {
   for (const n of ops) {
     if (n.data.section === 'attributes' && n.data.name !== undefined) n.data.output = { used: columnUsed(doc, n, edges) }
@@ -181,7 +184,7 @@ export function addDerived(
     if (c.source === undefined) continue
     wire(c.source, c.kind === 'key' ? KEY_HANDLE : 'out', columnHandle(c.name), c.name)
   }
-  const parts = responseParts(doc, ops, groups, targets)
+  const parts = responseParts(doc, ops, groups, targets, inherited)
   let trims = cols.some((c) => c.trimmed)
   for (const p of parts) {
     const dropped = trim?.part(p.key === 'crosstab' && crosstabLong(doc) ? 'data' : p.key)
@@ -278,10 +281,16 @@ function crosstabColumns(doc: Record<string, unknown>): ResultColumn[] {
 
 // responseParts lists the frame's non-empty response parts below its
 // table, in Response order, one row per entry: its label (else the
-// operator), where it fans out, whether multiplicity adjusts it.
+// operator), where it fans out, whether multiplicity adjusts it (and
+// which block: the entry's own, the frame's or the compose root's).
 // Vectors produce no part.
-export function responseParts(doc: Record<string, unknown>, ops: readonly OpNode[], groups: readonly OpNode[], fanned: readonly OpNode[]): ResponsePart[] {
-  const adjusting = multiplicityOn(doc) && ops.some((n) => n.data.section === 'multiplicity')
+export function responseParts(
+  doc: Record<string, unknown>,
+  ops: readonly OpNode[],
+  groups: readonly OpNode[],
+  fanned: readonly OpNode[],
+  inherited?: unknown,
+): ResponsePart[] {
   const perGroup = new Set(fanned.map((n) => n.id))
   const lastGroup = groups.at(-1)?.id
   const out: ResponsePart[] = []
@@ -297,7 +306,10 @@ export function responseParts(doc: Record<string, unknown>, ops: readonly OpNode
       if (perGroup.has(n.id) && lastGroup !== undefined) {
         row.fanout = key === 'post_tests' ? { from: partitionGroup(entry, groups), noun: 'partitions' } : { from: lastGroup, noun: 'groups' }
       }
-      if (adjusting && (key === 'tests' || key === 'post_tests') && testAdjusted(entry)) row.adjusted = true
+      if (key === 'tests' || key === 'post_tests') {
+        const by = adjustedBy(entry, doc, inherited)
+        if (by) row.adjusted = by
+      }
       rows.push(row)
     }
     if (rows.length > 0) out.push({ key, title: PART_TITLES[key], rows })
@@ -342,4 +354,123 @@ function indexOf(id: string): number {
 
 function isObject(v: unknown): v is Record<string, unknown> {
   return typeof v === 'object' && v !== null && !Array.isArray(v)
+}
+
+// ComposeSlot and ComposeFit describe a Compose root's lanes to its
+// Response node: a slot's lane title and Response node, a fit's name and
+// regression node (absent when the fit's request is not an object).
+export type ComposeSlot = { title: string; result?: ResultNode }
+export type ComposeFit = { name: string; source?: string }
+
+// composeResponse builds a Compose root's view-only Response node
+// (types.ComposedResponse, pulse v1.0.0-alpha.10 compose-requests.md and
+// compose-fits.md), placed in the root lane:
+//
+//   - Slots: `responses[i]` answers `requests[i]`, each slot's full
+//     Response (drawn on the slot's own Response node);
+//   - Overlays: one layer per Compose-host overlay spec, wired from it;
+//     the only part the root `return` shapes;
+//   - Fits: one regression result per fit, keyed by name, wired from the
+//     fit lane's regression; outside `return`, always emitted;
+//   - Ranking: a ranked sweep's `ranking`, outside `return`.
+//
+// The root `return` wires into the header. The root `multiplicity` block
+// is every slot's default: it wires into each slot Response part whose
+// tests inherit it (adjusted 'compose'), and into the overlays header
+// (Compose-host layers inherit it too); with neither, into the header.
+export function composeResponse(req: Record<string, unknown>, rootOps: readonly OpNode[], slots: readonly ComposeSlot[], fits: readonly ComposeFit[], edges: GraphEdge[]): ResultNode {
+  const id = resultId([])
+  const wire = (source: string, target: string, targetHandle: string, ref: string, extra = '') => {
+    edges.push({
+      id: `${source}|${RESPONSE_HANDLE}->${target}|${targetHandle}`,
+      source,
+      sourceHandle: RESPONSE_HANDLE,
+      target,
+      targetHandle,
+      className: 'result-wire' + extra,
+      deletable: false,
+      data: { ref, role: 'result' },
+    })
+  }
+  const parts: ResponsePart[] = []
+  if (slots.length > 0) {
+    parts.push({
+      key: 'responses',
+      title: PART_TITLES.responses,
+      rows: slots.map((s, i) => ({ id: formatPath(['requests', i]), source: s.result?.id ?? formatPath(['requests', i]), label: s.title, detail: `responses[${i}]` })),
+    })
+  }
+  const trim = returnTrim(req.return)
+  const overlays = rootOps.filter((n) => n.data.section === 'overlays')
+  if (overlays.length > 0) {
+    const dropped = !!trim?.part('overlays')
+    const rows: ResponseRow[] = overlays.map((n) => ({
+      id: n.id,
+      source: n.id,
+      label: n.data.name ?? `(${n.data.op})`,
+      detail: 'compares slots',
+      ...(dropped && { trimmed: true as const }),
+    }))
+    parts.push({ key: 'overlays', title: PART_TITLES.overlays, rows, ...(dropped && { trimmed: true as const }) })
+    for (const n of overlays) {
+      n.data.response = true
+      wire(n.id, id, partHandle(n.id), n.data.name ?? n.id)
+    }
+  }
+  if (fits.length > 0) {
+    parts.push({
+      key: 'fits',
+      title: PART_TITLES.fits,
+      rows: fits.map((f, j) => ({ id: formatPath(['fits', j]), source: f.source ?? formatPath(['fits', j]), label: f.name, detail: `fits.${f.name} · never shaped` })),
+    })
+    fits.forEach((f, j) => {
+      if (f.source !== undefined) wire(f.source, id, partHandle(formatPath(['fits', j])), f.name)
+    })
+  }
+  const sweep = isObject(req.sweep) ? req.sweep : undefined
+  if (sweep && isObject(sweep.rank)) {
+    const by = typeof sweep.rank.by === 'string' ? sweep.rank.by : undefined
+    parts.push({ key: 'ranking', title: PART_TITLES.ranking, rows: [{ id: 'sweep.rank', source: 'sweep', label: 'sweep.rank', ...(by && { detail: `by ${by}` }) }] })
+  }
+  const single = (section: string) => rootOps.find((n) => n.data.section === section)
+  const mult = single('multiplicity')
+  if (mult) {
+    mult.data.response = true
+    let wired = 0
+    for (const s of slots) {
+      const r = s.result
+      if (!r) continue
+      for (const p of r.data.parts) {
+        if ((p.key === 'tests' || p.key === 'post_tests') && p.rows.some((x) => x.adjusted === 'compose')) {
+          wire(mult.id, r.id, sectionHandle(p.key), 'multiplicity', ' multiplicity-wire')
+          wired++
+        }
+      }
+    }
+    if (overlays.length > 0) wire(mult.id, id, sectionHandle('overlays'), 'multiplicity', ' multiplicity-wire')
+    else if (wired === 0) wire(mult.id, id, HEAD_HANDLE, 'multiplicity', ' multiplicity-wire')
+  }
+  const ret = single('return')
+  if (ret) {
+    ret.data.response = true
+    wire(ret.id, id, HEAD_HANDLE, 'return', ' return-wire')
+  }
+  const trims = parts.some((p) => p.trimmed)
+  return {
+    id,
+    type: 'result',
+    position: { x: 0, y: 0 },
+    deletable: false,
+    connectable: false,
+    data: {
+      path: id,
+      column: 'result',
+      columns: [],
+      rowLevel: false,
+      table: false,
+      parts,
+      ...(ret && { ret: true }),
+      ...(trims && { trims: true }),
+    },
+  }
 }

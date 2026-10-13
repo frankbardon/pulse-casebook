@@ -105,16 +105,27 @@ describe('response parts', () => {
     expect(r.data.ret).toBeUndefined()
   })
 
-  it('stays inside its compose slot; the root lane gets no Response node', () => {
+  it('stays inside its compose slot; the root lane gets the compose Response node', () => {
     const doc = {
       requests: [{ label: 'a', ...full }],
       overlays: [{ kind: 'OVERLAY_DELTA', reference: 0, targets: [0] }],
       return: { exclude: ['overlays'] },
     }
     const c = buildComposeGraph(doc)
-    expect(c.nodes.filter((n) => n.type === 'result').map((n) => n.id)).toEqual(['requests[0]["(result)"]'])
+    expect(c.nodes.filter((n) => n.type === 'result').map((n) => [n.id, n.parentId])).toEqual([
+      ['requests[0]["(result)"]', 'requests[0]'],
+      ['["(result)"]', '(compose)'],
+    ])
     expect(c.edges.find((e) => e.source === 'requests[0].tests[0]' && e.data?.role === 'result')?.target).toBe('requests[0]["(result)"]')
-    expect(c.edges.some((e) => e.source === 'overlays[0]' && e.data?.role === 'result')).toBe(false)
+    // Compose-host overlays land in the root response, struck by the root return.
+    expect(c.edges.find((e) => e.source === 'overlays[0]' && e.data?.role === 'result')).toMatchObject({ target: '["(result)"]', targetHandle: 'part:overlays[0]' })
+    expect(c.edges.find((e) => e.source === 'return')).toMatchObject({ target: '["(result)"]', targetHandle: 'head' })
+    const root = result(c.nodes.filter((n) => n.parentId === '(compose)')).data
+    expect(root.parts.map((p) => [p.key, p.rows.map((r) => r.label), !!p.trimmed])).toEqual([
+      ['responses', ['a'], false],
+      ['overlays', ['(OVERLAY_DELTA)'], true],
+    ])
+    expect(root).toMatchObject({ table: false, ret: true, trims: true })
   })
 
   it('never touches the document', () => {
@@ -208,5 +219,49 @@ describe('headlines', () => {
     const view = readRun('compose', env, doc)
     const ran = view.responses.get('requests[0]')!
     expect(partHeadline('tests', partResults('tests', 0, ran.request, ran.response))).toBe('p = 0.03')
+  })
+})
+
+describe('multiplicity tags', () => {
+  const welch = (extra: Record<string, unknown> = {}) => ({ type: 'TEST_WELCH', field: 'revenue', split_by: 'arm', ...extra })
+  const rows = (doc: Record<string, unknown>) => result(buildRequestGraph({ cohort, ...doc }, { result: true }).nodes).data.parts.flatMap((p) => p.rows.map((r) => [r.id, r.adjusted]))
+
+  it("tags a test whose own block corrects it, with no request block", () => {
+    expect(rows({ tests: [welch({ multiplicity: { method: 'bh' } }), welch()] })).toEqual([
+      ['tests[0]', 'entry'],
+      ['tests[1]', undefined],
+    ])
+  })
+
+  it('falls through key by key: own method, request method; none opts out', () => {
+    const doc = {
+      multiplicity: { method: 'holm' },
+      tests: [welch({ multiplicity: { family: 'request' } }), welch({ multiplicity: { method: 'none' } }), welch({ multiplicity: { method: 'bonferroni' } })],
+      post_tests: [{ type: 'TEST_TUKEY_HSD', field: 'revenue' }],
+    }
+    expect(rows(doc)).toEqual([
+      ['tests[0]', 'request'],
+      ['tests[1]', undefined],
+      ['tests[2]', 'entry'],
+      // Tukey HSD never joins a family.
+      ['post_tests[0]', undefined],
+    ])
+  })
+
+  it('compose slots inherit the root block and get a wire from it', () => {
+    const doc = {
+      multiplicity: { method: 'holm', family: 'compose' },
+      requests: [
+        { label: 'a', cohort, tests: [welch()] },
+        { label: 'b', cohort, multiplicity: { method: 'none' }, tests: [welch()] },
+        { label: 'c', cohort, post_tests: [welch({ multiplicity: { method: 'bh' } })], aggregations: [{ type: 'AGG_COUNT', field: 'user_id', label: 'n' }] },
+      ],
+    }
+    const c = buildComposeGraph(doc)
+    const slot = (i: number) => c.nodes.find((n): n is ResultNode => n.type === 'result' && n.id === `requests[${i}]["(result)"]`)!.data.parts.flatMap((p) => p.rows.map((r) => r.adjusted))
+    expect([slot(0), slot(1), slot(2)]).toEqual([['compose'], [undefined], ['entry']])
+    const wires = c.edges.filter((e) => e.source === 'multiplicity').map((e) => [e.target, e.targetHandle, e.className])
+    expect(wires).toEqual([['requests[0]["(result)"]', 'sec:tests', 'result-wire multiplicity-wire']])
+    expect(op(c.nodes, 'multiplicity').data.response).toBe(true)
   })
 })

@@ -30,7 +30,10 @@ import {
   type ColumnKey,
   type GraphEdge,
   type GraphNode,
+  type OpNode,
+  type ResultNode,
 } from './requestGraph.ts'
+import { composeResponse, type ComposeFit, type ComposeSlot } from './resultGraph.ts'
 import { bindsFit, FIT_HANDLE, FIT_ROW } from './wiring.ts'
 
 export const ROOT_LANE = '(compose)'
@@ -96,19 +99,20 @@ export function buildComposeGraph(req: unknown, opts: ComposeOptions = {}): Comp
   const requests = objectList(req.requests)
   const fits = objectList(req.fits)
 
-  // Root lane: everything at the compose root but the lanes themselves.
+  // Root lane: everything at the compose root but the lanes themselves,
+  // and the compose-level Response node (added once the lanes exist).
+  // Drawn when the root has sections of its own or fits (whose results
+  // land in the compose response); a root of slots alone has none.
   const rootDoc = Object.fromEntries(
     Object.entries(req).filter(([k]) => !((k === 'requests' && requests) || (k === 'fits' && fits))),
   )
-  if (Object.keys(rootDoc).length > 0) {
-    add(
-      { id: ROOT_LANE, role: 'root', index: -1, base: [], title: 'Compose', named: false },
-      buildRequestGraph(rootDoc, { manifest: opts.manifest, withCohort: false }),
-    )
-  }
+  const hasRoot = Object.keys(rootDoc).length > 0 || (fits?.length ?? 0) > 0
+  const rootGraph = hasRoot ? buildRequestGraph(rootDoc, { manifest: opts.manifest, withCohort: false }) : null
+  if (rootGraph) add({ id: ROOT_LANE, role: 'root', index: -1, base: [], title: 'Compose', named: false }, rootGraph)
 
   // Fit lanes.
   const fitSources = new Map<string, string>()
+  const fitParts: ComposeFit[] = []
   fits?.forEach((fit, j) => {
     const id = formatPath(['fits', j])
     const base: PathSegment[] = ['fits', j, 'request']
@@ -119,13 +123,15 @@ export function buildComposeGraph(req: unknown, opts: ComposeOptions = {}): Comp
     for (const [k, v] of Object.entries(fit)) {
       if (k !== 'name' && k !== 'save' && k !== 'request') g.nodes.push(rawNode(formatPath(['fits', j, k]), k, v))
     }
-    if (name !== undefined) {
-      const reg = g.nodes.find((n) => n.type === 'op' && n.data.section === 'regressions')
-      if (reg?.type === 'op') {
-        reg.data.fit = name
-        if (!fitSources.has(name)) fitSources.set(name, reg.id)
-      }
+    const reg = g.nodes.find((n) => n.type === 'op' && n.data.section === 'regressions')
+    if (name !== undefined && reg?.type === 'op') {
+      reg.data.fit = name
+      if (!fitSources.has(name)) fitSources.set(name, reg.id)
     }
+    // Its result lands in the compose response's `fits`: a `response`
+    // source handle wired into the root Response node.
+    if (reg?.type === 'op') reg.data.response = true
+    fitParts.push({ name: name ?? `fit ${j + 1}`, ...(reg && { source: reg.id }) })
     add(
       {
         id,
@@ -141,15 +147,25 @@ export function buildComposeGraph(req: unknown, opts: ComposeOptions = {}): Comp
   })
 
   // Slot lanes. The label is the lane title, not a node.
+  const slotParts: ComposeSlot[] = []
   requests?.forEach((slot, i) => {
     const id = formatPath(['requests', i])
     const body = Object.fromEntries(Object.entries(slot).filter(([k]) => k !== 'label'))
     // Each slot returns its own table: its Result node (fits do not).
-    const g = buildRequestGraph(body, { ...graphOpts(id, ['requests', i]), result: true })
+    // Its tests inherit the root multiplicity block.
+    const g = buildRequestGraph(body, { ...graphOpts(id, ['requests', i]), result: true, inheritedMultiplicity: req.multiplicity })
     for (const n of g.nodes) if (n.type === 'op') bindFit(n, opts.manifest, fitSources, edges)
     const label = typeof slot.label === 'string' ? slot.label : undefined
     add({ id, role: 'slot', index: i, base: ['requests', i], title: label ?? `request_${i + 1}`, named: label !== undefined }, g)
+    slotParts.push({ title: label ?? `request_${i + 1}`, result: g.nodes.find((n): n is ResultNode => n.type === 'result') })
   })
+
+  // The compose response: slots, Compose-host overlays, fits, ranking.
+  if (rootGraph) {
+    const rootOps = rootGraph.nodes.filter((n): n is OpNode => n.type === 'op')
+    const node = composeResponse(req, rootOps, slotParts, fitParts, edges)
+    nodes.push({ ...node, parentId: ROOT_LANE })
+  }
 
   return buildComposeLayout(lanes, nodes, edges)
 }

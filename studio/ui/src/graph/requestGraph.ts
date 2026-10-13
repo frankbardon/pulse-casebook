@@ -17,7 +17,7 @@ import { describeAccept, isGlob, isVectorRole, readsMembers, slotFor, slotsFor, 
 import { groupKeyColumn, type GroupEntry } from './partition.ts'
 import { joinBodyLines, joinedFields, joinKeyRefusal, type RightSide } from './joins.ts'
 import { addDerived } from './resultGraph.ts'
-import type { PartKey } from './responseParts.ts'
+import type { Adjuster, PartKey } from './responseParts.ts'
 
 export type ColumnKey =
   | 'source'
@@ -140,14 +140,15 @@ export type ResultColumn = { name: string; kind: 'key' | 'aggregation' | 'window
 // id is the entry id relative to its frame (`tests[0]`, the row's
 // `part:` handle), source the entry's node; fanout names the group whose
 // preview counts the groups / partitions it runs over; adjusted marks a
-// test whose p-values the frame's multiplicity block corrects.
+// test whose p-values a multiplicity block corrects, naming the block
+// (its own, the frame's, the compose root's).
 export type ResponseRow = {
   id: string
   source: string
   label: string
   detail?: string
   fanout?: { from: string; noun: 'groups' | 'partitions' }
-  adjusted?: true
+  adjusted?: Adjuster
   trimmed?: true
 }
 
@@ -213,6 +214,9 @@ export type BuildOptions = {
   // Add the frame's view-only Result node (plain requests, compose slots
   // and chain stages; not fits or a compose / chain root).
   result?: boolean
+  // A compose slot: the ComposedRequest's multiplicity block, inherited
+  // by the slot's tests after their own and the slot's.
+  inheritedMultiplicity?: unknown
 }
 
 type SectionSpec = {
@@ -481,7 +485,7 @@ export function buildRequestGraph(req: unknown, opts: BuildOptions = {}): Reques
       fieldsKnown: !!known,
     },
   }
-  const result = addDerived(doc, ops, edges, base, !!opts.result)
+  const result = addDerived(doc, ops, edges, base, !!opts.result, opts.inheritedMultiplicity)
   const nodes: GraphNode[] = [...(opts.withCohort === false ? [] : [cohort]), ...raws, ...ops, ...(result ? [result] : [])]
   const columns = layoutNodes(nodes)
   return { nodes, edges, columns }
