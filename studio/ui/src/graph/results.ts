@@ -65,7 +65,7 @@ export function readRun(root: string, text: string, doc: unknown): RunView {
     const reqs = arr(d.requests)
     arr(data.responses).forEach((resp, i) => {
       const r = reqs[i]
-      const label = isObj(r) && typeof r.label === 'string' ? r.label : `slot ${i + 1}`
+      const label = isObj(r) && typeof r.label === 'string' ? r.label : `slot_${i + 1}`
       const base: PathSegment[] = ['requests', i]
       view.sections.push(responseSection(formatPath(base), label, resp))
       responseHeadlines(view.headlines, base, r, resp)
@@ -80,7 +80,7 @@ export function readRun(root: string, text: string, doc: unknown): RunView {
     const stages = arr(d.stages)
     arr(data.stages).forEach((resp, i) => {
       const st = stages[i]
-      const name = isObj(st) && typeof st.name === 'string' ? st.name : `stage ${i + 1}`
+      const name = isObj(st) && typeof st.name === 'string' ? st.name : `stage_${i + 1}`
       const base: PathSegment[] = ['stages', i, 'request']
       view.sections.push(responseSection(`stages[${i}]`, name, resp))
       responseHeadlines(view.headlines, base, isObj(st) ? st.request : undefined, resp)

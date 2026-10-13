@@ -38,7 +38,7 @@ import { chainRefusal } from './chainRules.ts'
 import { buildFacetGraph, FACET_NODE, FACET_PROPS } from './facetGraph.ts'
 import { FacetInspector } from './FacetInspector.tsx'
 import { buildComposeGraph, LANE, laneAt, laneOrder, moveLane, ROOT_LANE, stackLanes, type ComposeGraph, type LaneBox } from './composeGraph.ts'
-import { addLane, moveStage, removable, removeLane, renameLane, renameLaneIds } from './lanes.ts'
+import { addLane, laneNoun, moveStage, removable, removeLane, renameLane, renameLaneIds } from './lanes.ts'
 import { LaneActionsContext, type LaneActions } from './laneActions.ts'
 import { JoinViewContext, type JoinView } from './joinView.ts'
 import {
@@ -705,14 +705,14 @@ function RequestGraphView({ path, kind, catalog, history }: { path: string; kind
       if (compose) {
         const box = laneAt(boxes, pos.y)
         if (!box || box.id === ROOT_LANE) {
-          show({ text: `${item.op} goes into a request: drop it in a lane`, testId: 'place-refused' })
+          show({ text: `${item.op} goes into a request: drop it in a ${kind === 'chain' ? 'stage' : 'slot'}`, testId: 'place-refused' })
           return
         }
         lane = box.id
       }
       place(item, lane, pos)
     },
-    [items, placed, place, show, compose, boxes],
+    [items, placed, place, show, compose, boxes, kind],
   )
 
   // Join nodes whose joined fields are expanded (view state only).
@@ -739,7 +739,7 @@ function RequestGraphView({ path, kind, catalog, history }: { path: string; kind
         try {
           setDoc({ ...doc, model: renameLane(doc.model, id, name) })
         } catch (e) {
-          fail('rename lane', e)
+          fail(`rename ${laneNoun(id, kind)}`, e)
         }
       },
       remove: (id) => {
@@ -748,7 +748,7 @@ function RequestGraphView({ path, kind, catalog, history }: { path: string; kind
         try {
           r = removeLane(doc.model, id)
         } catch (e) {
-          fail('remove lane', e)
+          fail(`remove ${laneNoun(id, kind)}`, e)
           return
         }
         setDoc({ ...doc, model: r.model })
@@ -788,9 +788,9 @@ function RequestGraphView({ path, kind, catalog, history }: { path: string; kind
     try {
       setDoc({ ...doc, model: addLane(doc.model).model })
     } catch (e) {
-      show({ text: `Cannot add lane: ${e instanceof Error ? e.message : String(e)}`, testId: 'lane-refused' })
+      show({ text: `Cannot add ${kind === 'chain' ? 'stage' : 'slot'}: ${e instanceof Error ? e.message : String(e)}`, testId: 'lane-refused' })
     }
-  }, [doc, show])
+  }, [doc, show, kind])
 
   const save = useCallback(async () => {
     if (!doc || saving || !dirty) return
@@ -919,8 +919,8 @@ function RequestGraphView({ path, kind, catalog, history }: { path: string; kind
           <span className={wireMode === 'routed' ? 'on' : undefined}>Routed</span>
         </button>
         {compose && kind === 'compose' && (
-          <button type="button" data-testid="lane-add" onClick={newLane} title="Add a compose slot (a new lane reading the last lane's cohort)">
-            + Lane
+          <button type="button" data-testid="lane-add" onClick={newLane} title="Add a compose slot (reads the last slot's cohort)">
+            + Slot
           </button>
         )}
         {kind === 'chain' && (

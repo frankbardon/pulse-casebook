@@ -134,7 +134,7 @@ export function buildForm(node: ModelNode, catalog: Catalog = {}, ctx: FormConte
       { key: 'order_by', rel: ['order_by'], type: 'json', required: true },
     )
   }
-  const sections: FormSection[] = [{ title: 'Slot', fields: slot }]
+  const sections: FormSection[] = [{ title: 'Settings', fields: slot }]
   // A matrix and the vector-input operators (k-means, AGG_VEC_*,
   // ATTR_VEC_DISTANCE, ...) read members from a vector or inline fields;
   // an entry that already names a vector gets the picker too. A test

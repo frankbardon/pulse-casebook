@@ -23,7 +23,17 @@ function laneKey(id: string): { key: 'requests' | 'fits' | 'stages'; index: numb
   if (segs.length === 2 && (segs[0] === 'requests' || segs[0] === 'fits' || segs[0] === 'stages') && typeof segs[1] === 'number') {
     return { key: segs[0], index: segs[1] }
   }
-  throw new Error(`${id} is not a lane`)
+  throw new Error(`${id} is not a slot, fit or stage`)
+}
+
+// laneNoun names what a lane id holds in user-visible text: a compose
+// slot (`requests[i]`), a fit (`fits[j]`) or a chain stage (`stages[k]`).
+// Anything else (the root lane) is the request kind itself.
+export function laneNoun(id: string, kind?: string): string {
+  if (id.startsWith('requests[')) return 'slot'
+  if (id.startsWith('fits[')) return 'fit'
+  if (id.startsWith('stages[')) return 'stage'
+  return kind === 'chain' ? 'chain' : 'compose'
 }
 
 // slotLabels lists the labels the compose slots use.
@@ -37,7 +47,7 @@ function slotLabels(root: JsonNode): string[] {
 // the last slot's cohort (copied verbatim), and returns its lane id.
 export function addLane(model: GraphModel): { model: GraphModel; id: string } {
   if (model.kind === 'chain') return addStage(model)
-  if (model.kind !== 'compose') throw new Error('only compose and chain requests have lanes')
+  if (model.kind !== 'compose') throw new Error('only compose requests have slots and only chain requests have stages')
   const root = emitModel(model)
   const reqs = getIn(root, ['requests'])
   if (reqs !== undefined && reqs.type !== 'array') throw new Error('requests is not a list')
@@ -142,7 +152,7 @@ export function removeLane(model: GraphModel, id: string): { model: GraphModel; 
 export function renameLane(model: GraphModel, id: string, name: string): GraphModel {
   const { key, index } = laneKey(id)
   let root = emitModel(model)
-  if (getIn(root, [key, index])?.type !== 'object') throw new Error(`${id} is not a lane`)
+  if (getIn(root, [key, index])?.type !== 'object') throw new Error(`${id} is not a slot, fit or stage`)
   if (key === 'requests' || key === 'stages') {
     root = setIn(root, [key, index, key === 'requests' ? 'label' : 'name'], name === '' ? undefined : str(name))
     return buildModel(root, model.kind)

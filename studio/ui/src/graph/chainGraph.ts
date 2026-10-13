@@ -86,7 +86,7 @@ export function buildChainGraph(req: unknown, opts: ChainOptions = {}): ChainGra
       if (k !== 'name' && k !== 'request') g.nodes.push(rawNode(formatPath(['stages', i, k]), k, v))
     }
     const name = typeof stage.name === 'string' ? stage.name : undefined
-    add({ id, role: 'stage', index: i, base, title: name ?? `stage ${i + 1}`, named: name !== undefined }, g)
+    add({ id, role: 'stage', index: i, base, title: name ?? `stage_${i + 1}`, named: name !== undefined }, g)
     const out = stageOutput(isObject(r) ? r : {}, base)
     input = out.fields
     upstream = out.producers

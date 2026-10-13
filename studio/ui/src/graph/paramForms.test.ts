@@ -68,7 +68,7 @@ describe('generated forms', () => {
       ['success', 'params.success', 'string', true],
     ])
     expect(field(form, 'alpha').default).toBe(0.05)
-    expect(fields(form, 'Slot').map((f) => f.key)).toEqual(['label', 'field'])
+    expect(fields(form, 'Settings').map((f) => f.key)).toEqual(['label', 'field'])
   })
 
   it('maps manifest types to inputs (AGG_PERCENTILE, ATTR_DATE_PART, REG_GLM)', () => {
@@ -84,7 +84,7 @@ describe('generated forms', () => {
     expect(field(reg, 'target')).toMatchObject({ rel: ['target'], type: 'field', required: true })
     expect(field(reg, 'predictors')).toMatchObject({ rel: ['predictors'], type: 'json' })
     expect(field(reg, 'family')).toMatchObject({ rel: ['family'], type: 'enum' })
-    expect(fields(reg, 'Slot').map((f) => f.key)).toEqual(['name'])
+    expect(fields(reg, 'Settings').map((f) => f.key)).toEqual(['name'])
   })
 
   it('groups exactly_one_of params and reports violations', () => {
@@ -102,7 +102,7 @@ describe('generated forms', () => {
     expect(field(post, 'alpha').rel).toEqual(['alpha'])
     const win = buildForm(entry('windows', '{"type":"WIN_MOVING_AVG","field":"x","label":"ma","order_by":[{"field":"d"}]}'), catalog)
     expect(win.mode).toBe('none')
-    expect(fields(win, 'Slot').map((f) => f.key)).toContain('frame.preceding')
+    expect(fields(win, 'Settings').map((f) => f.key)).toContain('frame.preceding')
     const v = applyField(field(win, 'frame.preceding'), parseJson('{"type":"WIN_MOVING_AVG"}'), '6').value
     expect(json(v)).toBe('{"type":"WIN_MOVING_AVG","frame":{"preceding":6}}')
   })

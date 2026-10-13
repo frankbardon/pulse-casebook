@@ -252,7 +252,7 @@ describe('lanes', () => {
     const root = c.nodes.find((n): n is ResultNode => n.type === 'result' && n.id === '["(result)"]')!
     expect(root.parentId).toBe('(compose)')
     expect(root.data.parts.map((p) => [p.title, p.rows.map((r) => r.label)])).toEqual([
-      ['Slots', ['a', 'request_2']],
+      ['Slots', ['a', 'slot_2']],
       ['Fits', ['mmm']],
       ['Ranking', ['sweep.rank']],
     ])

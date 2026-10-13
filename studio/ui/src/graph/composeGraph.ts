@@ -131,14 +131,14 @@ export function buildComposeGraph(req: unknown, opts: ComposeOptions = {}): Comp
     // Its result lands in the compose response's `fits`: a `response`
     // source handle wired into the root Response node.
     if (reg?.type === 'op') reg.data.response = true
-    fitParts.push({ name: name ?? `fit ${j + 1}`, ...(reg && { source: reg.id }) })
+    fitParts.push({ name: name ?? `fit_${j + 1}`, ...(reg && { source: reg.id }) })
     add(
       {
         id,
         role: 'fit',
         index: j,
         base,
-        title: name ?? `fit ${j + 1}`,
+        title: name ?? `fit_${j + 1}`,
         named: name !== undefined,
         ...(typeof fit.save === 'string' && { save: fit.save }),
       },
@@ -156,8 +156,8 @@ export function buildComposeGraph(req: unknown, opts: ComposeOptions = {}): Comp
     const g = buildRequestGraph(body, { ...graphOpts(id, ['requests', i]), result: true, inheritedMultiplicity: req.multiplicity })
     for (const n of g.nodes) if (n.type === 'op') bindFit(n, opts.manifest, fitSources, edges)
     const label = typeof slot.label === 'string' ? slot.label : undefined
-    add({ id, role: 'slot', index: i, base: ['requests', i], title: label ?? `request_${i + 1}`, named: label !== undefined }, g)
-    slotParts.push({ title: label ?? `request_${i + 1}`, result: g.nodes.find((n): n is ResultNode => n.type === 'result') })
+    add({ id, role: 'slot', index: i, base: ['requests', i], title: label ?? `slot_${i + 1}`, named: label !== undefined }, g)
+    slotParts.push({ title: label ?? `slot_${i + 1}`, result: g.nodes.find((n): n is ResultNode => n.type === 'result') })
   })
 
   // The compose response: slots, Compose-host overlays, fits, ranking.

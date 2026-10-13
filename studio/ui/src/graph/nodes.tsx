@@ -326,6 +326,9 @@ export function LaneNodeView({ id, data }: NodeProps<LaneNode>) {
   const actions = use(LaneActionsContext)
   const [editing, setEditing] = useState<string | null>(null)
   const canEdit = data.role !== 'root' && actions !== null
+  // What this lane holds, for tooltips and labels: slot, fit or stage.
+  const noun = ROLE_LABEL[data.role]
+  const Noun = noun.charAt(0).toUpperCase() + noun.slice(1)
   const commit = () => {
     if (editing !== null && editing.trim() !== data.title) actions?.rename(id, editing.trim())
     setEditing(null)
@@ -342,7 +345,7 @@ export function LaneNodeView({ id, data }: NodeProps<LaneNode>) {
         {editing !== null ? (
           <input
             className="lane-title-input nodrag"
-            aria-label="Lane name"
+            aria-label={`${Noun} name`}
             data-testid="lane-title-input"
             value={editing}
             autoFocus
@@ -363,20 +366,20 @@ export function LaneNodeView({ id, data }: NodeProps<LaneNode>) {
         {data.save !== undefined && <span className="lane-save muted">save {data.save}</span>}
         {canEdit && (
           <span className="lane-tools nodrag">
-            <button type="button" title="Move lane up" aria-label="Move lane up" data-testid="lane-up" disabled={data.place <= 0} onClick={() => actions.move(id, -1)}>
+            <button type="button" title={`Move ${noun} up`} aria-label={`Move ${noun} up`} data-testid="lane-up" disabled={data.place <= 0} onClick={() => actions.move(id, -1)}>
               ↑
             </button>
             <button
               type="button"
-              title="Move lane down"
-              aria-label="Move lane down"
+              title={`Move ${noun} down`}
+              aria-label={`Move ${noun} down`}
               data-testid="lane-down"
               disabled={data.place >= data.count - 1}
               onClick={() => actions.move(id, 1)}
             >
               ↓
             </button>
-            <button type="button" title="Remove lane" aria-label="Remove lane" data-testid="lane-remove" disabled={!data.removable} onClick={() => actions.remove(id)}>
+            <button type="button" title={`Remove ${noun}`} aria-label={`Remove ${noun}`} data-testid="lane-remove" disabled={!data.removable} onClick={() => actions.remove(id)}>
               ×
             </button>
           </span>

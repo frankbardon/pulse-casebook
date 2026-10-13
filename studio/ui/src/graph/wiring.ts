@@ -85,7 +85,7 @@ export function checkConnection(graph: Pick<RequestGraph, 'nodes'>, wire: Wire, 
   // stage's aggregation labels.
   const across = frameOf(src.id) !== frameOf(tgt.id)
   if (across && !feedsStage(src, tgt)) {
-    return { ok: false, reason: stageOf(tgt.id) !== undefined ? 'a chain stage reads only the stage before it' : 'lanes cannot see each other\'s fields or labels' }
+    return { ok: false, reason: stageOf(tgt.id) !== undefined ? 'a chain stage reads only the stage before it' : 'compose slots and fits cannot see each other\'s fields or labels' }
   }
 
   let ref: string
