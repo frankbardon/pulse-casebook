@@ -5,6 +5,10 @@
 //
 //	studio <dir> [--port N] [--preview-timeout 10s] [--auto-preview-rows 1000000] [--no-git] [--max-upload 2GiB]
 //
+// A legacy folder is migrated to the library layout on request (GET
+// /api/migration/plan, POST /api/migration/apply); a migration that was
+// interrupted is resumed or rolled back on the next start.
+//
 // The global area and every workspace are kept in git repositories of
 // their own (see internal/history): every studio write is committed,
 // unless --no-git is given or git is not installed.
@@ -21,12 +25,14 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"syscall"
 	"time"
 
 	"github.com/frankbardon/pulse-casebook/studio/internal/library"
+	"github.com/frankbardon/pulse-casebook/studio/internal/migrate"
 	"github.com/frankbardon/pulse-casebook/studio/internal/server"
 	"github.com/frankbardon/pulse-casebook/studio/web"
 )
@@ -76,10 +82,22 @@ func run(args []string) error {
 	if !info.IsDir() {
 		return fmt.Errorf("%s is not a directory", positional[0])
 	}
+	// An interrupted migration (W2) is finished or rolled back first.
+	dir, err := filepath.EvalSymlinks(positional[0])
+	if err != nil {
+		return err
+	}
+	if dir, err = filepath.Abs(dir); err != nil {
+		return err
+	}
+	recovered, err := migrate.Recover(context.Background(), dir, migrate.Options{NoGit: *noGit, Logf: log.Printf})
+	if err != nil {
+		return err
+	}
 	// The library (a fresh directory gets library.json; a legacy flat
 	// folder is left as it is). Git-backed history per area is never
 	// fatal: problems turn it off.
-	lib, err := library.Open(positional[0])
+	lib, err := library.Open(dir)
 	if err != nil {
 		return err
 	}
@@ -89,8 +107,9 @@ func run(args []string) error {
 			AutoPreviewRows: *autoRows,
 			MaxUpload:       int64(maxUpload),
 		},
-		NoGit: *noGit,
-		Logf:  log.Printf,
+		NoGit:     *noGit,
+		Logf:      log.Printf,
+		Recovered: recovered,
 	}, web.FS(), web.Built())
 	if err != nil {
 		return err

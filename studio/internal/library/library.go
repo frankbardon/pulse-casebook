@@ -215,7 +215,7 @@ func Open(dir string) (*Library, error) {
 	}
 	l := &Library{dir: real, mode: mode}
 	if fresh {
-		if err := writeFileAtomic(filepath.Join(real, MarkerFile), []byte(fmt.Sprintf("{\"version\": %d}\n", Version))); err != nil {
+		if err := writeFileAtomic(filepath.Join(real, MarkerFile), Marker()); err != nil {
 			return nil, fmt.Errorf("initialise library: %w", err)
 		}
 	}
@@ -226,6 +226,9 @@ func Open(dir string) (*Library, error) {
 	}
 	return l, nil
 }
+
+// Marker is library.json's content.
+func Marker() []byte { return []byte(fmt.Sprintf("{\"version\": %d}\n", Version)) }
 
 // Dir is the library directory (absolute, symlinks evaluated).
 func (l *Library) Dir() string { return l.dir }

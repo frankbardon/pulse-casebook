@@ -27,12 +27,17 @@ const (
 
 // Node is one JSON value. Scalars keep their raw source text in Raw
 // (including quotes for strings). Objects keep Members in source order;
-// arrays keep Items.
+// arrays keep Items. Start and End are the byte span of the value in the
+// parsed source (src[Start:End] is its exact text), so a caller can
+// splice a change into the source without reformatting anything else;
+// they are zero for nodes built in code.
 type Node struct {
 	Kind    Kind
 	Raw     string
 	Members []Member
 	Items   []*Node
+
+	Start, End int
 }
 
 // Member is one key/value pair of an object. Key is the raw quoted key
@@ -91,6 +96,16 @@ func (p *parser) skipWS() {
 }
 
 func (p *parser) value(depth int) (*Node, error) {
+	start := p.pos
+	n, err := p.scan(depth)
+	if err != nil {
+		return nil, err
+	}
+	n.Start, n.End = start, p.pos
+	return n, nil
+}
+
+func (p *parser) scan(depth int) (*Node, error) {
 	if depth > maxDepth {
 		return nil, p.errf("nesting exceeds %d levels", maxDepth)
 	}

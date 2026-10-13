@@ -13,12 +13,14 @@ import (
 	"sort"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/frankbardon/pulse"
 
 	"github.com/frankbardon/pulse-casebook/studio/internal/history"
 	"github.com/frankbardon/pulse-casebook/studio/internal/library"
+	"github.com/frankbardon/pulse-casebook/studio/internal/migrate"
 	"github.com/frankbardon/pulse-casebook/studio/internal/routefs"
 	"github.com/frankbardon/pulse-casebook/studio/internal/scope"
 	"github.com/frankbardon/pulse-casebook/studio/internal/workspace"
@@ -42,6 +44,8 @@ import (
 //	POST  /api/workspaces           {name, description?} → 201 {workspace, git}
 //	PATCH /api/workspaces/{slug}    {name?, description?} → {workspace, commit?}
 //	GET   /api/cohorts              global + every workspace's cohorts, schemas, imports, sources
+//	GET   /api/migration/plan       legacy folder → library: the plan (migration.go)
+//	POST  /api/migration/apply      perform it; the server switches to the library without a restart
 //
 // Compatibility (removed by W4): any other /api/... path is served by
 // the default workspace (the legacy folder itself, else the first
@@ -59,6 +63,14 @@ type Library struct {
 
 	mu    sync.Mutex
 	areas map[string]*Server // workspace slug → server (opened lazily)
+
+	// Migration (migration.go): uiFS/uiBuilt rebuild the handler after
+	// a migration, which is then served by next; gate keeps every other
+	// request out while a migration runs.
+	uiFS    fs.FS
+	uiBuilt bool
+	gate    sync.RWMutex
+	next    atomic.Pointer[Library]
 }
 
 // LibraryOptions configures NewLibrary. Config carries the runtime
@@ -74,6 +86,9 @@ type LibraryOptions struct {
 	Logf func(string, ...any)
 	// Now stamps created workspaces (nil: time.Now).
 	Now func() time.Time
+	// Recovered is what startup did with an interrupted migration
+	// (migrate.Recover), reported by GET /api/migration/plan.
+	Recovered *migrate.Outcome
 }
 
 // NewLibrary opens the library's repositories and the default area.
@@ -84,7 +99,7 @@ func NewLibrary(ctx context.Context, lib *library.Library, opts LibraryOptions, 
 	if opts.Now == nil {
 		opts.Now = time.Now
 	}
-	l := &Library{lib: lib, opts: opts, mux: http.NewServeMux(), areas: map[string]*Server{}}
+	l := &Library{lib: lib, opts: opts, mux: http.NewServeMux(), areas: map[string]*Server{}, uiFS: ui, uiBuilt: uiBuilt}
 	root, err := scope.New(lib.Dir())
 	if err != nil {
 		return nil, err
@@ -115,13 +130,36 @@ func NewLibrary(ctx context.Context, lib *library.Library, opts LibraryOptions, 
 	l.mux.HandleFunc("POST /api/workspaces", l.handleCreateWorkspace)
 	l.mux.HandleFunc("PATCH /api/workspaces/{slug}", l.handleUpdateWorkspace)
 	l.mux.HandleFunc("GET /api/cohorts", l.handleCohorts)
+	l.mux.HandleFunc("GET /api/migration/plan", l.handleMigrationPlan)
+	l.mux.HandleFunc("POST /api/migration/apply", l.handleMigrationApply)
 	l.mux.HandleFunc("/api/w/{ws}/{rest...}", l.handleScoped)
 	l.mux.HandleFunc("/api/", l.handleCompat)
 	l.mux.Handle("/", l.ui)
 	return l, nil
 }
 
-func (l *Library) ServeHTTP(w http.ResponseWriter, r *http.Request) { l.mux.ServeHTTP(w, r) }
+// ServeHTTP serves the library. Once a migration has switched the
+// folder to the library layout, the new handler serves everything.
+// Requests wait while a migration runs (POST /api/migration/apply
+// takes the gate itself).
+func (l *Library) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	if next := l.next.Load(); next != nil {
+		next.ServeHTTP(w, r)
+		return
+	}
+	if r.URL.Path == migrationApplyPath {
+		l.mux.ServeHTTP(w, r)
+		return
+	}
+	l.gate.RLock()
+	if next := l.next.Load(); next != nil {
+		l.gate.RUnlock()
+		next.ServeHTTP(w, r)
+		return
+	}
+	defer l.gate.RUnlock()
+	l.mux.ServeHTTP(w, r)
+}
 
 // Dir is the library directory.
 func (l *Library) Dir() string { return l.lib.Dir() }

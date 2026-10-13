@@ -172,3 +172,27 @@ func TestParseAgreesWithStdlib(t *testing.T) {
 		}
 	}
 }
+
+func TestSpans(t *testing.T) {
+	src := []byte("{\r\n\t\"a\" : [ 1.5e+0 , \"x\\u00e9\" ],\"b\":{ \"c\":null } }")
+	n, err := Parse(src)
+	if err != nil {
+		t.Fatal(err)
+	}
+	a := n.Members[0].Value
+	for _, c := range []struct {
+		n    *Node
+		want string
+	}{
+		{n, string(src)},
+		{a, `[ 1.5e+0 , "x\u00e9" ]`},
+		{a.Items[0], "1.5e+0"},
+		{a.Items[1], `"x\u00e9"`},
+		{n.Members[1].Value, `{ "c":null }`},
+		{n.Members[1].Value.Members[0].Value, "null"},
+	} {
+		if got := string(src[c.n.Start:c.n.End]); got != c.want {
+			t.Errorf("span %q, want %q", got, c.want)
+		}
+	}
+}
