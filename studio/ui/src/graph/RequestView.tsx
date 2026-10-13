@@ -61,9 +61,13 @@ import { useValidation, ValidationContext } from './useValidation.ts'
 import { RunContext, useRun, type RunResults } from './useRun.ts'
 import { ResultsPanel } from './ResultsPanel.tsx'
 import { proposal, worst, type Issue } from './validation.ts'
+import { createFocusStore, hoverTarget } from './focus.ts'
+import { EdgeRouter, FocusStyle, WireEdge, type RouteStatus } from './WireEdge.tsx'
+import { readWireMode, RouteContext, RouteStore, writeWireMode, type WireMode } from './wires.ts'
 import './graph.css'
 
 const nodeTypes = { op: OpNodeView, cohort: CohortNodeView, raw: RawNodeView, facet: FacetNodeView, lane: LaneNodeView }
+const edgeTypes = { wire: WireEdge }
 
 // FlowNode is what the canvas draws: graph nodes plus lanes (parent
 // nodes holding a compose slot's or fit's, or a chain stage's, nodes).
@@ -142,6 +146,30 @@ function RequestGraphView({ path, kind, catalog }: { path: string; kind: ViewKin
   // unmeasured and stays hidden until its size changes, which may never
   // happen.
   const [measured, setMeasured] = useState<ReadonlyMap<string, Dimensions>>(new Map())
+  // Wires: routed around nodes or plain curves (per viewer), the latest
+  // routes, and the hover/selection focus that lights a node's wires.
+  // Routes and focus live outside React state: neither rebuilds the
+  // controlled node or edge arrays.
+  const [wireMode, setWireMode] = useState<WireMode>(readWireMode)
+  const [routes] = useState(() => new RouteStore())
+  const [focus] = useState(createFocusStore)
+  const routeStatus = useCallback((st: RouteStatus) => {
+    const el = flowBox.current
+    if (!el) return
+    el.dataset.routing = st.state
+    if (st.ms !== undefined) el.dataset.routeMs = st.ms.toFixed(1)
+    if (st.error !== undefined) el.title = `Wire routing unavailable: ${st.error}`
+  }, [])
+  const toggleWires = useCallback(() => {
+    setWireMode((m) => {
+      const next = m === 'routed' ? 'curves' : 'routed'
+      writeWireMode(next)
+      return next
+    })
+  }, [])
+  useEffect(() => {
+    focus.set({ selectedNode: selected ?? undefined, selectedEdge: selectedEdge ?? undefined })
+  }, [focus, selected, selectedEdge])
 
   useEffect(() => {
     const ctl = new AbortController()
@@ -392,7 +420,7 @@ function RequestGraphView({ path, kind, catalog }: { path: string; kind: ViewKin
 
   const edges = useMemo((): GraphEdge[] => {
     if (graph === null || typeof graph === 'string') return []
-    return graph.edges.map((e) => (e.id === selectedEdge ? { ...e, selected: true } : e))
+    return graph.edges.map((e) => ({ ...e, type: 'wire', ...(e.id === selectedEdge && { selected: true }) }))
   }, [graph, selectedEdge])
 
   // Column lookup for drags: a node stays inside its own stage column.
@@ -786,6 +814,18 @@ function RequestGraphView({ path, kind, catalog }: { path: string; kind: ViewKin
             Results
           </button>
         )}
+        <button
+          type="button"
+          className="wire-mode"
+          data-testid="wire-mode"
+          data-mode={wireMode}
+          aria-pressed={wireMode === 'routed'}
+          onClick={toggleWires}
+          title={wireMode === 'routed' ? 'Wires are routed around nodes: switch to plain curves' : 'Wires are plain curves: route them around nodes'}
+        >
+          <span className={wireMode === 'curves' ? 'on' : undefined}>Curves</span>
+          <span className={wireMode === 'routed' ? 'on' : undefined}>Routed</span>
+        </button>
         {compose && kind === 'compose' && (
           <button type="button" data-testid="lane-add" onClick={newLane} title="Add a compose slot (a new lane reading the last lane's cohort)">
             + Lane
@@ -815,6 +855,9 @@ function RequestGraphView({ path, kind, catalog }: { path: string; kind: ViewKin
         <div
           className="graph-flow"
           ref={flowBox}
+          data-wires={wireMode}
+          onPointerOver={(e) => focus.set(hoverTarget(e.target instanceof Element ? e.target : null))}
+          onPointerLeave={() => focus.set({ hoverNode: undefined, hoverHandle: undefined, hoverEdge: undefined })}
           onDragOver={(e) => {
             if (e.dataTransfer.types.includes(PALETTE_MIME)) {
               e.preventDefault()
@@ -828,10 +871,12 @@ function RequestGraphView({ path, kind, catalog }: { path: string; kind: ViewKin
             <ValidationContext value={validation}>
               <WireCheckContext value={check}>
                 <LaneActionsContext value={laneActions}>
+                <RouteContext value={routes}>
                 <ReactFlow<FlowNode, GraphEdge>
                   nodes={nodes}
                   edges={edges}
                   nodeTypes={nodeTypes}
+                  edgeTypes={edgeTypes}
                   onNodesChange={onNodesChange}
                   isValidConnection={(c) => check(c).ok}
                   onConnect={onConnect}
@@ -877,7 +922,10 @@ function RequestGraphView({ path, kind, catalog }: { path: string; kind: ViewKin
                   <Background />
                   <Controls showInteractive={false} />
                   <RemeasureUnready />
+                  <EdgeRouter store={routes} enabled={wireMode === 'routed'} onStatus={routeStatus} />
                 </ReactFlow>
+                </RouteContext>
+                <FocusStyle focus={focus} edges={edges} />
                 </LaneActionsContext>
               </WireCheckContext>
             </ValidationContext>

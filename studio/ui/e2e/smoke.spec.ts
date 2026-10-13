@@ -21,6 +21,68 @@ test('opens a plain request as a stage-column graph', async ({ page }) => {
   await expect(graph.locator('.react-flow__edge')).toHaveCount(13)
 })
 
+test('wires route around nodes, light up on hover, stay deletable, and remember Curves', async ({ page }) => {
+  await page.goto('/')
+  await page.getByRole('button', { name: 'req/04_metric_battery.json' }).click()
+  const graph = page.getByTestId('request-graph')
+  const flow = graph.locator('.graph-flow')
+  const edges = graph.locator('.react-flow__edge')
+  await expect(edges).toHaveCount(13)
+  // Routed by default: every wire is drawn from its route once it lands.
+  await expect(page.getByTestId('wire-mode')).toHaveAttribute('data-mode', 'routed')
+  await expect(flow).toHaveAttribute('data-routing', 'ready')
+  await expect(graph.locator('.react-flow__edge-path.routed')).toHaveCount(13)
+
+  // Hovering a cohort field row lights exactly that field's wires and dims the rest.
+  const row = graph.locator('[data-path="cohort"] .gnode-row').filter({ has: page.locator('.k', { hasText: /^arm$/ }) })
+  await row.hover()
+  const litCount = await graph.locator('.react-flow__edge[data-id^="cohort|field:arm->"]').count()
+  expect(litCount).toBeGreaterThan(0)
+  const opacities = async () =>
+    graph.locator('.react-flow__edge').evaluateAll((els) =>
+      els.map((e) => ({ id: e.getAttribute('data-id') ?? '', o: e.ownerDocument.defaultView!.getComputedStyle(e).opacity })),
+    )
+  await expect
+    .poll(async () => (await opacities()).filter((x) => x.o === '1').map((x) => x.id.startsWith('cohort|field:arm->')))
+    .toEqual(Array(litCount).fill(true))
+  await graph.locator('.react-flow__pane').hover({ position: { x: 5, y: 5 } })
+  await expect.poll(async () => (await opacities()).every((x) => x.o === '1')).toBe(true)
+
+  // A routed wire is still clicked through its wide hit area, selected and deleted.
+  const wire = graph.locator('.react-flow__edge[data-id^="cohort|field:revenue->"]').first()
+  const at = await wire.locator('.react-flow__edge-interaction').evaluate((el) => {
+    // A path element (the e2e tsconfig has no DOM lib).
+    const path = el as unknown as {
+      getTotalLength(): number
+      getPointAtLength(l: number): { x: number; y: number }
+      getScreenCTM(): { a: number; b: number; c: number; d: number; e: number; f: number } | null
+    }
+    const p = path.getPointAtLength(path.getTotalLength() / 2)
+    const m = path.getScreenCTM()!
+    // 6px off the drawn line: inside the hit area only.
+    return { x: p.x * m.a + p.y * m.c + m.e, y: p.x * m.b + p.y * m.d + m.f + 6 }
+  })
+  await page.mouse.click(at.x, at.y)
+  const selected = graph.locator('.react-flow__edge.selected')
+  await expect(selected).toHaveCount(1)
+  const gone = (await selected.getAttribute('data-id'))!
+  await page.keyboard.press('Delete')
+  await expect(edges).toHaveCount(12)
+  await expect(graph.locator(`.react-flow__edge[data-id="${gone}"]`)).toHaveCount(0)
+  await expect(page.getByTestId('dirty-state')).toContainText('unsaved')
+
+  // Curves: plain bezier wires, remembered across a reload.
+  await page.getByTestId('wire-mode').click()
+  await expect(page.getByTestId('wire-mode')).toHaveAttribute('data-mode', 'curves')
+  await expect(graph.locator('.react-flow__edge-path.routed')).toHaveCount(0)
+  await expect(edges).toHaveCount(12)
+  await page.reload()
+  await page.getByRole('button', { name: 'req/04_metric_battery.json' }).click()
+  await expect(page.getByTestId('wire-mode')).toHaveAttribute('data-mode', 'curves')
+  await expect(edges).toHaveCount(13)
+  await expect(graph.locator('.react-flow__edge-path.routed')).toHaveCount(0)
+})
+
 test('facet files open with a live facet preview and editable settings', async ({ page }) => {
   await page.goto('/')
   await page.getByRole('button', { name: 'req/02_srm_gof.facet.json' }).click()

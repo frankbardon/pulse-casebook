@@ -1238,3 +1238,26 @@
   border-style: dashed;
   opacity: 0.7;
 }
+
+/* Wires: Curves / Routed toggle on the bar. Routed wires (WireEdge) are
+   orthogonal paths around nodes; focus highlighting is a generated
+   stylesheet (focus.ts) using --wire-focus and --wire-dim. */
+.graph-bar button.wire-mode {
+  display: inline-flex;
+  padding: 0;
+  overflow: hidden;
+}
+
+.graph-bar button.wire-mode span {
+  padding: 1px var(--space-2);
+  color: var(--muted);
+}
+
+.graph-bar button.wire-mode span.on {
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  color: var(--accent);
+}
+
+.react-flow__edge {
+  transition: opacity 80ms linear;
+}
