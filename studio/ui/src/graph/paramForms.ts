@@ -17,6 +17,7 @@ import { fromPlain, stringValue, type JsonNode } from './jsonTree.ts'
 import type { ModelNode } from './model.ts'
 import type { PathSegment } from './nodePath.ts'
 import { sectionInfo } from './requestGraph.ts'
+import { joinKinds, type CohortOption } from './joins.ts'
 
 export type FieldType =
   | 'number' // float
@@ -31,6 +32,8 @@ export type FieldType =
   | 'expression' // multi-line string
   | 'ranges' // [{label,start,end}] date ranges
   | 'keys' // string array of group key columns (post-test partition_by)
+  | 'cohortFile' // a cohort file path (a join's right side)
+  | 'pairs' // [{left_field, right_field}] join keys
 
 export type FormField = {
   key: string
@@ -73,7 +76,12 @@ export type Catalog = { manifest?: Manifest; schema?: unknown }
 // FormContext is what a form needs from the rest of the request: the
 // group key columns of the node's request frame (in groups order), the
 // options of a post-test's partition_by.
-export type FormContext = { groupKeys?: readonly string[] }
+export type FormContext = {
+  groupKeys?: readonly string[]
+  // The workspace's cohort files, as a join's right side would name them
+  // from this request (joins.cohortOptions).
+  cohortOptions?: readonly CohortOption[]
+}
 
 // buildForm returns the inspector form for a node.
 export function buildForm(node: ModelNode, catalog: Catalog = {}, ctx: FormContext = {}): NodeForm {
@@ -124,6 +132,12 @@ export function buildForm(node: ModelNode, catalog: Catalog = {}, ctx: FormConte
     // The block's keys are its own (no manifest operator): pulse
     // types.Multiplicity. Empty method/family inherit.
     sections.push({ title: 'Correction', fields: MULTIPLICITY_FIELDS })
+    return { mode: 'handwritten', ...base, sections }
+  }
+  if (node.section === 'joins') {
+    // A join has no manifest operator: pulse types.JoinSpec, kinds from
+    // the manifest's join envelope.
+    sections.push({ title: 'Join', fields: joinFields(catalog.manifest, ctx) })
     return { mode: 'handwritten', ...base, sections }
   }
   if (node.section === 'vectors') {
@@ -294,6 +308,31 @@ const VECTOR_MEANING_FIELDS: FormField[] = [
   { key: 'scale_max', rel: ['scale_max'], type: 'number', hint: 'kind scale only; both or neither, min below max' },
 ]
 
+// joinFields edit a JoinSpec: the right cohort (picked from the
+// workspace's cohort files), the kind, the `as` prefix and the key pairs.
+function joinFields(manifest: Manifest | undefined, ctx: FormContext): FormField[] {
+  const kinds = joinKinds(manifest)
+  return [
+    {
+      key: 'right',
+      rel: ['right'],
+      type: 'cohortFile',
+      required: true,
+      options: (ctx.cohortOptions ?? []).map((o) => o.value),
+      hint: 'cohort joined in, held in memory: put the smaller cohort on the right',
+    },
+    {
+      key: 'kind',
+      rel: ['kind'],
+      type: 'enum',
+      options: kinds,
+      hint: `the engine runs ${kinds.join(', ')}; an inner join drops unmatched left rows`,
+    },
+    { key: 'as', rel: ['as'], type: 'string', hint: 'prefix on every right field name: as r_ turns bonus into r_bonus' },
+    { key: 'on', rel: ['on'], type: 'pairs', required: true, hint: 'equi-join keys, AND-ed; wire left keys from the cohort' },
+  ]
+}
+
 type Handwritten = (ops: ManifestOperator[]) => FormField[]
 
 const valuesList: Handwritten = () => [{ key: 'values', rel: ['values'], type: 'strings', required: true }]
@@ -355,6 +394,7 @@ export function fieldText(f: FormField, value: JsonNode): string {
     case 'field':
     case 'enum':
     case 'expression':
+    case 'cohortFile':
       return v.type === 'string' ? (stringValue(v) as string) : prettyJson(v)
     case 'enumItem':
       return v.type === 'array' && v.items.length === 1 && v.items[0].type === 'string'
@@ -367,6 +407,7 @@ export function fieldText(f: FormField, value: JsonNode): string {
         : prettyJson(v)
     case 'json':
     case 'ranges':
+    case 'pairs':
       return prettyJson(v)
   }
 }
@@ -386,7 +427,7 @@ export function encodeField(f: FormField, text: string, current: JsonNode | unde
 }
 
 function encodeRaw(f: FormField, text: string, current: JsonNode | undefined): Encoded {
-  const t = f.type === 'expression' || f.type === 'string' || f.type === 'field' ? text : text.trim()
+  const t = f.type === 'expression' || f.type === 'string' || f.type === 'field' || f.type === 'cohortFile' ? text : text.trim()
   if (t === '') return { value: undefined }
   switch (f.type) {
     case 'number':
@@ -399,6 +440,7 @@ function encodeRaw(f: FormField, text: string, current: JsonNode | undefined): E
     case 'field':
     case 'enum':
     case 'expression':
+    case 'cohortFile':
       return { value: { type: 'string', raw: JSON.stringify(t) } }
     case 'enumItem':
       return { value: stringItems(current, [t]) }
@@ -411,7 +453,8 @@ function encodeRaw(f: FormField, text: string, current: JsonNode | undefined): E
       return { value: stringItems(current, items) }
     }
     case 'json':
-    case 'ranges': {
+    case 'ranges':
+    case 'pairs': {
       const r = parseEdit(t)
       return 'error' in r ? r : { value: r.value }
     }

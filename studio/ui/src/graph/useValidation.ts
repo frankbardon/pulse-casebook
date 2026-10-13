@@ -26,6 +26,8 @@ export function useNodeValidation(id: string): NodeValidation | undefined {
   return useContext(ValidationContext).get(id)
 }
 
+const NONE: readonly Issue[] = []
+
 type Engine = { text: string; issues: Issue[]; steps: ExplainStep[]; summary?: string; failed?: string }
 
 // useValidation validates the editor's in-memory document. Manifest
@@ -39,6 +41,8 @@ export function useValidation(
   nodeIds: readonly string[],
   catalog: Catalog,
   cohortFields: CohortField[] | undefined,
+  // Client findings computed outside the manifest checks (joins.ts).
+  extra: readonly Issue[] = NONE,
 ): Validation {
   const [engine, setEngine] = useState<Engine | null>(null)
   const text = useMemo(() => (model ? emitModelText(model) : null), [model])
@@ -66,7 +70,7 @@ export function useValidation(
     }
   }, [path, text])
 
-  const client = useMemo(() => (model ? clientIssues(model, catalog, cohortFields) : []), [model, catalog, cohortFields])
+  const client = useMemo(() => (model ? [...clientIssues(model, catalog, cohortFields), ...extra] : []), [model, catalog, cohortFields, extra])
   // Engine issues for an older text would point at nodes that may have
   // moved; until the current text is validated only client issues show.
   // Explain text is kept across edits (it is descriptive, not a verdict).

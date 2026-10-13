@@ -61,6 +61,8 @@ export function processChain(manifest: Manifest | undefined): Required<ProcessCh
 export function chainRefusal(manifest: Manifest | undefined, section: string, op: string, stage?: number): string | null {
   const title = sectionInfo(section)?.title.toLowerCase() ?? section
   if (CHAIN_REJECTED_SECTIONS.has(section)) return `a chain stage cannot run a ${title} (${op})`
+  // Only the first stage reads a cohort, so only it may join.
+  if (section === 'joins' && stage !== undefined && stage > 0) return 'only the first chain stage may join'
   // Matrices are computed over cohort rows: only the first stage has them.
   if (section === 'matrices' && stage !== undefined && stage > 0) return `only the first chain stage may carry matrices (${op})`
   const pc = processChain(manifest)

@@ -97,6 +97,22 @@ func TestPredictMapsIssuesToNodes(t *testing.T) {
 		}
 	})
 
+	t.Run("a join's right cohort resolves like the request's", func(t *testing.T) {
+		join := func(right string) string {
+			return `{"cohort": ` + cohort + `, "joins": [{"right": ` + mustJSON(right) + `, "kind": "inner", "as": "r_",
+			  "on": [{"left_field": "user_id", "right_field": "user_id"}]}],
+			  "aggregations": [{"type": "AGG_AVERAGE", "field": "r_revenue", "label": "m"}]}`
+		}
+		code, out := postValidate(t, s, "/api/predict", "case/req/x.json", join("ab_test.pulse"))
+		if code != http.StatusOK || out["valid"] != true {
+			t.Fatalf("got %d %v", code, out)
+		}
+		_, out = postValidate(t, s, "/api/predict", "case/req/x.json", join("ghost.pulse"))
+		if out["valid"] != false {
+			t.Fatalf("unknown right cohort predicted valid: %v", out)
+		}
+	})
+
 	t.Run("decode error points at the offending key", func(t *testing.T) {
 		_, out := postValidate(t, s, "/api/predict", "case/req/x.json", `{"cohort": `+cohort+`, "weight": "w"}`)
 		if !hasSeverity(issuesAt(out)["weight"], "error") {

@@ -20,6 +20,7 @@
 import type { CohortField, Manifest } from '../api.ts'
 import { formatPath, type PathSegment } from './nodePath.ts'
 import { buildComposeLayout, ROOT_LANE, type ComposeGraph, type Lane } from './composeGraph.ts'
+import type { RightSide } from './joins.ts'
 import { buildRequestGraph, rawNode, type GraphEdge, type GraphNode } from './requestGraph.ts'
 
 export type ChainGraph = ComposeGraph & {
@@ -28,7 +29,12 @@ export type ChainGraph = ComposeGraph & {
   inputs: Map<string, CohortField[] | undefined>
 }
 
-export type ChainOptions = { manifest?: Manifest; cohortFields?: CohortField[] }
+export type ChainOptions = {
+  manifest?: Manifest
+  cohortFields?: CohortField[]
+  // A join's right cohort fields by its `right` path (first stage only).
+  rightFields?: (right: string) => RightSide
+}
 
 export function buildChainGraph(req: unknown, opts: ChainOptions = {}): ChainGraph {
   if (!isObject(req)) throw new Error('request must be a JSON object')
@@ -67,7 +73,7 @@ export function buildChainGraph(req: unknown, opts: ChainOptions = {}): ChainGra
     } else {
       const body = Object.fromEntries(Object.entries(r).filter(([k]) => k !== 'cohort'))
       if (i === 0) {
-        g = buildRequestGraph({ ...body, cohort: req.cohort }, { manifest: opts.manifest, cohortFields: input, basePath: base })
+        g = buildRequestGraph({ ...body, cohort: req.cohort }, { manifest: opts.manifest, cohortFields: input, basePath: base, rightFields: opts.rightFields })
         rehomeCohort(g, formatPath([...base, 'cohort']))
       } else {
         g = buildRequestGraph(body, { manifest: opts.manifest, cohortFields: input ?? [], basePath: base, withCohort: false, implicitFields: true })

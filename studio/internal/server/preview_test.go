@@ -120,6 +120,11 @@ var inlineRequests = map[string]string{
   "vectors": [{"name": "drivers", "fields": ["pages_viewed", "prior_sessions", "revenue"]}],
   "matrices": [{"type": "MAT_CORRELATION", "name": "corr", "vector": "drivers"}]
 }`,
+	"ab/req/join.json": `{
+  "cohort": ` + abCohort + `,
+  "joins": [{"right": "ab_half.pulse", "kind": "inner", "as": "r_", "on": [{"left_field": "user_id", "right_field": "user_id"}]}],
+  "aggregations": [{"type": "AGG_AVERAGE", "field": "r_revenue", "label": "rev"}]
+}`,
 	"ab/req/overlay.compose.json": `{
   "requests": [
     {"label": "variant", "cohort": ` + abCohort + `, "filterers": [{"type": "FILTER_INCLUDE", "field": "arm", "values": ["new_page"]}],
@@ -149,6 +154,9 @@ func newPreviewFixtureConfig(t *testing.T, cfg Config) *previewFixture {
 	for _, c := range fixtureCohorts {
 		synthCohort(t, filepath.Join(show, c.spec), filepath.Join(dir, c.out), 3000, 7)
 	}
+	// A join's right side: the first 1,500 users of the same cohort
+	// (user_id is monotonic), so an inner join on user_id keeps half.
+	synthCohort(t, filepath.Join(show, fixtureCohorts[0].spec), filepath.Join(dir, "ab", "ab_half.pulse"), 1500, 7)
 	write := func(rel string, data []byte) {
 		p := filepath.Join(dir, filepath.FromSlash(rel))
 		if err := os.MkdirAll(filepath.Dir(p), 0o755); err != nil {
@@ -430,6 +438,14 @@ func TestPreviewProbes(t *testing.T) {
 					equal(t, "element_n", at(p, "vector", "element_n", j), at(d, "metadata", "filtered_rows"))
 				}
 			}},
+		{name: "join", path: "ab/req/join.json", nodes: []string{"joins[0]"}, kind: "join", cost: "cheap", verb: "process",
+			check: func(t *testing.T, p map[string]any) {
+				if at(p, "rows", "filtered") != float64(1500) || at(p, "rows", "total") != float64(1500) {
+					t.Fatalf("joined rows = %v", at(p, "rows"))
+				}
+			}},
+		{name: "joined aggregation", path: "ab/req/join.json", nodes: []string{"aggregations[0]"}, kind: "aggregation", cost: "cheap", verb: "process",
+			check: nonEmpty("table"), parity: tableParity},
 		{name: "compose slot attribute", path: "ab/req/11_readout.compose.json", nodes: []string{"requests[1].attributes[0]"}, kind: "attribute", cost: "expensive", verb: "process",
 			check: nonEmpty("stats"), parity: statsParity(0, true)},
 		{name: "compose slot crosstab", path: "brand/req/06_q4_banner.json", nodes: []string{"requests[9].crosstab"}, kind: "crosstab", cost: "expensive", verb: "process",

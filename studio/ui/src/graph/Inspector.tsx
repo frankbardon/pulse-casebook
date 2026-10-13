@@ -5,6 +5,7 @@ import type { ModelNode } from './model.ts'
 import { applyField, buildForm, fieldText, formProblems, type Catalog, type FormField } from './paramForms.ts'
 import { clearPartition, partitionProblem, removePartitionItem } from './partition.ts'
 import { stringValue } from './jsonTree.ts'
+import type { CohortOption } from './joins.ts'
 
 type Props = {
   node: ModelNode
@@ -16,14 +17,16 @@ type Props = {
   // Group key columns of the node's request frame, in groups order
   // (a post-test's partition_by options).
   groupKeys?: readonly string[]
+  // The workspace's cohort files as a join's right side (joins.ts).
+  cohortOptions?: readonly CohortOption[]
 }
 
 // Inspector edits one model node: a form generated from the manifest (or
 // hand-written for free-form operators) plus the node's JSON as text.
 // Every edit replaces the node's jsonTree value; nothing round-trips
 // through JSON.parse.
-export function Inspector({ node, catalog, onChange, onClose, onDelete, groupKeys }: Props) {
-  const form = useMemo(() => buildForm(node, catalog, { groupKeys }), [node, catalog, groupKeys])
+export function Inspector({ node, catalog, onChange, onClose, onDelete, groupKeys, cohortOptions }: Props) {
+  const form = useMemo(() => buildForm(node, catalog, { groupKeys, cohortOptions }), [node, catalog, groupKeys, cohortOptions])
   const problems = form.mode === 'raw' ? [] : formProblems(form, node.value)
   const title = node.kind === 'cohort' ? 'Cohort' : node.kind === 'raw' ? `Raw ${node.section}` : node.section
   return (
@@ -48,7 +51,7 @@ export function Inspector({ node, catalog, onChange, onClose, onDelete, groupKey
           <fieldset key={s.title} className="insp-section">
             <legend>{s.title}</legend>
             {s.fields.map((f) => (
-              <Field key={`${node.id}|${f.rel.join('.')}`} field={f} value={node.value} onChange={onChange} />
+              <Field key={`${node.id}|${f.rel.join('.')}`} field={f} value={node.value} onChange={onChange} cohortOptions={cohortOptions} />
             ))}
           </fieldset>
         ))}
@@ -64,7 +67,17 @@ export function Inspector({ node, catalog, onChange, onClose, onDelete, groupKey
   )
 }
 
-function Field({ field: f, value, onChange }: { field: FormField; value: JsonNode; onChange: (v: JsonNode) => void }) {
+function Field({
+  field: f,
+  value,
+  onChange,
+  cohortOptions,
+}: {
+  field: FormField
+  value: JsonNode
+  onChange: (v: JsonNode) => void
+  cohortOptions?: readonly CohortOption[]
+}) {
   // draft holds what the user typed while it differs from the stored
   // value (mid-typing numbers, invalid JSON); it clears on blur.
   const [draft, setDraft] = useState<{ text: string; error?: string } | null>(null)
@@ -128,6 +141,36 @@ function Field({ field: f, value, onChange }: { field: FormField; value: JsonNod
     case 'keys':
       input = <KeysEditor field={f} value={value} onChange={onChange} />
       break
+    case 'pairs':
+      input = isPairList(getIn(value, f.rel)) ? <PairsEditor field={f} value={value} onChange={onChange} /> : textArea()
+      break
+    case 'cohortFile': {
+      const list = `${id}-cohorts`
+      const known = cohortOptions?.find((o) => o.value === text)
+      input = (
+        <>
+          <input
+            id={id}
+            type="text"
+            list={list}
+            value={text}
+            placeholder="pick a cohort file"
+            spellCheck={false}
+            onChange={(e) => commit(e.target.value)}
+            onBlur={blur}
+          />
+          <datalist id={list}>
+            {(cohortOptions ?? []).map((o) => (
+              <option key={o.path} value={o.value}>
+                {o.path}
+              </option>
+            ))}
+          </datalist>
+          {known && known.path !== known.value && <span className="insp-hint">{known.path}</span>}
+        </>
+      )
+      break
+    }
     case 'ranges':
       // Not a list of range objects: edit as JSON.
       input = isRangeList(getIn(value, f.rel)) ? <RangesEditor field={f} value={value} onChange={onChange} /> : textArea()
@@ -225,6 +268,50 @@ function KeysEditor({ field: f, value, onChange }: { field: FormField; value: Js
           </button>
         )}
       </div>
+    </div>
+  )
+}
+
+function isPairList(v: JsonNode | undefined): boolean {
+  return v === undefined || (v.type === 'array' && v.items.every((i) => i.type === 'object'))
+}
+
+const PAIR_KEYS = ['left_field', 'right_field'] as const
+
+// PairsEditor edits a join's `on`: one row per key pair. An emptied
+// name removes that key (the join node flags the pair incomplete).
+function PairsEditor({ field: f, value, onChange }: { field: FormField; value: JsonNode; onChange: (v: JsonNode) => void }) {
+  const list = getIn(value, f.rel)
+  const rows = list?.type === 'array' ? list.items : []
+  const cell = (i: number, k: (typeof PAIR_KEYS)[number]) => stringValue(getIn(rows[i], [k])) ?? ''
+  const set = (i: number, k: (typeof PAIR_KEYS)[number], t: string) => onChange(setIn(value, [...f.rel, i, k], t === '' ? undefined : fromPlain(t)))
+  const add = () => {
+    const base = list ? value : setIn(value, f.rel, { type: 'array', items: [] })
+    onChange(setIn(base, [...f.rel, rows.length], fromPlain({ left_field: '', right_field: '' })))
+  }
+  return (
+    <div className="insp-ranges insp-pairs" data-testid="join-pairs">
+      {rows.map((_, i) => (
+        <div key={i} className="insp-range insp-pair">
+          {PAIR_KEYS.map((k) => (
+            <input
+              key={k}
+              type="text"
+              aria-label={`pair ${i + 1} ${k}`}
+              placeholder={k}
+              value={cell(i, k)}
+              spellCheck={false}
+              onChange={(e) => set(i, k, e.target.value)}
+            />
+          ))}
+          <button type="button" aria-label={`Remove pair ${i + 1}`} onClick={() => onChange(setIn(value, [...f.rel, i], undefined))}>
+            −
+          </button>
+        </div>
+      ))}
+      <button type="button" className="insp-add" onClick={add}>
+        Add pair
+      </button>
     </div>
   )
 }

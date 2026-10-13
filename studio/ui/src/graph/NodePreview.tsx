@@ -125,6 +125,9 @@ function ProbeBody({
     }
     case 'cohort':
       return <Line>{probe.rows ? `${fmtCount(probe.rows.total)} rows` : '–'}</Line>
+    case 'join':
+      // An inner join keeps the left rows that matched.
+      return <Line>{probe.rows ? `${fmtCount(probe.rows.filtered)} joined rows` : '–'}</Line>
     case 'filter': {
       const f = probe.filter
       if (!f) return <Line muted>no counts</Line>

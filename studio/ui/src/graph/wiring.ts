@@ -20,7 +20,7 @@ import { formatPath, frameOf, parsePath, type PathSegment } from './nodePath.ts'
 import { FACET_NODE } from './facetGraph.ts'
 import { emitsType, findOperator, refusal, slotFor, vectorMemberRefusal } from './ports.ts'
 import { groupKeyColumn, PARTITION_PATH, removePartitionItem, wireRefusal, type GroupEntry } from './partition.ts'
-import { canSee, LAYOUT, type ColumnKey, type RequestGraph } from './requestGraph.ts'
+import { canSee, joinKeyCheck, LAYOUT, type ColumnKey, type RequestGraph } from './requestGraph.ts'
 
 // FIT_HANDLE is the source handle of a compose fit's regression; a wire
 // from it into an entry's `params.fit` input binds the fit by name.
@@ -51,8 +51,10 @@ export type Wire = {
 
 export type WireContext = { manifest?: Manifest; cohortFields?: CohortField[] }
 
+// also lists further writes the wire implies (a new join pair's
+// same-named right_field), applied with connectWire after the wire.
 export type WireCheck =
-  | { ok: true; ref: string; rowKey: string; sourceType?: string }
+  | { ok: true; ref: string; rowKey: string; sourceType?: string; also?: { rowKey: string; ref: string }[] }
   | { ok: false; reason: string }
 
 // checkConnection validates a wire against the graph: a source handle
@@ -89,11 +91,37 @@ export function checkConnection(graph: Pick<RequestGraph, 'nodes'>, wire: Wire, 
   let ref: string
   let type: string | undefined
   let from: string
+  // A join's keys read the left cohort: only its left_field inputs, and
+  // only from the cohort.
+  if (section === 'joins') {
+    if (!/^on\[\d+\]\.left_field$/.test(rowKey)) return { ok: false, reason: 'a join takes cohort fields only as left_field keys' }
+    if (src.type !== 'cohort' || !wire.sourceHandle?.startsWith('field:')) {
+      return { ok: false, reason: 'a join\'s left_field reads the left cohort, not joined fields or labels' }
+    }
+  }
   if (src.type === 'cohort' && wire.sourceHandle?.startsWith('field:')) {
     ref = wire.sourceHandle.slice('field:'.length)
     if (role === 'vector') return { ok: false, reason: 'vector inputs take a vector, not a cohort field' }
     type = ctx.cohortFields?.find((f) => f.name === ref)?.type
     from = `field ${ref}`
+    if (section === 'joins') {
+      const why = joinKeyCheck(tgt, rowKey, type)
+      if (why) return { ok: false, reason: `join ${rowKey}: ${why} (${from})` }
+      const pair = /^on\[(\d+)\]/.exec(rowKey)![0]
+      const info = tgt.data.join
+      // A new pair takes the same-named right field when there is one.
+      const fill =
+        !tgt.data.rows.some((r) => r.key === `${pair}.right_field`) && info?.state === 'known' && info.fields.some((f) => f.name === info.as + ref)
+          ? [{ rowKey: `${pair}.right_field`, ref }]
+          : undefined
+      return { ok: true, ref, rowKey, ...(type && { sourceType: type }), ...(fill && { also: fill }) }
+    }
+  } else if (src.type === 'op' && wire.sourceHandle?.startsWith('field:') && src.data.join) {
+    // A joined field, from its join node.
+    ref = wire.sourceHandle.slice('field:'.length)
+    if (role === 'vector') return { ok: false, reason: 'vector inputs take a vector, not a joined field' }
+    type = src.data.join.fields.find((f) => f.name === ref)?.type || undefined
+    from = `joined field ${ref}`
   } else if (src.type === 'op' && wire.sourceHandle === 'out' && src.data.name !== undefined) {
     ref = src.data.name
     if (!across && !canSee(section, indexOf(tgt.id), src.data.section, indexOf(src.id), role)) {
@@ -164,7 +192,19 @@ export function connectWire(model: GraphModel, id: string, rowKey: string, ref: 
     if (last !== 0) throw new Error(`index [${last}] out of range`)
     return updateNode(model, id, setIn(node.value, rel.slice(0, -1), { type: 'array', items: [str] }))
   }
-  return updateNode(model, id, setIn(node.value, rel, str))
+  // A key inside a list item one past the end (a join's next
+  // `on[2].left_field`) appends the item.
+  let value = node.value
+  const item = rel.slice(0, -1)
+  const at = item[item.length - 1]
+  if (typeof last === 'string' && typeof at === 'number' && getIn(value, item) === undefined) {
+    const empty: JsonNode = { type: 'object', members: [] }
+    if (getIn(value, item.slice(0, -1)) === undefined) {
+      if (at !== 0) throw new Error(`index [${at}] out of range`)
+      value = setIn(value, item.slice(0, -1), { type: 'array', items: [empty] })
+    } else value = setIn(value, item, empty)
+  }
+  return updateNode(model, id, setIn(value, rel, str))
 }
 
 // disconnectWire clears the value at rowKey: the member is removed, or

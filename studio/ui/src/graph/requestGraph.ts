@@ -15,6 +15,7 @@ import type { CohortField, Manifest, ManifestOperator } from '../api.ts'
 import { formatPath, type PathSegment } from './nodePath.ts'
 import { describeAccept, isGlob, slotFor, slotsFor } from './ports.ts'
 import { groupKeyColumn, type GroupEntry } from './partition.ts'
+import { joinedFields, joinKeyRefusal, type RightSide } from './joins.ts'
 
 export type ColumnKey =
   | 'source'
@@ -58,6 +59,22 @@ export type ParamRow = {
   accepts?: string
   // The row binds a compose fit by name (`params.fit`), not a field.
   fit?: true
+  // The value is known to be wrong (a join's right_field the right
+  // cohort lacks): drawn like an unresolved ref.
+  invalid?: true
+}
+
+// JoinInfo is a join node's output side: the joined fields it adds to
+// the request (the right cohort's fields, prefixed with `as`), each a
+// source handle `field:<name>` like the cohort's. state says whether the
+// right cohort's fields are known, still being inspected, or could not
+// be read (no such file); without them fields lists only the joined
+// names the request references.
+export type JoinInfo = {
+  right?: string
+  as: string
+  state: 'known' | 'pending' | 'missing'
+  fields: CohortFieldRow[]
 }
 
 export type OpNodeData = {
@@ -73,6 +90,8 @@ export type OpNodeData = {
   // Set on a compose fit's regression: the fit name it binds, drawn as a
   // `fit` source handle (composeGraph.ts).
   fit?: string
+  // Set on a join: the joined fields it outputs.
+  join?: JoinInfo
 }
 
 export type CohortFieldRow = { name: string; type: string; used: boolean }
@@ -121,6 +140,8 @@ export type BuildOptions = {
   // resolved without a wire (a chain stage reads the previous stage's
   // rows, not a cohort node).
   implicitFields?: boolean
+  // A join's right cohort fields by its `right` path (joins.RightSide).
+  rightFields?: (right: string) => RightSide
 }
 
 type SectionSpec = {
@@ -144,6 +165,9 @@ const ROW_LEVEL = ['features', 'attributes']
 // Stage order. Also the order nodes stack within a column and the order
 // producers are searched (downstream-most visible producer wins).
 const SECTIONS: SectionSpec[] = [
+  // Joins run at load, beside the cohort: their keys read the left
+  // cohort only; every later section sees the joined fields.
+  { key: 'joins', title: 'Join', column: 'source', opKey: 'kind', opFallback: 'JOIN', sees: [] },
   { key: 'features', title: 'Feature', column: 'features', opKey: 'type', opFallback: 'FEATURE', catalog: (m) => m.components?.features, nameKey: 'label', produces: true, sees: [], seesSelf: true },
   { key: 'filterers', title: 'Filter', column: 'filterers', opKey: 'type', opFallback: 'FILTER', catalog: (m) => m.components?.filterers, sees: ['features'] },
   { key: 'attributes', title: 'Attribute', column: 'attributes', opKey: 'type', opFallback: 'ATTRIBUTE', catalog: (m) => m.components?.attributes, nameKey: 'label', produces: true, sees: ['features'], seesSelf: true },
@@ -184,6 +208,7 @@ export const REQUEST_SECTIONS: ReadonlyMap<string, { single: boolean }> = new Ma
 // (POST /api/preview has a probe for them). The cohort node is previewed
 // too; multiplicity and return have no probe.
 export const PREVIEW_SECTIONS: ReadonlySet<string> = new Set([
+  'joins',
   'features',
   'filterers',
   'attributes',
@@ -207,7 +232,7 @@ export function hasPreview(n: GraphNode): boolean {
 
 // Keys (last named path segment, outside `params`) whose values are field
 // or label references.
-const REF_KEYS = new Set(['field', 'split_by', 'rows', 'cols', 'predictors', 'target', 'fields', 'vector'])
+const REF_KEYS = new Set(['field', 'split_by', 'rows', 'cols', 'predictors', 'target', 'fields', 'vector', 'left_field'])
 
 // PARAM_REF_KEYS are the `params` members of a section whose values are
 // field references: a post-test's partition_by (group key columns).
@@ -285,6 +310,7 @@ export function buildRequestGraph(req: unknown, opts: BuildOptions = {}): Reques
       // A vector's glob members (`q_*`) expand over the schema: no wire.
       if (key === 'vectors') for (const r of rows) if (r.ref !== undefined && isGlob(r.ref)) delete r.ref
       if (opts.manifest) addPorts(opts.manifest, key, op, e, rows, groupKeys)
+      const join = key === 'joins' ? joinInfo(e, rows, opts.rightFields) : undefined
       const list = opts.manifest && spec.catalog ? spec.catalog(opts.manifest) : undefined
       const opKnown =
         typeof opVal === 'string' && list ? list.some((o) => (o.name ?? o.kind) === opVal) : undefined
@@ -302,6 +328,7 @@ export function buildRequestGraph(req: unknown, opts: BuildOptions = {}): Reques
           ...(name !== undefined && { name }),
           rows,
           produces: !!spec.produces && name !== undefined,
+          ...(join && { join }),
         },
       })
       if (spec.produces && name !== undefined) {
@@ -322,15 +349,32 @@ export function buildRequestGraph(req: unknown, opts: BuildOptions = {}): Reques
   const knownNames = new Set(known?.map((f) => f.name))
   const referenced: string[] = []
   const edges: GraphEdge[] = []
+  const joins = ops.filter((n) => n.data.join !== undefined)
   for (const node of ops) {
     const spec = SECTION_BY_KEY.get(node.data.section)!
     const index = indexOf(node.id)
     for (const row of node.data.rows) {
       if (row.ref === undefined) continue
       const ref = row.ref
-      const src = resolve(spec, index, ref, lastName(row.key), producers, knownNames, !!known)
+      const role = lastName(row.key)
+      // A join's keys read the left cohort only.
+      const src =
+        spec.key === 'joins'
+          ? !known || knownNames.has(ref)
+            ? 'cohort'
+            : null
+          : resolve(spec, index, ref, role, producers, knownNames, !!known, joins)
       row.resolved = src !== null
       if (!src) continue
+      const viaJoin = src !== 'cohort' ? joins.find((j) => j.id === src) : undefined
+      if (viaJoin) {
+        const info = viaJoin.data.join!
+        const f = info.fields.find((x) => x.name === ref)
+        if (f) f.used = true
+        else info.fields.push({ name: ref, type: '', used: true })
+        edges.push(edge(viaJoin.id, `field:${ref}`, node.id, row.key, ref))
+        continue
+      }
       if (src === 'cohort') {
         if (opts.withCohort === false) {
           row.resolved = !!opts.implicitFields && knownNames.has(ref)
@@ -385,6 +429,16 @@ export function canSee(section: string, index: number, producerSection: string, 
 // post-test's partition_by gets an add row while the request has group
 // keys it does not list yet.
 function addPorts(manifest: Manifest, section: string, op: string, e: Record<string, unknown>, rows: ParamRow[], groupKeys: readonly string[]): void {
+  if (section === 'joins') {
+    // Each left key is an input; the next pair is an append port.
+    const accepts = 'left_field: a left cohort key (not a set column; its type must compare with right_field)'
+    for (const row of rows) if (row.ref !== undefined) row.accepts = accepts
+    const on = e.on
+    if (on === undefined || (Array.isArray(on) && on.every(isObject))) {
+      rows.push({ key: `on[${Array.isArray(on) ? on.length : 0}].left_field`, value: '', port: 'append', accepts })
+    }
+    return
+  }
   for (const row of rows) {
     if (row.ref === undefined) continue
     const slot = slotFor(manifest, section, op, row.key)
@@ -427,6 +481,7 @@ function resolve(
   producers: Map<string, Producer[]>,
   knownNames: Set<string>,
   fieldsKnown: boolean,
+  joins: readonly OpNode[] = [],
 ): string | 'cohort' | null {
   if (role === 'vector') {
     return findLast(producers.get('vectors') ?? [], (p) => p.name === ref)?.id ?? null
@@ -439,10 +494,56 @@ function resolve(
   const exact = findLast(visible, (p) => p.name === ref)
   if (exact) return exact.id
   if (fieldsKnown && knownNames.has(ref)) return 'cohort'
+  // A joined field: the right cohort's, prefixed with the join's `as`.
+  const joined = joins.find((j) => j.data.join!.state === 'known' && j.data.join!.fields.some((f) => f.name === ref))
+  if (joined) return joined.id
   // Expanding features (one-hot, etc.) emit `<label>_<suffix>` columns.
   const prefixed = findLast(visible, (p) => p.section === 'features' && ref.startsWith(p.name + '_'))
   if (prefixed) return prefixed.id
-  return fieldsKnown ? null : 'cohort'
+  // A join whose right fields are not known yet takes the names that
+  // carry its prefix, and (with the left fields known) any other name.
+  const open = joins.filter((j) => j.data.join!.state !== 'known')
+  const byPrefix = open.find((j) => j.data.join!.as !== '' && ref.startsWith(j.data.join!.as))
+  if (byPrefix) return byPrefix.id
+  if (fieldsKnown) return open.find((j) => j.data.join!.as === '')?.id ?? null
+  return 'cohort'
+}
+
+// joinInfo derives a join entry's output side from its right cohort's
+// fields, and marks on[] right_field rows naming no right field, or
+// whose key types do not compare, invalid.
+function joinInfo(e: Record<string, unknown>, rows: ParamRow[], rightFields?: (right: string) => RightSide): JoinInfo {
+  const right = typeof e.right === 'string' && e.right !== '' ? e.right : undefined
+  const as = typeof e.as === 'string' ? e.as : ''
+  const side = right !== undefined && rightFields ? rightFields(right) : right === undefined ? null : undefined
+  if (!side) return { ...(right !== undefined && { right }), as, state: side === null ? 'missing' : 'pending', fields: [] }
+  const types = new Map(side.map((f) => [f.name, f.type]))
+  for (const row of rows) {
+    if (!/^on\[\d+\]\.right_field$/.test(row.key)) continue
+    if (!types.has(row.value)) row.invalid = true
+  }
+  return {
+    ...(right !== undefined && { right }),
+    as,
+    state: 'known',
+    fields: joinedFields(side, as).map((f) => ({ name: f.name, type: f.type, used: false })),
+  }
+}
+
+// joinKeyType is the type a join's on[i] right_field names (for the
+// left_field input's key-type rule), when the right fields are known.
+export function joinKeyType(node: OpNode, rowKey: string): string | undefined {
+  const info = node.data.join
+  const m = /^on\[(\d+)\]\.left_field$/.exec(rowKey)
+  if (!info || info.state !== 'known' || !m) return undefined
+  const r = node.data.rows.find((x) => x.key === `on[${m[1]}].right_field`)?.value
+  return r === undefined ? undefined : info.fields.find((f) => f.name === info.as + r)?.type
+}
+
+// joinKeyCheck is the left_field input's rule: a key type the pair's
+// right_field compares with (joins.joinKeyRefusal).
+export function joinKeyCheck(node: OpNode, rowKey: string, leftType: string | undefined): string | null {
+  return joinKeyRefusal(leftType, joinKeyType(node, rowKey))
 }
 
 function edge(source: string, sourceHandle: string, target: string, role: string, ref: string): GraphEdge {
@@ -517,7 +618,7 @@ export function estimateHeight(n: GraphNode): number {
   const preview = hasPreview(n) ? LAYOUT.previewHeight : 0
   switch (n.type) {
     case 'op':
-      return headerHeight + n.data.rows.length * rowHeight + padding + preview
+      return headerHeight + (n.data.rows.length + (n.data.join ? Math.max(1, n.data.join.fields.length) + 1 : 0)) * rowHeight + padding + preview
     case 'cohort':
       return headerHeight + Math.max(1, n.data.fields.length) * rowHeight + padding + preview
     case 'raw':

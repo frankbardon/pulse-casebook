@@ -3,6 +3,7 @@ package preview
 import (
 	"context"
 	"encoding/json"
+	"maps"
 	"reflect"
 	"slices"
 	"sort"
@@ -623,5 +624,41 @@ func TestBuildVectorProbe(t *testing.T) {
 		if plan.Verb != VerbNone || plan.Nodes[0].Kind != KindNone || plan.Nodes[0].Reason == "" {
 			t.Fatalf("%s: plan %+v node %+v", v, plan, plan.Nodes[0])
 		}
+	}
+}
+
+func TestBuildJoinProbe(t *testing.T) {
+	doc := decode(t, `{"cohort": {"filename": "l.pulse", "data_dir": "."},
+		"joins": [{"right": "r.pulse", "kind": "inner", "on": [{"left_field": "id", "right_field": "id"}]}],
+		"filterers": [{"type": "FILTER_INCLUDE", "field": "g", "values": ["a"]}],
+		"vectors": [{"name": "v", "fields": ["x"]}]}`)
+	resolve := func(c any) (any, error) {
+		name := c.(map[string]any)["filename"].(string)
+		return map[string]any{"filename": "data/" + name}, nil
+	}
+	join, err := Build(doc, "request", []string{"joins[0]"}, testCatalog(), Options{ResolveCohort: resolve})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if join.Nodes[0].Kind != KindJoin || join.Cost != CostCheap {
+		t.Fatalf("plan %+v", join.Nodes[0])
+	}
+	keys := slices.Sorted(maps.Keys(join.Request))
+	if !reflect.DeepEqual(keys, []string{"cohort", "disable_components", "joins", "return"}) {
+		t.Fatalf("join sub-request keys = %v", keys)
+	}
+	// The right side resolves like a cohort; the document is untouched.
+	if got := join.Request["joins"].([]any)[0].(map[string]any)["right"]; got != "data/r.pulse" {
+		t.Fatalf("right = %v", got)
+	}
+	if got := doc["joins"].([]any)[0].(map[string]any)["right"]; got != "r.pulse" {
+		t.Fatalf("document right changed to %v", got)
+	}
+	cohort, err := Build(doc, "request", []string{"cohort"}, testCatalog(), Options{ResolveCohort: resolve})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, joined := cohort.Request["joins"]; joined {
+		t.Fatal("the cohort probe keeps the join: it previews the left side alone")
 	}
 }

@@ -74,11 +74,11 @@ describe('buildRequestGraph', () => {
     const g = buildRequestGraph({
       cohort: { filename: 'c.pulse' },
       weight: { field: 'w', kind: 'probability' },
-      joins: [{ right: 'r.pulse' }],
+      models: [{ name: 'm' }],
       tests: 'not-an-array',
     })
     const raws = g.nodes.filter((n) => n.type === 'raw').map((n) => n.id)
-    expect(raws).toEqual(['weight', 'joins', 'tests'])
+    expect(raws).toEqual(['weight', 'models', 'tests'])
   })
 
   it('does not wire a label to entries before it', () => {

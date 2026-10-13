@@ -2,7 +2,7 @@ import { use, useState, type KeyboardEvent } from 'react'
 import { Handle, Position, type Node, type NodeProps } from '@xyflow/react'
 import type { LaneRole } from './composeGraph.ts'
 import { LaneActionsContext } from './laneActions.ts'
-import { PREVIEW_SECTIONS, type ColumnKey, type CohortNode, type FacetNode, type OpNode, type RawNode } from './requestGraph.ts'
+import { PREVIEW_SECTIONS, type ColumnKey, type CohortNode, type FacetNode, type JoinInfo, type OpNode, type RawNode } from './requestGraph.ts'
 import { FACET_PROPS } from './facetGraph.ts'
 import { FacetResult } from './FacetPreview.tsx'
 import { FIT_HANDLE } from './wiring.ts'
@@ -30,7 +30,12 @@ export function OpNodeView({ data }: NodeProps<OpNode>) {
         {data.rows.map((r) => (
           <li
             key={r.key}
-            className={'gnode-row' + (r.ref !== undefined && !r.resolved ? ' unresolved' : '') + (r.port ? ' port' : '') + (r.fit ? ' fit' : '')}
+            className={
+              'gnode-row' +
+              ((r.ref !== undefined && !r.resolved) || r.invalid ? ' unresolved' : '') +
+              (r.port ? ' port' : '') +
+              (r.fit ? ' fit' : '')
+            }
             data-row={r.key}
           >
             {(r.ref !== undefined || r.port) && (
@@ -43,6 +48,7 @@ export function OpNodeView({ data }: NodeProps<OpNode>) {
           </li>
         ))}
       </ul>
+      {data.join && <JoinedFields join={data.join} />}
       {PREVIEW_SECTIONS.has(data.section) && <NodePreview id={data.path} label={data.name} />}
       {data.produces && <Handle type="source" position={Position.Right} id="out" title={`label ${data.name}`} />}
       {data.fit !== undefined && (
@@ -51,6 +57,36 @@ export function OpNodeView({ data }: NodeProps<OpNode>) {
       <NodeIssues id={data.path} />
       <NodeRunHeadline id={data.path} />
     </div>
+  )
+}
+
+// JoinedFields lists the fields a join adds (the right cohort's,
+// prefixed with `as`); each is a source handle (`field:<name>`) wired
+// into downstream inputs the way cohort fields are.
+function JoinedFields({ join }: { join: JoinInfo }) {
+  const note =
+    join.state === 'missing'
+      ? join.right === undefined
+        ? 'pick a right cohort'
+        : `${join.right} not found`
+      : join.state === 'pending'
+        ? 'reading right cohort…'
+        : undefined
+  return (
+    <ul className="gnode-rows gnode-joined" data-testid="joined-fields" data-state={join.state}>
+      <li className="gnode-row muted gnode-subhead">
+        <span className="k">joined fields</span>
+        {note !== undefined && <span className="v">{note}</span>}
+      </li>
+      {join.state === 'known' && join.fields.length === 0 && <li className="gnode-row muted">No fields</li>}
+      {join.fields.map((f) => (
+        <li key={f.name} className={'gnode-row' + (f.used ? ' used' : '')} data-field={f.name}>
+          <span className="k">{f.name}</span>
+          <span className="v type">{f.type || '?'}</span>
+          <Handle type="source" position={Position.Right} id={`field:${f.name}`} title={`${f.name} ${f.type}`.trim()} />
+        </li>
+      ))}
+    </ul>
   )
 }
 

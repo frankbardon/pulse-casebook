@@ -17,6 +17,7 @@ import {
 } from '@xyflow/react'
 import {
   inspectCohort,
+  listFiles,
   readFile,
   readLayout,
   saveFile,
@@ -26,6 +27,7 @@ import {
   type WorkspaceFile,
 } from '../api.ts'
 import { cohortCandidates } from './cohortPath.ts'
+import { cohortOptions, joinIssues, rightKey, type RightSide } from './joins.ts'
 import { toPlain, type JsonNode } from './jsonTree.ts'
 import { emitModel, emitModelText, parseModel, updateNode, type GraphModel } from './model.ts'
 import { buildRequestGraph, estimateHeight, LAYOUT, type GraphEdge, type GraphNode, type RequestGraph } from './requestGraph.ts'
@@ -137,6 +139,8 @@ function RequestGraphView({ path, kind, catalog }: { path: string; kind: ViewKin
   const flowBox = useRef<HTMLDivElement>(null)
   const rf = useRef<ReactFlowInstance<FlowNode, GraphEdge> | null>(null)
   const noteTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
+  // The workspace's cohort files, offered as a join's right side.
+  const [cohortFiles, setCohortFiles] = useState<string[]>([])
   const [saving, setSaving] = useState(false)
   const [saveError, setSaveError] = useState<string | null>(null)
   const [lay, setLay] = useState<LayoutDoc>(EMPTY_LAYOUT)
@@ -173,6 +177,15 @@ function RequestGraphView({ path, kind, catalog }: { path: string; kind: ViewKin
 
   useEffect(() => {
     const ctl = new AbortController()
+    listFiles(ctl.signal)
+      .then((l) => setCohortFiles(l.files.filter((f) => f.kind === 'cohort').map((f) => f.path)))
+      .catch(() => {})
+    return () => ctl.abort()
+  }, [path])
+  const cohortChoices = useMemo(() => cohortOptions(path, cohortFiles), [path, cohortFiles])
+
+  useEffect(() => {
+    const ctl = new AbortController()
     // A missing or unreadable sidecar means auto-layout, never an error.
     readLayout(path, ctl.signal)
       .then((f) => {
@@ -206,7 +219,12 @@ function RequestGraphView({ path, kind, catalog }: { path: string; kind: ViewKin
 
   // Each lane's cohort reference, by lane id ('' for a plain request).
   const cohortRefs = useMemo(() => cohortRefsOf(plain, kind), [plain, kind])
-  const cohortKeys = useMemo(() => [...new Set(cohortRefs.values())].sort().join('\n'), [cohortRefs])
+  // Every join's right cohort, inspected like a cohort for its fields.
+  const joinRights = useMemo(() => joinRightsOf(plain), [plain])
+  const cohortKeys = useMemo(
+    () => [...new Set([...cohortRefs.values(), ...joinRights.map(rightKey)])].sort().join('\n'),
+    [cohortRefs, joinRights],
+  )
 
   // Inspect every distinct cohort the document names (again after an
   // edit names a new one).
@@ -250,6 +268,15 @@ function RequestGraphView({ path, kind, catalog }: { path: string; kind: ViewKin
     },
     [cohortRefs, cohorts],
   )
+  // A join's right cohort: its fields, null when it could not be read,
+  // undefined while it is being inspected.
+  const rightFields = useCallback(
+    (right: string): RightSide => {
+      const st = cohorts.get(rightKey(right))
+      return st === undefined ? undefined : (st.fields ?? null)
+    },
+    [cohorts],
+  )
   const laneKeys = [...new Set(cohortRefs.values())]
   const cohortStates = laneKeys.map((k) => cohorts.get(k))
   const cohortError = cohortStates.find((c) => c?.error !== undefined)?.error ?? null
@@ -271,19 +298,19 @@ function RequestGraphView({ path, kind, catalog }: { path: string; kind: ViewKin
     if (plain === null) return null
     try {
       if (kind === 'compose') {
-        const compose = buildComposeGraph(plain, { manifest: catalog?.manifest, fieldsFor })
+        const compose = buildComposeGraph(plain, { manifest: catalog?.manifest, fieldsFor, rightFields })
         return { nodes: compose.nodes, edges: compose.edges, columns: compose.columns, compose }
       }
       if (kind === 'chain') {
-        const chain = buildChainGraph(plain, { manifest: catalog?.manifest, cohortFields: fieldsFor('') })
+        const chain = buildChainGraph(plain, { manifest: catalog?.manifest, cohortFields: fieldsFor(''), rightFields })
         return { nodes: chain.nodes, edges: chain.edges, columns: chain.columns, compose: chain, inputs: chain.inputs }
       }
       if (kind === 'facet') return buildFacetGraph(plain, { manifest: catalog?.manifest, cohortFields: fieldsFor('') })
-      return buildRequestGraph(plain, { manifest: catalog?.manifest, cohortFields: fieldsFor('') })
+      return buildRequestGraph(plain, { manifest: catalog?.manifest, cohortFields: fieldsFor(''), rightFields })
     } catch (e) {
       return String(e)
     }
-  }, [plain, kind, catalog, fieldsFor])
+  }, [plain, kind, catalog, fieldsFor, rightFields])
 
   // Live previews need the cohort: until it is inspected they are off.
   const previews = usePreviews(path, doc?.model ?? null, graph !== null && typeof graph !== 'string' ? graph : null, previewsOff)
@@ -323,7 +350,19 @@ function RequestGraphView({ path, kind, catalog }: { path: string; kind: ViewKin
     [graph, kind],
   )
   const validationCatalog = useMemo(() => catalog ?? {}, [catalog])
-  const validation = useValidation(path, doc?.model ?? null, nodeIds, validationCatalog, fields)
+  // Joins are checked against both cohorts' fields (joins.ts).
+  const joinFindings = useMemo(
+    () =>
+      doc
+        ? joinIssues(doc.model, {
+            manifest: catalog?.manifest,
+            rightFields,
+            leftFields: (frame) => laneFields(laneOfId(kind, frame === '' ? 'joins[0]' : `${frame}.joins[0]`)),
+          })
+        : [],
+    [doc, catalog, rightFields, laneFields, kind],
+  )
+  const validation = useValidation(path, doc?.model ?? null, nodeIds, validationCatalog, fields, joinFindings)
 
   // Full run of the in-memory document; results stay in memory (bottom
   // panel) and reach terminal nodes by context, like previews.
@@ -487,7 +526,12 @@ function RequestGraphView({ path, kind, catalog }: { path: string; kind: ViewKin
       const r = check(c)
       if (!r.ok) return note(r.reason)
       note(null)
-      setDoc((d) => (d && c.target ? { ...d, model: connectWire(d.model, c.target, r.rowKey, r.ref) } : d))
+      setDoc((d) => {
+        if (!d || !c.target) return d
+        let model = connectWire(d.model, c.target, r.rowKey, r.ref)
+        for (const w of r.also ?? []) model = connectWire(model, c.target, w.rowKey, w.ref)
+        return { ...d, model }
+      })
     },
     [check, note],
   )
@@ -967,6 +1011,7 @@ function RequestGraphView({ path, kind, catalog }: { path: string; kind: ViewKin
             onClose={() => setSelected(null)}
             onDelete={deletable(doc.model, node.id) ? () => remove([node.id], []) : undefined}
             groupKeys={selectedGroupKeys}
+            cohortOptions={node.section === 'joins' ? cohortChoices : undefined}
           />
         )}
       </div>
@@ -1000,6 +1045,29 @@ function laneOfId(kind: ViewKind, id: string): string {
   const frame = frameOf(id)
   if (frame === '') return ROOT_LANE
   return frame.startsWith('fits[') ? frame.slice(0, frame.indexOf(']') + 1) : frame
+}
+
+// joinRightsOf lists the right cohorts of every join in the document:
+// the request's, each compose slot's and fit's, each chain stage's.
+function joinRightsOf(plain: unknown): string[] {
+  const out = new Set<string>()
+  const scan = (req: unknown) => {
+    const joins = typeof req === 'object' && req !== null ? (req as { joins?: unknown }).joins : undefined
+    if (!Array.isArray(joins)) return
+    for (const j of joins) {
+      const right = typeof j === 'object' && j !== null ? (j as { right?: unknown }).right : undefined
+      if (typeof right === 'string' && right !== '') out.add(right)
+    }
+  }
+  if (typeof plain !== 'object' || plain === null) return []
+  const doc = plain as Record<string, unknown>
+  scan(doc)
+  for (const key of ['requests', 'fits', 'stages']) {
+    const list = doc[key]
+    if (!Array.isArray(list)) continue
+    for (const e of list) scan(key === 'requests' ? e : typeof e === 'object' && e !== null ? (e as { request?: unknown }).request : undefined)
+  }
+  return [...out].sort()
 }
 
 // cohortRefsOf maps each lane to its cohort reference as JSON (the key
@@ -1095,6 +1163,12 @@ function portSource(
   if (n?.type === 'cohort' && from.id?.startsWith('field:')) {
     const ref = from.id.slice('field:'.length)
     const type = fields?.find((f) => f.name === ref)?.type
+    return { ref, ...(type && { type }) }
+  }
+  if (n?.type === 'op' && from.id?.startsWith('field:') && n.data.join) {
+    // A joined field: typed by the right cohort, read by every section.
+    const ref = from.id.slice('field:'.length)
+    const type = n.data.join.fields.find((f) => f.name === ref)?.type
     return { ref, ...(type && { type }) }
   }
   if (n?.type === 'op' && from.id === 'out' && n.data.name !== undefined) {

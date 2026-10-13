@@ -19,6 +19,7 @@
 // Pure and deterministic, like buildRequestGraph.
 
 import type { CohortField, Manifest } from '../api.ts'
+import type { RightSide } from './joins.ts'
 import { formatPath, type PathSegment } from './nodePath.ts'
 import {
   buildRequestGraph,
@@ -67,6 +68,8 @@ export type ComposeOptions = {
   manifest?: Manifest
   // Cohort fields of a lane, from inspecting its cohort.
   fieldsFor?: (laneId: string) => CohortField[] | undefined
+  // A join's right cohort fields by its `right` path.
+  rightFields?: (right: string) => RightSide
 }
 
 // Lane geometry (px). head is the lane header: title row plus the lane's
@@ -87,6 +90,7 @@ export function buildComposeGraph(req: unknown, opts: ComposeOptions = {}): Comp
     manifest: opts.manifest,
     cohortFields: opts.fieldsFor?.(laneId),
     basePath: base,
+    rightFields: opts.rightFields,
   })
 
   const requests = objectList(req.requests)

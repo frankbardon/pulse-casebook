@@ -3,6 +3,7 @@ package preview
 import (
 	"encoding/json"
 	"fmt"
+	"maps"
 	"slices"
 	"strings"
 
@@ -26,6 +27,7 @@ const (
 	KindCrosstab    = "crosstab"
 	KindOverlay     = "overlay"
 	KindVector      = "vector"
+	KindJoin        = "join"
 	KindFacet       = "facet"
 	KindNone        = "none"
 )
@@ -212,6 +214,7 @@ var sectionKind = map[string]string{
 	"matrices":     KindMatrix,
 	"overlays":     KindOverlay,
 	"vectors":      KindVector,
+	"joins":        KindJoin,
 }
 
 // Build parses the node ids, checks they form one batch (same request
@@ -439,6 +442,13 @@ func (b *builder) requestFrame(section string, ids []string, indices []int) (*Pl
 
 	switch kind {
 	case KindCohort:
+		// The cohort node is the left side alone; its join has its own
+		// probe.
+		delete(sub, "vectors")
+		delete(sub, "joins")
+	case KindJoin:
+		// The cohort and its join, nothing else: the rows the join
+		// keeps (an inner join drops unmatched left rows).
 		delete(sub, "vectors")
 	case KindFilter:
 		keepThrough("filterers", maxIdx)
@@ -864,8 +874,12 @@ func overlayPlan(verb string, sub map[string]any, ids []string, section string, 
 	return plan
 }
 
-// resolveCohort rewrites obj["cohort"] in place.
+// resolveCohort rewrites obj["cohort"] in place, and each join's right
+// cohort (ResolveJoins).
 func (b *builder) resolveCohort(obj map[string]any) error {
+	if b.opts.ResolveCohort != nil {
+		ResolveJoins(obj, b.opts.ResolveCohort)
+	}
 	c, ok := obj["cohort"]
 	if !ok {
 		return nil
@@ -876,6 +890,40 @@ func (b *builder) resolveCohort(obj map[string]any) error {
 	}
 	obj["cohort"] = r
 	return nil
+}
+
+// ResolveJoins replaces obj["joins"] with a copy whose right cohorts are
+// rewritten to the file resolve finds for them, a right path read like
+// a request cohort with data_dir "." (the root, the request's directory,
+// then its parent). A right side that resolves nowhere is left as
+// written, so the engine's own error names it. obj's joins list and its
+// entries are never changed in place.
+func ResolveJoins(obj map[string]any, resolve func(cohort any) (any, error)) {
+	list, ok := obj["joins"].([]any)
+	if !ok {
+		return
+	}
+	out := make([]any, len(list))
+	for i, j := range list {
+		out[i] = j
+		spec, ok := j.(map[string]any)
+		right, _ := spec["right"].(string)
+		if !ok || right == "" {
+			continue
+		}
+		got, err := resolve(map[string]any{"filename": right, "data_dir": "."})
+		if err != nil {
+			continue
+		}
+		if m, ok := got.(map[string]any); ok {
+			if f, ok := m["filename"].(string); ok {
+				spec = maps.Clone(spec)
+				spec["right"] = f
+				out[i] = spec
+			}
+		}
+	}
+	obj["joins"] = out
 }
 
 func (b *builder) cohortOf(obj map[string]any) (any, error) {

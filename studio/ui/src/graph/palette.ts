@@ -18,6 +18,7 @@ import { fromPlain, stringValue, type JsonNode } from './jsonTree.ts'
 import { buildModel, emitModel, updateNode, type GraphModel } from './model.ts'
 import { formatPath, isPathPrefix, type PathSegment } from './nodePath.ts'
 import { paramField, topLevelKeys } from './paramForms.ts'
+import { maxJoins } from './joins.ts'
 import { compatibleOperators, refusal, slotsFor, type Slot } from './ports.ts'
 import { canSee, COLUMNS, sectionInfo, type ColumnKey } from './requestGraph.ts'
 import { connectWire } from './wiring.ts'
@@ -27,8 +28,8 @@ export const PALETTE_MIME = 'application/x-pulse-palette'
 
 // PALETTE_SECTIONS are the request sections whose operators the manifest
 // lists, in stage order. Sections without manifest operators (sort,
-// crosstab, return) are not in the palette; multiplicity and vectors
-// are, as fixed BLOCK_ITEMS entries.
+// crosstab, return) are not in the palette; joins, vectors and
+// multiplicity are, as fixed BLOCK_ITEMS entries.
 export const PALETTE_SECTIONS = [
   'features',
   'filterers',
@@ -60,11 +61,22 @@ export type PaletteItem = {
 }
 
 // BLOCK_ITEMS are request blocks the manifest lists no operators for,
-// placed as fixed items after the manifest's: a vector (a named member
+// placed as fixed items after the manifest's: a join (`{"right": "",
+// "kind": "inner", "on": []}`, as many as the manifest's join envelope
+// allows; the right cohort is picked in the inspector, keys wired in), a vector (a named member
 // set, `{"name": <unique>, "fields": []}`; members are wired in) and the
 // multiplicity block (one per request, method written to `method`;
 // family and alpha are set in the inspector).
 export const BLOCK_ITEMS: readonly PaletteItem[] = [
+  {
+    key: 'joins/JOIN',
+    section: 'joins',
+    column: 'source',
+    kind: 'Join',
+    op: 'JOIN',
+    type: 'inner',
+    description: "Inner hash join of a second cohort on key fields: its fields join the request's, prefixed with as.",
+  },
   {
     key: 'vectors/VECTOR',
     section: 'vectors',
@@ -221,6 +233,9 @@ export function placeNode(model: GraphModel, item: PaletteItem, opts: PlaceOptio
   const arr = getIn(root, [...base, item.section])
   if (arr !== undefined && arr.type !== 'array') throw new Error(`${item.section} is not a list in this request`)
   const index = arr ? arr.items.length : 0
+  if (item.section === 'joins' && index >= maxJoins(opts.manifest)) {
+    throw new Error(`this request already has ${index === 1 ? 'a join' : `${index} joins`}: the engine runs ${maxJoins(opts.manifest)} per request`)
+  }
 
   let value: JsonNode = { type: 'object', members: [] }
   const str = (s: string): JsonNode => ({ type: 'string', raw: JSON.stringify(s) })
@@ -228,6 +243,8 @@ export function placeNode(model: GraphModel, item: PaletteItem, opts: PlaceOptio
   if (info.nameKey) value = setIn(value, [info.nameKey], str(uniqueLabel(model, item, opts)))
   // A vector starts with no members; they are wired in.
   if (item.section === 'vectors') value = setIn(value, ['fields'], { type: 'array', items: [] })
+  // A join in JoinSpec key order: right (picked in the inspector), kind, on.
+  if (item.section === 'joins') value = fromPlain({ right: '', kind: item.type, on: [] })
 
   const next = setIn(root, arr ? [...base, item.section, index] : [...base, item.section], arr ? value : { type: 'array', items: [value] })
   let out = buildModel(next, model.kind)

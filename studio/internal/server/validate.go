@@ -101,18 +101,20 @@ func (s *Server) readValidateBody(w http.ResponseWriter, r *http.Request) (valid
 
 // engineDoc copies doc with every cohort object rewritten to the
 // root-relative file the engine opens (the request's own, each Compose
-// slot's and each fit request's). A cohort that resolves to no workspace
+// slot's, each fit request's) and every join's right cohort likewise
+// (each request's, a chain stage's too; preview.ResolveJoins). A cohort that resolves to no workspace
 // file is reported as an issue on its cohort node and dropped from the
 // copy, so Explain still describes the rest.
 func (s *Server) engineDoc(requestPath string, doc map[string]any, kind workspace.Kind) (map[string]any, []validate.Issue) {
 	resolve := s.cohortResolver(requestPath)
 	var issues []validate.Issue
 	fix := func(obj map[string]any, at []preview.Segment) map[string]any {
+		out := maps.Clone(obj)
+		preview.ResolveJoins(out, resolve)
 		c, ok := obj["cohort"]
 		if !ok {
-			return obj
+			return out
 		}
-		out := maps.Clone(obj)
 		got, err := resolve(c)
 		if err != nil {
 			delete(out, "cohort")
@@ -128,6 +130,25 @@ func (s *Server) engineDoc(requestPath string, doc map[string]any, kind workspac
 		return out
 	}
 	out := fix(doc, nil)
+	if kind == workspace.KindChain {
+		if list, ok := doc["stages"].([]any); ok {
+			stages := make([]any, len(list))
+			for i, e := range list {
+				stages[i] = e
+				st, ok := e.(map[string]any)
+				req, ok2 := st["request"].(map[string]any)
+				if !ok || !ok2 {
+					continue
+				}
+				st = maps.Clone(st)
+				req = maps.Clone(req)
+				preview.ResolveJoins(req, resolve)
+				st["request"] = req
+				stages[i] = st
+			}
+			out["stages"] = stages
+		}
+	}
 	if kind == workspace.KindCompose {
 		if list, ok := doc["requests"].([]any); ok {
 			reqs := make([]any, len(list))
