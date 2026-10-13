@@ -38,6 +38,8 @@ const (
 	KindSchema Kind = "schema"
 	KindImport Kind = "import"
 	KindSource Kind = "source"
+	// KindExport is a file under exports/ (cohort exports, gitignored).
+	KindExport Kind = "export"
 )
 
 // Import spec states (File.State on KindImport entries).
@@ -61,8 +63,9 @@ const MaxEntries = 5000
 // File is one entry of a listing. Path is slash-separated and relative to
 // the scoped root. Reason explains an unopenable classification.
 //
-// Import entries carry extra links: a source has its Format (pulse
-// io.FormatFromPath, "" when unrecognised) and Size; an import spec its
+// Import entries carry extra links: a source (and an export) has its
+// Format (pulse io.FormatFromPath, "transfer" for a .pulse.zst export,
+// "" when unrecognised) and Size; an import spec its
 // Target cohort and State; a cohort built by an import spec links back
 // to it in Spec, so the UI can offer Rebuild.
 type File struct {
@@ -158,7 +161,8 @@ func classifyName(name string) (kind Kind, reason string, ok bool) {
 }
 
 // classifyLayout recognises the import layout by root-relative path:
-// sources/** (any file), schemas/*.schema.json and imports/*.import.json.
+// sources/** and exports/** (any file), schemas/*.schema.json and
+// imports/*.import.json.
 func classifyLayout(name string) (Kind, bool) {
 	rel := filepath.ToSlash(name)
 	dir, base := path.Split(rel)
@@ -166,6 +170,8 @@ func classifyLayout(name string) (Kind, bool) {
 	switch {
 	case strings.HasPrefix(rel, "sources/") && base != "":
 		return KindSource, true
+	case strings.HasPrefix(rel, "exports/") && base != "":
+		return KindExport, true
 	case dir == "schemas/" && strings.HasSuffix(lower, ".schema.json"):
 		return KindSchema, true
 	case dir == "imports/" && strings.HasSuffix(lower, ".import.json"):
@@ -239,7 +245,7 @@ func List(dir string) (*Listing, error) {
 		}
 		rel = filepath.ToSlash(rel)
 		lower := strings.ToLower(name)
-		if !strings.HasSuffix(lower, ".json") && !strings.HasSuffix(lower, ".pulse") && !strings.HasPrefix(rel, "sources/") {
+		if !strings.HasSuffix(lower, ".json") && !strings.HasSuffix(lower, ".pulse") && !strings.HasPrefix(rel, "sources/") && !strings.HasPrefix(rel, "exports/") {
 			return nil
 		}
 		if len(out.Files) >= MaxEntries {
@@ -320,8 +326,11 @@ func classifyFile(abs, rel string, d fs.DirEntry) File {
 	f := File{Path: rel}
 	if kind, reason, ok := classifyName(rel); ok {
 		f.Kind, f.Reason = kind, reason
-		if kind == KindSource {
+		if kind == KindSource || kind == KindExport {
 			f.Format = string(pio.FormatFromPath(rel))
+			if kind == KindExport && strings.HasSuffix(strings.ToLower(rel), ".pulse.zst") {
+				f.Format = "transfer"
+			}
 			if info, err := d.Info(); err == nil {
 				f.Size = info.Size()
 			}

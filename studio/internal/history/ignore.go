@@ -10,7 +10,8 @@ import (
 
 // The managed block of the workspace .gitignore. Binaries are not
 // versioned: cohorts are rebuilt from the versioned schemas and import
-// specs, and uploaded sources are recorded by hash in the import specs.
+// specs, uploaded sources are recorded by hash in the import specs, and
+// cohort exports (exports/) are reproducible outputs.
 // Lines outside the markers belong to the user and are never touched.
 const (
 	ignoreBegin = "# >>> pulse studio (managed block: edits between these markers are replaced)"
@@ -21,6 +22,7 @@ const (
 var IgnorePatterns = []string{
 	"*.pulse",
 	"/sources/",
+	"/exports/",
 	"/.studio/",
 	".*.tmp",
 }

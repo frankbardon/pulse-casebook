@@ -255,6 +255,9 @@ func TestImportLayout(t *testing.T) {
 	write("cohorts/sales.pulse", "PULSE")
 	write("other.pulse", "PULSE")
 	write("data/x.csv", "a\n") // non-JSON outside sources/: not listed
+	write("exports/sales.json", "[]")
+	write("exports/sales.pulse.zst", "zz")
+	write("exports/.sales-1.tmp.csv", "partial")
 
 	listing, err := List(dir)
 	if err != nil {
@@ -272,6 +275,8 @@ func TestImportLayout(t *testing.T) {
 		"imports/gone.import.json":  {Path: "imports/gone.import.json", Kind: KindImport, Target: "gone.pulse", State: StateNeedsRebuild},
 		"cohorts/sales.pulse":       {Path: "cohorts/sales.pulse", Kind: KindCohort, Spec: "imports/sales.import.json"},
 		"other.pulse":               {Path: "other.pulse", Kind: KindCohort},
+		"exports/sales.json":        {Path: "exports/sales.json", Kind: KindExport, Format: "jsonarray", Size: 2},
+		"exports/sales.pulse.zst":   {Path: "exports/sales.pulse.zst", Kind: KindExport, Format: "transfer", Size: 2},
 	}
 	for p, w := range want {
 		if got[p] != w {

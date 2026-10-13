@@ -53,6 +53,7 @@ type Server struct {
 
 	importMu  sync.Mutex // serializes imports / rebuilds (target + spec writes)
 	sourcesMu sync.Mutex // serializes naming uploads in sources/
+	exportMu  sync.Mutex // serializes the exists-check + rename of exports (the exports run concurrently)
 }
 
 // New returns a Server. ui is the UI asset tree; uiBuilt says whether it
@@ -81,6 +82,7 @@ func New(root *scope.Root, engine *pulse.Pulse, cfg Config, ui fs.FS, uiBuilt bo
 	s.mux.HandleFunc("GET /api/history/file", s.handleHistoryFile)
 	s.mux.HandleFunc("POST /api/history/restore", s.handleRestore)
 	s.registerImportRoutes()
+	s.registerExportRoutes()
 	s.mux.HandleFunc("/api/", func(w http.ResponseWriter, r *http.Request) {
 		WriteError(w, http.StatusNotFound, "not_found", "no such API endpoint", map[string]any{"path": r.URL.Path})
 	})
