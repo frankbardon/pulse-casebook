@@ -119,6 +119,9 @@ func (s *Server) handleSaveLayout(w http.ResponseWriter, r *http.Request) {
 		WriteError(w, http.StatusInternalServerError, "write_failed", err.Error(), map[string]any{"path": side})
 		return
 	}
+	if p := s.relOf(abs); p != "" {
+		s.commitPaths(r.Context(), "studio: save "+p, p)
+	}
 	WriteJSON(w, http.StatusOK, layoutBody{Path: side, Layout: json.RawMessage(out)})
 }
 

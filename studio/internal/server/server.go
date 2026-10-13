@@ -11,6 +11,7 @@ import (
 
 	"github.com/frankbardon/pulse"
 
+	"github.com/frankbardon/pulse-casebook/studio/internal/history"
 	"github.com/frankbardon/pulse-casebook/studio/internal/preview"
 	"github.com/frankbardon/pulse-casebook/studio/internal/scope"
 )
@@ -23,6 +24,10 @@ type Config struct {
 	// NewEngine builds the engine for a case with a labels/ directory
 	// (see engineFor). Nil uses pulse.New with DataDir = the root.
 	NewEngine EngineFactory
+
+	// History is the workspace's git history (internal/history). Nil, or
+	// a disabled Repo, runs without history: writes are not committed.
+	History *history.Repo
 }
 
 // Server wires the scoped directory, the single Pulse engine and the UI.
@@ -63,6 +68,10 @@ func New(root *scope.Root, engine *pulse.Pulse, cfg Config, ui fs.FS, uiBuilt bo
 	s.mux.HandleFunc("POST /api/explain", s.handleExplain)
 	s.mux.HandleFunc("POST /api/run", s.handleRun)
 	s.mux.HandleFunc("POST /api/run/save", s.handleRunSave)
+	s.mux.HandleFunc("GET /api/status", s.handleStatus)
+	s.mux.HandleFunc("GET /api/history", s.handleHistory)
+	s.mux.HandleFunc("GET /api/history/file", s.handleHistoryFile)
+	s.mux.HandleFunc("POST /api/history/restore", s.handleRestore)
 	s.mux.HandleFunc("/api/", func(w http.ResponseWriter, r *http.Request) {
 		WriteError(w, http.StatusNotFound, "not_found", "no such API endpoint", map[string]any{"path": r.URL.Path})
 	})

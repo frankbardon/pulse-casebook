@@ -548,5 +548,6 @@ func (s *Server) handleRunSave(w http.ResponseWriter, r *http.Request) {
 		WriteError(w, http.StatusInternalServerError, "write_failed", err.Error(), map[string]any{"path": rel})
 		return
 	}
+	s.commitPaths(r.Context(), "studio: save run output "+rel, rel)
 	WriteJSON(w, http.StatusOK, runSaveResponse{Path: rel, Bytes: len(run.text), Overwritten: existed})
 }

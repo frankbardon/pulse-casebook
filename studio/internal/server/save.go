@@ -77,6 +77,9 @@ func (s *Server) handleSaveFile(w http.ResponseWriter, r *http.Request) {
 		WriteError(w, http.StatusInternalServerError, "write_failed", err.Error(), map[string]any{"path": rel})
 		return
 	}
+	if p := s.relOf(abs); p != "" {
+		s.commitPaths(r.Context(), "studio: save "+p, p)
+	}
 	kind, reason := workspace.Classify(rel, out)
 	WriteJSON(w, http.StatusOK, fileBody{Path: rel, Kind: kind, Reason: reason, Text: string(out)})
 }

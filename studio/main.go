@@ -1,7 +1,10 @@
 // Command studio serves Pulse Studio, a local visual request builder, for
 // one directory of Pulse requests and cohorts.
 //
-//	studio <dir> [--port N] [--preview-timeout 10s] [--auto-preview-rows 1000000]
+//	studio <dir> [--port N] [--preview-timeout 10s] [--auto-preview-rows 1000000] [--no-git]
+//
+// The directory is kept in git (see internal/history): every studio write
+// is committed, unless --no-git is given or git is not installed.
 package main
 
 import (
@@ -19,6 +22,7 @@ import (
 
 	"github.com/frankbardon/pulse"
 
+	"github.com/frankbardon/pulse-casebook/studio/internal/history"
 	"github.com/frankbardon/pulse-casebook/studio/internal/scope"
 	"github.com/frankbardon/pulse-casebook/studio/internal/server"
 	"github.com/frankbardon/pulse-casebook/studio/web"
@@ -38,8 +42,9 @@ func run(args []string) error {
 	port := fset.Int("port", defaultPort, "localhost port to listen on (0 picks a free port)")
 	timeout := fset.Duration("preview-timeout", 10*time.Second, "hard timeout for a single preview probe")
 	autoRows := fset.Int64("auto-preview-rows", 1_000_000, "cohort row count above which expensive previews wait for \"Run to here\"")
+	noGit := fset.Bool("no-git", false, "do not keep the directory in git (no auto-commit, no history)")
 	fset.Usage = func() {
-		fmt.Fprintln(fset.Output(), "usage: studio <dir> [--port N] [--preview-timeout D] [--auto-preview-rows N]")
+		fmt.Fprintln(fset.Output(), "usage: studio <dir> [--port N] [--preview-timeout D] [--auto-preview-rows N] [--no-git]")
 		fset.PrintDefaults()
 	}
 	// Accept flags before or after the directory argument.
@@ -70,9 +75,14 @@ func run(args []string) error {
 		return fmt.Errorf("start pulse engine: %w", err)
 	}
 
+	// Git-backed history: init (or use the enclosing repository), the
+	// managed .gitignore block. Never fatal: problems turn history off.
+	hist := history.Open(context.Background(), root.Dir(), history.Options{Disabled: *noGit}, log.Printf)
+
 	srv := server.New(root, engine, server.Config{
 		PreviewTimeout:  *timeout,
 		AutoPreviewRows: *autoRows,
+		History:         hist,
 	}, web.FS(), web.Built())
 
 	ln, err := net.Listen("tcp", fmt.Sprintf("127.0.0.1:%d", *port))

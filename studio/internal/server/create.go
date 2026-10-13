@@ -161,6 +161,8 @@ func (s *Server) handleCreateFile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	s.commitPaths(r.Context(), "studio: create "+rel, rel)
+
 	// Predict the file as the engine sees it: the cohort rewritten to the
 	// root-relative path the studio resolved (as previews do).
 	engineDoc, err := newRequestDoc(kind, cohortRef{Filename: enginePath, DataDir: ""}, fields)

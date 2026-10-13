@@ -35,7 +35,7 @@ describe.skipIf(!hasGo)('model emitter through the save API', () => {
     const bin = join(dir, 'studio')
     const build = spawnSync('go', ['build', '-o', bin, '.'], { cwd: studioDir, encoding: 'utf8' })
     if (build.status !== 0) throw new Error(`go build failed: ${build.stderr}`)
-    server = spawn(bin, [ws, '--port', '0'], { stdio: ['ignore', 'ignore', 'pipe'] })
+    server = spawn(bin, [ws, '--port', '0', '--no-git'], { stdio: ['ignore', 'ignore', 'pipe'] })
     base = await new Promise<string>((ok, fail) => {
       let log = ''
       server!.stderr!.on('data', (chunk: Buffer) => {

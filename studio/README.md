@@ -46,7 +46,7 @@ bin/studio showcase/ab-test-readout
 Then open the address it prints (default <http://127.0.0.1:4317/>). Press Ctrl-C to stop.
 
 ```
-studio <dir> [--port N] [--preview-timeout D] [--auto-preview-rows N]
+studio <dir> [--port N] [--preview-timeout D] [--auto-preview-rows N] [--no-git]
 ```
 
 | Flag | Default | Meaning |
@@ -54,11 +54,35 @@ studio <dir> [--port N] [--preview-timeout D] [--auto-preview-rows N]
 | `--port` | `4317` | Localhost port. `0` picks a free port; the chosen address is printed. |
 | `--preview-timeout` | `10s` | Hard time limit for one preview probe. A probe that exceeds it shows as timed out with a retry button. |
 | `--auto-preview-rows` | `1000000` | Cohort row count above which expensive previews do not run on their own. They wait for **Run to here**. |
+| `--no-git` | off | Do not keep the directory in git: no auto-commit, no history panel. |
 
 Flags may come before or after the directory. Exactly one directory is required.
 
 Cohorts (`.pulse` files) referenced by a request must already exist under the directory. Studio does
 not build them. The showcase cases document how (see each case's `REPRODUCE.md`).
+
+### History (git)
+
+The directory is kept in git, locally (no remote). On start, Studio runs `git init` in a directory
+that is not in a repository yet, and commits a snapshot of its JSON files. A directory inside an
+existing repository (a showcase case in this casebook, say) uses that repository instead: there is
+no nested repository, and Studio only ever commits paths inside the directory.
+
+Every Studio write is committed on its own, with a generated message such as
+`studio: save req/08_cuped_welch.json`: saving a request or its layout, creating a request, and
+saving a run to `out/`. Only the written paths are committed. Changes you make outside Studio,
+staged or not, are left alone. The author is your git `user.name` and `user.email`, or
+`Pulse Studio <studio@localhost>` when those are not set. Studio commits skip git hooks and
+commit signing.
+
+Studio keeps a managed block in the directory's `.gitignore`. It ignores cohorts (`*.pulse`),
+uploaded sources (`sources/`), Studio's caches (`.studio/`) and temp files. Lines outside the block
+are yours and are never changed.
+
+The **History** button on an open request lists the commits that touched the file. Click one to
+see its diff against the file on disk, and **Restore** to write that version back. A restore is
+committed as `studio: restore <path> to <commit>`. Without git installed, or with `--no-git`,
+Studio works the same without history and says so in the top bar.
 
 ## Using it
 
