@@ -2,7 +2,9 @@ import { use, useEffect, useRef, useState, type KeyboardEvent } from 'react'
 import { Handle, Position, useUpdateNodeInternals, type Node, type NodeProps } from '@xyflow/react'
 import type { LaneRole } from './composeGraph.ts'
 import { LaneActionsContext } from './laneActions.ts'
-import { PREVIEW_SECTIONS, type CohortNode, type FacetNode, type JoinInfo, type OpNode, type ParamRow, type RawNode } from './requestGraph.ts'
+import { PREVIEW_SECTIONS, type CohortNode, type FacetNode, type JoinInfo, type OpNode, type ParamRow, type RawNode, type ResultNode } from './requestGraph.ts'
+import { columnHandle, KEY_HANDLE, SCOPE_HANDLE, SCOPE_TARGET } from './resultGraph.ts'
+import { ResultPreview } from './ResultPreview.tsx'
 import { joinBodyRows, joinedSummary, type JoinBodyRow } from './joins.ts'
 import { JoinViewContext } from './joinView.ts'
 import { FACET_PROPS } from './facetGraph.ts'
@@ -35,13 +37,78 @@ export function OpNodeView({ data }: NodeProps<OpNode>) {
           : data.rows.map((r) => <Row key={r.key} r={r} />)}
       </ul>
       {data.join && <JoinedFields id={data.path} join={data.join} />}
+      {data.keyColumn !== undefined && <KeyRow name={data.keyColumn} />}
+      {data.keyColumn !== undefined && (
+        <Handle type="source" position={Position.Bottom} id={SCOPE_HANDLE} className="scope-handle" isConnectable={false} title={`entries that run once per ${data.keyColumn || 'group'}`} />
+      )}
+      {data.output !== undefined && data.name !== undefined && <OutputRow name={data.name} used={data.output.used} />}
       {PREVIEW_SECTIONS.has(data.section) && <NodePreview id={data.path} label={data.name} />}
-      {data.produces && <Handle type="source" position={Position.Right} id="out" title={`label ${data.name}`} />}
+      {data.produces && data.output === undefined && <Handle type="source" position={Position.Right} id="out" title={`label ${data.name}`} />}
+      {data.perGroup && (
+        <Handle type="target" position={Position.Top} id={SCOPE_TARGET} className="scope-handle" isConnectable={false} title="runs once per group" />
+      )}
       {data.fit !== undefined && (
         <Handle type="source" position={Position.Bottom} id={FIT_HANDLE} className="fit-handle" title={`fit ${data.fit}: wire into a slot's fit input`} />
       )}
       <NodeIssues id={data.path} />
       <NodeRunHeadline id={data.path} />
+    </div>
+  )
+}
+
+// KeyRow is a group's view-only footer: the key column it writes into
+// the result (`key` handle, wired to the Result node) and, when entries
+// run per group, its fan-out handle at the bottom edge (the scope wires).
+function KeyRow({ name }: { name: string }) {
+  return (
+    <ul className="gnode-rows gnode-derived">
+      <li className="gnode-row gnode-key" data-testid="group-key" data-row-derived="key">
+        <span className="k">key column</span>
+        <span className="v">{name || '?'}</span>
+        <Handle type="source" position={Position.Right} id={KEY_HANDLE} isConnectable={false} title={`key column ${name} in the result`} />
+      </li>
+    </ul>
+  )
+}
+
+// OutputRow is a labelled attribute's output: the per-row column it adds,
+// as its `out` handle (wire or drag it into a group, aggregation, ...). A
+// column nothing reads gets a dashed stub (and a warning, validation).
+function OutputRow({ name, used }: { name: string; used: boolean }) {
+  return (
+    <ul className="gnode-rows gnode-derived">
+      <li className={'gnode-row gnode-output' + (used ? '' : ' unused')} data-testid="attr-output" data-used={used}>
+        <span className="k">+ column</span>
+        <span className="v">{name}</span>
+        <Handle type="source" position={Position.Right} id="out" title={used ? `column ${name}` : `column ${name}: computed, but nothing uses it`} />
+      </li>
+    </ul>
+  )
+}
+
+// ResultNodeView is a frame's view-only Result node: the result table's
+// columns in order (group keys, aggregation labels, window labels), each
+// an input wired from the node that produces it, and a preview of the
+// rows. It is not request JSON: no inspector, never deleted.
+export function ResultNodeView({ data }: NodeProps<ResultNode>) {
+  return (
+    <div className="gnode result" data-path={data.path} data-testid="result-node">
+      <header className="gnode-head">
+        <span className="gnode-stage">Result</span>
+        <span className="gnode-op">data</span>
+      </header>
+      <ul className="gnode-rows">
+        {data.rowLevel && <li className="gnode-row muted" data-testid="result-row-level"><span className="k">Row-level output</span></li>}
+        {data.columns.length === 0 && !data.rowLevel && <li className="gnode-row muted"><span className="k">No columns</span></li>}
+        {data.columns.map((c) => (
+          <li key={c.kind + c.name} className={'gnode-row result-col kind-' + c.kind} data-col={c.name} data-kind={c.kind}>
+            <Handle type="target" position={Position.Left} id={columnHandle(c.name)} isConnectable={false} title={`${c.name} (${c.kind})`} />
+            <span className="k">{c.name}</span>
+            <span className="v type">{c.kind === 'key' ? 'key' : c.kind === 'aggregation' ? 'agg' : 'window'}</span>
+          </li>
+        ))}
+      </ul>
+      <ResultPreview from={data.previewFrom} columns={data.columns.map((c) => c.name)} />
     </div>
   )
 }

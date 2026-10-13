@@ -1,10 +1,12 @@
 import { use, useEffect, useMemo, useRef, useSyncExternalStore } from 'react'
-import { BaseEdge, getBezierPath, useStoreApi, type EdgeProps, type ReactFlowState } from '@xyflow/react'
+import { BaseEdge, EdgeLabelRenderer, getBezierPath, useStoreApi, type EdgeProps, type ReactFlowState } from '@xyflow/react'
 import type { GraphEdge } from './requestGraph.ts'
 import { focusCss, highlightOf, type FocusEdge, type FocusStore } from './focus.ts'
 import { buildScene, fitEnds, roundedPath, sceneKey, type SceneEdge, type SceneHandle, type SceneNode, type Side } from './routing.ts'
 import type { RouteJob, RouteReply } from './route.worker.ts'
 import { RouteContext, type RouteStore } from './wires.ts'
+import { fmtCount } from './previews.ts'
+import { usePreview } from './usePreviews.ts'
 
 const noSub = () => () => {}
 const CORNER = 6
@@ -33,7 +35,7 @@ export function WireEdge(p: EdgeProps<GraphEdge>) {
         targetY: p.targetY,
         targetPosition: p.targetPosition,
       })[0]
-  return (
+  const edge = (
     <BaseEdge
       id={p.id}
       path={d}
@@ -43,6 +45,30 @@ export function WireEdge(p: EdgeProps<GraphEdge>) {
       interactionWidth={p.interactionWidth ?? 20}
       className={pts ? 'routed' : undefined}
     />
+  )
+  if (p.data?.role !== 'scope' || !p.data.lead) return edge
+  return (
+    <>
+      {edge}
+      <ScopeLabel group={p.source} keyColumn={p.data.ref} x={p.sourceX} y={p.sourceY} />
+    </>
+  )
+}
+
+// ScopeLabel names a group's fan-out just below its fan-out handle, on
+// the group's lead scope wire: "per region", and "×4" once the group's
+// preview knows its bucket count.
+function ScopeLabel({ group, keyColumn, x, y }: { group: string; keyColumn: string; x: number; y: number }) {
+  const { state } = usePreview(group)
+  const probe = state?.status === 'ok' ? state.probe : state?.status === 'loading' ? state.last : undefined
+  const n = probe?.table?.total_rows
+  return (
+    <EdgeLabelRenderer>
+      <div className="scope-label" data-testid="scope-label" data-group={group} style={{ transform: `translate(-50%, 0) translate(${x}px, ${y + 6}px)` }}>
+        per {keyColumn || 'group'}
+        {n !== undefined && <span className="scope-count"> ×{fmtCount(n)}</span>}
+      </div>
+    </EdgeLabelRenderer>
   )
 }
 

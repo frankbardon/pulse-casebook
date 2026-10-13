@@ -10,6 +10,7 @@ import { paletteItems, placeNode } from './palette.ts'
 import { batches, changedIds, fingerprints, invalidated } from './previews.ts'
 import { checkConnection, connectWire, disconnectWire } from './wiring.ts'
 import { renameLane } from './lanes.ts'
+import { frameOf } from './nodePath.ts'
 import abFields from './testdata/ab_test.fields.json?raw'
 import catalogText from './testdata/catalog.slim.json?raw'
 import fitsCompose from './testdata/fits.compose.json?raw'
@@ -68,10 +69,10 @@ describe('compose previews', () => {
   it('stales only the edited lane', () => {
     const stale = edit('requests[1].attributes[0]')
     expect(stale.length).toBeGreaterThan(0)
-    expect(stale.every((id) => id.startsWith('requests[1].'))).toBe(true)
+    expect(stale.every((id) => frameOf(id) === 'requests[1]')).toBe(true)
     expect(stale).toContain('requests[1].tests[3]')
     const cohort = edit('requests[2].cohort')
-    expect(cohort.every((id) => id.startsWith('requests[2].'))).toBe(true)
+    expect(cohort.every((id) => frameOf(id) === 'requests[2]')).toBe(true)
     expect(cohort).toContain('requests[2].tests[0]')
   })
 

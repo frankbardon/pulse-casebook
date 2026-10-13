@@ -73,10 +73,10 @@ export function buildChainGraph(req: unknown, opts: ChainOptions = {}): ChainGra
     } else {
       const body = Object.fromEntries(Object.entries(r).filter(([k]) => k !== 'cohort'))
       if (i === 0) {
-        g = buildRequestGraph({ ...body, cohort: req.cohort }, { manifest: opts.manifest, cohortFields: input, basePath: base, rightFields: opts.rightFields })
+        g = buildRequestGraph({ ...body, cohort: req.cohort }, { manifest: opts.manifest, cohortFields: input, basePath: base, rightFields: opts.rightFields, result: true })
         rehomeCohort(g, formatPath([...base, 'cohort']))
       } else {
-        g = buildRequestGraph(body, { manifest: opts.manifest, cohortFields: input ?? [], basePath: base, withCohort: false, implicitFields: true })
+        g = buildRequestGraph(body, { manifest: opts.manifest, cohortFields: input ?? [], basePath: base, withCohort: false, implicitFields: true, result: true })
         wireUpstream(g, upstream)
       }
       // A stage's own cohort is ignored by the engine; keep it visible.

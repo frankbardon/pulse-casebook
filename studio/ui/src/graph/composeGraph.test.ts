@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import type { Manifest } from '../api.ts'
 import { buildComposeGraph, LANE, laneAt, laneOrder, moveLane, ROOT_LANE, stackLanes } from './composeGraph.ts'
+import { frameOf } from './nodePath.ts'
 import type { GraphNode, OpNode } from './requestGraph.ts'
 import abFields from './testdata/ab_test.fields.json?raw'
 import catalogText from './testdata/catalog.slim.json?raw'
@@ -26,17 +27,18 @@ describe('buildComposeGraph', () => {
       ['requests[3]', 'slot', 'regression_adjustment'],
     ])
     // Every node lives in its lane, keyed by its JSON path.
-    for (const n of g.nodes) expect(n.id.startsWith(`${n.parentId}.`)).toBe(true)
+    // (A slot's view-only Result node is `requests[i]["(result)"]`.)
+    for (const n of g.nodes) expect(n.id.startsWith(`${n.parentId}${n.type === 'result' ? '[' : '.'}`)).toBe(true)
     expect(g.nodes.some((n) => n.id === 'requests[0].label')).toBe(false)
     expect(op(g.nodes, 'requests[1].tests[3]').data).toMatchObject({ op: 'TEST_WELCH', name: 'pages_viewed_cuped' })
     expect(op(g.nodes, 'requests[0].multiplicity').data.column).toBe('output')
     // Wires stay inside their lane: the CUPED attribute feeds its test.
     const cuped = g.edges.find((e) => e.target === 'requests[1].tests[3]' && e.targetHandle === 'in:field')
     expect(cuped?.source).toBe('requests[1].attributes[0]')
-    for (const e of g.edges) expect(e.source.split('.')[0]).toBe(e.target.split('.')[0])
+    for (const e of g.edges) expect(frameOf(e.source)).toBe(frameOf(e.target))
     // Shared stage columns; each lane lists the ones it uses.
-    expect(g.columns.map((c) => c.key)).toEqual(['source', 'attributes', 'aggregations', 'analysis', 'output'])
-    expect(g.lanes[2].columns).toEqual(['source', 'aggregations', 'analysis'])
+    expect(g.columns.map((c) => c.key)).toEqual(['source', 'attributes', 'aggregations', 'analysis', 'output', 'result'])
+    expect(g.lanes[2].columns).toEqual(['source', 'aggregations', 'analysis', 'result'])
     // Positions are lane-relative: below the header, on the shared columns.
     const t = op(g.nodes, 'requests[3].regressions[1]')
     expect(t.position.x).toBe(g.columns.find((c) => c.key === 'analysis')!.x)

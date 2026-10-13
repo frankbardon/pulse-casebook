@@ -101,6 +101,21 @@ A request is drawn as a set of nodes, one node per entry in the request JSON:
   the downstream entry names in the JSON. Ports are type-checked against the engine's operator
   catalog, and a connection that the engine would refuse is rejected with the reason. Dragging a wire
   to empty canvas opens a menu of operators that accept that field's type.
+- **Result node.** Each request (each compose slot, each chain stage) ends in a **Result** node: the
+  table it returns, one row per group key combination. Its columns are listed in order (group key
+  columns marked `key`, then aggregation labels, then window labels), each wired from the node that
+  produces it, and its footer previews the row count and first rows. With no groups and no
+  aggregations it says **Row-level output**. It is not part of the request JSON: it has no inspector
+  and cannot be deleted (you can move it; its position is saved like any node's).
+- **Group fan-out.** A group's bottom handle draws thick dotted "scope" wires to everything that runs
+  once per group bucket: aggregations, tests and matrices, plus post-tests when there are two or more
+  groupers. The first wire is labelled `per <key>` and, once the group's preview has run, the bucket
+  count (`×4`). Regressions, vectors, windows and the crosstab do not run per group and get none.
+  Scope wires are drawn only; they cannot be selected, dragged or deleted.
+- **Attribute columns.** An attribute's output handle reads `+ column <label>`. If nothing in the
+  request reads that column (no wire out, and no later expression names it), the handle gets a dashed
+  stub and the node a warning: "computed, but nothing uses this column". It is only a warning; Run and
+  Save still work. Drag from the handle to empty canvas to add a group or aggregation that reads it.
 - **Palette.** The side palette lists every operator the connected Pulse engine offers, searchable by
   name and description. Drag one onto the canvas (or click it to add it at its stage's spot). Studio fills required parameters with defaults and
   flags what is still missing.
@@ -166,6 +181,8 @@ Tools in this repository that walk the showcase request files skip `*.layout.jso
   has to be added in the JSON.
 - **`coef("fit", ...)` references inside `ATTR_FORMULA` expressions are not drawn as wires.**
   Formula expressions are not parsed, so only fields named in explicit slots are wired.
+- **The Result preview needs an aggregation, window, sort or group to preview.** It reuses that
+  node's preview, so a request with none of them shows only its columns. Run shows the full result.
 - **Renaming a Compose slot label does not update overlays that name it.**
 - **Some inspectors are incomplete.** The test inspector lacks `split_by`, `rows` and `cols` fields
   (set them in the JSON), and `ATTR_FORMULA` has no field port row until a field is set.

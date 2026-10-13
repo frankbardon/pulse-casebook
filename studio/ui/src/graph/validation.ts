@@ -18,7 +18,7 @@ import { groupKeysOfModel, partitionDepth, partitionProblem, PARTITION_KEY, PART
 import { chainRefusal } from './chainRules.ts'
 import { buildForm, formProblems, type Catalog, type NodeForm } from './paramForms.ts'
 import { isGlob, refusal, slotsFor, vectorMemberRefusal } from './ports.ts'
-import { sectionInfo } from './requestGraph.ts'
+import { sectionInfo, type GraphNode } from './requestGraph.ts'
 
 export type Severity = 'error' | 'warning' | 'hint'
 
@@ -288,4 +288,26 @@ export function proposal(is: Pick<PredictIssue, 'proposed'>): string | undefined
   if (!is.proposed || is.proposed.length === 0) return undefined
   const shown = is.proposed.slice(0, 5).map((v) => (typeof v === 'string' ? v : JSON.stringify(v)))
   return shown.join(', ') + (is.proposed.length > 5 ? `, … (${is.proposed.length - 5} more)` : '')
+}
+
+// COLUMN_UNUSED is the client code of an attribute whose column nothing
+// in its frame reads (resultGraph.columnUsed).
+export const COLUMN_UNUSED = 'COLUMN_UNUSED'
+
+// unusedColumnIssues warns on every labelled attribute whose column
+// nothing reads: it is computed per row, then dropped. A warning only:
+// the request still runs and saves.
+export function unusedColumnIssues(nodes: readonly GraphNode[]): Issue[] {
+  const out: Issue[] = []
+  for (const n of nodes) {
+    if (n.type !== 'op' || n.data.output === undefined || n.data.output.used) continue
+    out.push({
+      path: n.id,
+      severity: 'warning',
+      code: COLUMN_UNUSED,
+      message: `computed, but nothing uses this column (${n.data.name ?? ''}): wire it into a group, aggregation or test, or remove it`,
+      source: 'client',
+    })
+  }
+  return out
 }

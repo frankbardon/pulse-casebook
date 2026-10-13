@@ -106,14 +106,14 @@ describe('join node', () => {
   it('gives compose lanes a shared Join column only lanes with joins draw', () => {
     const plainSlot = { label: 'b', cohort: { filename: 'left.pulse' }, aggregations: [{ type: 'AGG_COUNT', field: 'amount', label: 'n' }] }
     const alone = buildComposeGraph({ requests: [plainSlot] }, { manifest, fieldsFor: () => left, rightFields: rights })
-    expect(alone.columns.map((c) => c.key)).toEqual(['source', 'aggregations'])
+    expect(alone.columns.map((c) => c.key)).toEqual(['source', 'aggregations', 'result'])
     const c = buildComposeGraph(
       { requests: [{ label: 'a', ...(JSON.parse(JOINED) as object) }, plainSlot] },
       { manifest, fieldsFor: () => left, rightFields: rights },
     )
-    expect(c.columns.map((col) => col.key)).toEqual(['source', 'joins', 'filterers', 'aggregations'])
+    expect(c.columns.map((col) => col.key)).toEqual(['source', 'joins', 'filterers', 'aggregations', 'result'])
     expect(c.lanes.find((l) => l.id === 'requests[0]')?.columns).toContain('joins')
-    expect(c.lanes.find((l) => l.id === 'requests[1]')?.columns).toEqual(['source', 'aggregations'])
+    expect(c.lanes.find((l) => l.id === 'requests[1]')?.columns).toEqual(['source', 'aggregations', 'result'])
     const xOf = (id: string) => c.nodes.find((n) => n.id === id)?.position.x
     expect(xOf('requests[0].joins[0]')).toBe(c.columns[1].x)
   })

@@ -16,6 +16,7 @@ import { formatPath, type PathSegment } from './nodePath.ts'
 import { describeAccept, isGlob, isVectorRole, readsMembers, slotFor, slotsFor, VECTOR2_INPUT, VECTOR_INPUT } from './ports.ts'
 import { groupKeyColumn, type GroupEntry } from './partition.ts'
 import { joinBodyLines, joinedFields, joinKeyRefusal, type RightSide } from './joins.ts'
+import { addDerived } from './resultGraph.ts'
 
 export type ColumnKey =
   | 'source'
@@ -29,6 +30,7 @@ export type ColumnKey =
   | 'sort'
   | 'analysis'
   | 'output'
+  | 'result'
 
 export const COLUMNS: { key: ColumnKey; title: string }[] = [
   { key: 'source', title: 'Cohort' },
@@ -43,6 +45,8 @@ export const COLUMNS: { key: ColumnKey; title: string }[] = [
   { key: 'sort', title: 'Sort' },
   { key: 'analysis', title: 'Analysis' },
   { key: 'output', title: 'Output' },
+  // The view-only Result node (resultGraph.ts): the table the frame returns.
+  { key: 'result', title: 'Result' },
 ]
 
 // ParamRow is one line of a node's compact body. key is the JSON path of
@@ -96,6 +100,13 @@ export type OpNodeData = {
   fit?: string
   // Set on a join: the joined fields it outputs.
   join?: JoinInfo
+  // View-only, derived by resultGraph.ts. A group's key column (its
+  // `key` and fan-out `scope` source handles); an entry that runs once
+  // per group bucket (its `scope:in` target handle); a labelled
+  // attribute's output column and whether anything reads it.
+  keyColumn?: string
+  perGroup?: true
+  output?: { used: boolean }
 }
 
 export type CohortFieldRow = { name: string; type: string; used: boolean }
@@ -116,12 +127,26 @@ export type RawNodeData = { path: string; column: ColumnKey; section: string; js
 // live preview of the facet result.
 export type FacetNodeData = { path: string; column: ColumnKey; rows: ParamRow[] }
 
+// ResultColumn is one column of a frame's result table: a group key, an
+// aggregation label or a window label, wired from source when known.
+export type ResultColumn = { name: string; kind: 'key' | 'aggregation' | 'window'; source?: string }
+
+// ResultNodeData is a frame's view-only Result node (resultGraph.ts):
+// its result table's columns in order, whether the output is row-level
+// (no groups, no aggregations), and the node whose preview probe holds
+// the whole table (the sort, else the last window, aggregation or group).
+export type ResultNodeData = { path: string; column: ColumnKey; columns: ResultColumn[]; rowLevel: boolean; previewFrom?: string }
+
 export type OpNode = Node<OpNodeData, 'op'>
 export type CohortNode = Node<CohortNodeData, 'cohort'>
 export type RawNode = Node<RawNodeData, 'raw'>
 export type FacetNode = Node<FacetNodeData, 'facet'>
-export type GraphNode = OpNode | CohortNode | RawNode | FacetNode
-export type GraphEdge = Edge<{ ref: string; role: string }>
+export type ResultNode = Node<ResultNodeData, 'result'>
+export type GraphNode = OpNode | CohortNode | RawNode | FacetNode | ResultNode
+// role: the input row's name for field wires, or `fit`, `stage`, and the
+// view-only `scope` (group fan-out; lead marks one wire per group, which
+// carries the label) and `result` (into the Result node).
+export type GraphEdge = Edge<{ ref: string; role: string; lead?: boolean }>
 
 export type RequestGraph = {
   nodes: GraphNode[]
@@ -146,6 +171,9 @@ export type BuildOptions = {
   implicitFields?: boolean
   // A join's right cohort fields by its `right` path (joins.RightSide).
   rightFields?: (right: string) => RightSide
+  // Add the frame's view-only Result node (plain requests, compose slots
+  // and chain stages; not fits or a compose / chain root).
+  result?: boolean
 }
 
 type SectionSpec = {
@@ -263,6 +291,8 @@ export const LAYOUT = {
   previewHeight: 38,
   // Fixed height of a facet node's result preview (scrolls inside).
   facetPreviewHeight: 200,
+  // Fixed height of a Result node's preview (row count + a few rows).
+  resultPreviewHeight: 74,
 }
 
 type Producer = { section: string; index: number; name: string; id: string }
@@ -412,7 +442,8 @@ export function buildRequestGraph(req: unknown, opts: BuildOptions = {}): Reques
       fieldsKnown: !!known,
     },
   }
-  const nodes: GraphNode[] = opts.withCohort === false ? [...raws, ...ops] : [cohort, ...raws, ...ops]
+  const result = addDerived(doc, ops, edges, base, !!opts.result)
+  const nodes: GraphNode[] = [...(opts.withCohort === false ? [] : [cohort]), ...raws, ...ops, ...(result ? [result] : [])]
   const columns = layoutNodes(nodes)
   return { nodes, edges, columns }
 }
@@ -643,14 +674,27 @@ export function estimateHeight(n: GraphNode): number {
       // A join draws its key pairs one line each and its joined fields
       // collapsed (nodes.tsx JoinedFields); measured sizes take over once
       // a node is drawn, expanded or not.
-      return headerHeight + (n.data.join ? joinBodyLines(n.data.rows, n.data.join, false) : n.data.rows.length) * rowHeight + padding + preview
+      return (
+        headerHeight +
+        ((n.data.join ? joinBodyLines(n.data.rows, n.data.join, false) : n.data.rows.length) + extraLines(n)) * rowHeight +
+        padding +
+        preview
+      )
     case 'cohort':
       return headerHeight + Math.max(1, n.data.fields.length) * rowHeight + padding + preview
     case 'raw':
       return 28 + n.data.json.split('\n').length * rawLineHeight + padding
     case 'facet':
       return headerHeight + n.data.rows.length * rowHeight + padding + LAYOUT.facetPreviewHeight
+    case 'result':
+      return headerHeight + Math.max(1, n.data.columns.length + (n.data.rowLevel ? 1 : 0)) * rowHeight + padding + LAYOUT.resultPreviewHeight
   }
+}
+
+// extraLines counts an op node's view-only rows: a group's key column
+// row, an attribute's output column row.
+function extraLines(n: OpNode): number {
+  return (n.data.keyColumn !== undefined ? 1 : 0) + (n.data.output !== undefined ? 1 : 0)
 }
 
 function findLast<T>(xs: T[], pred: (x: T) => boolean): T | undefined {

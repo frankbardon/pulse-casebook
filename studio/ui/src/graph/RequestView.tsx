@@ -50,7 +50,7 @@ import {
   type Wire,
   type WireCheck,
 } from './wiring.ts'
-import { CohortNodeView, FacetNodeView, LaneNodeView, OpNodeView, RawNodeView, type LaneNode } from './nodes.tsx'
+import { CohortNodeView, FacetNodeView, LaneNodeView, OpNodeView, RawNodeView, ResultNodeView, type LaneNode } from './nodes.tsx'
 import { Inspector } from './Inspector.tsx'
 import { HistoryPanel } from './HistoryPanel.tsx'
 import { groupKeysOfModel } from './partition.ts'
@@ -62,13 +62,13 @@ import { PreviewContext, usePreviews } from './usePreviews.ts'
 import { useValidation, ValidationContext } from './useValidation.ts'
 import { RunContext, useRun, type RunResults } from './useRun.ts'
 import { ResultsPanel } from './ResultsPanel.tsx'
-import { proposal, worst, type Issue } from './validation.ts'
+import { proposal, unusedColumnIssues, worst, type Issue } from './validation.ts'
 import { createFocusStore, hoverTarget } from './focus.ts'
 import { EdgeRouter, FocusStyle, WireEdge, type RouteStatus } from './WireEdge.tsx'
 import { readWireMode, RouteContext, RouteStore, writeWireMode, type WireMode } from './wires.ts'
 import './graph.css'
 
-const nodeTypes = { op: OpNodeView, cohort: CohortNodeView, raw: RawNodeView, facet: FacetNodeView, lane: LaneNodeView }
+const nodeTypes = { op: OpNodeView, cohort: CohortNodeView, raw: RawNodeView, facet: FacetNodeView, lane: LaneNodeView, result: ResultNodeView }
 const edgeTypes = { wire: WireEdge }
 
 // FlowNode is what the canvas draws: graph nodes plus lanes (parent
@@ -319,7 +319,7 @@ function RequestGraphView({ path, kind, catalog, history }: { path: string; kind
         return { nodes: chain.nodes, edges: chain.edges, columns: chain.columns, compose: chain, inputs: chain.inputs }
       }
       if (kind === 'facet') return buildFacetGraph(plain, { manifest: catalog?.manifest, cohortFields: fieldsFor('') })
-      return buildRequestGraph(plain, { manifest: catalog?.manifest, cohortFields: fieldsFor(''), rightFields })
+      return buildRequestGraph(plain, { manifest: catalog?.manifest, cohortFields: fieldsFor(''), rightFields, result: true })
     } catch (e) {
       return String(e)
     }
@@ -364,16 +364,21 @@ function RequestGraphView({ path, kind, catalog, history }: { path: string; kind
   )
   const validationCatalog = useMemo(() => catalog ?? {}, [catalog])
   // Joins are checked against both cohorts' fields (joins.ts).
+  // ... and attributes whose column nothing reads are warned about
+  // (resultGraph.columnUsed).
   const joinFindings = useMemo(
     () =>
       doc
-        ? joinIssues(doc.model, {
-            manifest: catalog?.manifest,
-            rightFields,
-            leftFields: (frame) => laneFields(laneOfId(kind, frame === '' ? 'joins[0]' : `${frame}.joins[0]`)),
-          })
+        ? [
+            ...joinIssues(doc.model, {
+              manifest: catalog?.manifest,
+              rightFields,
+              leftFields: (frame) => laneFields(laneOfId(kind, frame === '' ? 'joins[0]' : `${frame}.joins[0]`)),
+            }),
+            ...(graph !== null && typeof graph !== 'string' ? unusedColumnIssues(graph.nodes) : []),
+          ]
         : [],
-    [doc, catalog, rightFields, laneFields, kind],
+    [doc, catalog, rightFields, laneFields, kind, graph],
   )
   const validation = useValidation(path, doc?.model ?? null, nodeIds, validationCatalog, fields, joinFindings)
 

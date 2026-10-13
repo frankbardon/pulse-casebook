@@ -144,7 +144,8 @@ export function buildComposeGraph(req: unknown, opts: ComposeOptions = {}): Comp
   requests?.forEach((slot, i) => {
     const id = formatPath(['requests', i])
     const body = Object.fromEntries(Object.entries(slot).filter(([k]) => k !== 'label'))
-    const g = buildRequestGraph(body, graphOpts(id, ['requests', i]))
+    // Each slot returns its own table: its Result node (fits do not).
+    const g = buildRequestGraph(body, { ...graphOpts(id, ['requests', i]), result: true })
     for (const n of g.nodes) if (n.type === 'op') bindFit(n, opts.manifest, fitSources, edges)
     const label = typeof slot.label === 'string' ? slot.label : undefined
     add({ id, role: 'slot', index: i, base: ['requests', i], title: label ?? `request_${i + 1}`, named: label !== undefined }, g)

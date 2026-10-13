@@ -41,7 +41,7 @@ describe('buildChainGraph', () => {
     expect(cohort?.parentId).toBe('stages[0]')
     expect(g.edges.some((e) => e.source === 'cohort' && e.target === 'stages[0].request.groups[0]')).toBe(true)
     // Every other node lives in its stage lane, keyed by its JSON path.
-    for (const n of g.nodes) if (n.id !== 'cohort') expect(n.id.startsWith(`${n.parentId}.request.`)).toBe(true)
+    for (const n of g.nodes) if (n.id !== 'cohort') expect(n.id.startsWith(`${n.parentId}.request${n.type === 'result' ? '[' : '.'}`)).toBe(true)
     // The second stage reads the first stage's output: its group field
     // is wired from the aggregation that makes first_month.
     const group = op(g.nodes, 'stages[1].request.groups[0]')

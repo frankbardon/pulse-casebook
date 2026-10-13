@@ -1395,3 +1395,91 @@
 .react-flow__edge {
   transition: opacity 80ms linear;
 }
+
+/* View-only derived parts (resultGraph.ts): the Result node, group key
+   and fan-out (scope) wires, attribute output columns. */
+.gnode.result {
+  --stage: var(--accent);
+  border-style: dashed;
+  border-left-style: solid;
+}
+
+.gnode.result .result-col.kind-key .k {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.gnode.result .result-col .k {
+  color: var(--text);
+}
+
+.gnode-preview.result-preview {
+  height: 74px;
+}
+
+.result-preview .result-row {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--muted);
+}
+
+.gnode-derived {
+  border-top: 1px dashed var(--border);
+}
+
+.gnode-row.gnode-key .v,
+.gnode-row.gnode-output .v {
+  color: var(--accent);
+}
+
+/* An attribute column nothing reads: a dashed stub off its handle. */
+.gnode-row.gnode-output.unused .v {
+  color: var(--warn);
+}
+
+.gnode-row.gnode-output.unused::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: -30px;
+  width: 24px;
+  border-top: 2px dashed var(--warn);
+  pointer-events: none;
+}
+
+.react-flow__edge.result-wire .react-flow__edge-path {
+  stroke-dasharray: 4 3;
+}
+
+/* Group fan-out: thick, dotted, muted; lighter than data wires. */
+.react-flow__edge.scope-wire .react-flow__edge-path {
+  stroke: var(--muted);
+  stroke-width: 3;
+  stroke-dasharray: 1 6;
+  stroke-linecap: round;
+  opacity: 0.55;
+}
+
+.react-flow__handle.scope-handle {
+  background: var(--muted);
+  border-color: var(--muted);
+  width: 8px;
+  height: 8px;
+}
+
+.scope-label {
+  position: absolute;
+  pointer-events: none;
+  padding: 0 4px;
+  border-radius: 3px;
+  background: var(--surface);
+  color: var(--muted);
+  font: 10px / 14px var(--font-mono);
+  white-space: nowrap;
+}
+
+.scope-label .scope-count {
+  color: var(--text);
+  font-weight: 600;
+}

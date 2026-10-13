@@ -749,6 +749,9 @@ exports[`buildRequestGraph > maps 08_cuped_welch with a label wire from the attr
         "name": "pages_cuped",
         "op": "ATTR_FORMULA",
         "opKnown": true,
+        "output": {
+          "used": true,
+        },
         "path": "attributes[0]",
         "produces": true,
         "rows": [
@@ -1110,6 +1113,97 @@ exports[`buildRequestGraph > maps 13_holdout_deciles without inspect data 1`] = 
       "target": "sort[0]",
       "targetHandle": "in:field",
     },
+    {
+      "className": "scope-wire",
+      "data": {
+        "lead": true,
+        "ref": "pd_score",
+        "role": "scope",
+      },
+      "deletable": false,
+      "focusable": false,
+      "id": "groups[0]|scope->aggregations[0]|scope:in",
+      "selectable": false,
+      "source": "groups[0]",
+      "sourceHandle": "scope",
+      "target": "aggregations[0]",
+      "targetHandle": "scope:in",
+    },
+    {
+      "className": "scope-wire",
+      "data": {
+        "ref": "pd_score",
+        "role": "scope",
+      },
+      "deletable": false,
+      "focusable": false,
+      "id": "groups[0]|scope->aggregations[1]|scope:in",
+      "selectable": false,
+      "source": "groups[0]",
+      "sourceHandle": "scope",
+      "target": "aggregations[1]",
+      "targetHandle": "scope:in",
+    },
+    {
+      "className": "scope-wire",
+      "data": {
+        "ref": "pd_score",
+        "role": "scope",
+      },
+      "deletable": false,
+      "focusable": false,
+      "id": "groups[0]|scope->aggregations[2]|scope:in",
+      "selectable": false,
+      "source": "groups[0]",
+      "sourceHandle": "scope",
+      "target": "aggregations[2]",
+      "targetHandle": "scope:in",
+    },
+    {
+      "className": "scope-wire",
+      "data": {
+        "ref": "pd_score",
+        "role": "scope",
+      },
+      "deletable": false,
+      "focusable": false,
+      "id": "groups[0]|scope->aggregations[3]|scope:in",
+      "selectable": false,
+      "source": "groups[0]",
+      "sourceHandle": "scope",
+      "target": "aggregations[3]",
+      "targetHandle": "scope:in",
+    },
+    {
+      "className": "scope-wire",
+      "data": {
+        "ref": "pd_score",
+        "role": "scope",
+      },
+      "deletable": false,
+      "focusable": false,
+      "id": "groups[0]|scope->aggregations[4]|scope:in",
+      "selectable": false,
+      "source": "groups[0]",
+      "sourceHandle": "scope",
+      "target": "aggregations[4]",
+      "targetHandle": "scope:in",
+    },
+    {
+      "className": "scope-wire",
+      "data": {
+        "ref": "pd_score",
+        "role": "scope",
+      },
+      "deletable": false,
+      "focusable": false,
+      "id": "groups[0]|scope->aggregations[5]|scope:in",
+      "selectable": false,
+      "source": "groups[0]",
+      "sourceHandle": "scope",
+      "target": "aggregations[5]",
+      "targetHandle": "scope:in",
+    },
   ],
   "nodes": [
     {
@@ -1358,6 +1452,9 @@ exports[`buildRequestGraph > maps 13_holdout_deciles without inspect data 1`] = 
         "column": "attributes",
         "name": "lti",
         "op": "ATTR_FORMULA",
+        "output": {
+          "used": true,
+        },
         "path": "attributes[0]",
         "produces": true,
         "rows": [
@@ -1381,6 +1478,9 @@ exports[`buildRequestGraph > maps 13_holdout_deciles without inspect data 1`] = 
         "column": "attributes",
         "name": "term60",
         "op": "ATTR_FORMULA",
+        "output": {
+          "used": true,
+        },
         "path": "attributes[1]",
         "produces": true,
         "rows": [
@@ -1395,7 +1495,7 @@ exports[`buildRequestGraph > maps 13_holdout_deciles without inspect data 1`] = 
       "id": "attributes[1]",
       "position": {
         "x": 936,
-        "y": 124,
+        "y": 142,
       },
       "type": "op",
     },
@@ -1404,6 +1504,9 @@ exports[`buildRequestGraph > maps 13_holdout_deciles without inspect data 1`] = 
         "column": "attributes",
         "name": "emp_missing",
         "op": "ATTR_FORMULA",
+        "output": {
+          "used": true,
+        },
         "path": "attributes[2]",
         "produces": true,
         "rows": [
@@ -1418,7 +1521,7 @@ exports[`buildRequestGraph > maps 13_holdout_deciles without inspect data 1`] = 
       "id": "attributes[2]",
       "position": {
         "x": 936,
-        "y": 248,
+        "y": 284,
       },
       "type": "op",
     },
@@ -1427,6 +1530,9 @@ exports[`buildRequestGraph > maps 13_holdout_deciles without inspect data 1`] = 
         "column": "attributes",
         "name": "emp_years",
         "op": "ATTR_FORMULA",
+        "output": {
+          "used": true,
+        },
         "path": "attributes[3]",
         "produces": true,
         "rows": [
@@ -1441,7 +1547,7 @@ exports[`buildRequestGraph > maps 13_holdout_deciles without inspect data 1`] = 
       "id": "attributes[3]",
       "position": {
         "x": 936,
-        "y": 372,
+        "y": 426,
       },
       "type": "op",
     },
@@ -1450,6 +1556,9 @@ exports[`buildRequestGraph > maps 13_holdout_deciles without inspect data 1`] = 
         "column": "attributes",
         "name": "revol_missing",
         "op": "ATTR_FORMULA",
+        "output": {
+          "used": false,
+        },
         "path": "attributes[4]",
         "produces": true,
         "rows": [
@@ -1464,7 +1573,7 @@ exports[`buildRequestGraph > maps 13_holdout_deciles without inspect data 1`] = 
       "id": "attributes[4]",
       "position": {
         "x": 936,
-        "y": 496,
+        "y": 568,
       },
       "type": "op",
     },
@@ -1473,6 +1582,9 @@ exports[`buildRequestGraph > maps 13_holdout_deciles without inspect data 1`] = 
         "column": "attributes",
         "name": "revol_util_filled",
         "op": "ATTR_FORMULA",
+        "output": {
+          "used": true,
+        },
         "path": "attributes[5]",
         "produces": true,
         "rows": [
@@ -1487,7 +1599,7 @@ exports[`buildRequestGraph > maps 13_holdout_deciles without inspect data 1`] = 
       "id": "attributes[5]",
       "position": {
         "x": 936,
-        "y": 620,
+        "y": 710,
       },
       "type": "op",
     },
@@ -1496,6 +1608,9 @@ exports[`buildRequestGraph > maps 13_holdout_deciles without inspect data 1`] = 
         "column": "attributes",
         "name": "purpose_te_train",
         "op": "ATTR_FORMULA",
+        "output": {
+          "used": true,
+        },
         "path": "attributes[6]",
         "produces": true,
         "rows": [
@@ -1510,7 +1625,7 @@ exports[`buildRequestGraph > maps 13_holdout_deciles without inspect data 1`] = 
       "id": "attributes[6]",
       "position": {
         "x": 936,
-        "y": 744,
+        "y": 852,
       },
       "type": "op",
     },
@@ -1519,6 +1634,9 @@ exports[`buildRequestGraph > maps 13_holdout_deciles without inspect data 1`] = 
         "column": "attributes",
         "name": "pd_score",
         "op": "ATTR_FORMULA",
+        "output": {
+          "used": true,
+        },
         "path": "attributes[7]",
         "produces": true,
         "rows": [
@@ -1533,13 +1651,14 @@ exports[`buildRequestGraph > maps 13_holdout_deciles without inspect data 1`] = 
       "id": "attributes[7]",
       "position": {
         "x": 936,
-        "y": 868,
+        "y": 994,
       },
       "type": "op",
     },
     {
       "data": {
         "column": "groups",
+        "keyColumn": "pd_score",
         "op": "GROUP_QUANTILE",
         "path": "groups[0]",
         "produces": false,
@@ -1571,6 +1690,7 @@ exports[`buildRequestGraph > maps 13_holdout_deciles without inspect data 1`] = 
         "name": "loans",
         "op": "AGG_COUNT",
         "path": "aggregations[0]",
+        "perGroup": true,
         "produces": true,
         "rows": [
           {
@@ -1596,6 +1716,7 @@ exports[`buildRequestGraph > maps 13_holdout_deciles without inspect data 1`] = 
         "name": "defaults",
         "op": "AGG_SUM",
         "path": "aggregations[1]",
+        "perGroup": true,
         "produces": true,
         "rows": [
           {
@@ -1621,6 +1742,7 @@ exports[`buildRequestGraph > maps 13_holdout_deciles without inspect data 1`] = 
         "name": "observed_rate",
         "op": "AGG_AVERAGE",
         "path": "aggregations[2]",
+        "perGroup": true,
         "produces": true,
         "rows": [
           {
@@ -1646,6 +1768,7 @@ exports[`buildRequestGraph > maps 13_holdout_deciles without inspect data 1`] = 
         "name": "mean_pd",
         "op": "AGG_AVERAGE",
         "path": "aggregations[3]",
+        "perGroup": true,
         "produces": true,
         "rows": [
           {
@@ -1671,6 +1794,7 @@ exports[`buildRequestGraph > maps 13_holdout_deciles without inspect data 1`] = 
         "name": "mean_true_pd",
         "op": "AGG_AVERAGE",
         "path": "aggregations[4]",
+        "perGroup": true,
         "produces": true,
         "rows": [
           {
@@ -1696,6 +1820,7 @@ exports[`buildRequestGraph > maps 13_holdout_deciles without inspect data 1`] = 
         "name": "principal_usd",
         "op": "AGG_SUM",
         "path": "aggregations[5]",
+        "perGroup": true,
         "produces": true,
         "rows": [
           {

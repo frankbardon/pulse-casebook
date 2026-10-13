@@ -1,5 +1,9 @@
 import { drag, expect, test } from './harness.ts'
 
+// Field and label wires only: the view-only Result wires and group
+// fan-out wires (result-fanout.spec.ts) are left out of the counts.
+const DATA_WIRES = '.react-flow__edge:not(.result-wire):not(.scope-wire)'
+
 // Read-only smoke: every test here shares its worker's server over a temp
 // copy of ab-test-readout (cohorts synthesized by global setup), so
 // nothing is saved. Flows that write files live in workspace.spec.ts,
@@ -18,7 +22,7 @@ test('opens a plain request as a stage-column graph', async ({ page }) => {
   await expect(graph).toBeVisible()
   await expect(graph.locator('[data-path="tests[2]"]')).toContainText('TEST_WELCH')
   await expect(graph.locator('[data-path="cohort"]')).toContainText('categorical_u8')
-  await expect(graph.locator('.react-flow__edge')).toHaveCount(13)
+  await expect(graph.locator(DATA_WIRES)).toHaveCount(13)
 })
 
 test('wires route around nodes, light up on hover, stay deletable, and remember Curves', async ({ page }) => {
@@ -26,12 +30,12 @@ test('wires route around nodes, light up on hover, stay deletable, and remember 
   await page.getByRole('button', { name: 'req/04_metric_battery.json' }).click()
   const graph = page.getByTestId('request-graph')
   const flow = graph.locator('.graph-flow')
-  const edges = graph.locator('.react-flow__edge')
+  const edges = graph.locator(DATA_WIRES)
   await expect(edges).toHaveCount(13)
   // Routed by default: every wire is drawn from its route once it lands.
   await expect(page.getByTestId('wire-mode')).toHaveAttribute('data-mode', 'routed')
   await expect(flow).toHaveAttribute('data-routing', 'ready')
-  await expect(graph.locator('.react-flow__edge-path.routed')).toHaveCount(13)
+  await expect(graph.locator(`${DATA_WIRES} .react-flow__edge-path.routed`)).toHaveCount(13)
 
   // Hovering a cohort field row lights exactly that field's wires and dims the rest.
   const row = graph.locator('[data-path="cohort"] .gnode-row').filter({ has: page.locator('.k', { hasText: /^arm$/ }) })
@@ -234,7 +238,7 @@ test('deleting a node removes it and its wires; drags land where dropped', async
   await page.getByRole('button', { name: 'req/08_cuped_welch.json' }).click()
   const graph = page.getByTestId('request-graph')
   await expect(graph.locator('[data-path="cohort"]')).toContainText('categorical_u8')
-  const edges = graph.locator('.react-flow__edge')
+  const edges = graph.locator(DATA_WIRES)
   await expect(edges).toHaveCount(6)
 
   // A test dragged left across earlier stages keeps the dropped x (no
@@ -294,7 +298,7 @@ test('dragging a field port to the canvas offers only compatible operators and w
   await page.getByRole('button', { name: 'req/08_cuped_welch.json' }).click()
   const graph = page.getByTestId('request-graph')
   await expect(graph.locator('[data-path="cohort"]')).toContainText('categorical_u8')
-  const edges = graph.locator('.react-flow__edge')
+  const edges = graph.locator(DATA_WIRES)
   await expect(edges).toHaveCount(6)
 
   // Drop the categorical `arm` port on empty canvas (bottom-right corner).
