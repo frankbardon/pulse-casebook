@@ -7,6 +7,7 @@ import (
 	"io/fs"
 	"net/http"
 	"path/filepath"
+	"sync"
 	"time"
 
 	"github.com/frankbardon/pulse"
@@ -28,6 +29,10 @@ type Config struct {
 	// History is the workspace's git history (internal/history). Nil, or
 	// a disabled Repo, runs without history: writes are not committed.
 	History *history.Repo
+
+	// MaxUpload caps one source upload (POST /api/sources) in bytes;
+	// 0 means DefaultMaxUpload (2 GiB). CLI --max-upload.
+	MaxUpload int64
 }
 
 // Server wires the scoped directory, the single Pulse engine and the UI.
@@ -45,6 +50,9 @@ type Server struct {
 	cohorts    cohortCounts
 	labels     labelEngines
 	runs       runState
+
+	importMu  sync.Mutex // serializes imports / rebuilds (target + spec writes)
+	sourcesMu sync.Mutex // serializes naming uploads in sources/
 }
 
 // New returns a Server. ui is the UI asset tree; uiBuilt says whether it
@@ -72,6 +80,7 @@ func New(root *scope.Root, engine *pulse.Pulse, cfg Config, ui fs.FS, uiBuilt bo
 	s.mux.HandleFunc("GET /api/history", s.handleHistory)
 	s.mux.HandleFunc("GET /api/history/file", s.handleHistoryFile)
 	s.mux.HandleFunc("POST /api/history/restore", s.handleRestore)
+	s.registerImportRoutes()
 	s.mux.HandleFunc("/api/", func(w http.ResponseWriter, r *http.Request) {
 		WriteError(w, http.StatusNotFound, "not_found", "no such API endpoint", map[string]any{"path": r.URL.Path})
 	})

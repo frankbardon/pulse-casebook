@@ -5,6 +5,7 @@ package workspace
 
 import (
 	"encoding/json"
+	"errors"
 	"io/fs"
 	"os"
 	"path"
@@ -13,6 +14,7 @@ import (
 	"sort"
 	"strings"
 
+	pio "github.com/frankbardon/pulse/io"
 	"github.com/frankbardon/pulse/types"
 )
 
@@ -29,6 +31,24 @@ const (
 	KindChain      Kind = "chain"
 	KindCohort     Kind = "cohort"
 	KindUnopenable Kind = "unopenable"
+
+	// Import workspace layout (G1): schemas/<name>.schema.json saved
+	// schemas, imports/<cohort>.import.json import specs, and any file
+	// under sources/ (uploaded source data, gitignored).
+	KindSchema Kind = "schema"
+	KindImport Kind = "import"
+	KindSource Kind = "source"
+)
+
+// Import spec states (File.State on KindImport entries).
+const (
+	// StateOK: the spec's target cohort exists.
+	StateOK = "ok"
+	// StateNeedsRebuild: the spec is in the workspace (and so in git)
+	// but its .pulse is missing; POST /api/import/rebuild restores it.
+	StateNeedsRebuild = "needs_rebuild"
+	// StateInvalid: the spec cannot be read (Reason says why).
+	StateInvalid = "invalid"
 )
 
 // MaxRequestBytes bounds how much of a JSON file is read to classify it.
@@ -40,10 +60,20 @@ const MaxEntries = 5000
 
 // File is one entry of a listing. Path is slash-separated and relative to
 // the scoped root. Reason explains an unopenable classification.
+//
+// Import entries carry extra links: a source has its Format (pulse
+// io.FormatFromPath, "" when unrecognised) and Size; an import spec its
+// Target cohort and State; a cohort built by an import spec links back
+// to it in Spec, so the UI can offer Rebuild.
 type File struct {
 	Path   string `json:"path"`
 	Kind   Kind   `json:"kind"`
 	Reason string `json:"reason,omitempty"`
+	Format string `json:"format,omitempty"`
+	Size   int64  `json:"size,omitempty"`
+	Target string `json:"target,omitempty"`
+	State  string `json:"state,omitempty"`
+	Spec   string `json:"spec,omitempty"`
 }
 
 // Listing is the result of List.
@@ -109,6 +139,9 @@ func Classify(name string, data []byte) (Kind, string) {
 // classifyName decides what the file name alone can; ok is false when the
 // contents must be read.
 func classifyName(name string) (kind Kind, reason string, ok bool) {
+	if kind, ok := classifyLayout(name); ok {
+		return kind, "", true
+	}
 	base := strings.ToLower(path.Base(filepath.ToSlash(name)))
 	if strings.HasSuffix(base, ".pulse") {
 		return KindCohort, "", true
@@ -122,6 +155,23 @@ func classifyName(name string) (kind Kind, reason string, ok bool) {
 		}
 	}
 	return "", "", false
+}
+
+// classifyLayout recognises the import layout by root-relative path:
+// sources/** (any file), schemas/*.schema.json and imports/*.import.json.
+func classifyLayout(name string) (Kind, bool) {
+	rel := filepath.ToSlash(name)
+	dir, base := path.Split(rel)
+	lower := strings.ToLower(base)
+	switch {
+	case strings.HasPrefix(rel, "sources/") && base != "":
+		return KindSource, true
+	case dir == "schemas/" && strings.HasSuffix(lower, ".schema.json"):
+		return KindSchema, true
+	case dir == "imports/" && strings.HasSuffix(lower, ".import.json"):
+		return KindImport, true
+	}
+	return "", false
 }
 
 // ClassifyJSON detects the request root of a JSON document by its
@@ -183,32 +233,99 @@ func List(dir string) (*Listing, error) {
 		if d.IsDir() || !d.Type().IsRegular() {
 			return nil
 		}
+		rel, err := filepath.Rel(dir, p)
+		if err != nil {
+			return nil
+		}
+		rel = filepath.ToSlash(rel)
 		lower := strings.ToLower(name)
-		if !strings.HasSuffix(lower, ".json") && !strings.HasSuffix(lower, ".pulse") {
+		if !strings.HasSuffix(lower, ".json") && !strings.HasSuffix(lower, ".pulse") && !strings.HasPrefix(rel, "sources/") {
 			return nil
 		}
 		if len(out.Files) >= MaxEntries {
 			out.Truncated = true
 			return fs.SkipAll
 		}
-		rel, err := filepath.Rel(dir, p)
-		if err != nil {
-			return nil
-		}
-		out.Files = append(out.Files, classifyFile(p, filepath.ToSlash(rel), d))
+		out.Files = append(out.Files, classifyFile(p, rel, d))
 		return nil
 	})
 	if err != nil {
 		return nil, err
 	}
+	linkImports(dir, out.Files)
 	sort.Slice(out.Files, func(i, j int) bool { return out.Files[i].Path < out.Files[j].Path })
 	return out, nil
+}
+
+// linkImports reads each import spec's target: the spec gets Target and
+// State (needs_rebuild when the cohort is missing), and the cohort, when
+// listed, gets Spec.
+func linkImports(dir string, files []File) {
+	specOf := map[string]string{}
+	for i := range files {
+		f := &files[i]
+		if f.Kind != KindImport {
+			continue
+		}
+		target, err := SpecTarget(filepath.Join(dir, filepath.FromSlash(f.Path)))
+		if err != nil {
+			f.State, f.Reason = StateInvalid, err.Error()
+			continue
+		}
+		f.Target = target
+		f.State = StateNeedsRebuild
+		if info, err := os.Stat(filepath.Join(dir, filepath.FromSlash(target))); err == nil && info.Mode().IsRegular() {
+			f.State = StateOK
+		}
+		if _, dup := specOf[target]; !dup {
+			specOf[target] = f.Path
+		}
+	}
+	for i := range files {
+		if files[i].Kind == KindCohort {
+			files[i].Spec = specOf[files[i].Path]
+		}
+	}
+}
+
+// SpecTarget reads an import spec's target cohort path (root-relative,
+// slash-separated). Only the target is decoded here; package importer
+// owns the full spec.
+func SpecTarget(abs string) (string, error) {
+	info, err := os.Stat(abs)
+	if err != nil {
+		return "", errors.New("unreadable")
+	}
+	if info.Size() > MaxRequestBytes {
+		return "", errors.New("import spec too large")
+	}
+	data, err := os.ReadFile(abs)
+	if err != nil {
+		return "", errors.New("unreadable")
+	}
+	var spec struct {
+		Target string `json:"target"`
+	}
+	if err := json.Unmarshal(data, &spec); err != nil {
+		return "", errors.New("import spec is not valid JSON")
+	}
+	t := path.Clean(spec.Target)
+	if spec.Target == "" || !filepath.IsLocal(filepath.FromSlash(t)) || !strings.HasSuffix(strings.ToLower(t), ".pulse") {
+		return "", errors.New("import spec has no valid target")
+	}
+	return t, nil
 }
 
 func classifyFile(abs, rel string, d fs.DirEntry) File {
 	f := File{Path: rel}
 	if kind, reason, ok := classifyName(rel); ok {
 		f.Kind, f.Reason = kind, reason
+		if kind == KindSource {
+			f.Format = string(pio.FormatFromPath(rel))
+			if info, err := d.Info(); err == nil {
+				f.Size = info.Size()
+			}
+		}
 		return f
 	}
 	if info, err := d.Info(); err == nil && info.Size() > MaxRequestBytes {

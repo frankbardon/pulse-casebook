@@ -232,3 +232,68 @@ func TestLayoutPath(t *testing.T) {
 		}
 	}
 }
+
+func TestImportLayout(t *testing.T) {
+	dir := t.TempDir()
+	write := func(rel, content string) {
+		p := filepath.Join(dir, filepath.FromSlash(rel))
+		if err := os.MkdirAll(filepath.Dir(p), 0o755); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(p, []byte(content), 0o644); err != nil {
+			t.Fatal(err)
+		}
+	}
+	write("sources/sales.csv", "a\n1\n")
+	write("sources/raw.bin.gz", "x")
+	write("sources/.upload-1.tmp", "partial")
+	write("schemas/sales.schema.json", `[{"name":"a","type":"u8"}]`)
+	write("schemas/notes.json", `{"x":1}`)
+	write("imports/sales.import.json", `{"version":1,"target":"cohorts/sales.pulse","source":{"path":"sources/sales.csv"}}`)
+	write("imports/gone.import.json", `{"version":1,"target":"gone.pulse","source":{"path":"sources/sales.csv"}}`)
+	write("imports/bad.import.json", `{"version":1,"target":"../../etc.pulse"}`)
+	write("cohorts/sales.pulse", "PULSE")
+	write("other.pulse", "PULSE")
+	write("data/x.csv", "a\n") // non-JSON outside sources/: not listed
+
+	listing, err := List(dir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	got := map[string]File{}
+	for _, f := range listing.Files {
+		got[f.Path] = f
+	}
+	want := map[string]File{
+		"sources/sales.csv":         {Path: "sources/sales.csv", Kind: KindSource, Format: "csv", Size: 4},
+		"sources/raw.bin.gz":        {Path: "sources/raw.bin.gz", Kind: KindSource, Size: 1},
+		"schemas/sales.schema.json": {Path: "schemas/sales.schema.json", Kind: KindSchema},
+		"imports/sales.import.json": {Path: "imports/sales.import.json", Kind: KindImport, Target: "cohorts/sales.pulse", State: StateOK},
+		"imports/gone.import.json":  {Path: "imports/gone.import.json", Kind: KindImport, Target: "gone.pulse", State: StateNeedsRebuild},
+		"cohorts/sales.pulse":       {Path: "cohorts/sales.pulse", Kind: KindCohort, Spec: "imports/sales.import.json"},
+		"other.pulse":               {Path: "other.pulse", Kind: KindCohort},
+	}
+	for p, w := range want {
+		if got[p] != w {
+			t.Errorf("%s = %+v, want %+v", p, got[p], w)
+		}
+	}
+	if b := got["imports/bad.import.json"]; b.State != StateInvalid || b.Reason == "" {
+		t.Errorf("bad spec = %+v", b)
+	}
+	if n := got["schemas/notes.json"]; n.Kind != KindUnopenable {
+		t.Errorf("schemas/notes.json = %+v", n)
+	}
+	for _, p := range []string{"sources/.upload-1.tmp", "data/x.csv"} {
+		if _, ok := got[p]; ok {
+			t.Errorf("%s listed", p)
+		}
+	}
+	// Classify (GET /api/file) agrees by path.
+	if k, _ := Classify("schemas/sales.schema.json", []byte(`[]`)); k != KindSchema {
+		t.Errorf("Classify schema = %s", k)
+	}
+	if k, _ := Classify("req/sales.schema.json", []byte(`[]`)); k != KindUnopenable {
+		t.Errorf("schema outside schemas/ = %s", k)
+	}
+}

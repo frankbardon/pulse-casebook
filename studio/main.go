@@ -1,7 +1,7 @@
 // Command studio serves Pulse Studio, a local visual request builder, for
 // one directory of Pulse requests and cohorts.
 //
-//	studio <dir> [--port N] [--preview-timeout 10s] [--auto-preview-rows 1000000] [--no-git]
+//	studio <dir> [--port N] [--preview-timeout 10s] [--auto-preview-rows 1000000] [--no-git] [--max-upload 2GiB]
 //
 // The directory is kept in git (see internal/history): every studio write
 // is committed, unless --no-git is given or git is not installed.
@@ -13,10 +13,13 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"math"
 	"net"
 	"net/http"
 	"os"
 	"os/signal"
+	"strconv"
+	"strings"
 	"syscall"
 	"time"
 
@@ -43,8 +46,10 @@ func run(args []string) error {
 	timeout := fset.Duration("preview-timeout", 10*time.Second, "hard timeout for a single preview probe")
 	autoRows := fset.Int64("auto-preview-rows", 1_000_000, "cohort row count above which expensive previews wait for \"Run to here\"")
 	noGit := fset.Bool("no-git", false, "do not keep the directory in git (no auto-commit, no history)")
+	maxUpload := sizeFlag(server.DefaultMaxUpload)
+	fset.Var(&maxUpload, "max-upload", "largest source file an upload may be (bytes, or with KB/MB/GB/KiB/MiB/GiB)")
 	fset.Usage = func() {
-		fmt.Fprintln(fset.Output(), "usage: studio <dir> [--port N] [--preview-timeout D] [--auto-preview-rows N] [--no-git]")
+		fmt.Fprintln(fset.Output(), "usage: studio <dir> [--port N] [--preview-timeout D] [--auto-preview-rows N] [--no-git] [--max-upload SIZE]")
 		fset.PrintDefaults()
 	}
 	// Accept flags before or after the directory argument.
@@ -83,6 +88,7 @@ func run(args []string) error {
 		PreviewTimeout:  *timeout,
 		AutoPreviewRows: *autoRows,
 		History:         hist,
+		MaxUpload:       int64(maxUpload),
 	}, web.FS(), web.Built())
 
 	ln, err := net.Listen("tcp", fmt.Sprintf("127.0.0.1:%d", *port))
@@ -104,4 +110,44 @@ func run(args []string) error {
 		defer cancel()
 		return httpSrv.Shutdown(shutdown)
 	}
+}
+
+// sizeFlag is a byte count flag accepting a plain number or a number
+// with a unit: KB/MB/GB/TB (powers of 1000), KiB/MiB/GiB/TiB (powers of
+// 1024), B; case-insensitive, optional space ("2GiB", "500 MB").
+type sizeFlag int64
+
+func (f *sizeFlag) String() string { return strconv.FormatInt(int64(*f), 10) }
+
+func (f *sizeFlag) Set(v string) error {
+	n, err := parseSize(v)
+	if err != nil {
+		return err
+	}
+	*f = sizeFlag(n)
+	return nil
+}
+
+func parseSize(v string) (int64, error) {
+	s := strings.ToLower(strings.TrimSpace(v))
+	units := []struct {
+		suffix string
+		mult   int64
+	}{
+		{"kib", 1 << 10}, {"mib", 1 << 20}, {"gib", 1 << 30}, {"tib", 1 << 40},
+		{"kb", 1e3}, {"mb", 1e6}, {"gb", 1e9}, {"tb", 1e12},
+		{"k", 1 << 10}, {"m", 1 << 20}, {"g", 1 << 30}, {"b", 1},
+	}
+	mult := int64(1)
+	for _, u := range units {
+		if strings.HasSuffix(s, u.suffix) {
+			s, mult = strings.TrimSpace(strings.TrimSuffix(s, u.suffix)), u.mult
+			break
+		}
+	}
+	f, err := strconv.ParseFloat(s, 64)
+	if err != nil || f <= 0 || f*float64(mult) > float64(math.MaxInt64) {
+		return 0, fmt.Errorf("invalid size %q", v)
+	}
+	return int64(f * float64(mult)), nil
 }

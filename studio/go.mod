@@ -2,7 +2,10 @@ module github.com/frankbardon/pulse-casebook/studio
 
 go 1.26.1
 
-require github.com/frankbardon/pulse v1.0.0-alpha.10
+require (
+	github.com/frankbardon/pulse v1.0.0-alpha.10
+	github.com/spf13/afero v1.15.0
+)
 
 require (
 	github.com/andybalholm/brotli v1.2.3 // indirect
@@ -18,7 +21,6 @@ require (
 	github.com/pierrec/lz4/v4 v4.1.29 // indirect
 	github.com/richardlehane/mscfb v1.0.7 // indirect
 	github.com/richardlehane/msoleps v1.0.6 // indirect
-	github.com/spf13/afero v1.15.0 // indirect
 	github.com/tiendc/go-deepcopy v1.7.2 // indirect
 	github.com/xuri/efp v0.0.1 // indirect
 	github.com/xuri/excelize/v2 v2.11.0 // indirect
