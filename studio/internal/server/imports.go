@@ -551,27 +551,7 @@ func (s *Server) resolveSchema(w http.ResponseWriter, raw json.RawMessage, rs *r
 			WriteError(w, http.StatusBadRequest, "invalid_name", "schema must be a saved schema name or an inline schema document", map[string]any{"schema": ref})
 			return false
 		}
-		rel, abs, ok := s.scopedPath(w, importer.SchemaPath(name))
-		if !ok {
-			return false
-		}
-		data, err := readSmall(abs)
-		if err != nil {
-			if errors.Is(err, fs.ErrNotExist) {
-				WriteError(w, http.StatusNotFound, "schema_not_found", "no saved schema with this name", map[string]any{"schema": name, "path": rel})
-			} else {
-				writeFSError(w, rel, err)
-			}
-			return false
-		}
-		fields, sch, err := importer.ParseSchema(data)
-		if err != nil {
-			writeSchemaError(w, err)
-			return false
-		}
-		rs.fields, rs.schema, rs.refPath = fields, sch, rel
-		rs.ref = &importer.SpecSchema{Ref: name, Path: rel, SHA256: importer.HashBytes(data)}
-		return true
+		return s.loadSavedSchema(w, name, importer.SchemaPath(name), rs)
 	}
 	fields, sch, err := importer.ParseSchema(raw)
 	if err != nil {
@@ -580,6 +560,34 @@ func (s *Server) resolveSchema(w http.ResponseWriter, raw json.RawMessage, rs *r
 	}
 	rs.fields, rs.schema = fields, sch
 	rs.ref = &importer.SpecSchema{Inline: fields}
+	return true
+}
+
+// loadSavedSchema reads the saved schema name at relPath (its area's
+// schemas/<name>.schema.json, or "_global/schemas/..." for a global
+// schema a workspace spec uses since the schema was made global) into
+// rs.
+func (s *Server) loadSavedSchema(w http.ResponseWriter, name, relPath string, rs *resolvedSource) bool {
+	rel, abs, ok := s.scopedPath(w, relPath)
+	if !ok {
+		return false
+	}
+	data, err := readSmall(abs)
+	if err != nil {
+		if errors.Is(err, fs.ErrNotExist) {
+			WriteError(w, http.StatusNotFound, "schema_not_found", "no saved schema with this name", map[string]any{"schema": name, "path": rel})
+		} else {
+			writeFSError(w, rel, err)
+		}
+		return false
+	}
+	fields, sch, err := importer.ParseSchema(data)
+	if err != nil {
+		writeSchemaError(w, err)
+		return false
+	}
+	rs.fields, rs.schema, rs.refPath = fields, sch, rel
+	rs.ref = &importer.SpecSchema{Ref: name, Path: rel, SHA256: importer.HashBytes(data)}
 	return true
 }
 
@@ -1189,6 +1197,12 @@ func (s *Server) handleRebuild(w http.ResponseWriter, r *http.Request) {
 	schemaChanged := false
 	if sc := spec.Schema; sc != nil {
 		switch {
+		case sc.Ref != "" && s.cfg.Library && strings.HasPrefix(sc.Path, globalPrefix+"/"):
+			// A workspace spec whose schema was made global (internal/promote).
+			if !s.loadSavedSchema(w, sc.Ref, sc.Path, rs) {
+				return
+			}
+			schemaChanged = rs.ref.SHA256 != sc.SHA256
 		case sc.Ref != "":
 			raw, _ := json.Marshal(sc.Ref)
 			if !s.resolveSchema(w, raw, rs) {

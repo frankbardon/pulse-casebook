@@ -13,6 +13,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/frankbardon/pulse-casebook/studio/internal/fileops"
 	"github.com/frankbardon/pulse-casebook/studio/internal/history"
 	"github.com/frankbardon/pulse-casebook/studio/internal/jsonfmt"
 	"github.com/frankbardon/pulse-casebook/studio/internal/library"
@@ -409,29 +410,6 @@ func commitIn(ctx context.Context, wsDir string, j *Journal, msg string, paths [
 	return c, nil
 }
 
-// moveOne renames from to to; done already when from is gone and to
-// exists. Never overwrites.
-func moveOne(from, to string) error {
-	_, ferr := os.Lstat(from)
-	_, terr := os.Lstat(to)
-	switch {
-	case ferr == nil && errors.Is(terr, fs.ErrNotExist):
-		if err := os.MkdirAll(filepath.Dir(to), 0o755); err != nil {
-			return err
-		}
-		return os.Rename(from, to)
-	case errors.Is(ferr, fs.ErrNotExist) && terr == nil:
-		return nil
-	case ferr == nil && terr == nil:
-		return errors.New("the target already exists")
-	case ferr != nil && !errors.Is(ferr, fs.ErrNotExist):
-		return ferr
-	case terr != nil && !errors.Is(terr, fs.ErrNotExist):
-		return terr
-	}
-	return errors.New("neither the source nor the target exists")
-}
-
 // rewriteOne writes r.After over a file holding r.Before (keeping its
 // mode); already done when it holds r.After.
 func rewriteOne(file string, r JournalRewrite) error {
@@ -678,24 +656,7 @@ func Recover(ctx context.Context, dir string, opts Options) (*Outcome, error) {
 	return out, nil
 }
 
-func writeFileAtomic(path string, data []byte, mode fs.FileMode) error {
-	tmp, err := os.CreateTemp(filepath.Dir(path), "."+filepath.Base(path)+".*.tmp")
-	if err != nil {
-		return err
-	}
-	name := tmp.Name()
-	_, err = tmp.Write(data)
-	if err == nil {
-		err = tmp.Chmod(mode)
-	}
-	if cerr := tmp.Close(); err == nil {
-		err = cerr
-	}
-	if err == nil {
-		err = os.Rename(name, path)
-	}
-	if err != nil {
-		_ = os.Remove(name)
-	}
-	return err
-}
+var (
+	moveOne         = fileops.Move
+	writeFileAtomic = fileops.WriteAtomic
+)

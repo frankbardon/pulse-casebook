@@ -21,6 +21,7 @@ import (
 	"github.com/frankbardon/pulse-casebook/studio/internal/history"
 	"github.com/frankbardon/pulse-casebook/studio/internal/library"
 	"github.com/frankbardon/pulse-casebook/studio/internal/migrate"
+	"github.com/frankbardon/pulse-casebook/studio/internal/promote"
 	"github.com/frankbardon/pulse-casebook/studio/internal/routefs"
 	"github.com/frankbardon/pulse-casebook/studio/internal/scope"
 	"github.com/frankbardon/pulse-casebook/studio/internal/workspace"
@@ -44,6 +45,7 @@ import (
 //	POST  /api/workspaces           {name, description?} → 201 {workspace, git}
 //	PATCH /api/workspaces/{slug}    {name?, description?} → {workspace, commit?}
 //	GET   /api/cohorts              global + every workspace's cohorts, schemas, imports, sources
+//	POST  /api/cohorts/promote      make a local cohort or schema global (promote.go; never back)
 //	GET   /api/migration/plan       legacy folder → library: the plan (migration.go)
 //	POST  /api/migration/apply      perform it; the server switches to the library without a restart
 //
@@ -116,6 +118,13 @@ func NewLibrary(ctx context.Context, lib *library.Library, opts LibraryOptions, 
 		ws, _ := lib.Workspaces()
 		l.areas[ws[0].Slug] = l.base
 	} else {
+		// A promotion the last run did not finish is rolled back (or,
+		// past its rewrites, committed) before anything is served.
+		if out, err := promote.Recover(ctx, lib.Dir(), promote.RecoverOptions{NoGit: opts.NoGit, Git: opts.Git, Logf: opts.Logf}); err != nil {
+			return nil, err
+		} else if out != nil {
+			opts.Logf("promote: interrupted promotion of %s (workspace %s): %s", out.Item.Path, out.Workspace, out.Action)
+		}
 		l.global = history.Open(ctx, lib.Dir(), history.Options{Disabled: opts.NoGit, Git: opts.Git, Standalone: true, Ignore: history.GlobalIgnorePatterns}, opts.Logf)
 		l.globalRoot = root.WithDeny(library.WorkspacesDir)
 		cfg.History, cfg.Library, cfg.ListSkip = l.global, true, []string{library.WorkspacesDir}
@@ -130,6 +139,7 @@ func NewLibrary(ctx context.Context, lib *library.Library, opts LibraryOptions, 
 	l.mux.HandleFunc("POST /api/workspaces", l.handleCreateWorkspace)
 	l.mux.HandleFunc("PATCH /api/workspaces/{slug}", l.handleUpdateWorkspace)
 	l.mux.HandleFunc("GET /api/cohorts", l.handleCohorts)
+	l.mux.HandleFunc("POST "+promotePath, l.handlePromote)
 	l.mux.HandleFunc("GET /api/migration/plan", l.handleMigrationPlan)
 	l.mux.HandleFunc("POST /api/migration/apply", l.handleMigrationApply)
 	l.mux.HandleFunc("/api/w/{ws}/{rest...}", l.handleScoped)
@@ -147,7 +157,8 @@ func (l *Library) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		next.ServeHTTP(w, r)
 		return
 	}
-	if r.URL.Path == migrationApplyPath {
+	if r.URL.Path == migrationApplyPath || r.URL.Path == promotePath {
+		// These take the gate themselves.
 		l.mux.ServeHTTP(w, r)
 		return
 	}

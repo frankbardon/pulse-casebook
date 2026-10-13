@@ -40,6 +40,7 @@ import (
 	"github.com/frankbardon/pulse-casebook/studio/internal/history"
 	"github.com/frankbardon/pulse-casebook/studio/internal/jsonfmt"
 	"github.com/frankbardon/pulse-casebook/studio/internal/library"
+	"github.com/frankbardon/pulse-casebook/studio/internal/refedit"
 	"github.com/frankbardon/pulse-casebook/studio/internal/workspace"
 )
 
@@ -94,22 +95,16 @@ type Move struct {
 
 // Ref fields (RefChange.Field).
 const (
-	FieldCohort       = "cohort"        // {filename, data_dir}
-	FieldJoin         = "join"          // joins[].right
-	FieldPopulation   = "population"    // overlays ref.population.cohort
-	FieldImportTarget = "import_target" // import spec target
+	FieldCohort       = refedit.FieldCohort       // {filename, data_dir}
+	FieldJoin         = refedit.FieldJoin         // joins[].right
+	FieldPopulation   = refedit.FieldPopulation   // overlays ref.population.cohort
+	FieldImportTarget = refedit.FieldImportTarget // import spec target
 )
 
 // RefChange is one rewritten reference. Old and New are the reference
 // as written (cohorts: data_dir + "/" + filename); Resolved is the
 // legacy file it pointed at.
-type RefChange struct {
-	Pointer  string `json:"pointer"`
-	Field    string `json:"field"`
-	Old      string `json:"old"`
-	New      string `json:"new"`
-	Resolved string `json:"resolved"`
-}
+type RefChange = refedit.Change
 
 // Rewrite is one moved JSON file whose references change. Path is its
 // new (library-relative) path, From the old one.
@@ -123,13 +118,7 @@ type Rewrite struct {
 
 // Issue is a warning (the migration still runs) or a conflict (it
 // refuses).
-type Issue struct {
-	Code    string `json:"code"`
-	Path    string `json:"path,omitempty"`
-	Pointer string `json:"pointer,omitempty"`
-	Ref     string `json:"ref,omitempty"`
-	Message string `json:"message"`
-}
+type Issue = refedit.Issue
 
 // WorkspacePlan is the workspace the folder becomes.
 type WorkspacePlan struct {
@@ -559,9 +548,9 @@ func (p *Plan) classify(files []file) {
 		m := dest[k]
 		switch m.Kind {
 		case KindAnalysis:
-			p.planRewrite(res, m, refsOfAnalysis)
+			p.planRewrite(res, m, refedit.Analysis)
 		case KindImport:
-			p.planRewrite(res, m, refsOfImport)
+			p.planRewrite(res, m, refedit.ImportTarget)
 		}
 	}
 }
@@ -612,34 +601,31 @@ func layoutKind(rel string) (string, workspace.Kind, bool) {
 	return "", "", false
 }
 
-func (p *Plan) planRewrite(res *resolver, m Move, find func(*jsonfmt.Node, *refWalk)) {
+func (p *Plan) planRewrite(res *resolver, m Move, find func(*refedit.Walk, *jsonfmt.Node)) {
 	src, err := os.ReadFile(filepath.Join(p.dir, filepath.FromSlash(m.From)))
 	if err != nil {
 		p.Warnings = append(p.Warnings, Issue{Code: "unreadable", Path: m.From, Message: err.Error()})
 		return
 	}
-	root, err := jsonfmt.Parse(src)
-	if err != nil {
+	out, w, err := refedit.Rewrite(src, m.From, res, find)
+	if w == nil {
 		p.Warnings = append(p.Warnings, Issue{Code: "invalid_json", Path: m.From, Message: err.Error()})
 		return
 	}
-	w := &refWalk{res: res, from: m.From}
-	find(root, w)
-	for i := range w.issues {
-		w.issues[i].Path = m.From
+	for i := range w.Issues {
+		w.Issues[i].Path = m.From
 	}
-	p.Warnings = append(p.Warnings, w.issues...)
-	p.Counts.Refs += w.refs
-	if len(w.edits) == 0 {
-		return
-	}
-	out := splice(src, w.edits)
-	if _, err := jsonfmt.Parse(out); err != nil {
+	p.Warnings = append(p.Warnings, w.Issues...)
+	p.Counts.Refs += w.Refs
+	if err != nil {
 		// Never write a file that no longer parses.
 		p.Warnings = append(p.Warnings, Issue{Code: "rewrite_failed", Path: m.From, Message: err.Error()})
 		return
 	}
-	p.Rewrites = append(p.Rewrites, Rewrite{Path: p.Workspace.Path + "/" + m.To, From: m.From, Changes: w.changes, before: src, after: out})
+	if out == nil {
+		return
+	}
+	p.Rewrites = append(p.Rewrites, Rewrite{Path: p.Workspace.Path + "/" + m.To, From: m.From, Changes: w.Changes, before: src, after: out})
 }
 
 func (p *Plan) fingerprint() string {
