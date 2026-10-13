@@ -94,15 +94,15 @@ overwrites an existing file.
 
 A request is drawn as a set of nodes, one node per entry in the request JSON:
 
-- **Stage columns.** Nodes sit in columns that follow how Pulse evaluates a request: Cohort, Features,
-  Filters, Attributes, Group, Aggregate, Windows, Sort, Analysis, Output. A node can only be placed in
-  a column that suits its kind.
+- **Stage layout.** A request first opens laid out left to right in the order Pulse evaluates it:
+  Cohort, Features, Filters, Attributes, Group, Aggregate, Windows, Sort, Analysis, Output. After that
+  nodes go wherever you drag them; the layout is saved next to the request.
 - **Field wires.** A wire means "this node reads that field". It is the label (or cohort field) that
   the downstream entry names in the JSON. Ports are type-checked against the engine's operator
   catalog, and a connection that the engine would refuse is rejected with the reason. Dragging a wire
   to empty canvas opens a menu of operators that accept that field's type.
 - **Palette.** The side palette lists every operator the connected Pulse engine offers, searchable by
-  name and description. Drag one into its column. Studio fills required parameters with defaults and
+  name and description. Drag one onto the canvas (or click it to add it at its stage's spot). Studio fills required parameters with defaults and
   flags what is still missing.
 - **Raw JSON nodes.** Anything Studio does not model (unknown keys, odd shapes, templated values) is
   kept as a raw node whose JSON you edit as text. Nothing in your file is dropped.

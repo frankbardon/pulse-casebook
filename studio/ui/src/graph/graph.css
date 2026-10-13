@@ -261,16 +261,6 @@
   margin-top: var(--space-1);
 }
 
-.col-title {
-  position: absolute;
-  width: 240px;
-  font-size: var(--text-sm);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--muted);
-}
-
 .empty {
   padding: var(--space-3) calc(var(--space-3) * 2);
 }
@@ -905,7 +895,7 @@
   color: var(--warn);
 }
 
-/* Compose lanes: one band per slot or fit, holding its stage columns.
+/* Compose lanes: one band per slot or fit, holding its nodes.
    The band itself takes no pointer events (the canvas pans and port
    drags drop "on the pane" through it); only its header does. */
 .react-flow__node-lane {
@@ -999,17 +989,6 @@
 .lane-tools button:disabled {
   opacity: 0.4;
   cursor: default;
-}
-
-.lane-col-title {
-  position: absolute;
-  top: 38px;
-  width: 240px;
-  font-size: var(--text-sm);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--muted);
 }
 
 .lane > .gnode-badge {

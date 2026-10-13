@@ -3,7 +3,6 @@ import {
   Background,
   Controls,
   ReactFlow,
-  ViewportPortal,
   getBezierPath,
   useStore,
   useStoreApi,
@@ -44,14 +43,10 @@ import { LaneActionsContext, type LaneActions } from './laneActions.ts'
 import { JoinViewContext, type JoinView } from './joinView.ts'
 import {
   checkConnection,
-  clampToColumn,
-  columnAllows,
-  columnAt,
   connectWire,
   deletable,
   deleteNode,
   disconnectWires,
-  homeToColumn,
   type Wire,
   type WireCheck,
 } from './wiring.ts'
@@ -399,8 +394,7 @@ function RequestGraphView({ path, kind, catalog, history }: { path: string; kind
     runNow()
   }, [runNow])
 
-  // Sidecar positions override auto-layout (re-homed to the node's own
-  // column when the columns moved since: wiring.homeToColumn); ids the
+  // Sidecar positions override auto-layout, verbatim; ids the
   // graph no longer has are simply never looked up. Compose content positions are relative to
   // their lane; lanes stack top to bottom in lane order, each as tall as
   // its content (measured where React Flow has measured it).
@@ -410,7 +404,7 @@ function RequestGraphView({ path, kind, catalog, history }: { path: string; kind
       const saved = positionOf(lay.layout, n.id)
       return {
         ...n,
-        position: saved ? homeToColumn(saved, n.data.column, graph.columns) : n.position,
+        position: saved ?? n.position,
         selected: n.id === selected,
         measured: measured.get(n.id),
       }
@@ -451,7 +445,6 @@ function RequestGraphView({ path, kind, catalog, history }: { path: string; kind
           title: lane.title,
           named: lane.named,
           ...(lane.save !== undefined && { save: lane.save }),
-          columns: compose.columns.filter((c) => lane.columns.includes(c.key)),
           place: order.indexOf(b.id),
           count: order.length,
           removable: doc !== null && removable(doc.model, b.id),
@@ -489,7 +482,7 @@ function RequestGraphView({ path, kind, catalog, history }: { path: string; kind
 
   // Column lookup for drags: a node stays inside its own stage column.
   const placed = graph !== null && typeof graph !== 'string' ? graph : null
-  const columnOf = useMemo(() => new Map(placed?.nodes.map((n) => [n.id, n.data.column]) ?? []), [placed])
+  const contentIds = useMemo(() => new Set(placed?.nodes.map((n) => n.id)), [placed])
 
   const onNodesChange = useCallback((changes: NodeChange<FlowNode>[]) => {
     const sizes = changes.filter((c) => c.type === 'dimensions' && c.dimensions)
@@ -513,16 +506,14 @@ function RequestGraphView({ path, kind, catalog, history }: { path: string; kind
       let layout = l.layout
       for (const c of moves) {
         if (c.type !== 'position' || !c.position) continue
-        const column = columnOf.get(c.id)
-        if (column === undefined) continue
-        let pos = placed ? clampToColumn(c.position, column, placed.columns) : c.position
+        if (!contentIds.has(c.id)) continue
         // A lane's nodes stay below its header.
-        if (placed?.compose) pos = { x: pos.x, y: Math.max(LANE.head, pos.y) }
+        const pos = placed?.compose ? { x: c.position.x, y: Math.max(LANE.head, c.position.y) } : c.position
         layout = moveNode(layout, c.id, pos)
       }
       return { ...l, layout }
     })
-  }, [columnOf, placed])
+  }, [contentIds, placed])
 
   // A wire's field types come from the target lane's cohort.
   const check = useCallback(
@@ -656,9 +647,8 @@ function RequestGraphView({ path, kind, catalog, history }: { path: string; kind
 
   // place appends a new entry for item (wired, when a port drag opened
   // the palette) to the request of lane ('' for a plain request) and
-  // selects it. With a drop point the node sits there, snapped to its own
-  // stage column; without one, or when that column is not drawn yet, it
-  // is auto-laid out.
+  // selects it. With a drop point the node sits there; without one it is
+  // auto-laid out in its stage's column.
   const place = useCallback(
     (item: PaletteItem, lane: string, at?: { x: number; y: number }, wire?: { rowKey: string; ref: string }) => {
       if (!doc) return
@@ -681,24 +671,22 @@ function RequestGraphView({ path, kind, catalog, history }: { path: string; kind
         return
       }
       setDoc({ ...doc, model: r.model })
-      const col = at && placed?.columns.find((c) => c.key === item.column)
       // Compose: the drop point is made relative to the node's lane.
       const box = boxes.find((b) => b.id === lane)
-      const y = at && box ? Math.max(LANE.head, at.y - box.y) : at?.y
+      const pos = at && (compose ? box && { x: at.x - box.x, y: Math.max(LANE.head, at.y - box.y) } : at)
       setLay((l) => {
         // A stale sidecar entry for the reused id never positions the new node.
         const layout = renameNodes(l.layout, (x) => x === r.id, new Map())
-        return { ...l, layout: col && y !== undefined && (!compose || box) ? moveNode(layout, r.id, { x: col.x, y }) : layout }
+        return { ...l, layout: pos ? moveNode(layout, r.id, pos) : layout }
       })
       setSelected(r.id)
       setSelectedEdge(null)
       show(null)
     },
-    [doc, catalog, laneFields, baseOf, placed, boxes, compose, show, kind, laneById],
+    [doc, catalog, laneFields, baseOf, boxes, compose, show, kind, laneById],
   )
 
-  // A palette item dropped on the canvas lands in its own stage column
-  // only (wiring.columnAt / columnAllows).
+  // A palette item dropped on the canvas lands where it is dropped.
   const onDrop = useCallback(
     (e: DragEvent) => {
       const key = e.dataTransfer.getData(PALETTE_MIME)
@@ -716,12 +704,7 @@ function RequestGraphView({ path, kind, catalog, history }: { path: string; kind
         }
         lane = box.id
       }
-      const own = placed.columns.find((c) => c.key === item.column)
-      if (own && !columnAllows(item.column, columnAt(pos.x, placed.columns))) {
-        show({ text: `${item.op} is a ${item.kind.toLowerCase()}: drop it in the ${own.title} column`, testId: 'place-refused' })
-        return
-      }
-      place(item, lane, own ? pos : undefined)
+      place(item, lane, pos)
     },
     [items, placed, place, show, compose, boxes],
   )
@@ -1026,15 +1009,6 @@ function RequestGraphView({ path, kind, catalog, history }: { path: string; kind
                   minZoom={0.2}
                   proOptions={{ hideAttribution: true }}
                 >
-                  {!compose && (
-                    <ViewportPortal>
-                      {graph.columns.map((c) => (
-                        <div key={c.key} className="col-title" style={{ transform: `translate(${c.x}px, -28px)` }}>
-                          {c.title}
-                        </div>
-                      ))}
-                    </ViewportPortal>
-                  )}
                   <Background />
                   <Controls showInteractive={false} />
                   <RemeasureUnready />

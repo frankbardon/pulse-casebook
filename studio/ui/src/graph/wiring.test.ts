@@ -3,16 +3,13 @@ import type { CohortField, Manifest } from '../api.ts'
 import { toPlain } from './jsonTree.ts'
 import { renameNodes } from './layout.ts'
 import { emitModel, emitModelText, parseModel, type GraphModel } from './model.ts'
-import { buildRequestGraph, LAYOUT, type OpNode } from './requestGraph.ts'
+import { buildRequestGraph, type OpNode } from './requestGraph.ts'
 import {
   checkConnection,
-  clampToColumn,
-  columnAt,
   connectWire,
   deleteNode,
   disconnectWire,
   disconnectWires,
-  homeToColumn,
 } from './wiring.ts'
 import catalogText from './testdata/catalog.slim.json?raw'
 import abFields from './testdata/ab_test.fields.json?raw'
@@ -146,35 +143,5 @@ describe('deleteNode', () => {
     const { renames } = deleteNode(parseModel(cupedWelch, 'request'), 'tests[0]')
     const out = renameNodes(layout, (id) => id === 'tests[0]', renames)
     expect(out.nodes).toEqual({ 'tests[0]': { x: 2, y: 2 }, cohort: { x: 3, y: 3 } })
-  })
-})
-
-describe('column placement', () => {
-  const columns = buildRequestGraph(JSON.parse(cupedWelch), ctx).columns
-  const step = LAYOUT.nodeWidth + LAYOUT.columnGap
-
-  it('keeps a dragged node inside its own column band', () => {
-    const tests = columns.find((c) => c.key === 'analysis')!
-    expect(clampToColumn({ x: tests.x + 40, y: 9 }, 'analysis', columns)).toEqual({ x: tests.x + 40, y: 9 })
-    const right = clampToColumn({ x: tests.x + 2 * step, y: 9 }, 'analysis', columns)
-    expect(columnAt(right.x, columns)).toBe('analysis')
-    const left = clampToColumn({ x: -5 * step, y: 9 }, 'analysis', columns)
-    expect(columnAt(left.x, columns)).toBe('analysis')
-    expect(left.y).toBe(9)
-  })
-
-  it('finds the column under an x', () => {
-    expect(columnAt(0, columns)).toBe('source')
-    expect(columnAt(step * 0.9, columns)).toBe(columns[1].key)
-  })
-
-  it('keeps a saved position in its own column band and re-homes one from another column', () => {
-    const tests = columns.find((c) => c.key === 'analysis')!
-    expect(homeToColumn({ x: tests.x + 30, y: 120 }, 'analysis', columns)).toEqual({ x: tests.x + 30, y: 120 })
-    // A sidecar written before a column appeared: the x now lands one
-    // column left of the node's own stage.
-    expect(homeToColumn({ x: tests.x - step, y: 120 }, 'analysis', columns)).toEqual({ x: tests.x, y: 120 })
-    // A column the graph does not draw leaves the position alone.
-    expect(homeToColumn({ x: 5, y: 6 }, 'joins', columns)).toEqual({ x: 5, y: 6 })
   })
 })

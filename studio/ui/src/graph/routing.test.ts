@@ -37,7 +37,7 @@ describe('absolutePositions', () => {
 })
 
 describe('buildScene', () => {
-  const lane: SceneNode = { id: 'requests[1]', position: { x: 0, y: 400 }, width: 1200, height: 300, lane: true, titles: [16, 346], handles: [] }
+  const lane: SceneNode = { id: 'requests[1]', position: { x: 0, y: 400 }, width: 1200, height: 300, lane: true, handles: [] }
   const cohort: SceneNode = {
     id: 'requests[1].cohort',
     parentId: 'requests[1]',
@@ -97,10 +97,9 @@ describe('buildScene', () => {
   it('makes content nodes and lane header strips obstacles, never lane bodies', () => {
     const scene = buildScene([lane, cohort, test], [])
     const ids = scene.obstacles.map((o) => o.id)
-    expect(ids).toEqual(['requests[1]#title', 'requests[1]#tools', 'requests[1]#col0', 'requests[1]#col1', cohort.id, test.id])
+    expect(ids).toEqual(['requests[1]#title', 'requests[1]#tools', cohort.id, test.id])
     expect(scene.obstacles[0]).toEqual({ id: 'requests[1]#title', x: 0, y: 400, width: LANE_HEADER.title, height: LANE_HEADER.height })
     expect(scene.obstacles[1]).toMatchObject({ x: 1200 - LANE_HEADER.tools, y: 400 })
-    expect(scene.obstacles[3]).toMatchObject({ x: 346, y: 400 + LANE_HEADER.colTitle.top })
     expect(scene.obstacles.find((o) => o.id === test.id)).toEqual({ id: test.id, x: 676, y: 460, width: 200, height: 100 })
   })
 })

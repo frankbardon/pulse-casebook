@@ -66,17 +66,10 @@ function sceneOf(s: ReactFlowState): { nodes: SceneNode[]; edges: SceneEdge[]; d
       width: n.measured.width ?? 0,
       height: n.measured.height ?? 0,
       lane: n.type === 'lane',
-      ...(n.type === 'lane' && { titles: laneTitles(n.data) }),
       handles,
     })
   }
   return { nodes, edges: s.edges, dragging }
-}
-
-// laneTitles reads a lane node's column title positions (LaneNodeData).
-function laneTitles(data: unknown): number[] {
-  const cols = (data as { columns?: { x?: unknown }[] } | undefined)?.columns
-  return Array.isArray(cols) ? cols.map((c) => c.x).filter((x): x is number => typeof x === 'number') : []
 }
 
 export type RouteStatus = { state: 'pending' | 'ready' | 'failed'; ms?: number; error?: string }

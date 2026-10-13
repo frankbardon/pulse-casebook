@@ -72,8 +72,8 @@ export type ComposeOptions = {
   rightFields?: (right: string) => RightSide
 }
 
-// Lane geometry (px). head is the lane header: title row plus the lane's
-// column titles.
+// Lane geometry (px). head is the lane header: title row plus space
+// above the lane's first nodes.
 export const LANE = { pad: 16, head: 60, gap: 28, minBody: 48 }
 
 export function buildComposeGraph(req: unknown, opts: ComposeOptions = {}): ComposeGraph {

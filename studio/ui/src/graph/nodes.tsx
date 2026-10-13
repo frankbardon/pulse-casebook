@@ -2,7 +2,7 @@ import { use, useEffect, useRef, useState, type KeyboardEvent } from 'react'
 import { Handle, Position, useUpdateNodeInternals, type Node, type NodeProps } from '@xyflow/react'
 import type { LaneRole } from './composeGraph.ts'
 import { LaneActionsContext } from './laneActions.ts'
-import { PREVIEW_SECTIONS, type ColumnKey, type CohortNode, type FacetNode, type JoinInfo, type OpNode, type ParamRow, type RawNode } from './requestGraph.ts'
+import { PREVIEW_SECTIONS, type CohortNode, type FacetNode, type JoinInfo, type OpNode, type ParamRow, type RawNode } from './requestGraph.ts'
 import { joinBodyRows, joinedSummary, type JoinBodyRow } from './joins.ts'
 import { JoinViewContext } from './joinView.ts'
 import { FACET_PROPS } from './facetGraph.ts'
@@ -265,8 +265,6 @@ export type LaneNodeData = {
   title: string
   named: boolean
   save?: string
-  // Lane's stage column titles, lane-relative x.
-  columns: { key: ColumnKey; title: string; x: number }[]
   // Position in the drawing order (root lane: -1) and lane count.
   place: number
   count: number
@@ -280,7 +278,7 @@ export type LaneNode = Node<LaneNodeData, 'lane'>
 const ROLE_LABEL: Record<LaneRole, string> = { root: 'compose', slot: 'slot', fit: 'fit', stage: 'stage' }
 
 // LaneNodeView is one compose or chain lane: a labeled band holding a
-// slot's, fit's or chain stage's stage columns. The header renames (double-click the title),
+// slot's, fit's or chain stage's nodes. The header renames (double-click the title),
 // reorders and removes the lane; its badge carries lane-level issues.
 export function LaneNodeView({ id, data }: NodeProps<LaneNode>) {
   const actions = use(LaneActionsContext)
@@ -342,11 +340,6 @@ export function LaneNodeView({ id, data }: NodeProps<LaneNode>) {
           </span>
         )}
       </header>
-      {data.columns.map((c) => (
-        <div key={c.key} className="lane-col-title" style={{ left: c.x }}>
-          {c.title}
-        </div>
-      ))}
       <NodeIssues id={id} />
     </div>
   )

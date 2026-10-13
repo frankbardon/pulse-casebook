@@ -37,9 +37,6 @@ export type SceneNode = {
   width: number
   height: number
   lane?: boolean
-  // A lane's stage column titles (lane-relative x), drawn under its
-  // header: wires keep off them too.
-  titles?: number[]
   handles: SceneHandle[]
 }
 
@@ -67,7 +64,7 @@ export type Route = { points: XY[] }
 // Lane header geometry: the header strip (.lane-head) is 30px tall; its title
 // sits at the left, its tools at the right. Only those parts block wires,
 // so wires between lanes still cross the header's empty middle.
-export const LANE_HEADER = { height: 30, title: 320, tools: 100, colTitle: { top: 34, height: 20, width: 110 } }
+export const LANE_HEADER = { height: 30, title: 320, tools: 100 }
 
 // absolutePositions resolves parent-relative positions to absolute ones
 // (any depth; a missing parent counts as the origin, a cycle is cut).
@@ -137,11 +134,6 @@ export function buildScene(nodes: readonly SceneNode[], edges: readonly SceneEdg
     if (n.width > title + LANE_HEADER.tools) {
       obstacles.push({ id: `${n.id}#tools`, x: at.x + n.width - LANE_HEADER.tools, y: at.y, width: LANE_HEADER.tools, height: h })
     }
-    const ct = LANE_HEADER.colTitle
-    for (const [i, x] of (n.titles ?? []).entries()) {
-      if (n.height < ct.top + ct.height) break
-      obstacles.push({ id: `${n.id}#col${i}`, x: at.x + x, y: at.y + ct.top, width: ct.width, height: ct.height })
-    }
   }
   const out: RouteRequest[] = []
   for (const e of edges) {
@@ -165,7 +157,7 @@ export function sceneKey(nodes: readonly SceneNode[], edges: readonly SceneEdge[
   for (const n of nodes) {
     let hs = ''
     for (const h of n.handles) hs += `${h.id ?? ''}@${r1(h.x)},${r1(h.y)};`
-    parts.push(`${n.id}|${n.parentId ?? ''}|${r1(n.position.x)},${r1(n.position.y)}|${r1(n.width)}x${r1(n.height)}|${hs}|${n.titles?.join(',') ?? ''}`)
+    parts.push(`${n.id}|${n.parentId ?? ''}|${r1(n.position.x)},${r1(n.position.y)}|${r1(n.width)}x${r1(n.height)}|${hs}`)
   }
   for (const e of edges) parts.push(e.id)
   return parts.join('\n')

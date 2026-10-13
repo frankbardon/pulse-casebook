@@ -229,7 +229,7 @@ test('wiring a label into an input updates the param; bad types are refused', as
   await expect(page.getByTestId('inspector').locator('[data-field="field"] input')).toHaveValue('pages_cuped')
 })
 
-test('deleting a node removes it and its wires; drags stay in the stage column', async ({ page }) => {
+test('deleting a node removes it and its wires; drags land where dropped', async ({ page }) => {
   await page.goto('/')
   await page.getByRole('button', { name: 'req/08_cuped_welch.json' }).click()
   const graph = page.getByTestId('request-graph')
@@ -237,15 +237,16 @@ test('deleting a node removes it and its wires; drags stay in the stage column',
   const edges = graph.locator('.react-flow__edge')
   await expect(edges).toHaveCount(6)
 
-  // A test dragged far right stays in the Analysis column.
+  // A test dragged left across earlier stages keeps the dropped x (no
+  // clamp back into the Analysis stage; auto-pan may shift it a little).
   const node = graph.locator('.react-flow__node').filter({ has: page.locator('[data-path="tests[1]"]') })
   const before = (await node.boundingBox())!
   await node.hover()
   await page.mouse.down()
-  await page.mouse.move(before.x + before.width / 2 + 2000, before.y + before.height / 2, { steps: 10 })
+  await page.mouse.move(before.x + before.width / 2 - 2 * before.width, before.y + before.height / 2, { steps: 10 })
   await page.mouse.up()
   const after = (await node.boundingBox())!
-  expect(after.x - before.x).toBeLessThan(before.width)
+  expect(before.x - after.x).toBeGreaterThan(1.5 * before.width)
 
   await graph.locator('[data-path="attributes[0]"]').click()
   await page.getByTestId('delete-node').click()
@@ -351,7 +352,7 @@ test('a changed feature_set_digest reloads the catalog and the palette', async (
   await expect(palette.locator('[data-op="TEST_SIMULATED"]')).toBeVisible()
 })
 
-test('palette items dropped on the canvas land only in their own stage column', async ({ page }) => {
+test('palette items dropped on the canvas land where they are dropped', async ({ page }) => {
   await page.goto('/')
   await page.getByRole('button', { name: 'req/08_cuped_welch.json' }).click()
   const graph = page.getByTestId('request-graph')
@@ -363,19 +364,15 @@ test('palette items dropped on the canvas land only in their own stage column', 
   await palette.getByTestId('palette-search').fill('TEST_WELCH')
   const welch = palette.locator('[data-op="TEST_WELCH"]')
   const cohort = graph.locator('[data-path="cohort"]')
-  const analysis = graph.locator('[data-path="tests[1]"]')
+  const at = (await cohort.boundingBox())!
 
-  // Over the Cohort column: refused.
+  // Over the Cohort's stage: accepted, at the drop point.
   await welch.dragTo(cohort, { targetPosition: { x: 20, y: 10 } })
-  await expect(page.getByTestId('place-refused')).toContainText('Analysis column')
-  await expect(graph.locator('[data-path="tests[2]"]')).toHaveCount(0)
-
-  // Over the Analysis column: placed there.
-  await welch.dragTo(analysis, { targetPosition: { x: 20, y: 10 } })
   await expect(graph.locator('[data-path="tests[2]"]')).toContainText('TEST_WELCH')
+  await expect(page.getByTestId('place-refused')).toHaveCount(0)
   const placed = (await graph.locator('.react-flow__node[data-id="tests[2]"]').boundingBox())!
-  const column = (await graph.locator('.react-flow__node[data-id="tests[1]"]').boundingBox())!
-  expect(Math.abs(placed.x - column.x)).toBeLessThan(2)
+  expect(Math.abs(placed.x - (at.x + 20))).toBeLessThan(3)
+  expect(Math.abs(placed.y - (at.y + 10))).toBeLessThan(3)
 })
 
 // Validation runs on the in-memory document (nothing is saved): a field

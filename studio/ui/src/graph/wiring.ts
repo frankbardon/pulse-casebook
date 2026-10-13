@@ -20,7 +20,7 @@ import { formatPath, frameOf, parsePath, type PathSegment } from './nodePath.ts'
 import { FACET_NODE } from './facetGraph.ts'
 import { emitsType, findOperator, isVectorRole, refusal, slotFor, vectorMemberRefusal } from './ports.ts'
 import { groupKeyColumn, PARTITION_PATH, removePartitionItem, wireRefusal, type GroupEntry } from './partition.ts'
-import { canSee, joinKeyCheck, LAYOUT, type ColumnKey, type RequestGraph } from './requestGraph.ts'
+import { canSee, joinKeyCheck, type RequestGraph } from './requestGraph.ts'
 
 // FIT_HANDLE is the source handle of a compose fit's regression; a wire
 // from it into an entry's `params.fit` input binds the fit by name.
@@ -270,52 +270,6 @@ export function deleteNode(model: GraphModel, id: string): { model: GraphModel; 
     }
   }
   return { model: buildModel(root, model.kind), renames }
-}
-
-// Column bands: a node belongs to the column whose x it is nearest to.
-// clampToColumn keeps a dragged node's x inside its own column's band,
-// so it can never be dropped in a column that contradicts the pipeline
-// order. columns are the graph's laid-out columns.
-export function clampToColumn(
-  pos: { x: number; y: number },
-  column: ColumnKey,
-  columns: readonly { key: ColumnKey; x: number }[],
-): { x: number; y: number } {
-  const col = columns.find((c) => c.key === column)
-  if (!col) return pos
-  const half = (LAYOUT.nodeWidth + LAYOUT.columnGap) / 2 - 1
-  return { x: Math.min(col.x + half, Math.max(col.x - half, pos.x)), y: pos.y }
-}
-
-// homeToColumn places a sidecar position: kept as saved while its x is
-// still in the node's own column band, else moved to its column's x
-// (y kept). A sidecar written before the columns changed (the Join column
-// appearing or disappearing shifts every later column) would otherwise
-// park nodes in another stage's column.
-export function homeToColumn(
-  pos: { x: number; y: number },
-  column: ColumnKey,
-  columns: readonly { key: ColumnKey; x: number }[],
-): { x: number; y: number } {
-  const col = columns.find((c) => c.key === column)
-  if (!col || columnAt(pos.x, columns) === column) return pos
-  return { x: col.x, y: pos.y }
-}
-
-// columnAt says which laid-out column x falls in (nearest column x).
-export function columnAt(x: number, columns: readonly { key: ColumnKey; x: number }[]): ColumnKey | undefined {
-  let best: { key: ColumnKey; d: number } | undefined
-  for (const c of columns) {
-    const d = Math.abs(c.x - x)
-    if (!best || d < best.d) best = { key: c.key, d }
-  }
-  return best?.key
-}
-
-// columnAllows says whether a node of column `own` may sit in `at`:
-// only its own stage column.
-export function columnAllows(own: ColumnKey, at: ColumnKey | undefined): boolean {
-  return at === undefined || own === at
 }
 
 function samePrefix(segs: PathSegment[], prefix: PathSegment[]): boolean {
