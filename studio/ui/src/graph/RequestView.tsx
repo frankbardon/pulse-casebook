@@ -329,6 +329,9 @@ function RequestGraphView({ path, kind, catalog }: { path: string; kind: ViewKin
   // panel) and reach terminal nodes by context, like previews.
   const run = useRun(path, doc?.model ?? null)
   const [resultsOpen, setResultsOpen] = useState(false)
+  // A maximised results panel hides the graph body (display:none, so React
+  // Flow skips measuring it) and keeps the bar; Restore brings both back.
+  const [resultsMax, setResultsMax] = useState(false)
   const runResults = useMemo(
     (): RunResults => ({ get: (id) => run.last?.view.headlines.get(id), stale: run.stale }),
     [run.last, run.stale],
@@ -840,7 +843,7 @@ function RequestGraphView({ path, kind, catalog }: { path: string; kind: ViewKin
         {cohortError && <span className="err">{cohortError}</span>}
         <RequestIssues issues={validation.request} failed={validation.failed} />
       </div>
-      <div className="graph-body">
+      <div className={'graph-body' + (resultsOpen && resultsMax ? ' hidden-by-results' : '')}>
         {paletteOpen && (
           <Palette
             items={items}
@@ -967,7 +970,17 @@ function RequestGraphView({ path, kind, catalog }: { path: string; kind: ViewKin
           />
         )}
       </div>
-      {resultsOpen && <ResultsPanel run={run} onClose={() => setResultsOpen(false)} />}
+      {resultsOpen && (
+        <ResultsPanel
+          run={run}
+          maximised={resultsMax}
+          onMaximise={setResultsMax}
+          onClose={() => {
+            setResultsOpen(false)
+            setResultsMax(false)
+          }}
+        />
+      )}
     </div>
   )
 }

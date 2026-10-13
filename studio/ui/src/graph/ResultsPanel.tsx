@@ -1,21 +1,84 @@
-import { useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type KeyboardEvent, type PointerEvent, type RefObject } from 'react'
 import { ApiCallError, saveRun } from '../api.ts'
 import { fmtCount } from './previews.ts'
 import type { ResultSection, ResultTable } from './results.ts'
+import {
+  RESULTS_HEIGHT,
+  clampHeight,
+  escapeRestores,
+  heightBounds,
+  readStoredHeight,
+  stepHeight,
+  writeStoredHeight,
+  type HeightBounds,
+} from './resultsSize.ts'
 import { useRunHeadline, type Run } from './useRun.ts'
 
 // ResultsPanel is the bottom panel of a full run: per-response result
 // tables (one tab per compose slot or chain stage), the raw envelope,
 // and Save to out/. Results live only in memory until Save is clicked.
-export function ResultsPanel({ run, onClose }: { run: Run; onClose: () => void }) {
+// Its top edge is a resize handle (height remembered per viewer); the
+// header's Maximise fills the graph area until Restore or Esc.
+export function ResultsPanel({
+  run,
+  onClose,
+  maximised,
+  onMaximise,
+}: {
+  run: Run
+  onClose: () => void
+  maximised: boolean
+  onMaximise: (max: boolean) => void
+}) {
   const last = run.last
   const [tab, setTab] = useState<'tables' | 'raw'>('tables')
   const [section, setSection] = useState(0)
   const sections = last?.view.sections ?? []
   const shown = sections[Math.min(section, Math.max(0, sections.length - 1))]
+  const panelRef = useRef<HTMLElement>(null)
+  const size = usePanelHeight(panelRef)
+
+  useEffect(() => {
+    if (!maximised) return
+    const onKey = (e: globalThis.KeyboardEvent) => {
+      if (!escapeRestores(e)) return
+      e.preventDefault()
+      onMaximise(false)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [maximised, onMaximise])
 
   return (
-    <section className="results" data-testid="results-panel" aria-label="Run results">
+    <section
+      ref={panelRef}
+      className={'results' + (maximised ? ' max' : '') + (size.dragging ? ' resizing' : '')}
+      style={maximised ? undefined : { height: size.height }}
+      data-testid="results-panel"
+      data-maximised={maximised ? 'true' : undefined}
+      aria-label="Run results"
+    >
+      {!maximised && (
+        <div
+          className="results-grip"
+          role="separator"
+          aria-orientation="horizontal"
+          aria-label="Resize results"
+          aria-valuenow={size.height}
+          aria-valuemin={size.bounds.min}
+          aria-valuemax={size.bounds.max}
+          tabIndex={0}
+          title="Drag to resize results; double-click to reset"
+          data-testid="results-resize"
+          onPointerDown={size.onPointerDown}
+          onPointerMove={size.onPointerMove}
+          onPointerUp={size.onPointerEnd}
+          onPointerCancel={size.onPointerEnd}
+          onLostPointerCapture={size.onPointerEnd}
+          onDoubleClick={size.reset}
+          onKeyDown={size.onKeyDown}
+        />
+      )}
       <header className="results-head">
         <strong>Results</strong>
         <RunStatus run={run} />
@@ -29,7 +92,18 @@ export function ResultsPanel({ run, onClose }: { run: Run; onClose: () => void }
         </span>
         <span className="results-spacer" />
         {last && <SaveToOut key={last.result.run_id} runId={last.result.run_id} outDir={last.result.out_dir} outName={last.result.out_name} />}
-        <button type="button" onClick={onClose} title="Hide results (they stay in memory)" aria-label="Hide results">
+        <button
+          type="button"
+          className="results-icon"
+          data-testid="results-maximise"
+          aria-pressed={maximised}
+          aria-label={maximised ? 'Restore' : 'Maximise results'}
+          title={maximised ? 'Restore (Esc)' : 'Maximise results'}
+          onClick={() => onMaximise(!maximised)}
+        >
+          <MaxIcon restore={maximised} />
+        </button>
+        <button type="button" className="results-icon" onClick={onClose} title="Hide results (they stay in memory)" aria-label="Hide results">
           ×
         </button>
       </header>
@@ -60,6 +134,124 @@ export function ResultsPanel({ run, onClose }: { run: Run; onClose: () => void }
       </div>
     </section>
   )
+}
+
+// MaxIcon: one square (maximise) or two offset squares (restore).
+function MaxIcon({ restore }: { restore: boolean }) {
+  return (
+    <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.3">
+      {restore ? (
+        <>
+          <rect x="1.5" y="3.5" width="7" height="7" />
+          <path d="M3.5 3.5V1.5h7v7h-2" />
+        </>
+      ) : (
+        <rect x="1.5" y="1.5" width="9" height="9" />
+      )}
+    </svg>
+  )
+}
+
+// usePanelHeight is the panel's height: the viewer's remembered height,
+// clamped to the room under the graph bar (re-measured whenever the graph
+// area resizes). A drag writes the height straight to the DOM once per
+// animation frame and commits it to state (and storage) on release, so
+// the result tables never re-render mid-drag.
+function usePanelHeight(ref: RefObject<HTMLElement | null>) {
+  const [pref, setPref] = useState(readStoredHeight)
+  const [available, setAvailable] = useState(0)
+  const [dragging, setDragging] = useState(false)
+  const drag = useRef<{ id: number; y: number; h: number; next: number; frame: number } | null>(null)
+
+  const bounds = useMemo(
+    (): HeightBounds => (available > 0 ? heightBounds(available) : { min: RESULTS_HEIGHT.MIN, max: Math.max(RESULTS_HEIGHT.MIN, pref) }),
+    [available, pref],
+  )
+  const height = clampHeight(pref, bounds)
+
+  useLayoutEffect(() => {
+    const panel = ref.current
+    const parent = panel?.parentElement
+    if (!panel || !parent) return
+    const bar = parent.querySelector<HTMLElement>(':scope > .graph-bar')
+    const measure = () => {
+      const top = bar ? bar.getBoundingClientRect().bottom : parent.getBoundingClientRect().top
+      setAvailable(Math.max(0, Math.floor(parent.getBoundingClientRect().bottom - top)))
+    }
+    measure()
+    const ro = new ResizeObserver(measure)
+    ro.observe(parent)
+    if (bar) ro.observe(bar)
+    window.addEventListener('resize', measure)
+    return () => {
+      ro.disconnect()
+      window.removeEventListener('resize', measure)
+    }
+  }, [ref])
+
+  const commit = useCallback((h: number) => {
+    setPref(h)
+    writeStoredHeight(h)
+  }, [])
+
+  const onPointerDown = useCallback(
+    (e: PointerEvent<HTMLDivElement>) => {
+      if (e.button !== 0 || drag.current) return
+      e.preventDefault()
+      e.currentTarget.focus()
+      e.currentTarget.setPointerCapture(e.pointerId)
+      drag.current = { id: e.pointerId, y: e.clientY, h: height, next: height, frame: 0 }
+      setDragging(true)
+    },
+    [height],
+  )
+
+  const onPointerMove = useCallback(
+    (e: PointerEvent<HTMLDivElement>) => {
+      const d = drag.current
+      if (!d || d.id !== e.pointerId) return
+      d.next = clampHeight(d.h + d.y - e.clientY, bounds)
+      if (d.frame) return
+      const grip = e.currentTarget
+      d.frame = requestAnimationFrame(() => {
+        d.frame = 0
+        const panel = ref.current
+        if (!panel) return
+        panel.style.height = `${d.next}px`
+        grip.setAttribute('aria-valuenow', String(d.next))
+      })
+    },
+    [ref, bounds],
+  )
+
+  const onPointerEnd = useCallback(
+    (e: PointerEvent<HTMLDivElement>) => {
+      const d = drag.current
+      if (!d || d.id !== e.pointerId) return
+      drag.current = null
+      if (d.frame) cancelAnimationFrame(d.frame)
+      if (e.currentTarget.hasPointerCapture(e.pointerId)) e.currentTarget.releasePointerCapture(e.pointerId)
+      if (ref.current) ref.current.style.height = `${d.next}px`
+      setDragging(false)
+      if (d.next !== d.h) commit(d.next)
+    },
+    [ref, commit],
+  )
+
+  const onKeyDown = useCallback(
+    (e: KeyboardEvent<HTMLDivElement>) => {
+      const next = stepHeight(height, e.key, e.shiftKey, bounds)
+      if (next === null) return
+      e.preventDefault()
+      e.stopPropagation()
+      commit(next)
+    },
+    [height, bounds, commit],
+  )
+
+  const reset = useCallback(() => commit(RESULTS_HEIGHT.DEFAULT), [commit])
+
+  return { height, bounds, dragging, onPointerDown, onPointerMove, onPointerEnd, onKeyDown, reset }
 }
 
 function RunStatus({ run }: { run: Run }) {

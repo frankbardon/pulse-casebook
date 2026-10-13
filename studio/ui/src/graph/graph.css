@@ -1065,6 +1065,7 @@
 }
 
 .results {
+  position: relative;
   flex: none;
   height: 260px;
   display: flex;
@@ -1072,6 +1073,72 @@
   border-top: 1px solid var(--border);
   background: var(--surface);
   font-size: var(--text-sm);
+}
+
+/* Maximised: the panel takes the graph body's place under the bar. */
+.results.max {
+  flex: 1;
+  height: auto;
+  min-height: 0;
+}
+
+.graph-body.hidden-by-results {
+  display: none;
+}
+
+/* Resize handle on the panel's top edge: a wide hit strip straddling the
+   border with a short grip bar in the middle. */
+.results-grip {
+  position: absolute;
+  top: -5px;
+  left: 0;
+  right: 0;
+  z-index: 6;
+  height: 10px;
+  cursor: ns-resize;
+  touch-action: none;
+  outline: none;
+}
+
+.results-grip::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 50%;
+  width: 40px;
+  height: 4px;
+  margin-left: -20px;
+  border-radius: 2px;
+  background: var(--border);
+  transition: background-color 0.1s;
+}
+
+.results-grip:hover::after,
+.results.resizing .results-grip::after {
+  background: var(--muted);
+}
+
+.results-grip:focus-visible::after {
+  background: var(--accent);
+  box-shadow: 0 0 0 2px var(--surface), 0 0 0 3px var(--accent);
+}
+
+.results.resizing {
+  user-select: none;
+}
+
+.results.resizing .results-body {
+  pointer-events: none;
+}
+
+.results button.results-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 20px;
+  padding: 0 var(--space-1);
+  line-height: 1;
 }
 
 .results-head {

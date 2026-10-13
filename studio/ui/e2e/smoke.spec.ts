@@ -456,3 +456,82 @@ test('Run of a plain request and a facet; an in-flight run cancels', async ({ pa
   await expect(page.getByTestId('run-button')).toBeVisible()
   release()
 })
+
+test('the results panel resizes by drag and keyboard, maximises, restores, and remembers its height', async ({ page }) => {
+  await page.goto('/')
+  await page.evaluate(() => localStorage.removeItem('studio.resultsHeight'))
+  const openAndRun = async () => {
+    await page.getByRole('button', { name: 'req/11_readout.compose.json' }).click()
+    await expect(page.getByTestId('request-graph').getByTestId('lane-title')).toHaveCount(4)
+    await page.getByTestId('run-button').click()
+    await expect(page.getByTestId('run-status')).toHaveAttribute('data-phase', 'done', { timeout: 30_000 })
+  }
+  await openAndRun()
+  const panel = page.getByTestId('results-panel')
+  const grip = panel.getByTestId('results-resize')
+  const body = page.locator('.graph-body')
+  const height = async () => Math.round((await panel.boundingBox())!.height)
+  const now = async () => Number(await grip.getAttribute('aria-valuenow'))
+  await expect(grip).toHaveAttribute('aria-valuenow', '260')
+  await expect(grip).toHaveAttribute('aria-valuemin', '120')
+  const max = Number(await grip.getAttribute('aria-valuemax'))
+  expect(max).toBeGreaterThan(300)
+
+  // Dragging the top edge up makes the panel taller (and the graph shorter).
+  const graphBefore = (await body.boundingBox())!.height
+  const g = (await grip.boundingBox())!
+  await page.mouse.move(g.x + g.width / 2, g.y + g.height / 2)
+  await page.mouse.down()
+  await page.mouse.move(g.x + g.width / 2, g.y + g.height / 2 - 100, { steps: 8 })
+  await page.mouse.up()
+  await expect(grip).toHaveAttribute('aria-valuenow', '360')
+  expect(Math.abs((await height()) - 360)).toBeLessThanOrEqual(1)
+  expect((await body.boundingBox())!.height).toBeLessThan(graphBefore - 90)
+
+  // Keyboard: arrows step 24px, Shift 120px, Home/End jump to the bounds.
+  await grip.focus()
+  await page.keyboard.press('ArrowUp')
+  await expect(grip).toHaveAttribute('aria-valuenow', '384')
+  await page.keyboard.press('Shift+ArrowDown')
+  await expect(grip).toHaveAttribute('aria-valuenow', '264')
+  await page.keyboard.press('End')
+  await expect(grip).toHaveAttribute('aria-valuenow', String(max))
+  await page.keyboard.press('Home')
+  await expect(grip).toHaveAttribute('aria-valuenow', '120')
+  await page.keyboard.press('Shift+ArrowUp')
+  await page.keyboard.press('Shift+ArrowUp')
+  await expect(grip).toHaveAttribute('aria-valuenow', '360')
+  expect(await now()).toBe(360)
+
+  // Maximise fills the graph area under the bar; Esc and Restore bring it back.
+  const maxBtn = panel.getByTestId('results-maximise')
+  await expect(maxBtn).toHaveAttribute('aria-label', 'Maximise results')
+  await maxBtn.click()
+  await expect(panel).toHaveAttribute('data-maximised', 'true')
+  await expect(maxBtn).toHaveAttribute('aria-label', 'Restore')
+  await expect(body).toBeHidden()
+  await expect(page.getByTestId('run-button')).toBeVisible()
+  expect(await height()).toBeGreaterThan(max)
+  await page.keyboard.press('Escape')
+  await expect(panel).not.toHaveAttribute('data-maximised', 'true')
+  await expect(body).toBeVisible()
+  expect(Math.abs((await height()) - 360)).toBeLessThanOrEqual(1)
+  await maxBtn.click()
+  await expect(panel).toHaveAttribute('data-maximised', 'true')
+  // Esc typed in a field does not restore.
+  await panel.getByTestId('save-out-name').press('Escape')
+  await expect(panel).toHaveAttribute('data-maximised', 'true')
+  await panel.getByRole('button', { name: 'Restore' }).click()
+  await expect(panel).not.toHaveAttribute('data-maximised', 'true')
+  expect(Math.abs((await height()) - 360)).toBeLessThanOrEqual(1)
+
+  // The height survives a reload; maximised does not.
+  await page.reload()
+  await openAndRun()
+  await expect(grip).toHaveAttribute('aria-valuenow', '360')
+  await expect(panel).not.toHaveAttribute('data-maximised', 'true')
+  // Double-click resets to the default.
+  await grip.dblclick()
+  await expect(grip).toHaveAttribute('aria-valuenow', '260')
+  await page.evaluate(() => localStorage.removeItem('studio.resultsHeight'))
+})
