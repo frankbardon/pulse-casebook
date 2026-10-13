@@ -1,17 +1,20 @@
-// Cohort export (X1), against a temp copy of ab-test-readout kept in
-// git: export the cohort to CSV with a field subset and to SPSS with its
-// own options (a non-UTC zone refused before export), download both,
-// see them listed under Exports, never committed, and the last format
-// and options remembered for the cohort.
+// Cohort export (X1; streamed since W1), against a temp copy of
+// ab-test-readout kept in git: export the cohort to CSV with a field
+// subset and to SPSS with its own options (a non-UTC zone refused before
+// export). Export hands the file straight to the browser as a download;
+// nothing is stored in the workspace, and the last format and options
+// are remembered for the cohort.
 import { readFileSync } from 'node:fs'
 import { expect, test } from './harness.ts'
-import type { Page } from '@playwright/test'
+import type { Locator, Page } from '@playwright/test'
 
 test.use({ workspace: 'ab-test-readout' })
 
-async function download(page: Page): Promise<Buffer> {
-  const [dl] = await Promise.all([page.waitForEvent('download'), page.getByTestId('export-download').click()])
-  return readFileSync(await dl.path())
+// download clicks a control that triggers a download and returns the
+// file's name and bytes.
+async function download(page: Page, control: Locator): Promise<{ name: string; data: Buffer }> {
+  const [dl] = await Promise.all([page.waitForEvent('download'), control.click()])
+  return { name: dl.suggestedFilename(), data: readFileSync(await dl.path()) }
 }
 
 test('export a cohort to CSV with a field subset and to SPSS with options', async ({ page, studio }) => {
@@ -38,16 +41,20 @@ test('export a cohort to CSV with a field subset and to SPSS with options', asyn
   for (const f of ['arm', 'user_id']) await page.locator(`[data-testid="export-field"][data-field="${f}"]`).check()
   await expect(page.getByTestId('export-field-count')).toHaveText('3 of 19')
   await page.getByTestId('export-name').fill('ab_subset')
-  await expect(page.getByTestId('export-path')).toHaveText('exports/ab_subset.csv')
+  await expect(page.getByTestId('export-path')).toHaveText('ab_subset.csv')
   await expect(preflight).toHaveAttribute('data-state', 'valid')
-  await page.getByTestId('export-run').click()
+  const csvFile = await download(page, page.getByTestId('export-run'))
+  expect(csvFile.name).toBe('ab_subset.csv')
   await expect(page.getByTestId('export-result')).toBeVisible()
   await expect(page.getByTestId('export-result-rows')).toHaveText('40,000')
-  const csv = (await download(page)).toString('utf8')
+  const csv = csvFile.data.toString('utf8')
   const lines = csv.trimEnd().split('\n')
   expect(lines[0]).toBe('user_id,arm,revenue') // the cohort's order, not the click order
   expect(lines).toHaveLength(40_001)
-  expect(studio.read('exports/ab_subset.csv')).toBe(csv)
+  // "Download again" hands over the same bytes without re-exporting.
+  const again = await download(page, page.getByTestId('export-download'))
+  expect(again.name).toBe('ab_subset.csv')
+  expect(again.data.equals(csvFile.data)).toBe(true)
 
   // SPSS: its own options appear; a non-UTC zone is refused up front.
   await page.getByTestId('export-format').selectOption('spss')
@@ -64,31 +71,26 @@ test('export a cohort to CSV with a field subset and to SPSS with options', asyn
   await page.getByTestId('export-opt-charset').fill('windows-1252')
   await page.getByTestId('export-name').fill('ab_test')
   await expect(preflight).toHaveAttribute('data-state', 'valid')
-  await page.getByTestId('export-run').click()
+  const savFile = await download(page, page.getByTestId('export-run'))
+  expect(savFile.name).toBe('ab_test.sav')
   await expect(page.getByTestId('export-result')).toBeVisible()
-  const sav = await download(page)
+  const sav = savFile.data
   expect(sav.subarray(0, 4).toString('latin1')).toBe('$FL2')
   expect(sav.readInt32LE(72)).toBe(0) // header compression field: 0 = uncompressed (bytecode is 1)
   expect(sav.toString('latin1')).toContain('windows-1252') // the declared charset (record 7.20)
-  expect(sav.equals(readFileSync(`${studio.dir}/exports/ab_test.sav`))).toBe(true)
 
-  // The preflight re-checks after the export: the same name now needs a confirm.
-  await expect(page.getByTestId('export-overwrite')).toBeVisible()
+  // The same name exports again: nothing is stored, so nothing to replace.
   await page.getByTestId('export-opt-sanitize_names').check()
-  await expect(page.getByTestId('export-overwrite')).toBeVisible()
-  await expect(page.getByTestId('export-run')).toBeDisabled()
-  await page.getByTestId('export-overwrite').check()
+  await expect(preflight).toHaveAttribute('data-state', 'valid')
   await expect(page.getByTestId('export-run')).toBeEnabled()
 
-  // Listed under Exports as downloads; exports/ is never committed.
+  // Nothing was written to the workspace, and no Exports section.
   await page.getByTestId('export-close').click()
   await expect(dialog).toHaveCount(0)
-  const links = page.locator('[data-kind="export"] [data-testid="export-link"]')
-  await expect(links).toHaveCount(2)
-  await expect(page.locator('[data-testid="export-link"][data-path="exports/ab_subset.csv"]')).toHaveAttribute('href', /\/api\/export\/download\?path=exports%2Fab_subset\.csv/)
-  expect(studio.git('status', '--porcelain', '--untracked-files=all')).not.toContain('exports/')
-  expect(studio.git('check-ignore', 'exports/ab_test.sav')).toBe('exports/ab_test.sav')
-  expect(studio.read('.gitignore')).toContain('/exports/')
+  expect(studio.exists('exports')).toBe(false)
+  expect(studio.git('status', '--porcelain', '--untracked-files=all')).not.toContain('export')
+  expect(studio.read('.gitignore')).not.toContain('/exports/')
+  await expect(page.locator('[data-kind="export"]')).toHaveCount(0)
 
   // Reopened from the sidebar row: the last format and options are remembered.
   await page.locator('[data-testid="cohort-export"][data-path="ab_test.pulse"]').click()
@@ -112,10 +114,11 @@ test('every format Pulse writes, and the transfer artifact, exports from the dia
     await expect(page.getByTestId('export-tz')).toHaveCount(id === 'transfer' ? 0 : 1)
     await expect(page.getByTestId('export-name')).toHaveValue('design' + ext[id])
     await expect(page.getByTestId('export-preflight')).toHaveAttribute('data-state', 'valid')
-    await page.getByTestId('export-run').click()
-    await expect(page.getByTestId('export-result')).toContainText('exports/design' + ext[id])
-    expect(studio.exists('exports/design' + ext[id])).toBe(true)
+    const file = await download(page, page.getByTestId('export-run'))
+    expect(file.name).toBe('design' + ext[id])
+    expect(file.data.length).toBeGreaterThan(0)
+    await expect(page.getByTestId('export-result')).toContainText('design' + ext[id])
   }
   await page.getByTestId('export-close').click()
-  await expect(page.locator('[data-kind="export"] [data-testid="export-link"]')).toHaveCount(ids.length)
+  expect(studio.exists('exports')).toBe(false)
 })

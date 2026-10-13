@@ -36,7 +36,6 @@ export type FileKind =
   | 'source'
   | 'schema'
   | 'import'
-  | 'export'
   | 'unopenable'
 
 // ImportState is an import spec's state: ok (its cohort is on disk),
@@ -47,8 +46,7 @@ export type WorkspaceFile = {
   path: string
   kind: FileKind
   reason?: string
-  // source / export: detected format ("" if unrecognised; "transfer"
-  // for a .pulse.zst export) and size in bytes.
+  // source: detected format ("" if unrecognised) and size in bytes.
   format?: string
   size?: number
   // import: the cohort the spec builds and its state.
@@ -56,6 +54,9 @@ export type WorkspaceFile = {
   state?: ImportState
   // cohort: the import spec that built it (offer Rebuild).
   spec?: string
+  // "global": a library's global cohort listed in a workspace (path
+  // "_global/...").
+  scope?: 'global'
 }
 
 export type FileListing = {
@@ -789,7 +790,6 @@ export type ExportBody = {
   time_zone?: string
   labels?: LabelBinding[]
   name?: string
-  overwrite?: boolean
 }
 
 export type LabelTableInfo = { name: string; row_count: number; enumerable: boolean }
@@ -805,11 +805,8 @@ export type ExportPredict = {
   exported_fields: number
   warnings: CodedWarning[]
   label_tables: LabelTableInfo[]
-  // The resolved file name (default "<cohort>.<ext>") and whether
-  // exports/<name> already exists.
+  // The resolved download file name (default "<cohort>.<ext>").
   name: string
-  path: string
-  exists: boolean
 }
 
 export function predictExport(body: ExportBody, signal?: AbortSignal): Promise<ExportPredict> {
@@ -827,23 +824,38 @@ export type ExportReport = {
 }
 
 export type ExportResult = {
-  path: string
+  // The download's file name.
+  name: string
   format: string
   cohort: string
   report: ExportReport
   transfer?: { codec: string; level?: number; cohort_bytes: number; compressed_bytes: number; ratio: number; sha256: string }
-  file: WorkspaceFile
-  replaced?: boolean
 }
 
-// runExport writes exports/<name>. An existing file is refused
-// (ApiCallError "exists") unless overwrite; a Pulse refusal carries its
-// Pulse code.
-export function runExport(body: ExportBody, signal?: AbortSignal): Promise<ExportResult> {
-  return postJSON<ExportResult>('/api/export', JSON.stringify(body), signal)
+// runExport generates the export on the server and returns the file
+// (exports are never stored: each one streams back as a download) with
+// its report (X-Studio-Export-Report header). A Pulse refusal is an
+// ApiCallError carrying its Pulse code.
+export async function runExport(body: ExportBody, signal?: AbortSignal): Promise<{ result: ExportResult; file: Blob }> {
+  const res = await fetch('/api/export', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), signal })
+  if (!res.ok) {
+    const out: unknown = await res.json().catch(() => null)
+    if (isApiError(out)) throw new ApiCallError(res.status, out.error.code, out.error.message, out.error.details)
+    throw new ApiCallError(res.status, 'http_error', `HTTP ${res.status}`)
+  }
+  const header = res.headers.get('X-Studio-Export-Report')
+  if (header === null) throw new ApiCallError(res.status, 'http_error', 'the export response carries no report')
+  const result = JSON.parse(decodeURIComponent(header)) as ExportResult
+  return { result, file: await res.blob() }
 }
 
-// exportDownloadUrl is the attachment URL of an exports/ file.
-export function exportDownloadUrl(path: string): string {
-  return `/api/export/download?path=${encodeURIComponent(path)}`
+// saveDownload hands a file to the browser as a download.
+export function saveDownload(url: string, name: string): void {
+  const a = document.createElement('a')
+  a.href = url
+  a.download = name
+  a.style.display = 'none'
+  document.body.appendChild(a)
+  a.click()
+  a.remove()
 }

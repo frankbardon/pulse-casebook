@@ -100,3 +100,62 @@ func mustSymlink(t *testing.T, target, link string) {
 		t.Skipf("symlinks unsupported: %v", err)
 	}
 }
+
+func TestMountAndDeny(t *testing.T) {
+	base := t.TempDir()
+	lib := filepath.Join(base, "lib")
+	ws := filepath.Join(lib, "workspaces", "w")
+	for _, d := range []string{filepath.Join(lib, "cohorts"), filepath.Join(ws, "cohorts"), filepath.Join(lib, "workspaces", "v")} {
+		if err := os.MkdirAll(d, 0o755); err != nil {
+			t.Fatal(err)
+		}
+	}
+	mustWrite(t, filepath.Join(lib, "cohorts", "g.pulse"))
+	mustWrite(t, filepath.Join(ws, "cohorts", "l.pulse"))
+	mustSymlink(t, filepath.Join(lib, "cohorts"), filepath.Join(ws, "link"))
+	mustSymlink(t, filepath.Join(lib, "workspaces"), filepath.Join(lib, "cohorts", "back"))
+
+	g, err := New(lib)
+	if err != nil {
+		t.Fatal(err)
+	}
+	global := g.WithDeny("workspaces")
+	w, err := New(ws)
+	if err != nil {
+		t.Fatal(err)
+	}
+	w = w.WithMount("_global", global)
+
+	ok := map[string]string{
+		"cohorts/l.pulse":                    filepath.Join(w.Dir(), "cohorts", "l.pulse"),
+		"_global/cohorts/g.pulse":            filepath.Join(global.Dir(), "cohorts", "g.pulse"),
+		"cohorts/../_global/cohorts/g.pulse": filepath.Join(global.Dir(), "cohorts", "g.pulse"),
+		"_global":                            global.Dir(),
+		"_global/cohorts/new.pulse":          filepath.Join(global.Dir(), "cohorts", "new.pulse"),
+	}
+	for rel, want := range ok {
+		got, err := w.Resolve(rel)
+		if err != nil || got != want {
+			t.Errorf("Resolve(%q) = %q, %v; want %q", rel, got, err, want)
+			continue
+		}
+		back, ok := w.Rel(got)
+		if !ok || (rel != "cohorts/../_global/cohorts/g.pulse" && back != rel) {
+			t.Errorf("Rel(%q) = %q, %v", got, back, ok)
+		}
+	}
+	for _, rel := range []string{"_global/workspaces/v", "_global/workspaces/w/cohorts/l.pulse", "link/g.pulse", "../../cohorts/g.pulse", "_global/../../x", "_global/cohorts/back/v"} {
+		if _, err := w.Resolve(rel); !errors.Is(err, ErrOutside) {
+			t.Errorf("Resolve(%q) = %v, want ErrOutside", rel, err)
+		}
+	}
+	if _, err := global.Resolve("workspaces/w/cohorts/l.pulse"); !errors.Is(err, ErrOutside) {
+		t.Errorf("global resolved into workspaces/: %v", err)
+	}
+	if _, ok := global.Rel(filepath.Join(global.Dir(), "workspaces", "w")); ok {
+		t.Error("global Rel of a denied path")
+	}
+	if w.Mounted("_global") != global || w.Mounted("x") != nil {
+		t.Error("Mounted")
+	}
+}

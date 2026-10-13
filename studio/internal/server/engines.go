@@ -76,9 +76,9 @@ func (s *Server) tableStamp(dir string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	rel, err := filepath.Rel(s.root.Dir(), dir)
-	if err != nil {
-		return "", err
+	rel, ok := s.root.Rel(dir)
+	if !ok {
+		return "", fmt.Errorf("label tables %s are outside the workspace", dir)
 	}
 	var parts []string
 	for _, e := range entries {
@@ -127,6 +127,9 @@ func (s *Server) engineFor(requestPath string) *pulse.Pulse {
 	newEngine := s.cfg.NewEngine
 	if newEngine == nil {
 		newEngine = func(d string) (*pulse.Pulse, error) {
+			if s.cfg.FS != nil {
+				return pulse.New(pulse.Options{FS: s.cfg.FS, LabelTablesDir: d})
+			}
 			return pulse.New(pulse.Options{DataDir: s.root.Dir(), LabelTablesDir: d})
 		}
 	}

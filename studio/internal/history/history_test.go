@@ -352,7 +352,7 @@ func TestConcurrentCommitsSerialize(t *testing.T) {
 }
 
 func TestMergeIgnore(t *testing.T) {
-	block := string(ignoreBlock())
+	block := string(ignoreBlock(IgnorePatterns))
 	tests := []struct {
 		name, src, want string
 	}{
@@ -372,5 +372,43 @@ func TestMergeIgnore(t *testing.T) {
 				t.Fatalf("not idempotent: %q", again)
 			}
 		})
+	}
+}
+
+// A standalone area inside another repository (a library workspace
+// under the global repository, which ignores workspaces/) gets its own
+// repository with its own managed patterns; reopening keeps it.
+func TestStandaloneNestedRepo(t *testing.T) {
+	base := isolate(t)
+	lib := filepath.Join(base, "lib")
+	ws := filepath.Join(lib, "workspaces", "w")
+	write(t, lib, "library.json", "{}")
+	write(t, ws, "workspace.json", `{"name": "w"}`)
+	g := Open(context.Background(), lib, Options{Standalone: true, Ignore: GlobalIgnorePatterns}, t.Logf)
+	if st := g.Status(); !st.Enabled || !st.Initialized || st.RepoRoot != lib {
+		t.Fatalf("global status = %+v", st)
+	}
+	if got := git(t, lib, "ls-files"); got != ".gitignore\nlibrary.json" {
+		t.Fatalf("global files = %q", got)
+	}
+	r := Open(context.Background(), ws, Options{Standalone: true}, t.Logf)
+	if st := r.Status(); !st.Enabled || !st.Initialized || st.RepoRoot != ws || st.Prefix != "" {
+		t.Fatalf("workspace status = %+v", st)
+	}
+	if got := git(t, ws, "ls-files"); got != ".gitignore\nworkspace.json" {
+		t.Fatalf("workspace files = %q", got)
+	}
+	if ig, _ := os.ReadFile(filepath.Join(ws, ".gitignore")); strings.Contains(string(ig), "/workspaces/") || strings.Contains(string(ig), "/exports/") {
+		t.Fatalf("workspace .gitignore = %q", ig)
+	}
+	if ig, _ := os.ReadFile(filepath.Join(lib, ".gitignore")); !strings.Contains(string(ig), "/workspaces/") {
+		t.Fatalf("global .gitignore = %q", ig)
+	}
+	if got := git(t, lib, "status", "--porcelain", "--untracked-files=all"); got != "" {
+		t.Fatalf("global status = %q", got)
+	}
+	again := Open(context.Background(), ws, Options{Standalone: true}, t.Logf)
+	if st := again.Status(); !st.Enabled || st.Initialized || st.RepoRoot != ws {
+		t.Fatalf("reopened status = %+v", st)
 	}
 }

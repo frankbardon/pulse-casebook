@@ -10,27 +10,32 @@ import (
 
 // The managed block of the workspace .gitignore. Binaries are not
 // versioned: cohorts are rebuilt from the versioned schemas and import
-// specs, uploaded sources are recorded by hash in the import specs, and
-// cohort exports (exports/) are reproducible outputs.
+// specs, and uploaded sources are recorded by hash in the import specs.
+// (Cohort exports are never stored: they stream as downloads.)
 // Lines outside the markers belong to the user and are never touched.
 const (
 	ignoreBegin = "# >>> pulse studio (managed block: edits between these markers are replaced)"
 	ignoreEnd   = "# <<< pulse studio"
 )
 
-// IgnorePatterns are the managed block's lines.
+// IgnorePatterns are the managed block's lines of a workspace (and of a
+// legacy flat folder).
 var IgnorePatterns = []string{
 	"*.pulse",
 	"/sources/",
-	"/exports/",
 	"/.studio/",
 	".*.tmp",
 }
 
-func ignoreBlock() []byte {
+// GlobalIgnorePatterns are the managed block's lines of a library's
+// global area: the workspace patterns plus /workspaces/ (each workspace
+// is a repository of its own).
+var GlobalIgnorePatterns = append(append([]string{}, IgnorePatterns...), "/workspaces/")
+
+func ignoreBlock(patterns []string) []byte {
 	var b bytes.Buffer
 	b.WriteString(ignoreBegin + "\n")
-	for _, p := range IgnorePatterns {
+	for _, p := range patterns {
 		b.WriteString(p + "\n")
 	}
 	b.WriteString(ignoreEnd + "\n")
@@ -40,8 +45,11 @@ func ignoreBlock() []byte {
 // MergeIgnore returns src with the managed block set to the current
 // patterns: replaced in place when present (an unterminated block runs
 // to the end of the file), appended otherwise. It is idempotent.
-func MergeIgnore(src []byte) []byte {
-	block := ignoreBlock()
+func MergeIgnore(src []byte) []byte { return MergeIgnoreWith(src, IgnorePatterns) }
+
+// MergeIgnoreWith is MergeIgnore with the given patterns.
+func MergeIgnoreWith(src []byte, patterns []string) []byte {
+	block := ignoreBlock(patterns)
 	begin := lineIndex(src, ignoreBegin, 0)
 	if begin < 0 {
 		out := append([]byte{}, src...)
@@ -86,12 +94,15 @@ func lineIndex(src []byte, line string, from int) int {
 
 // EnsureIgnore writes the managed block into the .gitignore at file,
 // creating it if needed. It reports whether the file changed.
-func EnsureIgnore(file string) (bool, error) {
+func EnsureIgnore(file string) (bool, error) { return EnsureIgnoreWith(file, IgnorePatterns) }
+
+// EnsureIgnoreWith is EnsureIgnore with the given patterns.
+func EnsureIgnoreWith(file string, patterns []string) (bool, error) {
 	src, err := os.ReadFile(file)
 	if err != nil && !errors.Is(err, fs.ErrNotExist) {
 		return false, err
 	}
-	out := MergeIgnore(src)
+	out := MergeIgnoreWith(src, patterns)
 	if bytes.Equal(out, src) {
 		return false, nil
 	}

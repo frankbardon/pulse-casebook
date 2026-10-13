@@ -27,6 +27,7 @@ import (
 	"github.com/frankbardon/pulse-casebook/studio/internal/history"
 	"github.com/frankbardon/pulse-casebook/studio/internal/importer"
 	"github.com/frankbardon/pulse-casebook/studio/internal/jsonfmt"
+	"github.com/frankbardon/pulse-casebook/studio/internal/library"
 	"github.com/frankbardon/pulse-casebook/studio/internal/scope"
 	"github.com/frankbardon/pulse-casebook/studio/internal/workspace"
 )
@@ -920,6 +921,16 @@ func (s *Server) handleImport(w http.ResponseWriter, r *http.Request) {
 	if !ok {
 		WriteError(w, http.StatusBadRequest, "invalid_target", "target must be a cohort name or a .pulse path whose name is letters, digits, '.', '-' or '_'", map[string]any{"target": req.Target})
 		return
+	}
+	if strings.HasPrefix(targetRel, globalPrefix+"/") {
+		// Each area keeps its cohorts, specs and schemas together: a
+		// global cohort is imported through /api/w/_global/import.
+		WriteError(w, http.StatusBadRequest, "invalid_target", "import into the global area through /api/w/_global/import", map[string]any{"target": req.Target})
+		return
+	}
+	if s.cfg.Library && !strings.Contains(targetRel, "/") {
+		// A bare cohort name lands in the area's cohorts/ directory.
+		targetRel = library.CohortsDir + "/" + targetRel
 	}
 	targetRel, targetAbs, ok := s.scopedPath(w, targetRel)
 	if !ok {

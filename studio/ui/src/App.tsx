@@ -120,7 +120,7 @@ export function App() {
         />
       </aside>
       <main className="canvas">{canvas}</main>
-      {exporting && <ExportDialog key={exporting.n} cohort={exporting.cohort} onClose={() => setExporting(null)} onExported={filesChanged} />}
+      {exporting && <ExportDialog key={exporting.n} cohort={exporting.cohort} onClose={() => setExporting(null)} />}
     </div>
   )
 }

@@ -1,11 +1,13 @@
 package server
 
 import (
+	"bytes"
 	"context"
 	"encoding/csv"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -53,6 +55,37 @@ func getRaw(s *Server, url string) *httptest.ResponseRecorder {
 	return rec
 }
 
+// postExport POSTs /api/export. On 200 it returns the streamed file and
+// the decoded X-Studio-Export-Report; otherwise the JSON error body.
+func postExport(t *testing.T, s *Server, body map[string]any) (int, map[string]any, []byte, http.Header) {
+	t.Helper()
+	raw, _ := json.Marshal(body)
+	rec := httptest.NewRecorder()
+	s.ServeHTTP(rec, httptest.NewRequest(http.MethodPost, "/api/export", bytes.NewReader(raw)))
+	if rec.Code != http.StatusOK {
+		var out map[string]any
+		_ = json.Unmarshal(rec.Body.Bytes(), &out)
+		return rec.Code, out, nil, rec.Header()
+	}
+	dec, err := url.PathUnescape(rec.Header().Get("X-Studio-Export-Report"))
+	if err != nil {
+		t.Fatalf("report header: %v", err)
+	}
+	var rep map[string]any
+	if err := json.Unmarshal([]byte(dec), &rep); err != nil {
+		t.Fatalf("report header %q: %v", dec, err)
+	}
+	return rec.Code, rep, rec.Body.Bytes(), rec.Header()
+}
+
+// noExportsDir asserts nothing was written to the workspace.
+func noExportsDir(t *testing.T, s *Server) {
+	t.Helper()
+	if _, err := os.Stat(filepath.Join(s.Root().Dir(), "exports")); err == nil {
+		t.Fatal("an exports/ directory was written")
+	}
+}
+
 func refusalCode(out map[string]any) string {
 	r, _ := out["refusal"].(map[string]any)
 	c, _ := r["code"].(string)
@@ -94,23 +127,27 @@ func TestExportCSVFieldsAndZone(t *testing.T) {
 	cohort := exportCohort(t, s)
 
 	code, pred := postJSON(t, s, "/api/export/predict", map[string]any{"cohort": cohort, "format": "csv", "fields": []string{"id", "seen_at"}, "time_zone": "Asia/Kolkata"})
-	if code != http.StatusOK || pred["valid"] != true || pred["rows"] != float64(12) || pred["exported_fields"] != float64(2) || pred["name"] != "people.csv" || pred["exists"] != false {
+	if code != http.StatusOK || pred["valid"] != true || pred["rows"] != float64(12) || pred["exported_fields"] != float64(2) || pred["name"] != "people.csv" {
 		t.Fatalf("predict: %d %v", code, pred)
 	}
-	code, out := postJSON(t, s, "/api/export", map[string]any{"cohort": cohort, "format": "csv", "fields": []string{"seen_at", "id"}, "time_zone": "Asia/Kolkata", "name": "subset"})
-	if code != http.StatusCreated || out["path"] != "exports/subset.csv" {
+	if _, ok := pred["exists"]; ok {
+		t.Fatalf("predict still reports exists: %v", pred)
+	}
+	code, out, data, hdr := postExport(t, s, map[string]any{"cohort": cohort, "format": "csv", "fields": []string{"seen_at", "id"}, "time_zone": "Asia/Kolkata", "name": "subset"})
+	if code != http.StatusOK || out["name"] != "subset.csv" || out["cohort"] != cohort {
 		t.Fatalf("export: %d %v", code, out)
 	}
+	if cd := hdr.Get("Content-Disposition"); !strings.Contains(cd, "attachment") || !strings.Contains(cd, "filename=subset.csv") {
+		t.Fatalf("Content-Disposition: %q", cd)
+	}
+	if hdr.Get("Content-Length") != strconv.Itoa(len(data)) || !strings.HasPrefix(hdr.Get("Content-Type"), "text/csv") {
+		t.Fatalf("headers: %v", hdr)
+	}
 	rep := out["report"].(map[string]any)
-	if rep["rows"] != float64(12) || rep["bytes"].(float64) <= 0 {
+	if rep["rows"] != float64(12) || rep["bytes"] != float64(len(data)) {
 		t.Fatalf("report: %v", rep)
 	}
-	f, err := os.Open(filepath.Join(s.Root().Dir(), "exports", "subset.csv"))
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer f.Close()
-	rows, err := csv.NewReader(f).ReadAll()
+	rows, err := csv.NewReader(bytes.NewReader(data)).ReadAll()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -122,43 +159,18 @@ func TestExportCSVFieldsAndZone(t *testing.T) {
 		t.Fatalf("zone not applied: %v", rows[1])
 	}
 
-	// Existing name: 409 unless overwrite; nothing committed (gitignored).
-	code, out = postJSON(t, s, "/api/export", map[string]any{"cohort": cohort, "format": "csv", "name": "subset.csv"})
-	if code != http.StatusConflict || errCode(out) != "exists" {
-		t.Fatalf("exists: %d %v", code, out)
+	// Exports are not stored: the same name streams again, nothing is
+	// written or committed, and the old endpoints are gone.
+	code, _, data, _ = postExport(t, s, map[string]any{"cohort": cohort, "format": "csv", "name": "subset.csv"})
+	if code != http.StatusOK || !strings.HasPrefix(string(data), "id,region,seen_at,home town\n") {
+		t.Fatalf("second export: %d %q", code, data)
 	}
-	code, out = postJSON(t, s, "/api/export", map[string]any{"cohort": cohort, "format": "csv", "name": "subset.csv", "overwrite": true})
-	if code != http.StatusOK || out["replaced"] != true {
-		t.Fatalf("overwrite: %d %v", code, out)
+	noExportsDir(t, s)
+	if st := gitOut(t, s.Root().Dir(), "status", "--porcelain", "--untracked-files=all"); st != "" {
+		t.Fatalf("export left changes: %q", st)
 	}
-	if st := gitOut(t, s.Root().Dir(), "status", "--porcelain", "--untracked-files=all"); strings.Contains(st, "exports/") {
-		t.Fatalf("exports not ignored: %q", st)
-	}
-	if got := gitOut(t, s.Root().Dir(), "check-ignore", "exports/subset.csv"); got != "exports/subset.csv" {
-		t.Fatalf("check-ignore: %q", got)
-	}
-	entries, _ := os.ReadDir(filepath.Join(s.Root().Dir(), "exports"))
-	if len(entries) != 1 {
-		t.Fatalf("temp files left behind: %v", entries)
-	}
-
-	// Listed as an export; downloadable as an attachment.
-	files := listFiles(t, s)
-	if f := files["exports/subset.csv"]; f == nil || f["kind"] != "export" || f["format"] != "csv" {
-		t.Fatalf("listing: %v", f)
-	}
-	rec := getRaw(s, "/api/export/download?path=exports/subset.csv")
-	if rec.Code != http.StatusOK || !strings.Contains(rec.Header().Get("Content-Disposition"), `filename=subset.csv`) || !strings.HasPrefix(rec.Body.String(), "id,region,seen_at,home town\n") { // the overwrite exported every field
-		t.Fatalf("download: %d %v %q", rec.Code, rec.Header(), rec.Body.String())
-	}
-	if rec := getRaw(s, "/api/export/download?path=people.pulse"); rec.Code != http.StatusBadRequest {
-		t.Fatalf("download outside exports/: %d", rec.Code)
-	}
-	if rec := getRaw(s, "/api/export/download?path=exports/../../etc/passwd"); rec.Code != http.StatusForbidden {
-		t.Fatalf("download traversal: %d", rec.Code)
-	}
-	if rec := getRaw(s, "/api/export/download?path=exports/missing.csv"); rec.Code != http.StatusNotFound {
-		t.Fatalf("download missing: %d", rec.Code)
+	if rec := getRaw(s, "/api/export/download?path=exports/subset.csv"); rec.Code != http.StatusNotFound {
+		t.Fatalf("download endpoint still served: %d", rec.Code)
 	}
 }
 
@@ -172,21 +184,19 @@ func TestExportSPSSOptions(t *testing.T) {
 		t.Fatalf("predict unsanitized: %d %v", code, pred)
 	}
 	refused := refusalCode(pred)
-	code, out := postJSON(t, s, "/api/export", map[string]any{"cohort": cohort, "format": "spss"})
+	code, out, _, _ := postExport(t, s, map[string]any{"cohort": cohort, "format": "spss"})
 	if code != http.StatusUnprocessableEntity || errCode(out) != refused {
 		t.Fatalf("export unsanitized: %d %v (predict said %s)", code, out, refused)
 	}
-	if _, err := os.Stat(filepath.Join(s.Root().Dir(), "exports", "people.sav")); err == nil {
-		t.Fatal("refused export left a file")
-	}
+	noExportsDir(t, s)
 
 	opts := map[string]any{"sanitize_names": true, "uncompressed": true}
 	code, pred = postJSON(t, s, "/api/export/predict", map[string]any{"cohort": cohort, "format": "spss", "options": opts})
 	if code != http.StatusOK || pred["valid"] != true || !contains(warningCodes(pred["warnings"]), "PULSE_SPSS_NAME_SANITIZED") {
 		t.Fatalf("predict sanitized: %d %v", code, pred)
 	}
-	code, out = postJSON(t, s, "/api/export", map[string]any{"cohort": cohort, "format": "spss", "options": opts})
-	if code != http.StatusCreated || out["path"] != "exports/people.sav" {
+	code, out, data, _ := postExport(t, s, map[string]any{"cohort": cohort, "format": "spss", "options": opts})
+	if code != http.StatusOK || out["name"] != "people.sav" || !bytes.HasPrefix(data, []byte("$FL2")) {
 		t.Fatalf("export sanitized: %d %v", code, out)
 	}
 	if w := warningCodes(out["report"].(map[string]any)["warnings"]); !contains(w, "PULSE_SPSS_NAME_SANITIZED") {
@@ -209,17 +219,19 @@ func TestExportTransferAndErrors(t *testing.T) {
 	s := newImportServer(t, false)
 	cohort := exportCohort(t, s)
 
-	code, out := postJSON(t, s, "/api/export", map[string]any{"cohort": cohort, "format": "transfer", "options": map[string]any{"level": 5}})
-	if code != http.StatusCreated || out["path"] != "exports/people.pulse.zst" {
+	code, out, data, _ := postExport(t, s, map[string]any{"cohort": cohort, "format": "transfer", "options": map[string]any{"level": 5}})
+	if code != http.StatusOK || out["name"] != "people.pulse.zst" || len(data) == 0 {
 		t.Fatalf("transfer: %d %v", code, out)
 	}
 	tr := out["transfer"].(map[string]any)
-	if tr["level"] != float64(5) || tr["codec"] != "zstd" {
+	if tr["level"] != float64(5) || tr["codec"] != "zstd" || tr["output"] != "people.pulse.zst" || tr["compressed_bytes"] != float64(len(data)) {
 		t.Fatalf("transfer report: %v", tr)
 	}
-	if f := listFiles(t, s)["exports/people.pulse.zst"]; f == nil || f["kind"] != "export" || f["format"] != "transfer" {
-		t.Fatalf("transfer listing: %v", f)
+	// zstd frame magic.
+	if !bytes.HasPrefix(data, []byte{0x28, 0xb5, 0x2f, 0xfd}) {
+		t.Fatalf("not a zstd frame: % x", data[:4])
 	}
+	noExportsDir(t, s)
 
 	cases := []struct {
 		name string
@@ -240,7 +252,7 @@ func TestExportTransferAndErrors(t *testing.T) {
 		{"name", map[string]any{"cohort": cohort, "format": "csv", "name": "../x"}, 400, "invalid_name"},
 	}
 	for _, c := range cases {
-		code, out := postJSON(t, s, "/api/export", c.body)
+		code, out, _, _ := postExport(t, s, c.body)
 		if code != c.code || errCode(out) != c.err {
 			t.Errorf("%s: %d %v, want %d %s", c.name, code, out, c.code, c.err)
 		}
@@ -266,12 +278,11 @@ func TestExportLabels(t *testing.T) {
 	if code != http.StatusOK || !strings.Contains(stringOf(pred["label_tables"]), "regions") {
 		t.Fatalf("label tables: %d %v", code, pred)
 	}
-	code, out := postJSON(t, s, "/api/export", map[string]any{"cohort": cohort, "format": "csv", "fields": []string{"id", "region"},
+	code, out, data, _ := postExport(t, s, map[string]any{"cohort": cohort, "format": "csv", "fields": []string{"id", "region"},
 		"labels": []map[string]any{{"field": "region", "table": "regions", "mode": "augment"}}})
-	if code != http.StatusCreated {
+	if code != http.StatusOK {
 		t.Fatalf("labelled export: %d %v", code, out)
 	}
-	data, _ := os.ReadFile(filepath.Join(s.Root().Dir(), "exports", "people.csv"))
 	if !strings.HasPrefix(string(data), "id,region,region_label\n") || !strings.Contains(string(data), "coast") {
 		t.Fatalf("labelled csv: %q", data)
 	}
@@ -289,4 +300,26 @@ func contains(list []string, s string) bool {
 func stringOf(v any) string {
 	b, _ := json.Marshal(v)
 	return string(b)
+}
+
+// Every format streams from memory: nothing lands in the workspace or the
+// working directory.
+func TestExportEveryFormatStreams(t *testing.T) {
+	s := newImportServer(t, false)
+	cohort := exportCohort(t, s)
+	before, _ := os.ReadDir(s.Root().Dir())
+	for _, f := range []string{"csv", "tsv", "ndjson", "jsonarray", "parquet", "arrow", "excel", "spss", "transfer"} {
+		body := map[string]any{"cohort": cohort, "format": f}
+		if f == "spss" {
+			body["options"] = map[string]any{"sanitize_names": true}
+		}
+		code, out, data, hdr := postExport(t, s, body)
+		if code != http.StatusOK || len(data) == 0 || !strings.Contains(hdr.Get("Content-Disposition"), "people.") {
+			t.Errorf("%s: %d %v", f, code, out)
+		}
+	}
+	after, _ := os.ReadDir(s.Root().Dir())
+	if len(after) != len(before) {
+		t.Fatalf("export wrote into the workspace: %v → %v", before, after)
+	}
 }

@@ -16,7 +16,11 @@
 //     casebook): no nested init. The enclosing repository is used, and
 //     every command runs in the workspace directory with workspace-relative
 //     literal pathspecs, so commits never include paths outside it, nor
-//     anything the user changed or staged that the studio did not write.
+//     anything the user changed or staged that the studio did not write;
+//   - Options.Standalone (a library's global area and each workspace):
+//     the directory always gets a repository of its own, nested inside
+//     an enclosing one if need be (the global repository ignores
+//     workspaces/).
 package history
 
 import (
@@ -49,6 +53,14 @@ type Options struct {
 	Disabled bool
 	// Git is the git executable; "" looks up "git" on PATH.
 	Git string
+	// Standalone gives dir a repository of its own: when dir is inside
+	// another repository (but is not its top level), a nested repository
+	// is initialised in dir instead of using the enclosing one. Library
+	// areas (the global area, each workspace) are standalone.
+	Standalone bool
+	// Ignore is the managed .gitignore block's patterns; nil uses
+	// IgnorePatterns.
+	Ignore []string
 }
 
 // Status describes the workspace's history support (GET /api/status).
@@ -106,6 +118,10 @@ func Open(ctx context.Context, dir string, opts Options, log func(format string,
 		log = func(string, ...any) {}
 	}
 	r := &Repo{dir: dir}
+	patterns := opts.Ignore
+	if patterns == nil {
+		patterns = IgnorePatterns
+	}
 	if opts.Disabled {
 		r.status.Reason = "disabled with --no-git"
 		if g, err := lookGit(opts.Git); err == nil {
@@ -124,6 +140,12 @@ func Open(ctx context.Context, dir string, opts Options, log func(format string,
 	r.status.Available = true
 
 	top, err := r.run(ctx, nil, "rev-parse", "--show-toplevel")
+	if err == nil && opts.Standalone {
+		if prefix, perr := r.run(ctx, nil, "rev-parse", "--show-prefix"); perr == nil && strings.TrimSpace(string(prefix)) != "" {
+			// Inside another repository: give dir its own.
+			err = &gitError{args: []string{"rev-parse"}, code: 128, stderr: "not a git repository (standalone)"}
+		}
+	}
 	switch {
 	case err == nil:
 		r.status.RepoRoot = strings.TrimSpace(string(top))
@@ -156,7 +178,7 @@ func Open(ctx context.Context, dir string, opts Options, log func(format string,
 	r.env = r.identityEnv(ctx)
 	r.status.Enabled = true
 
-	changed, err := EnsureIgnore(filepath.Join(dir, ".gitignore"))
+	changed, err := EnsureIgnoreWith(filepath.Join(dir, ".gitignore"), patterns)
 	if err != nil {
 		log("history: cannot update .gitignore: %v", err)
 	}

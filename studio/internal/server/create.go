@@ -11,6 +11,7 @@ import (
 	"strings"
 
 	"github.com/frankbardon/pulse-casebook/studio/internal/jsonfmt"
+	"github.com/frankbardon/pulse-casebook/studio/internal/library"
 	"github.com/frankbardon/pulse-casebook/studio/internal/preview"
 	"github.com/frankbardon/pulse-casebook/studio/internal/scope"
 	"github.com/frankbardon/pulse-casebook/studio/internal/validate"
@@ -22,12 +23,28 @@ import (
 //	{
 //	  "path":   "case/req/new.json",  the file to create (root-relative)
 //	  "root":   "request",            request | compose | facet | chain
+//	  "mode":   "standalone",         or the analysis mode instead of root:
+//	                                  standalone | composed | faceted | chained
 //	  "cohort": "case/data.pulse"     a .pulse cohort in the workspace
 //	}
+//
+// In a library workspace the cohort is "cohorts/x.pulse" (local) or
+// "_global/cohorts/x.pulse" (global), written as {"filename": "x.pulse",
+// "data_dir": "cohorts" | "_global/cohorts"}; a missing parent directory
+// under analyses/ is created.
 type createBody struct {
 	Path   string `json:"path"`
 	Root   string `json:"root"`
+	Mode   string `json:"mode"`
 	Cohort string `json:"cohort"`
+}
+
+// analysisModes maps the user-facing analysis modes onto request roots.
+var analysisModes = map[string]workspace.Kind{
+	"standalone": workspace.KindRequest,
+	"composed":   workspace.KindCompose,
+	"faceted":    workspace.KindFacet,
+	"chained":    workspace.KindChain,
 }
 
 // cohortRef is a request's cohort object, keys in house order.
@@ -81,6 +98,14 @@ func (s *Server) handleCreateFile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	kind := workspace.Kind(body.Root)
+	if body.Mode != "" {
+		k, ok := analysisModes[body.Mode]
+		if !ok || (body.Root != "" && workspace.Kind(body.Root) != k) {
+			WriteError(w, http.StatusBadRequest, "invalid_mode", "mode must be standalone, composed, faceted or chained (and agree with root)", map[string]any{"mode": body.Mode, "root": body.Root})
+			return
+		}
+		kind = k
+	}
 	switch kind {
 	case workspace.KindRequest, workspace.KindCompose, workspace.KindFacet, workspace.KindChain:
 	default:
@@ -107,6 +132,13 @@ func (s *Server) handleCreateFile(w http.ResponseWriter, r *http.Request) {
 		writeFSError(w, rel, err)
 		return
 	}
+	if s.cfg.Library && strings.HasPrefix(rel, library.AnalysesDir+"/") {
+		// Analyses may live in folders under analyses/: create them.
+		if err := os.MkdirAll(filepath.Dir(abs), 0o755); err != nil {
+			WriteError(w, http.StatusInternalServerError, "write_failed", err.Error(), map[string]any{"path": rel})
+			return
+		}
+	}
 	if pinfo, err := os.Stat(filepath.Dir(abs)); err != nil || !pinfo.IsDir() {
 		WriteError(w, http.StatusNotFound, "not_found", "parent directory does not exist", map[string]any{"path": rel})
 		return
@@ -128,12 +160,9 @@ func (s *Server) handleCreateFile(w http.ResponseWriter, r *http.Request) {
 		WriteError(w, http.StatusServiceUnavailable, "engine_unavailable", "pulse engine is not running", nil)
 		return
 	}
-	enginePath, err := filepath.Rel(s.root.Dir(), cohortAbs)
-	if err != nil {
-		WriteError(w, http.StatusInternalServerError, "create_failed", err.Error(), nil)
-		return
-	}
-	enginePath = filepath.ToSlash(enginePath)
+	// The engine's filesystem is rooted at the workspace (the global
+	// area mounted under _global/), so it takes the root-relative path.
+	enginePath := cohortRel
 
 	fields, err := s.cohortFields(r, enginePath)
 	if err != nil {
@@ -192,12 +221,12 @@ func (s *Server) scopedPath(w http.ResponseWriter, rel string) (string, string, 
 		}
 		return "", "", false
 	}
-	clean, err := filepath.Rel(s.root.Dir(), abs)
-	if err != nil {
-		WriteError(w, http.StatusForbidden, "path_outside", err.Error(), map[string]any{"path": rel})
+	clean, ok := s.root.Rel(abs)
+	if !ok {
+		WriteError(w, http.StatusForbidden, "path_outside", "path escapes the studio directory", map[string]any{"path": rel})
 		return "", "", false
 	}
-	return filepath.ToSlash(clean), abs, true
+	return clean, abs, true
 }
 
 // cohortFor returns the cohort object a new request at requestPath writes
@@ -210,10 +239,14 @@ func (s *Server) scopedPath(w http.ResponseWriter, rel string) (string, string, 
 // = root) resolves as data_dir + "/" + filename directly. Either form is
 // accepted only if the first existing candidate is exactly the cohort, so
 // a same-named cohort elsewhere can never shadow the chosen one.
+//
+// In a library workspace the ref is always the root-relative form
+// ({"filename": "x.pulse", "data_dir": "cohorts"} or "_global/cohorts"),
+// which keeps a workspace self-contained and renameable.
 func (s *Server) cohortFor(requestPath, cohortPath string) cohortRef {
 	dir, base := slashDir(cohortPath), cohortPath[strings.LastIndex(cohortPath, "/")+1:]
 	reqDir := slashDir(requestPath)
-	if dir == reqDir || dir == slashDir(reqDir) {
+	if !s.cfg.Library && (dir == reqDir || dir == slashDir(reqDir)) {
 		conv := cohortRef{Filename: base, DataDir: "."}
 		if got, ok := s.firstExistingCohort(requestPath, conv); ok && got == cohortPath {
 			return conv

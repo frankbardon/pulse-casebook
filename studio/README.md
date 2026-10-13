@@ -76,7 +76,7 @@ staged or not, are left alone. The author is your git `user.name` and `user.emai
 commit signing.
 
 Studio keeps a managed block in the directory's `.gitignore`. It ignores cohorts (`*.pulse`),
-uploaded sources (`sources/`), cohort exports (`exports/`), Studio's caches (`.studio/`) and temp
+uploaded sources (`sources/`), Studio's caches (`.studio/`) and temp
 files. Lines outside the block
 are yours and are never changed.
 
@@ -201,8 +201,8 @@ to overwrite unless you click **Overwrite**.
 
 ### Exporting a cohort
 
-**Export…** on a cohort (the button on the cohort view, or on the cohort's row in the sidebar) writes
-it to a file in `exports/`. You can pick any format Pulse writes: CSV, TSV, NDJSON, a JSON array,
+**Export…** on a cohort (the button on the cohort view, or on the cohort's row in the sidebar)
+downloads it as a file. You can pick any format Pulse writes: CSV, TSV, NDJSON, a JSON array,
 Parquet, Arrow, Excel or an SPSS `.sav`. You can also pick a Pulse transfer artifact (`.pulse.zst`,
 the cohort's exact bytes compressed with zstd).
 
@@ -219,10 +219,9 @@ the cohort's exact bytes compressed with zstd).
   illegal SPSS name, a non-UTC zone for SPSS, too many rows for one Excel sheet). Export stays
   disabled while there is a refusal.
 
-The file name defaults to `<cohort>.<ext>`. An existing file is replaced only after you confirm.
-The finished export shows its report and a **Download** link. Exports are listed under **Exports**
-in the sidebar, where each row downloads the file. `exports/` is ignored by git and nothing is
-committed. The dialog remembers the last format and options you used for each cohort, in this
+The file name defaults to `<cohort>.<ext>`. **Export** generates the file and your browser
+downloads it; the finished export shows its report and a **Download again** link. Exports are never
+stored in the directory: export again whenever you need the file. The dialog remembers the last format and options you used for each cohort, in this
 browser only.
 
 ### Renaming columns on import
@@ -294,9 +293,9 @@ Tools in this repository that walk the showcase request files skip `*.layout.jso
   as raw nodes. Multiplicity is available once per request and not in chains.
 - **Label-table load errors appear only in the server log.** If a case's `labels/` directory fails
   to load, Studio falls back to the shared engine and logs why; the UI does not say so.
-- **Exports are built in memory.** Pulse's writers buffer the whole output before writing it, so a
-  very large cohort needs memory to match. Exports cannot be deleted from the UI; remove files from
-  `exports/` by hand.
+- **Exports are built in memory.** Pulse's writers buffer the whole output before writing it, and
+  Studio holds the finished file in memory while it streams, so a very large cohort needs memory to
+  match.
 - **Single directory, single user, local only.** No authentication and no concurrent-edit
   protection: if another tool changes a file you have open, Studio overwrites it on Save.
 - **Cohorts are not built or edited.** Results are tables and the raw JSON envelope.

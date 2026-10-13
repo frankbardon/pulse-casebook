@@ -68,7 +68,6 @@ export type FormState = {
   timeZone: string
   labels: Record<string, LabelChoice>
   name: string
-  overwrite?: boolean
 }
 
 // exportBody builds the predict / export body. Fields are sent only for
@@ -94,7 +93,6 @@ export function exportBody(cohort: string, allFields: readonly string[], st: For
     if (labels.length > 0) body.labels = labels
   }
   if (st.name.trim() !== '') body.name = st.name.trim()
-  if (st.overwrite) body.overwrite = true
   return body
 }
 

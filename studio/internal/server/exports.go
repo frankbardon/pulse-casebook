@@ -2,13 +2,14 @@ package server
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"mime"
 	"net/http"
 	"os"
-	"path"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"time"
 
@@ -20,17 +21,16 @@ import (
 	"github.com/spf13/afero"
 
 	"github.com/frankbardon/pulse-casebook/studio/internal/exporter"
-	"github.com/frankbardon/pulse-casebook/studio/internal/workspace"
 )
 
-// Export endpoints (X1). A cohort is exported to any format Pulse writes
-// (plus the zstd transfer artifact) into exports/<name>.<ext>. exports/
-// is gitignored data: nothing is committed.
+// Export endpoints (X1, streaming since W1). A cohort is exported to any
+// format Pulse writes (plus the zstd transfer artifact). Exports are not
+// stored: each export is generated on demand and streamed back as a
+// download; nothing is written to the library.
 //
 //	GET  /api/export/formats         format descriptors + common options
 //	POST /api/export/predict         preflight: rows, warnings, refusal
-//	POST /api/export                 write exports/<name>, return the report
-//	GET  /api/export/download?path=  stream an exports/ file as an attachment
+//	POST /api/export                 the exported file as an attachment
 //
 // Shapes are documented on each handler and in the visual-request-builder
 // story notes ("X1").
@@ -39,7 +39,6 @@ func (s *Server) registerExportRoutes() {
 	s.mux.HandleFunc("GET /api/export/formats", s.handleExportFormats)
 	s.mux.HandleFunc("POST /api/export/predict", s.handleExportPredict)
 	s.mux.HandleFunc("POST /api/export", s.handleExport)
-	s.mux.HandleFunc("GET /api/export/download", s.handleExportDownload)
 }
 
 // handleExportFormats is GET /api/export/formats →
@@ -51,14 +50,13 @@ func (s *Server) handleExportFormats(w http.ResponseWriter, _ *http.Request) {
 // exportRequest is the predict / export body. Fields empty = every
 // field; Options are the format's own (exporter.Format.Options keys).
 type exportRequest struct {
-	Cohort    string                `json:"cohort"`
-	Format    string                `json:"format"`
-	Options   map[string]any        `json:"options"`
-	Fields    []string              `json:"fields"`
-	TimeZone  string                `json:"time_zone"`
-	Labels    []*types.LabelBinding `json:"labels"`
-	Name      string                `json:"name"`
-	Overwrite bool                  `json:"overwrite"`
+	Cohort   string                `json:"cohort"`
+	Format   string                `json:"format"`
+	Options  map[string]any        `json:"options"`
+	Fields   []string              `json:"fields"`
+	TimeZone string                `json:"time_zone"`
+	Labels   []*types.LabelBinding `json:"labels"`
+	Name     string                `json:"name"`
 }
 
 // exportPlan is a validated request.
@@ -164,8 +162,6 @@ type exportPredictResponse struct {
 	Warnings    []codedBody            `json:"warnings"`
 	LabelTables []pulse.LabelTableInfo `json:"label_tables"`
 	Name        string                 `json:"name"`
-	Path        string                 `json:"path"`
-	Exists      bool                   `json:"exists"`
 }
 
 // handleExportPredict is POST /api/export/predict {cohort, format,
@@ -213,12 +209,7 @@ func (s *Server) handleExportPredict(w http.ResponseWriter, r *http.Request) {
 		name = exporter.DefaultName(p.rel, p.format)
 	}
 	if file, ok := exporter.FileName(name, p.format); ok {
-		out.Name, out.Path = file, exporter.Path(file)
-		if abs, err := s.root.Resolve(out.Path); err == nil {
-			if _, err := os.Stat(abs); err == nil {
-				out.Exists = true
-			}
-		}
+		out.Name = file
 	}
 
 	refuse := func(cb codedBody) {
@@ -341,29 +332,32 @@ type exportReportBody struct {
 	Warnings      []codedBody    `json:"warnings"`
 }
 
+// exportReportHeader carries the export report beside the streamed
+// file: the JSON below, percent-encoded (encodeURIComponent-compatible;
+// decode with decodeURIComponent).
+const exportReportHeader = "X-Studio-Export-Report"
+
 type exportResponse struct {
-	Path     string              `json:"path"`
+	Name     string              `json:"name"`
 	Format   string              `json:"format"`
 	Cohort   string              `json:"cohort"`
 	Report   exportReportBody    `json:"report"`
 	Transfer *pio.TransferReport `json:"transfer,omitempty"`
-	File     workspace.File      `json:"file"`
-	Replaced bool                `json:"replaced,omitempty"`
 }
 
-// handleExport is POST /api/export: the predict body + {name?,
-// overwrite?}. name defaults to "<cohort>.<ext>"; the format's
-// extension is appended unless present. The export runs into a hidden
-// temp file in exports/ and is renamed into place, so a failed or
-// cancelled export leaves nothing behind. 201 (200 when it replaced a
-// file) {path, format, cohort, report:{rows, fields?, bytes, elapsed_ms,
-// row_error_count, row_errors (≤100), warnings:[coded]}, transfer?
-// (Pulse TransferReport), file:{path, kind:"export", format, size},
-// replaced?}. Not committed: exports/ is gitignored.
+// handleExport is POST /api/export: the predict body (name? = the
+// download's file name, default "<cohort>.<ext>"; the format's extension
+// is appended unless present). Exports are never stored: the file is
+// generated in memory and streamed back as the response body (200,
+// Content-Type by extension, Content-Disposition attachment with the
+// name, Content-Length), with the report {name, format, cohort,
+// report:{rows, fields?, bytes, elapsed_ms, row_error_count, row_errors
+// (≤100), warnings:[coded]}, transfer?} percent-encoded in the
+// X-Studio-Export-Report header. Nothing is written to the library.
 //
-// Errors: as predict, plus invalid_name 400, exists 409 (details {path};
-// resend with overwrite), a Pulse refusal 422 with its code (nothing
-// written), export_failed 422, cancelled 499.
+// Errors (JSON envelope, nothing streamed): as predict, plus
+// invalid_name 400, a Pulse refusal 422 with its code, export_failed
+// 422, cancelled 499.
 func (s *Server) handleExport(w http.ResponseWriter, r *http.Request) {
 	p, ok := s.resolveExport(w, r)
 	if !ok {
@@ -378,53 +372,38 @@ func (s *Server) handleExport(w http.ResponseWriter, r *http.Request) {
 		WriteError(w, http.StatusBadRequest, "invalid_name", "export name must be letters, digits, '.', '-' or '_', starting with a letter or digit", map[string]any{"name": name})
 		return
 	}
-	dirAbs, ok := s.ensureDir(w, exporter.ExportsDir)
-	if !ok {
-		return
-	}
-	outRel := exporter.Path(file)
-	outAbs := filepath.Join(dirAbs, file)
-	_, statErr := os.Stat(outAbs)
-	existed := statErr == nil
-	if existed && !p.req.Overwrite {
-		WriteError(w, http.StatusConflict, "exists", "an export of this name exists; pass overwrite to replace it", map[string]any{"path": outRel})
-		return
-	}
-	// The temp keeps the extension: some writers (Excel) check it.
-	stem := strings.TrimSuffix(file, p.format.Extension)
-	tmpf, err := os.CreateTemp(dirAbs, "."+stem+"-*.tmp"+p.format.Extension)
-	if err != nil {
-		WriteError(w, http.StatusInternalServerError, "write_failed", err.Error(), map[string]any{"path": outRel})
-		return
-	}
-	tmp := tmpf.Name()
-	_ = tmpf.Close()
-	defer os.Remove(tmp) // no-op after the rename
+	// Pulse writers write through an afero Fs: an in-memory one here
+	// (the file name keeps its extension: some writers check it), over
+	// the read-only OS filesystem for the transfer job, which reads its
+	// source through the same Fs.
+	mem := afero.NewMemMapFs()
+	out := "/export/" + file
+	_ = mem.MkdirAll("/export", 0o755) // the copy-on-write Fs needs the parent in its layer
 
 	start := time.Now()
-	resp := exportResponse{Path: outRel, Format: p.format.ID, Cohort: p.rel}
+	resp := exportResponse{Name: file, Format: p.format.ID, Cohort: p.rel}
 	resp.Report.RowErrors, resp.Report.Warnings = []rowErrorBody{}, []codedBody{}
 	if p.transfer() {
-		rep, err := p.engine.ExportTransfer(r.Context(), &pio.TransferExportJob{FS: afero.NewOsFs(), Source: p.abs, Output: tmp, Level: p.settings.Level})
+		fsys := afero.NewCopyOnWriteFs(afero.NewReadOnlyFs(afero.NewOsFs()), mem)
+		rep, err := p.engine.ExportTransfer(r.Context(), &pio.TransferExportJob{FS: fsys, Source: p.abs, Output: out, Level: p.settings.Level})
 		if err != nil {
 			writeExportError(w, err, "export_failed", p.rel)
 			return
 		}
-		rep.Source, rep.Output = p.rel, outRel
+		rep.Source, rep.Output = p.rel, file
 		resp.Transfer = rep
 		if insp, err := p.engine.Inspect(r.Context(), p.rel); err == nil {
 			resp.Report.Rows = int(insp.RecordCount)
 			resp.Report.Fields = len(insp.Fields)
 		}
 	} else {
-		wr, err := pio.NewWriter(pio.Format(p.format.ID), afero.NewOsFs(), tmp, p.settings.Writer)
+		wr, err := pio.NewWriter(pio.Format(p.format.ID), mem, out, p.settings.Writer)
 		if err != nil {
 			writeExportError(w, err, "export_failed", p.rel)
 			return
 		}
 		// Every Pulse writer buffers and emits its file once, in Close;
-		// on an error it is discarded (releases Excel's spill files)
-		// and the temp file removed, so nothing is written.
+		// on an error it is discarded (releases Excel's spill files).
 		rep, err := p.engine.Export(r.Context(), p.job(p.abs, wr))
 		if err == nil {
 			err = wr.Close()
@@ -443,28 +422,42 @@ func (s *Server) handleExport(w http.ResponseWriter, r *http.Request) {
 		fillExportReport(&resp.Report, rep)
 		resp.Report.Fields = len(p.req.Fields)
 	}
+	data, err := afero.ReadFile(mem, out)
+	if err != nil {
+		WriteError(w, http.StatusInternalServerError, "export_failed", "the export produced no file: "+err.Error(), map[string]any{"cohort": p.rel})
+		return
+	}
+	resp.Report.Bytes = int64(len(data))
 	resp.Report.ElapsedMS = time.Since(start).Milliseconds()
+	report, _ := json.Marshal(resp)
 
-	s.exportMu.Lock()
-	defer s.exportMu.Unlock()
-	if _, err := os.Stat(outAbs); err == nil && !p.req.Overwrite {
-		WriteError(w, http.StatusConflict, "exists", "an export of this name was written meanwhile; pass overwrite to replace it", map[string]any{"path": outRel})
-		return
+	ctype := mime.TypeByExtension(filepath.Ext(file))
+	if ctype == "" {
+		ctype = "application/octet-stream"
 	}
-	if err := os.Rename(tmp, outAbs); err != nil {
-		WriteError(w, http.StatusInternalServerError, "write_failed", err.Error(), map[string]any{"path": outRel})
-		return
+	h := w.Header()
+	h.Set("Content-Type", ctype)
+	h.Set("Content-Disposition", mime.FormatMediaType("attachment", map[string]string{"filename": file}))
+	h.Set("Content-Length", strconv.Itoa(len(data)))
+	h.Set("Cache-Control", "no-store")
+	h.Set(exportReportHeader, encodeURIComponent(string(report)))
+	w.WriteHeader(http.StatusOK)
+	_, _ = w.Write(data)
+}
+
+// encodeURIComponent percent-encodes s like JavaScript's
+// encodeURIComponent, so the UI decodes it with decodeURIComponent.
+func encodeURIComponent(s string) string {
+	const keep = "-_.!~*'()"
+	var b strings.Builder
+	for _, c := range []byte(s) {
+		if c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c >= '0' && c <= '9' || strings.IndexByte(keep, c) >= 0 {
+			b.WriteByte(c)
+			continue
+		}
+		fmt.Fprintf(&b, "%%%02X", c)
 	}
-	if info, err := os.Stat(outAbs); err == nil {
-		resp.Report.Bytes = info.Size()
-	}
-	resp.File = workspace.File{Path: outRel, Kind: workspace.KindExport, Format: exporter.FormatOfPath(outRel), Size: resp.Report.Bytes}
-	resp.Replaced = existed
-	status := http.StatusCreated
-	if existed {
-		status = http.StatusOK
-	}
-	WriteJSON(w, status, resp)
+	return b.String()
 }
 
 func fillExportReport(b *exportReportBody, rep *pio.ExportReport) {
@@ -512,46 +505,4 @@ func writeExportError(w http.ResponseWriter, err error, fallback, cohort string)
 	}
 	details["cohort"] = cohort
 	WriteError(w, http.StatusUnprocessableEntity, cb.Code, cb.Message, details)
-}
-
-// handleExportDownload is GET /api/export/download?path=exports/x.csv:
-// streams the file as an attachment. Only files under exports/ are
-// served (not_export 400), scoped to the workspace (path_outside 403).
-func (s *Server) handleExportDownload(w http.ResponseWriter, r *http.Request) {
-	q := r.URL.Query().Get("path")
-	if q == "" {
-		WriteError(w, http.StatusBadRequest, "missing_path", "query parameter path is required", nil)
-		return
-	}
-	rel, abs, ok := s.scopedPath(w, q)
-	if !ok {
-		return
-	}
-	if !strings.HasPrefix(rel, exporter.ExportsDir+"/") || path.Base(rel) == "" {
-		WriteError(w, http.StatusBadRequest, "not_export", "only files under exports/ can be downloaded", map[string]any{"path": rel})
-		return
-	}
-	f, err := os.Open(abs)
-	if err != nil {
-		writeFSError(w, rel, err)
-		return
-	}
-	defer f.Close()
-	info, err := f.Stat()
-	if err != nil {
-		writeFSError(w, rel, err)
-		return
-	}
-	if !info.Mode().IsRegular() {
-		WriteError(w, http.StatusBadRequest, "not_a_file", "path is not a regular file", map[string]any{"path": rel})
-		return
-	}
-	base := path.Base(rel)
-	ctype := mime.TypeByExtension(filepath.Ext(base))
-	if ctype == "" {
-		ctype = "application/octet-stream"
-	}
-	w.Header().Set("Content-Type", ctype)
-	w.Header().Set("Content-Disposition", mime.FormatMediaType("attachment", map[string]string{"filename": base}))
-	http.ServeContent(w, r, base, info.ModTime(), f)
 }

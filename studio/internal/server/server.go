@@ -11,8 +11,10 @@ import (
 	"time"
 
 	"github.com/frankbardon/pulse"
+	"github.com/spf13/afero"
 
 	"github.com/frankbardon/pulse-casebook/studio/internal/history"
+	"github.com/frankbardon/pulse-casebook/studio/internal/library"
 	"github.com/frankbardon/pulse-casebook/studio/internal/preview"
 	"github.com/frankbardon/pulse-casebook/studio/internal/scope"
 )
@@ -33,6 +35,28 @@ type Config struct {
 	// MaxUpload caps one source upload (POST /api/sources) in bytes;
 	// 0 means DefaultMaxUpload (2 GiB). CLI --max-upload.
 	MaxUpload int64
+
+	// Library: this server is one area of a library (a workspace, or
+	// the global area) rather than a legacy flat folder. A bare import
+	// target then lands in cohorts/, a new analysis's cohort ref is
+	// always {filename, data_dir: <root-relative dir>}, and a
+	// workspace's file listing adds the global cohorts.
+	Library bool
+
+	// GlobalHistory is the library's global repository: paths under
+	// "_global/" (the global area mounted in a workspace root) are
+	// committed there and their history read from it. Nil: such paths
+	// are not committed.
+	GlobalHistory *history.Repo
+
+	// FS is the filesystem engines with label tables are built on (the
+	// workspace's routefs, so "_global/..." cohorts resolve). Nil uses
+	// DataDir = the root.
+	FS afero.Fs
+
+	// ListSkip names top-level directories GET /api/files does not walk
+	// (the global area skips workspaces/).
+	ListSkip []string
 }
 
 // Server wires the scoped directory, the single Pulse engine and the UI.
@@ -53,7 +77,6 @@ type Server struct {
 
 	importMu  sync.Mutex // serializes imports / rebuilds (target + spec writes)
 	sourcesMu sync.Mutex // serializes naming uploads in sources/
-	exportMu  sync.Mutex // serializes the exists-check + rename of exports (the exports run concurrently)
 }
 
 // New returns a Server. ui is the UI asset tree; uiBuilt says whether it
@@ -171,3 +194,7 @@ func WriteJSON(w http.ResponseWriter, status int, v any) {
 func WriteError(w http.ResponseWriter, status int, code, message string, details any) {
 	WriteJSON(w, status, ErrorBody{Error: ErrorDetail{Code: code, Message: message, Details: details}})
 }
+
+// globalPrefix is the reserved first segment under which a library
+// workspace sees the global area (library.GlobalPrefix).
+const globalPrefix = library.GlobalPrefix

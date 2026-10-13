@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
-import { exportDownloadUrl, listFiles, type FileListing, type WorkspaceFile } from './api.ts'
-import { formatBytes } from './importer/format.ts'
+import { listFiles, type FileListing, type WorkspaceFile } from './api.ts'
 import { fileBadge, fileLabel, groupFiles, isOpenable } from './files.ts'
 import { NewRequest } from './NewRequest.tsx'
 import './Sidebar.css'
@@ -114,16 +113,6 @@ export function Sidebar({ selected, onSelect, reload, newRequest, onNewRequest, 
             {g.files.map((f) => {
               const open = isOpenable(f)
               const badge = fileBadge(f)
-              if (f.kind === 'export') {
-                return (
-                  <li key={f.path}>
-                    <a className="file" href={exportDownloadUrl(f.path)} download title={`Download ${f.path}`} data-path={f.path} data-testid="export-link">
-                      <span className="file-name">{fileLabel(f)}</span>
-                      {f.size !== undefined && <span className="file-size">{formatBytes(f.size)}</span>}
-                    </a>
-                  </li>
-                )
-              }
               return (
                 <li key={f.path} className={f.kind === 'cohort' ? 'file-row' : undefined}>
                   <button

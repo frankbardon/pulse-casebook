@@ -11,6 +11,7 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
 
 	"github.com/frankbardon/pulse-casebook/studio/internal/history"
 	"github.com/frankbardon/pulse-casebook/studio/internal/workspace"
@@ -32,39 +33,80 @@ import (
 // are skipped. History is best effort: when it is off, or the commit
 // fails, the write still succeeds; failures are logged and the result is
 // nil. The commit runs to completion even if the client goes away.
+//
+// In a library workspace the global area is mounted under "_global/":
+// those paths belong to the global repository (Config.GlobalHistory),
+// every other path to the workspace's own. commitPaths splits a write's
+// paths by owner and commits each group in its repository with the same
+// message (the commit returned is the workspace one when there is one).
 func (s *Server) commitPaths(ctx context.Context, msg string, paths ...string) *history.Commit {
-	if !s.cfg.History.Enabled() {
-		return nil
+	groups := map[*history.Repo][]string{}
+	var order []*history.Repo
+	for _, p := range paths {
+		repo, rel := s.repoFor(p)
+		if !repo.Enabled() {
+			continue
+		}
+		if _, ok := groups[repo]; !ok {
+			order = append(order, repo)
+		}
+		groups[repo] = append(groups[repo], rel)
 	}
-	c, err := s.cfg.History.Commit(context.WithoutCancel(ctx), msg, paths...)
-	if err != nil {
-		log.Printf("history: %s: %v", msg, err)
-		return nil
+	var first *history.Commit
+	for _, repo := range order {
+		c, err := repo.Commit(context.WithoutCancel(ctx), msg, groups[repo]...)
+		if err != nil {
+			log.Printf("history: %s: %v", msg, err)
+			continue
+		}
+		if first == nil || repo == s.cfg.History {
+			if c != nil {
+				first = c
+			}
+		}
 	}
-	return c
+	return first
+}
+
+// repoFor returns the repository owning the root-relative path rel and
+// the path inside it: the global repository for "_global/..." when this
+// root mounts the global area, else the workspace's.
+func (s *Server) repoFor(rel string) (*history.Repo, string) {
+	if rest, ok := strings.CutPrefix(rel, globalPrefix+"/"); ok && s.root.Mounted(globalPrefix) != nil {
+		return s.cfg.GlobalHistory, rest
+	}
+	return s.cfg.History, rel
 }
 
 // relOf maps a scoped absolute path back to its slash-separated
-// root-relative form (the form commitPaths and git take).
+// root-relative form (the form commitPaths and git take; a global-area
+// path in a workspace is "_global/...").
 func (s *Server) relOf(abs string) string {
-	rel, err := filepath.Rel(s.root.Dir(), abs)
-	if err != nil {
+	rel, ok := s.root.Rel(abs)
+	if !ok {
 		return ""
 	}
-	return filepath.ToSlash(rel)
+	return rel
 }
 
-// handleStatus is GET /api/status: git availability and the repository.
+// handleStatus is GET /api/status: git availability and the repository
+// (+ global: the global repository's, in a library workspace).
 func (s *Server) handleStatus(w http.ResponseWriter, _ *http.Request) {
-	WriteJSON(w, http.StatusOK, map[string]any{"git": s.cfg.History.Status()})
+	body := map[string]any{"git": s.cfg.History.Status()}
+	if s.root.Mounted(globalPrefix) != nil {
+		body["global_git"] = s.cfg.GlobalHistory.Status()
+	}
+	WriteJSON(w, http.StatusOK, body)
 }
 
-// historyReady writes 503 history_unavailable unless history is on.
-func (s *Server) historyReady(w http.ResponseWriter) bool {
-	if s.cfg.History.Enabled() {
+// historyReady writes 503 history_unavailable unless the repository
+// owning rel has history on.
+func (s *Server) historyReady(w http.ResponseWriter, rel string) bool {
+	repo, _ := s.repoFor(rel)
+	if repo.Enabled() {
 		return true
 	}
-	WriteError(w, http.StatusServiceUnavailable, "history_unavailable", s.cfg.History.Status().Reason, nil)
+	WriteError(w, http.StatusServiceUnavailable, "history_unavailable", repo.Status().Reason, nil)
 	return false
 }
 
@@ -79,11 +121,11 @@ const maxHistoryLimit = 500
 // path, newest first (default 100). A path with no history (never
 // committed, or deleted before the repository) gives an empty list.
 func (s *Server) handleHistory(w http.ResponseWriter, r *http.Request) {
-	if !s.historyReady(w) {
-		return
-	}
 	_, abs, ok := s.resolveQueryPath(w, r)
 	if !ok {
+		return
+	}
+	if !s.historyReady(w, s.relOf(abs)) {
 		return
 	}
 	limit := 100
@@ -96,7 +138,8 @@ func (s *Server) handleHistory(w http.ResponseWriter, r *http.Request) {
 		limit = min(n, maxHistoryLimit)
 	}
 	rel := s.relOf(abs)
-	commits, err := s.cfg.History.Log(r.Context(), rel, limit)
+	repo, inRepo := s.repoFor(rel)
+	commits, err := repo.Log(r.Context(), inRepo, limit)
 	if err != nil {
 		WriteError(w, http.StatusInternalServerError, "history_failed", err.Error(), map[string]any{"path": rel})
 		return
@@ -113,14 +156,14 @@ type historyFileBody struct {
 // handleHistoryFile is GET /api/history/file?path=&rev=: the file's
 // content at a commit (rev: a full or abbreviated hash).
 func (s *Server) handleHistoryFile(w http.ResponseWriter, r *http.Request) {
-	if !s.historyReady(w) {
-		return
-	}
 	_, abs, ok := s.resolveQueryPath(w, r)
 	if !ok {
 		return
 	}
 	rel := s.relOf(abs)
+	if !s.historyReady(w, rel) {
+		return
+	}
 	rev := r.URL.Query().Get("rev")
 	data, full, ok := s.contentAt(w, r.Context(), rel, rev)
 	if !ok {
@@ -135,10 +178,11 @@ func (s *Server) contentAt(w http.ResponseWriter, ctx context.Context, rel, rev 
 		WriteError(w, http.StatusBadRequest, "missing_rev", "rev is required", nil)
 		return nil, "", false
 	}
-	full, err := s.cfg.History.Resolve(ctx, rev)
+	repo, inRepo := s.repoFor(rel)
+	full, err := repo.Resolve(ctx, rev)
 	if err == nil {
 		var data []byte
-		data, err = s.cfg.History.Show(ctx, full, rel, workspace.MaxRequestBytes)
+		data, err = repo.Show(ctx, full, inRepo, workspace.MaxRequestBytes)
 		if err == nil {
 			return data, full, true
 		}
@@ -178,9 +222,6 @@ type restoreResponse struct {
 // GET /api/file body for the restored bytes, plus the commit (absent when
 // the file already had that content).
 func (s *Server) handleRestore(w http.ResponseWriter, r *http.Request) {
-	if !s.historyReady(w) {
-		return
-	}
 	raw, err := io.ReadAll(io.LimitReader(r.Body, 64<<10))
 	if err != nil {
 		WriteError(w, http.StatusBadRequest, "read_body_failed", err.Error(), nil)
@@ -197,6 +238,9 @@ func (s *Server) handleRestore(w http.ResponseWriter, r *http.Request) {
 	}
 	rel, abs, ok := s.scopedPath(w, body.Path)
 	if !ok {
+		return
+	}
+	if !s.historyReady(w, rel) {
 		return
 	}
 	data, full, ok := s.contentAt(w, r.Context(), rel, body.Rev)

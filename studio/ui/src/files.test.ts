@@ -12,13 +12,12 @@ const files: WorkspaceFile[] = [
   { path: 'imports/orders.import.json', kind: 'import', target: 'orders.pulse', state: 'needs_rebuild' },
   { path: 'schemas/retail.schema.json', kind: 'schema' },
   { path: 'sources/orders.csv', kind: 'source', format: 'csv', size: 10 },
-  { path: 'exports/orders.csv', kind: 'export', format: 'csv', size: 12 },
 ]
 
 describe('groupFiles', () => {
   it('groups by kind in sidebar order and drops empty groups', () => {
     const groups = groupFiles(files)
-    expect(groups.map((g) => g.kind)).toEqual(['request', 'compose', 'facet', 'cohort', 'source', 'schema', 'import', 'export', 'unopenable'])
+    expect(groups.map((g) => g.kind)).toEqual(['request', 'compose', 'facet', 'cohort', 'source', 'schema', 'import', 'unopenable'])
     expect(groups[0].files.map((f) => f.path)).toEqual(['req/01.json', 'req/03.json'])
   })
 
@@ -33,7 +32,6 @@ describe('isOpenable', () => {
     ['compose', true],
     ['cohort', true],
     ['unopenable', false],
-    ['export', false],
   ] as const)('%s -> %s', (kind, want) => {
     expect(isOpenable({ path: 'x', kind })).toBe(want)
   })
@@ -64,7 +62,7 @@ describe('defaultNewDir', () => {
 
 describe('fileLabel and fileBadge', () => {
   it('shortens sources, schemas and import specs', () => {
-    expect(files.map(fileLabel).slice(6)).toEqual(['orders', 'retail', 'orders.csv', 'orders.csv'])
+    expect(files.map(fileLabel).slice(6)).toEqual(['orders', 'retail', 'orders.csv'])
     expect(fileLabel({ path: 'req/01.json', kind: 'request' })).toBe('req/01.json')
   })
 

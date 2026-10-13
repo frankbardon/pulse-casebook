@@ -1,15 +1,16 @@
 // ExportDialog exports a cohort (X1): pick a format, the fields, the
 // format's own options (rendered from the server's descriptors), a time
-// zone and label bindings where the format takes them, and a file name
-// under exports/. A debounced Pulse preflight shows rows, warnings and
-// any refusal before Export is allowed; the result offers a download.
+// zone and label bindings where the format takes them, and a download
+// file name. A debounced Pulse preflight shows rows, warnings and any
+// refusal before Export is allowed. Exports are never stored: Export
+// streams the file and hands it to the browser as a download.
 import { useEffect, useMemo, useState } from 'react'
 import {
-  exportDownloadUrl,
   getExportFormats,
   inspectCohort,
   predictExport,
   runExport,
+  saveDownload,
   type CohortField,
   type ExportCommon,
   type ExportFormat,
@@ -38,13 +39,11 @@ import './export.css'
 type Props = {
   cohort: string
   onClose: () => void
-  // An export landed in exports/ (the sidebar re-lists).
-  onExported: (r: ExportResult) => void
 }
 
 type Loaded = { formats: ExportFormat[]; common: ExportCommon; fields: CohortField[] }
 
-export function ExportDialog({ cohort, onClose, onExported }: Props) {
+export function ExportDialog({ cohort, onClose }: Props) {
   const [loaded, setLoaded] = useState<Loaded | null>(null)
   const [error, setError] = useState<string | null>(null)
   useEffect(() => {
@@ -77,18 +76,22 @@ export function ExportDialog({ cohort, onClose, onExported }: Props) {
         </header>
         {error && <p className="err">{error}</p>}
         {!loaded && !error && <p className="muted">Loading…</p>}
-        {loaded && <ExportForm cohort={cohort} {...loaded} onExported={onExported} />}
+        {loaded && <ExportForm cohort={cohort} {...loaded} />}
       </section>
     </div>
   )
 }
 
-type FormProps = Loaded & { cohort: string; onExported: (r: ExportResult) => void }
+type FormProps = Loaded & { cohort: string }
 
 type PredictState = { key: string; data?: ExportPredict; error?: string }
-type RunState = { status: 'idle' } | { status: 'running'; ctl: AbortController } | { status: 'done'; result: ExportResult } | { status: 'error'; error: string }
+type RunState =
+  | { status: 'idle' }
+  | { status: 'running'; ctl: AbortController }
+  | { status: 'done'; result: ExportResult; url: string }
+  | { status: 'error'; error: string }
 
-function ExportForm({ cohort, formats, common, fields, onExported }: FormProps) {
+function ExportForm({ cohort, formats, common, fields }: FormProps) {
   const allFields = useMemo(() => fields.map((f) => f.name), [fields])
   const [initial] = useState(() => {
     const r = recall(cohort)
@@ -104,11 +107,15 @@ function ExportForm({ cohort, formats, common, fields, onExported }: FormProps) 
   const [timeZone, setTimeZone] = useState(initial.timeZone)
   const [labels, setLabels] = useState<Record<string, LabelChoice>>({})
   const [name, setName] = useState(() => defaultName(cohort, initial.format))
-  const [overwrite, setOverwrite] = useState(false)
   const [predict, setPredict] = useState<PredictState>({ key: '' })
   const [run, setRun] = useState<RunState>({ status: 'idle' })
-  // Bumped after an export so the preflight re-checks (the file exists now).
-  const [round, setRound] = useState(0)
+  // The last export's object URL ("Download again") is released when
+  // replaced or when the dialog closes.
+  const doneUrl = run.status === 'done' ? run.url : null
+  useEffect(() => {
+    if (doneUrl === null) return
+    return () => URL.revokeObjectURL(doneUrl)
+  }, [doneUrl])
 
   const format = formats.find((f) => f.id === formatId) ?? formats[0]
   const opts = values[format.id]
@@ -116,14 +123,14 @@ function ExportForm({ cohort, formats, common, fields, onExported }: FormProps) 
   const noFields = format.supports.fields && selected.size === 0
   const body = exportBody(cohort, allFields, { format, options: opts, selected, timeZone, labels, name })
   const bodyText = optErrors || noFields ? '' : JSON.stringify(body)
-  const bodyKey = bodyText === '' ? '' : `${round}:${bodyText}`
+  const bodyKey = bodyText
 
   // Debounced preflight of the current settings.
   useEffect(() => {
     if (bodyKey === '') return
     const ctl = new AbortController()
     const t = setTimeout(() => {
-      predictExport(JSON.parse(bodyKey.slice(bodyKey.indexOf(':') + 1)), ctl.signal)
+      predictExport(JSON.parse(bodyKey), ctl.signal)
         .then((data) => setPredict({ key: bodyKey, data }))
         .catch((e: unknown) => {
           if (!ctl.signal.aborted) setPredict({ key: bodyKey, error: e instanceof Error ? e.message : String(e) })
@@ -137,16 +144,14 @@ function ExportForm({ cohort, formats, common, fields, onExported }: FormProps) 
 
   const current = bodyKey !== '' && predict.key === bodyKey ? predict : null
   const pre = current?.data
-  const exists = pre?.exists === true
   const running = run.status === 'running'
-  const canExport = !running && pre?.valid === true && (!exists || overwrite)
+  const canExport = !running && pre?.valid === true
 
   const changeFormat = (id: string) => {
     const next = formats.find((f) => f.id === id)
     if (!next) return
     setName((n) => swapExtension(n, format, next))
     setFormatId(id)
-    setOverwrite(false)
     setRun({ status: 'idle' })
   }
   const setOption = (key: string, v: ExportOptionValue) => setValues((all) => ({ ...all, [format.id]: { ...all[format.id], [key]: v } }))
@@ -154,13 +159,12 @@ function ExportForm({ cohort, formats, common, fields, onExported }: FormProps) 
   const doExport = () => {
     const ctl = new AbortController()
     setRun({ status: 'running', ctl })
-    runExport({ ...body, overwrite: exists && overwrite }, ctl.signal)
-      .then((result) => {
-        setRun({ status: 'done', result })
-        setOverwrite(false)
-        setRound((n) => n + 1)
+    runExport(body, ctl.signal)
+      .then(({ result, file }) => {
+        const url = URL.createObjectURL(file)
+        saveDownload(url, result.name)
+        setRun({ status: 'done', result, url })
         remember(cohort, format.id, opts, timeZone)
-        onExported(result)
       })
       .catch((e: unknown) => {
         if (ctl.signal.aborted) return setRun({ status: 'idle' })
@@ -314,14 +318,8 @@ function ExportForm({ cohort, formats, common, fields, onExported }: FormProps) 
         </label>
         {pre && (
           <p className="opt-help">
-            Writes <span className="mono" data-testid="export-path">{pre.path}</span> in the workspace (exports/ is not versioned).
+            Downloads <span className="mono" data-testid="export-path">{pre.name}</span>. Exports are not stored in the library: export again whenever you need the file.
           </p>
-        )}
-        {exists && (
-          <label className="export-check warn">
-            <input type="checkbox" checked={overwrite} onChange={(e) => setOverwrite(e.target.checked)} data-testid="export-overwrite" />
-            {pre.path} exists: replace it
-          </label>
         )}
       </div>
 
@@ -342,7 +340,7 @@ function ExportForm({ cohort, formats, common, fields, onExported }: FormProps) 
           {run.error}
         </p>
       )}
-      {run.status === 'done' && <ExportResultView result={run.result} />}
+      {run.status === 'done' && <ExportResultView result={run.result} url={run.url} />}
     </div>
   )
 }
@@ -384,13 +382,12 @@ function Warnings({ list, testid }: { list: { code: string; message: string }[];
   )
 }
 
-function ExportResultView({ result }: { result: ExportResult }) {
+function ExportResultView({ result, url }: { result: ExportResult; url: string }) {
   const r = result.report
   return (
     <section className="notice ok export-result" data-testid="export-result">
       <p>
-        <strong>Exported</strong> <span className="mono">{result.path}</span>
-        {result.replaced && ' (replaced)'}
+        <strong>Exported</strong> <span className="mono">{result.name}</span>
       </p>
       <dl className="report-figures">
         <div>
@@ -415,8 +412,8 @@ function ExportResultView({ result }: { result: ExportResult }) {
       {r.row_error_count > 0 && <p className="warn">{formatCount(r.row_error_count)} rows could not be exported.</p>}
       {r.warnings.length > 0 && <Warnings list={r.warnings} testid="export-result-warnings" />}
       <p>
-        <a className="export-download" href={exportDownloadUrl(result.path)} download data-testid="export-download">
-          Download {result.path.replace(/^exports\//, '')}
+        <a className="export-download" href={url} download={result.name} data-testid="export-download">
+          Download {result.name} again
         </a>
       </p>
     </section>

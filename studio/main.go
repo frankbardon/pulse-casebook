@@ -1,10 +1,13 @@
 // Command studio serves Pulse Studio, a local visual request builder, for
-// one directory of Pulse requests and cohorts.
+// one library directory (internal/library): global cohorts and schemas
+// plus workspaces of analyses. A pre-library flat folder (requests and
+// cohorts at its root or in req/) is served in place as one workspace.
 //
 //	studio <dir> [--port N] [--preview-timeout 10s] [--auto-preview-rows 1000000] [--no-git] [--max-upload 2GiB]
 //
-// The directory is kept in git (see internal/history): every studio write
-// is committed, unless --no-git is given or git is not installed.
+// The global area and every workspace are kept in git repositories of
+// their own (see internal/history): every studio write is committed,
+// unless --no-git is given or git is not installed.
 package main
 
 import (
@@ -23,10 +26,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/frankbardon/pulse"
-
-	"github.com/frankbardon/pulse-casebook/studio/internal/history"
-	"github.com/frankbardon/pulse-casebook/studio/internal/scope"
+	"github.com/frankbardon/pulse-casebook/studio/internal/library"
 	"github.com/frankbardon/pulse-casebook/studio/internal/server"
 	"github.com/frankbardon/pulse-casebook/studio/web"
 )
@@ -69,34 +69,39 @@ func run(args []string) error {
 		return errors.New("expected exactly one directory argument")
 	}
 
-	root, err := scope.New(positional[0])
+	info, err := os.Stat(positional[0])
 	if err != nil {
 		return err
 	}
-	// One engine instance for the whole process; cohort paths in requests
-	// resolve against the scoped directory.
-	engine, err := pulse.New(pulse.Options{DataDir: root.Dir()})
-	if err != nil {
-		return fmt.Errorf("start pulse engine: %w", err)
+	if !info.IsDir() {
+		return fmt.Errorf("%s is not a directory", positional[0])
 	}
-
-	// Git-backed history: init (or use the enclosing repository), the
-	// managed .gitignore block. Never fatal: problems turn history off.
-	hist := history.Open(context.Background(), root.Dir(), history.Options{Disabled: *noGit}, log.Printf)
-
-	srv := server.New(root, engine, server.Config{
-		PreviewTimeout:  *timeout,
-		AutoPreviewRows: *autoRows,
-		History:         hist,
-		MaxUpload:       int64(maxUpload),
+	// The library (a fresh directory gets library.json; a legacy flat
+	// folder is left as it is). Git-backed history per area is never
+	// fatal: problems turn it off.
+	lib, err := library.Open(positional[0])
+	if err != nil {
+		return err
+	}
+	srv, err := server.NewLibrary(context.Background(), lib, server.LibraryOptions{
+		Config: server.Config{
+			PreviewTimeout:  *timeout,
+			AutoPreviewRows: *autoRows,
+			MaxUpload:       int64(maxUpload),
+		},
+		NoGit: *noGit,
+		Logf:  log.Printf,
 	}, web.FS(), web.Built())
+	if err != nil {
+		return err
+	}
 
 	ln, err := net.Listen("tcp", fmt.Sprintf("127.0.0.1:%d", *port))
 	if err != nil {
 		return err
 	}
 	httpSrv := &http.Server{Handler: srv, ReadHeaderTimeout: 10 * time.Second}
-	log.Printf("serving %s at http://%s/", root.Dir(), ln.Addr())
+	log.Printf("serving %s (%s) at http://%s/", lib.Dir(), lib.Mode(), ln.Addr())
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()

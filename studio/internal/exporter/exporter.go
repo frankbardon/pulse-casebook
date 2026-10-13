@@ -17,10 +17,6 @@ import (
 	"github.com/frankbardon/pulse-casebook/studio/internal/importer"
 )
 
-// ExportsDir is the workspace directory exports are written to. It is
-// data, not versioned: history.IgnorePatterns ignores it.
-const ExportsDir = "exports"
-
 // FormatTransfer is the Pulse transfer artifact: the cohort's exact
 // bytes, zstd-compressed (Pulse.ExportTransfer). It is not a tabular
 // format, so fields, time zone and labels do not apply.
@@ -272,9 +268,6 @@ func FileName(name string, f Format) (string, bool) {
 	}
 	return n, true
 }
-
-// Path is the workspace path of an export file.
-func Path(file string) string { return ExportsDir + "/" + file }
 
 // DefaultName is the default export name for a cohort path: its base
 // name without ".pulse", plus the format's extension.

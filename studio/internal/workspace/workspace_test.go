@@ -4,6 +4,7 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
+	"strings"
 	"testing"
 )
 
@@ -254,10 +255,9 @@ func TestImportLayout(t *testing.T) {
 	write("imports/bad.import.json", `{"version":1,"target":"../../etc.pulse"}`)
 	write("cohorts/sales.pulse", "PULSE")
 	write("other.pulse", "PULSE")
-	write("data/x.csv", "a\n") // non-JSON outside sources/: not listed
-	write("exports/sales.json", "[]")
-	write("exports/sales.pulse.zst", "zz")
-	write("exports/.sales-1.tmp.csv", "partial")
+	write("data/x.csv", "a\n")             // non-JSON outside sources/: not listed
+	write("exports/sales.pulse.zst", "zz") // exports are no longer stored: plain data
+	write("workspaces/w/a.json", `{}`)
 
 	listing, err := List(dir)
 	if err != nil {
@@ -275,8 +275,7 @@ func TestImportLayout(t *testing.T) {
 		"imports/gone.import.json":  {Path: "imports/gone.import.json", Kind: KindImport, Target: "gone.pulse", State: StateNeedsRebuild},
 		"cohorts/sales.pulse":       {Path: "cohorts/sales.pulse", Kind: KindCohort, Spec: "imports/sales.import.json"},
 		"other.pulse":               {Path: "other.pulse", Kind: KindCohort},
-		"exports/sales.json":        {Path: "exports/sales.json", Kind: KindExport, Format: "jsonarray", Size: 2},
-		"exports/sales.pulse.zst":   {Path: "exports/sales.pulse.zst", Kind: KindExport, Format: "transfer", Size: 2},
+		"workspaces/w/a.json":       {Path: "workspaces/w/a.json", Kind: KindRequest},
 	}
 	for p, w := range want {
 		if got[p] != w {
@@ -289,10 +288,23 @@ func TestImportLayout(t *testing.T) {
 	if n := got["schemas/notes.json"]; n.Kind != KindUnopenable {
 		t.Errorf("schemas/notes.json = %+v", n)
 	}
-	for _, p := range []string{"sources/.upload-1.tmp", "data/x.csv"} {
+	for _, p := range []string{"sources/.upload-1.tmp", "data/x.csv", "exports/sales.pulse.zst"} {
 		if _, ok := got[p]; ok {
 			t.Errorf("%s listed", p)
 		}
+	}
+	// A library's global area skips workspaces/.
+	skipped, err := ListWith(dir, ListOptions{Skip: []string{"workspaces"}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, f := range skipped.Files {
+		if strings.HasPrefix(f.Path, "workspaces/") {
+			t.Errorf("ListWith Skip listed %s", f.Path)
+		}
+	}
+	if len(skipped.Files) != len(listing.Files)-1 {
+		t.Errorf("ListWith Skip: %d files, want %d", len(skipped.Files), len(listing.Files)-1)
 	}
 	// Classify (GET /api/file) agrees by path.
 	if k, _ := Classify("schemas/sales.schema.json", []byte(`[]`)); k != KindSchema {

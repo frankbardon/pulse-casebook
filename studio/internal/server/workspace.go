@@ -5,22 +5,36 @@ import (
 	"io/fs"
 	"net/http"
 	"os"
-	"path/filepath"
 	"strings"
 
 	"github.com/frankbardon/pulse/descriptor"
 
+	"github.com/frankbardon/pulse-casebook/studio/internal/library"
 	"github.com/frankbardon/pulse-casebook/studio/internal/scope"
 	"github.com/frankbardon/pulse-casebook/studio/internal/workspace"
 )
 
 // handleFiles lists every request, cohort and unopenable JSON file in the
-// scoped directory.
+// scoped directory. A library workspace's listing also carries the
+// global area's cohorts, as "_global/..." paths with scope "global"
+// (what the workspace's analyses can reference); the global area's
+// schemas, imports and sources are listed by /api/w/_global/files.
 func (s *Server) handleFiles(w http.ResponseWriter, _ *http.Request) {
-	listing, err := workspace.List(s.root.Dir())
+	listing, err := workspace.ListWith(s.root.Dir(), workspace.ListOptions{Skip: s.cfg.ListSkip})
 	if err != nil {
 		WriteError(w, http.StatusInternalServerError, "list_failed", err.Error(), nil)
 		return
+	}
+	if g := s.root.Mounted(globalPrefix); g != nil {
+		if gl, err := workspace.ListWith(g.Dir(), workspace.ListOptions{Skip: []string{library.WorkspacesDir}}); err == nil {
+			for _, f := range gl.Files {
+				if f.Kind != workspace.KindCohort {
+					continue
+				}
+				listing.Files = append(listing.Files, workspace.File{Path: globalPrefix + "/" + f.Path, Kind: f.Kind, Scope: "global"})
+			}
+			listing.Truncated = listing.Truncated || gl.Truncated
+		}
 	}
 	WriteJSON(w, http.StatusOK, listing)
 }
@@ -99,13 +113,13 @@ func (s *Server) handleCohortInspect(w http.ResponseWriter, r *http.Request) {
 	}
 	// The engine's filesystem is rooted at the scoped directory, so it
 	// takes the root-relative form of the already-validated path.
-	enginePath, err := filepath.Rel(s.root.Dir(), abs)
-	if err != nil {
-		WriteError(w, http.StatusInternalServerError, "inspect_failed", err.Error(), map[string]any{"path": rel})
+	enginePath := s.relOf(abs)
+	if enginePath == "" {
+		WriteError(w, http.StatusForbidden, "path_outside", "path escapes the studio directory", map[string]any{"path": rel})
 		return
 	}
 	if anchored {
-		enginePath = filepath.ToSlash(enginePath) + "#" + anchor
+		enginePath += "#" + anchor
 	}
 	opts := &descriptor.InspectOptions{FullDict: r.URL.Query().Get("full_dict") == "1"}
 	env, err := s.engine.InspectEnvelope(r.Context(), enginePath, opts)

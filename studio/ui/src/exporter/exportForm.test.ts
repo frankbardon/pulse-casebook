@@ -81,8 +81,8 @@ describe('exportBody', () => {
   })
   it('omits fields when all are checked, and everything tabular for the transfer artifact', () => {
     expect(exportBody('p.pulse', fields, { ...base, format: csv, selected: new Set(fields) })).toEqual({ cohort: 'p.pulse', format: 'csv' })
-    const t = exportBody('p.pulse', fields, { ...base, format: transfer, options: { level: 9 }, selected: new Set(['id']), timeZone: 'UTC', overwrite: true })
-    expect(t).toEqual({ cohort: 'p.pulse', format: 'transfer', options: { level: 9 }, overwrite: true })
+    const t = exportBody('p.pulse', fields, { ...base, format: transfer, options: { level: 9 }, selected: new Set(['id']), timeZone: 'UTC' })
+    expect(t).toEqual({ cohort: 'p.pulse', format: 'transfer', options: { level: 9 } })
   })
 })
 
