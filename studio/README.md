@@ -145,8 +145,8 @@ Tools in this repository that walk the showcase request files skip `*.layout.jso
 - **Renaming a Compose slot label does not update overlays that name it.**
 - **Some inspectors are incomplete.** The test inspector lacks `split_by`, `rows` and `cols` fields
   (set them in the JSON), and `ATTR_FORMULA` has no field port row until a field is set.
-- **Not in the palette:** sort, vectors, crosstab and return have no operators in the manifest, so
-  edit them as raw nodes. Multiplicity is available once per request and not in chains.
+- **Not in the palette:** sort, crosstab and return have no operators in the manifest, so edit them
+  as raw nodes. Multiplicity is available once per request and not in chains.
 - **Label-table load errors appear only in the server log.** If a case's `labels/` directory fails
   to load, Studio falls back to the shared engine and logs why; the UI does not say so.
 - **Single directory, single user, local only.** No authentication and no concurrent-edit
@@ -155,3 +155,9 @@ Tools in this repository that walk the showcase request files skip `*.layout.jso
 - **Studio's `go.mod` pin can differ from `bin/pulse`.** `make pulse` builds the CLI from `PULSE_REF`,
   while Studio uses the version pinned in `studio/go.mod`. To align them if the results differ, run
   `make pulse` and `make studio-bump` with the same `PULSE_REF`.
+
+## Third-party software
+
+Routed wires use [libavoid-js](https://github.com/Aksem/libavoid-js), which is licensed under the
+LGPL-2.1-or-later and loaded as a separate WebAssembly module. See
+[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for its notice, licence text and how to replace it.
