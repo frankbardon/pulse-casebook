@@ -464,6 +464,26 @@
   opacity: 0;
 }
 
+/* Over the stacked handles: pressing it expands the list, so a joined
+   field can be dragged from its own handle. */
+.joined-grab {
+  position: absolute;
+  right: -5px;
+  top: 50%;
+  width: 10px;
+  height: 10px;
+  transform: translateY(-50%);
+  border-radius: 50%;
+  border: 1px solid var(--muted);
+  background: var(--surface);
+  cursor: grab;
+  z-index: 2;
+}
+
+.joined-grab:hover {
+  border-color: var(--accent);
+}
+
 .gnode .react-flow__handle {
   width: 6px;
   height: 6px;

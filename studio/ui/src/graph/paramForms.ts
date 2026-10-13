@@ -18,7 +18,7 @@ import type { GraphModel, ModelNode } from './model.ts'
 import { frameOf, type PathSegment } from './nodePath.ts'
 import { sectionInfo } from './requestGraph.ts'
 import { joinKinds, type CohortOption } from './joins.ts'
-import { isVectorInput, VECTOR_OR_FIELDS } from './ports.ts'
+import { readsMembers } from './ports.ts'
 
 export type FieldType =
   | 'number' // float
@@ -47,6 +47,9 @@ export type FormField = {
   options?: string[]
   // exactly_one_of group name.
   oneOf?: string
+  // The oneOf group may also be left empty: at most one of it is set
+  // (a vector-input test's second set, vector2 / fields2).
+  oneOfOptional?: true
   // strings: exact item count.
   count?: number
   hint?: string
@@ -134,9 +137,12 @@ export function buildForm(node: ModelNode, catalog: Catalog = {}, ctx: FormConte
   const sections: FormSection[] = [{ title: 'Slot', fields: slot }]
   // A matrix and the vector-input operators (k-means, AGG_VEC_*,
   // ATTR_VEC_DISTANCE, ...) read members from a vector or inline fields;
-  // an entry that already names a vector gets the picker too.
-  if (node.section !== 'vectors' && (VECTOR_OR_FIELDS.has(node.section) || isVectorInput(op) || getIn(value, ['vector']) !== undefined)) {
-    sections.push({ title: 'Members', fields: memberFields(ctx.vectorNames ?? []) })
+  // an entry that already names a vector gets the picker too. A test
+  // reading a second set (TEST_HOTELLING_T2) gets vector2 / fields2.
+  const members = op ? readsMembers(catalog.manifest, node.section, op) : undefined
+  if (node.section !== 'vectors' && (members || getIn(value, ['vector']) !== undefined)) {
+    const second = !!members?.second || getIn(value, ['vector2']) !== undefined || getIn(value, ['fields2']) !== undefined
+    sections.push({ title: 'Members', fields: memberFields(ctx.vectorNames ?? [], second) })
   }
   const base = { op, ...(opKnown !== undefined && { opKnown }) }
 
@@ -296,13 +302,35 @@ const MULTIPLICITY_FIELDS: FormField[] = [
 // members come from: exactly one of a vectors entry by name, picked from
 // the request's vector names, and inline fields (pulse types.MatrixSpec),
 // so formProblems flags both or neither.
-function memberFields(vectorNames: readonly string[]): FormField[] {
+function memberFields(vectorNames: readonly string[], second = false): FormField[] {
+  const names = [...new Set(vectorNames)]
+  const pair: FormField[] = second
+    ? [
+        {
+          key: 'vector2',
+          rel: ['vector2'],
+          type: 'vectorRef',
+          options: names,
+          oneOf: 'members2',
+          oneOfOptional: true,
+          hint: 'optional second set (paired form): a vectors entry with the same member count',
+        },
+        {
+          key: 'fields2',
+          rel: ['fields2'],
+          type: 'strings',
+          oneOf: 'members2',
+          oneOfOptional: true,
+          hint: 'optional second set inline, one per line, same member count',
+        },
+      ]
+    : []
   return [
     {
       key: 'vector',
       rel: ['vector'],
       type: 'vectorRef',
-      options: [...new Set(vectorNames)],
+      options: names,
       oneOf: 'members',
       hint: 'a vectors entry of this request, by name (or wire one into the node)',
     },
@@ -313,6 +341,7 @@ function memberFields(vectorNames: readonly string[]): FormField[] {
       oneOf: 'members',
       hint: 'inline member columns, one per line (or wire fields into the node); globs like q_* expand in schema order',
     },
+    ...pair,
   ]
 }
 
@@ -561,7 +590,9 @@ export function formProblems(form: NodeForm, value: JsonNode): string[] {
   }
   for (const [, fs] of groups) {
     const set = fs.filter((f) => getIn(value, f.rel) !== undefined).length
-    if (set !== 1) out.push(`exactly one of ${fs.map((f) => f.key).join(', ')}`)
+    if (fs.every((f) => f.oneOfOptional)) {
+      if (set > 1) out.push(`at most one of ${fs.map((f) => f.key).join(', ')}`)
+    } else if (set !== 1) out.push(`exactly one of ${fs.map((f) => f.key).join(', ')}`)
   }
   return out
 }

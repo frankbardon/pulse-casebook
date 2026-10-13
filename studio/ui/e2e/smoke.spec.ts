@@ -310,6 +310,9 @@ test('dragging a field port to the canvas offers only compatible operators and w
   await expect(picker.locator('[data-op="FEAT_ONE_HOT"]')).toBeVisible()
   await expect(picker.locator('[data-op="FEAT_LOG"]')).toHaveCount(0)
   await expect(picker.locator('[data-section="overlays"]')).toHaveCount(0)
+  // A cohort field can key a new join; a categorical one is no vector member.
+  await expect(picker.locator('[data-op="JOIN"]')).toHaveCount(1)
+  await expect(picker.locator('[data-op="VECTOR"]')).toHaveCount(0)
   await picker.getByTestId('palette-search').fill('TEST_WELCH')
   const welch = picker.locator('[data-op="TEST_WELCH"]')
   await expect(welch).toContainText('split_by')

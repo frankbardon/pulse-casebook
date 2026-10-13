@@ -13,6 +13,11 @@
 //     reads its members from exactly one of `vector` (a vectors entry
 //     by name) and inline `fields` (pulse types.MatrixSpec; both or
 //     neither is SERVICE_VALIDATION): see VECTOR_OR_FIELDS.
+//   - Vector-input operators (k-means, AGG_VEC_*, the vector attributes
+//     and multivariate tests; VECTOR_INPUT_OPS / vectorInputOps) read
+//     exactly one of `vector` and inline `fields` (integer or float
+//     columns), never `field`; TEST_HOTELLING_T2 also takes an optional
+//     second set, `vector2` or `fields2` (SECOND_VECTOR_OPS).
 //   - Vectors (`vectors[i].fields`, no manifest operator): integer and
 //     float columns (pulse payload-schema "Vector slot"); packed_bool
 //     only beside `coerce: "binary"` (vectorMemberRefusal).
@@ -99,36 +104,88 @@ export function vectorMemberRefusal(type: string | undefined, coerce: string | u
 // one that sets neither offers both inputs.
 export const VECTOR_OR_FIELDS: ReadonlySet<string> = new Set(['matrices'])
 
-// VECTOR_INPUT_OPS are the operators that read their members from a
-// top-level `vector` (a vectors entry by name) or inline `fields`,
-// exactly one of them (pulse types Group / Aggregation / Attribute /
-// Test `Vector`). The manifest does not flag them, so the list follows
-// the pulse request schema's descriptions; isVectorInput adds any
-// AGG_VEC_* aggregator.
+// VECTOR_INPUT_OPS are the built-in operators that read their members
+// from a top-level `vector` (a vectors entry by name) or inline
+// `fields`, exactly one of them, never `field` (pulse internal/vectors:
+// VectorGroupTypes, VectorAggregationTypes, VectorAttributeTypes,
+// VectorTestTypes; every one takes vector OR fields, none requires a
+// vector). The manifest flags none of them (alpha.10 has only
+// extension aggregators' `vector_input` and the crosstab's
+// `array_valued_aggregators`, which vectorInputOps adds), so this list
+// is the fallback a catalog test keeps honest (vectors.test.ts).
 export const VECTOR_INPUT_OPS: ReadonlySet<string> = new Set([
   'GROUP_KMEANS',
   'AGG_VEC_MEAN',
   'AGG_VEC_SUM',
+  'ATTR_FACTOR_SCORE',
   'ATTR_MAHALANOBIS',
   'ATTR_PC_SCORE',
-  'ATTR_FACTOR_SCORE',
-  'ATTR_SCALE_SCORE',
   'ATTR_PROFILE_SIMILARITY',
+  'ATTR_SCALE_SCORE',
   'ATTR_VEC_DISTANCE',
+  'TEST_BARTLETT_SPHERICITY',
+  'TEST_BOX_M',
   'TEST_HOTELLING_T2',
   'TEST_MANOVA',
-  'TEST_BOX_M',
-  'TEST_BARTLETT_SPHERICITY',
   'TEST_MARDIA',
 ])
 
+// SECOND_VECTOR_OPS also read a second member set from `vector2` or
+// `fields2` (at most one, beside the first; pulse vectors.SecondVectorTypes:
+// TEST_HOTELLING_T2's paired form).
+export const SECOND_VECTOR_OPS: ReadonlySet<string> = new Set(['TEST_HOTELLING_T2'])
+
+// VECTOR_ROLES are the entry keys that name a vectors entry: wired from a
+// vector node's `out`, resolved against the request's vectors only.
+export const VECTOR_ROLES: ReadonlySet<string> = new Set(['vector', 'vector2'])
+
+export function isVectorRole(role: string): boolean {
+  return VECTOR_ROLES.has(role)
+}
+
+// MEMBER_SECTIONS are the sections a vector-input operator lives in.
+const MEMBER_SECTIONS: ReadonlySet<string> = new Set(['groups', 'aggregations', 'attributes', 'tests'])
+
+// vectorInputOps is the vector-input operator set: VECTOR_INPUT_OPS plus
+// what the manifest declares (an extension aggregator's `vector_input`,
+// the crosstab's `array_valued_aggregators`, which imply it).
+export function vectorInputOps(manifest?: Manifest): ReadonlySet<string> {
+  const ext = (manifest?.extensions as { aggregators?: { name?: string; vector_input?: boolean; array_valued?: boolean }[] } | undefined)?.aggregators
+  const arrays = (manifest?.crosstab as { array_valued_aggregators?: unknown } | undefined)?.array_valued_aggregators
+  const extra = [
+    ...(ext ?? []).filter((o) => o.vector_input || o.array_valued).map((o) => o.name),
+    ...(Array.isArray(arrays) ? arrays : []),
+  ].filter((n): n is string => typeof n === 'string' && n !== '')
+  return extra.length === 0 ? VECTOR_INPUT_OPS : new Set([...VECTOR_INPUT_OPS, ...extra])
+}
+
 // isVectorInput says whether an operator reads a `vector` member set.
-export function isVectorInput(op: string | undefined): boolean {
-  return op !== undefined && (VECTOR_INPUT_OPS.has(op) || op.startsWith('AGG_VEC_'))
+export function isVectorInput(op: string | undefined, manifest?: Manifest): boolean {
+  return op !== undefined && (vectorInputOps(manifest).has(op) || op.startsWith('AGG_VEC_'))
+}
+
+// readsMembers says whether an entry of section running op names its
+// members by vector or inline fields (a matrix, a vector-input
+// operator), and whether it takes a second set (vector2 / fields2).
+export function readsMembers(manifest: Manifest | undefined, section: string, op: string): { second: boolean } | undefined {
+  if (VECTOR_OR_FIELDS.has(section)) return { second: false }
+  if (MEMBER_SECTIONS.has(section) && isVectorInput(op, manifest)) return { second: section === 'tests' && SECOND_VECTOR_OPS.has(op) }
+  return undefined
+}
+
+// INLINE_MEMBER is what a vector-input operator's inline `fields` take:
+// integer or float columns (the vector member rule without a coerce,
+// so packed_bool is refused; pulse vectors.ResolveSpec).
+export const INLINE_MEMBER: Accept = {
+  types: ['u4', 'u8', 'u16', 'u32', 'u64', 'f32', 'f64'],
+  what: 'an integer or float field',
 }
 
 // VECTOR_INPUT is the tooltip of the `vector` input such an entry offers.
 export const VECTOR_INPUT = 'vector: a vectors entry of this request, by name (or wire fields instead)'
+
+// VECTOR2_INPUT is the tooltip of the optional second set's input.
+export const VECTOR2_INPUT = 'vector2: an optional second vectors entry, same member count (the paired form; or wire fields2)'
 
 // isGlob says whether a vector member entry is a glob (`q_*`), which
 // expands over the cohort's columns rather than naming one.
@@ -211,6 +268,20 @@ export function slotsFor(manifest: Manifest | undefined, section: string, op: st
   const typed = (what: string): Accept => {
     const types = acceptedTypes(manifest, section, op)
     return types ? { types, what } : ANY
+  }
+  // A vector-input operator reads inline `fields` (or a vector), never
+  // `field`; a test keeps its other requires (split_by).
+  const members = section !== 'matrices' ? readsMembers(manifest, section, op) : undefined
+  if (members) {
+    const slots: Slot[] = [{ key: 'fields', list: true, required: true, accept: INLINE_MEMBER }]
+    if (members.second) slots.push({ key: 'fields2', list: true, required: false, accept: INLINE_MEMBER })
+    if (section === 'tests') {
+      for (const r of o?.requires ?? []) {
+        if (r === 'Field' || r === 'Field2' || !Object.hasOwn(REQUIRES, r)) continue
+        slots.push({ key: REQUIRES[r].key, list: false, required: true, accept: REQUIRES[r].accept })
+      }
+    }
+    return slots
   }
   switch (section) {
     case 'tests':

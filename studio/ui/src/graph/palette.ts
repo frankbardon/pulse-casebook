@@ -18,8 +18,8 @@ import { fromPlain, stringValue, type JsonNode } from './jsonTree.ts'
 import { buildModel, emitModel, updateNode, type GraphModel } from './model.ts'
 import { formatPath, isPathPrefix, type PathSegment } from './nodePath.ts'
 import { paramField, topLevelKeys } from './paramForms.ts'
-import { maxJoins } from './joins.ts'
-import { compatibleOperators, refusal, slotsFor, type Slot } from './ports.ts'
+import { joinKeyRefusal, maxJoins } from './joins.ts'
+import { compatibleOperators, refusal, slotsFor, vectorMemberRefusal, type Slot } from './ports.ts'
 import { canSee, COLUMNS, sectionInfo, type ColumnKey } from './requestGraph.ts'
 import { connectWire } from './wiring.ts'
 
@@ -151,9 +151,14 @@ export function paletteGroups<T extends PaletteItem>(items: readonly T[]): Palet
   )
 }
 
-// PortSource is the field port a drag started from: a cohort field, or a
-// producer's label output (producer = its section and index).
-export type PortSource = { ref: string; type?: string; producer?: { section: string; index: number } }
+// PortSource is the field port a drag started from: a cohort field
+// (cohort set), a joined field, or a producer's label output (producer =
+// its section and index).
+export type PortSource = { ref: string; type?: string; cohort?: true; producer?: { section: string; index: number } }
+
+// JOIN_KEY is the input a join placed from a cohort field port fills:
+// its first key pair's left side.
+const JOIN_KEY: Slot = { key: 'left_field', list: false, required: true, accept: { what: 'a left cohort key' } }
 
 // PortItem is a palette item a port can feed, with the input the wire
 // goes into.
@@ -164,6 +169,9 @@ export type PortItem = PaletteItem & { slot: Slot; rowKey: string }
 // (ports.compatibleOperators, then the first such input), and, for a
 // label, the new entry (appended to its section) runs after the
 // producer. Operators without field inputs (overlays) are left out.
+//
+// Two blocks take a port too (blockForPort): a vector, with the field as
+// its first member, and, from a cohort field only, a join keyed on it.
 export function itemsForPort(
   items: readonly PaletteItem[],
   manifest: Manifest | undefined,
@@ -174,6 +182,11 @@ export function itemsForPort(
   const compatible = new Map<string, Set<string>>()
   const out: PortItem[] = []
   for (const it of items) {
+    if (it.section === 'vectors' || it.section === 'joins') {
+      const b = blockForPort(it, manifest, model, src, base)
+      if (b) out.push(b)
+      continue
+    }
     let ok = compatible.get(it.section)
     if (!ok) {
       ok = new Set(compatibleOperators(manifest, it.section, src.type).map((o) => o.name ?? o.kind ?? ''))
@@ -188,6 +201,32 @@ export function itemsForPort(
     out.push({ ...it, slot, rowKey: slot.list ? formatPath([slot.key, 0]) : slot.key })
   }
   return out
+}
+
+// blockForPort places a block item from a port. A vector takes any
+// field or label its members may name (vectorMemberRefusal, no coerce
+// yet) as fields[0]. A join takes a cohort field (never a joined field
+// or a label: its keys read the left cohort) that can be a key as
+// on[0].left_field, only while the request has room for another join
+// (maxJoins) and is not a later chain stage (only the first reads a
+// cohort; chainRules.chainRefusal).
+function blockForPort(
+  it: PaletteItem,
+  manifest: Manifest | undefined,
+  model: GraphModel,
+  src: PortSource,
+  base: readonly PathSegment[],
+): PortItem | null {
+  if (it.section === 'vectors') {
+    const slot = slotsFor(manifest, 'vectors', it.op)[0]
+    if (!slot || vectorMemberRefusal(src.type, undefined) !== null) return null
+    if (src.producer && !canSee('vectors', nextIndex(model, 'vectors', base), src.producer.section, src.producer.index, slot.key)) return null
+    return { ...it, slot, rowKey: formatPath([slot.key, 0]) }
+  }
+  if (!src.cohort || src.producer || joinKeyRefusal(src.type, undefined) !== null) return null
+  if (base[0] === 'stages' && typeof base[1] === 'number' && base[1] > 0) return null
+  if (nextIndex(model, 'joins', base) >= maxJoins(manifest)) return null
+  return { ...it, slot: JOIN_KEY, rowKey: 'on[0].left_field' }
 }
 
 // nextIndex is the index a new entry of section gets (appended) in the

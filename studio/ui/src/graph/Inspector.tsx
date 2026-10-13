@@ -218,7 +218,7 @@ function Field({
       <label htmlFor={id}>
         {f.key}
         {f.required && <span className="req">*</span>}
-        <span className="insp-type">{f.oneOf ? `${f.type} · one of ${f.oneOf}` : f.type}</span>
+        <span className="insp-type">{f.oneOf ? `${f.type} · ${f.oneOfOptional ? 'at most ' : ''}one of ${f.oneOf}` : f.type}</span>
       </label>
       {input}
       {draft?.error && <span className="insp-err">{draft.error}</span>}

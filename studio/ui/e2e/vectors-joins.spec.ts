@@ -101,6 +101,18 @@ test('a join draws its keys and joined fields, previews joined rows and flags an
     })
   })
   expect(ends.some((pt) => Math.abs(pt.y - (box.y + box.height / 2)) < box.height && Math.abs(pt.x - (box.x + box.width)) < 16)).toBe(true)
+  // Pressing the grab dot over the stacked handles expands the list, so a
+  // joined field can be dragged from its own handle.
+  const grab = joined.getByTestId('joined-grab')
+  const g = (await grab.boundingBox())!
+  await page.mouse.move(g.x + g.width / 2, g.y + g.height / 2)
+  await page.mouse.down()
+  await expect(joined).toHaveAttribute('data-expanded', 'true')
+  await page.mouse.up()
+  await expect(joined.locator('[data-field="src_region"] .react-flow__handle')).toHaveClass(/connectable/)
+  await expect(grab).toHaveCount(0)
+  await toggle.click()
+  await expect(joined).toHaveAttribute('data-expanded', 'false')
   const preview = join.locator('[data-testid="preview"]')
   await expect(preview).toHaveAttribute('data-state', 'ok')
   await expect(preview).toContainText('joined rows')

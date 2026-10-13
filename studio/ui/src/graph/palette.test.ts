@@ -118,6 +118,41 @@ describe('itemsForPort', () => {
     expect(sections.has('filterers')).toBe(false)
   })
 
+  it('a cohort field offers a vector (as its first member) and a join (keyed on it)', () => {
+    const got = itemsForPort(items, manifest, model, { ref: 'revenue', type: 'f64', cohort: true })
+    expect(got.find((i) => i.section === 'vectors')).toMatchObject({ key: 'vectors/VECTOR', rowKey: 'fields[0]' })
+    expect(got.find((i) => i.section === 'joins')).toMatchObject({ key: 'joins/JOIN', rowKey: 'on[0].left_field' })
+    // A categorical field can key a join, not be a vector member.
+    const cat = itemsForPort(items, manifest, model, { ref: 'arm', type: 'categorical_u8', cohort: true })
+    expect(cat.some((i) => i.section === 'joins')).toBe(true)
+    expect(cat.some((i) => i.section === 'vectors')).toBe(false)
+    // A set column is never a join key.
+    expect(itemsForPort(items, manifest, model, { ref: 'tags', type: 'set_u8', cohort: true }).some((i) => i.section === 'joins')).toBe(false)
+  })
+
+  it('a join only from a cohort field, while the request has room, and in the first chain stage', () => {
+    const label = itemsForPort(items, manifest, model, { ref: 'pages_cuped', type: 'f64', producer: { section: 'attributes', index: 0 } })
+    expect(label.some((i) => i.section === 'joins')).toBe(false)
+    expect(label.some((i) => i.section === 'vectors')).toBe(true)
+    expect(itemsForPort(items, manifest, model, { ref: 'r_x', type: 'f64' }).some((i) => i.section === 'joins')).toBe(false)
+    const joined = parseModel('{"cohort":{"filename":"ab_test.pulse"},"joins":[{"right":"b.pulse","kind":"inner","on":[]}]}', 'request')
+    expect(itemsForPort(items, manifest, joined, { ref: 'revenue', type: 'f64', cohort: true }).some((i) => i.section === 'joins')).toBe(false)
+    const chain = parseModel(
+      '{"cohort":{"filename":"ab_test.pulse"},"stages":[{"name":"a","request":{}},{"name":"b","request":{}}]}',
+      'chain',
+    )
+    const src = { ref: 'revenue', type: 'f64', cohort: true as const }
+    expect(itemsForPort(items, manifest, chain, src, ['stages', 0, 'request']).some((i) => i.section === 'joins')).toBe(true)
+    expect(itemsForPort(items, manifest, chain, src, ['stages', 1, 'request']).some((i) => i.section === 'joins')).toBe(false)
+  })
+
+  it('places a join from a port with on[0].left_field set', () => {
+    const join = itemsForPort(items, manifest, model, { ref: 'user_id', type: 'u32', cohort: true }).find((i) => i.section === 'joins')!
+    const { model: m, id } = placeNode(model, join, { ...opts, wire: { rowKey: join.rowKey, ref: 'user_id' } })
+    expect(id).toBe('joins[0]')
+    expect(emitModelText(m)).toContain('"joins":[{"right":"","kind":"inner","on":[{"left_field":"user_id"}]}]')
+  })
+
   it('every offered item wires cleanly', () => {
     for (const src of [
       { ref: 'revenue', type: 'f64' },

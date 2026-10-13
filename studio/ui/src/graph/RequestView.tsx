@@ -27,7 +27,7 @@ import {
   type WorkspaceFile,
 } from '../api.ts'
 import { cohortCandidates } from './cohortPath.ts'
-import { cohortOptions, joinIssues, rightKey, type RightSide } from './joins.ts'
+import { anchorUnreadable, cohortOptions, joinIssues, rightKey, type RightSide } from './joins.ts'
 import { toPlain, type JsonNode } from './jsonTree.ts'
 import { emitModel, emitModelText, parseModel, updateNode, type GraphModel } from './model.ts'
 import { buildRequestGraph, estimateHeight, LAYOUT, type GraphEdge, type GraphNode, type RequestGraph } from './requestGraph.ts'
@@ -109,7 +109,10 @@ export function RequestView({ file, catalog }: Props) {
 type ViewGraph = RequestGraph & { compose?: ComposeGraph; inputs?: ChainGraph['inputs'] }
 
 // Cohort inspection of one distinct cohort reference (keyed by its JSON).
-type CohortState = { fields?: CohortField[]; error?: string }
+// unreadable: a join's anchored right (`archive.pulse#shard.pulse`)
+// whose archive exists but whose shard inspect could not read; its
+// fields are unknown, which is not the same as a missing file.
+type CohortState = { fields?: CohortField[]; error?: string; unreadable?: true }
 
 // Editing state of an open file. model is the lossless graph model every
 // edit goes through; saved is the compact JSON of what is on disk, so
@@ -243,7 +246,9 @@ function RequestGraphView({ path, kind, catalog }: { path: string; kind: ViewKin
       mine.add(key)
       void (async () => {
         let last: unknown = new Error('request names no cohort file')
-        for (const c of cohortCandidates(path, JSON.parse(key))) {
+        let unreadable = false
+        const ref = JSON.parse(key) as unknown
+        for (const c of cohortCandidates(path, ref)) {
           try {
             const res = await inspectCohort(c, ctl.signal)
             mine.delete(key)
@@ -252,10 +257,11 @@ function RequestGraphView({ path, kind, catalog }: { path: string; kind: ViewKin
           } catch (e) {
             if (ctl.signal.aborted) return
             last = e
+            if (anchorUnreadable(ref, e)) unreadable = true
           }
         }
         mine.delete(key)
-        setCohorts((m) => new Map(m).set(key, { error: `cohort not inspected: ${String(last)}` }))
+        setCohorts((m) => new Map(m).set(key, { error: `cohort not inspected: ${String(last)}`, ...(unreadable && { unreadable: true as const }) }))
       })()
     }
     return () => {
@@ -276,7 +282,7 @@ function RequestGraphView({ path, kind, catalog }: { path: string; kind: ViewKin
   const rightFields = useCallback(
     (right: string): RightSide => {
       const st = cohorts.get(rightKey(right))
-      return st === undefined ? undefined : (st.fields ?? null)
+      return st === undefined ? undefined : (st.fields ?? (st.unreadable ? 'unknown' : null))
     },
     [cohorts],
   )
@@ -1181,7 +1187,8 @@ type PortPick = {
 }
 
 // portSource describes the port a drag started from: a cohort field (its
-// inspected type) or a producer's label (its manifest emits_type).
+// inspected type), a joined field (its right cohort type) or a
+// producer's label (its manifest emits_type).
 function portSource(
   nodes: GraphNode[],
   from: { nodeId: string; id?: string | null },
@@ -1192,7 +1199,7 @@ function portSource(
   if (n?.type === 'cohort' && from.id?.startsWith('field:')) {
     const ref = from.id.slice('field:'.length)
     const type = fields?.find((f) => f.name === ref)?.type
-    return { ref, ...(type && { type }) }
+    return { ref, ...(type && { type }), cohort: true }
   }
   if (n?.type === 'op' && from.id?.startsWith('field:') && n.data.join) {
     // A joined field: typed by the right cohort, read by every section.

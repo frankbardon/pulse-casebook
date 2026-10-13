@@ -13,7 +13,7 @@
 import type { Edge, Node } from '@xyflow/react'
 import type { CohortField, Manifest, ManifestOperator } from '../api.ts'
 import { formatPath, type PathSegment } from './nodePath.ts'
-import { describeAccept, isGlob, slotFor, slotsFor, VECTOR_INPUT, VECTOR_OR_FIELDS } from './ports.ts'
+import { describeAccept, isGlob, isVectorRole, readsMembers, slotFor, slotsFor, VECTOR2_INPUT, VECTOR_INPUT } from './ports.ts'
 import { groupKeyColumn, type GroupEntry } from './partition.ts'
 import { joinBodyLines, joinedFields, joinKeyRefusal, type RightSide } from './joins.ts'
 
@@ -70,13 +70,14 @@ export type ParamRow = {
 // JoinInfo is a join node's output side: the joined fields it adds to
 // the request (the right cohort's fields, prefixed with `as`), each a
 // source handle `field:<name>` like the cohort's. state says whether the
-// right cohort's fields are known, still being inspected, or could not
-// be read (no such file); without them fields lists only the joined
-// names the request references.
+// right cohort's fields are known, still being inspected, could not be
+// read (no such file), or are unknown (a shard anchor whose archive
+// exists but whose shard inspect could not read: never flagged); without
+// them fields lists only the joined names the request references.
 export type JoinInfo = {
   right?: string
   as: string
-  state: 'known' | 'pending' | 'missing'
+  state: 'known' | 'pending' | 'missing' | 'unknown'
   fields: CohortFieldRow[]
 }
 
@@ -236,7 +237,7 @@ export function hasPreview(n: GraphNode): boolean {
 
 // Keys (last named path segment, outside `params`) whose values are field
 // or label references.
-const REF_KEYS = new Set(['field', 'split_by', 'rows', 'cols', 'predictors', 'target', 'fields', 'vector', 'left_field'])
+const REF_KEYS = new Set(['field', 'split_by', 'rows', 'cols', 'predictors', 'target', 'fields', 'vector', 'fields2', 'vector2', 'left_field'])
 
 // PARAM_REF_KEYS are the `params` members of a section whose values are
 // field references: a post-test's partition_by (group key columns).
@@ -311,8 +312,11 @@ export function buildRequestGraph(req: unknown, opts: BuildOptions = {}): Reques
       const rows: ParamRow[] = []
       const paramRefs = PARAM_REF_KEYS[key]
       for (const [k, v] of Object.entries(e)) if (!omit.has(k)) flatten(v, [k], rows, paramRefs)
-      // A vector's glob members (`q_*`) expand over the schema: no wire.
-      if (key === 'vectors') for (const r of rows) if (r.ref !== undefined && isGlob(r.ref)) delete r.ref
+      // Glob members (`q_*`) of a vector or of inline fields expand over
+      // the schema: no wire.
+      if (key === 'vectors' || readsMembers(opts.manifest, key, op)) {
+        for (const r of rows) if (r.ref !== undefined && isGlob(r.ref) && /^fields2?\[/.test(r.key)) delete r.ref
+      }
       if (opts.manifest) addPorts(opts.manifest, key, op, e, rows, groupKeys)
       const join = key === 'joins' ? joinInfo(e, rows, opts.rightFields) : undefined
       const list = opts.manifest && spec.catalog ? spec.catalog(opts.manifest) : undefined
@@ -418,7 +422,7 @@ export function buildRequestGraph(req: unknown, opts: BuildOptions = {}): Reques
 // section is upstream of it, or an earlier entry of its own section for
 // sections that see themselves. Vector refs only see vectors.
 export function canSee(section: string, index: number, producerSection: string, producerIndex: number, role = ''): boolean {
-  if (role === 'vector') return producerSection === 'vectors'
+  if (isVectorRole(role)) return producerSection === 'vectors'
   // partition_by names group key columns: what the groupers see.
   if (role === 'partition_by') return ROW_LEVEL.includes(producerSection)
   const spec = SECTION_BY_KEY.get(section)
@@ -448,10 +452,17 @@ function addPorts(manifest: Manifest, section: string, op: string, e: Record<str
     const slot = slotFor(manifest, section, op, row.key)
     if (slot.accept.types || slot.accept.kinds || slot.groupKey) row.accepts = describeAccept(slot)
   }
-  // A matrix names its members by vector or by inline fields, exactly
-  // one: neither set offers both inputs, either set asks for nothing.
-  const membersBy = VECTOR_OR_FIELDS.has(section) ? (e.vector !== undefined ? 'vector' : e.fields !== undefined ? 'fields' : null) : undefined
+  // A matrix or vector-input operator names its members by vector or by
+  // inline fields, exactly one: neither set offers both inputs, either
+  // set asks for nothing. The optional second set (vector2 / fields2,
+  // TEST_HOTELLING_T2's paired form) likewise offers a vector2 input
+  // while neither is set.
+  const members = readsMembers(manifest, section, op)
+  const membersBy = members ? (e.vector !== undefined ? 'vector' : e.fields !== undefined ? 'fields' : null) : undefined
   if (membersBy === null) rows.push({ key: 'vector', value: '', port: 'empty', accepts: VECTOR_INPUT })
+  if (members?.second && e.vector2 === undefined && e.fields2 === undefined) {
+    rows.push({ key: 'vector2', value: '', port: 'empty', accepts: VECTOR2_INPUT })
+  }
   for (const slot of slotsFor(manifest, section, op)) {
     const v = plainAt(e, slot.key)
     if (slot.groupKey) {
@@ -461,7 +472,8 @@ function addPorts(manifest: Manifest, section: string, op: string, e: Record<str
       }
       continue
     }
-    if (!slot.required) continue
+    // An optional list already started (fields2) takes more items.
+    if (!slot.required && !(slot.list && Array.isArray(v))) continue
     // A vector names its members by fields or by pattern, never both.
     if (section === 'vectors' && e.pattern !== undefined) continue
     if (slot.key === 'fields' && membersBy === 'vector') continue
@@ -492,7 +504,7 @@ function resolve(
   fieldsKnown: boolean,
   joins: readonly OpNode[] = [],
 ): string | 'cohort' | null {
-  if (role === 'vector') {
+  if (isVectorRole(role)) {
     return findLast(producers.get('vectors') ?? [], (p) => p.name === ref)?.id ?? null
   }
   // Downstream-most visible producer first. partition_by names group
@@ -525,6 +537,7 @@ function joinInfo(e: Record<string, unknown>, rows: ParamRow[], rightFields?: (r
   const right = typeof e.right === 'string' && e.right !== '' ? e.right : undefined
   const as = typeof e.as === 'string' ? e.as : ''
   const side = right !== undefined && rightFields ? rightFields(right) : right === undefined ? null : undefined
+  if (side === 'unknown') return { right, as, state: 'unknown', fields: [] }
   if (!side) return { ...(right !== undefined && { right }), as, state: side === null ? 'missing' : 'pending', fields: [] }
   const types = new Map(side.map((f) => [f.name, f.type]))
   for (const row of rows) {

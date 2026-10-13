@@ -51,8 +51,30 @@ export function rightKey(right: string): string {
 
 // RightSide is what is known of a join's right cohort: its fields,
 // null when it could not be inspected (no such file), undefined while
-// it is being inspected.
-export type RightSide = CohortField[] | null | undefined
+// it is being inspected, 'unknown' when it is a shard anchor
+// (`archive.pulse#shard.pulse`) inside an archive that exists but whose
+// shard inspect could not read: its fields are unknown (no field
+// handles), and it is not flagged missing.
+export type RightSide = CohortField[] | null | undefined | 'unknown'
+
+// isAnchor says whether a cohort path is a shard anchor,
+// `archive.pulse#shard.pulse` (pulse service.SplitAnchorPath: the first
+// '#'): the engine opens that one shard inside the archive.
+export function isAnchor(path: string): boolean {
+  const i = path.indexOf('#')
+  return i > 0 && i < path.length - 1
+}
+
+// anchorUnreadable says whether an inspect failure of cohort ref (a
+// {filename, data_dir} reference) means "fields unknown" rather than
+// "missing": the ref is a shard anchor and the server found its archive
+// (any error but not_found, which it reports for a missing archive).
+export function anchorUnreadable(ref: unknown, err: unknown): boolean {
+  const filename = typeof ref === 'object' && ref !== null ? (ref as { filename?: unknown }).filename : undefined
+  if (typeof filename !== 'string' || !isAnchor(filename)) return false
+  const msg = err instanceof Error ? err.message : String(err)
+  return !msg.startsWith('not_found:') && !msg.startsWith('path_outside:')
+}
 
 // joinedFields is the joined schema's right half: every right field,
 // renamed with the `as` prefix.
@@ -151,7 +173,8 @@ export function joinIssues(model: GraphModel, ctx: JoinContext): Issue[] {
       out.push(issue(`${id}.right`, 'JOIN_RIGHT', 'right is required: pick the cohort to join'))
     } else {
       const side = ctx.rightFields(right)
-      if (side === null) out.push(issue(`${id}.right`, 'JOIN_RIGHT', `right cohort ${right} is not a cohort file in the workspace`, right))
+      if (side === 'unknown') rightFields = undefined
+      else if (side === null) out.push(issue(`${id}.right`, 'JOIN_RIGHT', `right cohort ${right} is not a cohort file in the workspace`, right))
       else if (side) rightFields = side
     }
     const left = ctx.leftFields(frame)

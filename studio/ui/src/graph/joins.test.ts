@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest'
 import type { CohortField, Manifest } from '../api.ts'
 import { toPlain } from './jsonTree.ts'
 import { buildComposeGraph } from './composeGraph.ts'
-import { cohortOptions, joinBodyLines, joinBodyRows, joinedSummary, joinIssues, joinKeyRefusal, joinKinds, maxJoins, type RightSide } from './joins.ts'
+import { anchorUnreadable, cohortOptions, isAnchor, joinBodyLines, joinBodyRows, joinedSummary, joinIssues, joinKeyRefusal, joinKinds, maxJoins, type RightSide } from './joins.ts'
 import { emitModel, emitModelText, parseModel, type GraphModel } from './model.ts'
 import { applyField, buildForm } from './paramForms.ts'
 import { paletteItems, placeNode } from './palette.ts'
@@ -284,5 +284,42 @@ describe('compact join body', () => {
     expect(joinBodyLines(join.data.rows, join.data.join!, true)).toBe(6 + 1 + 4)
     const { headerHeight, rowHeight, padding, previewHeight } = LAYOUT
     expect(estimateHeight(join)).toBe(headerHeight + 7 * rowHeight + padding + previewHeight)
+  })
+})
+
+describe('shard-anchor right sides', () => {
+  const ANCHORED = JOINED.replace('"right":"right.pulse"', '"right":"arch.pulse#s1.pulse"')
+  const model = parseModel(ANCHORED, 'request')
+
+  it('recognises archive.pulse#shard.pulse', () => {
+    expect(isAnchor('arch.pulse#s1.pulse')).toBe(true)
+    expect(isAnchor('data/arch.pulse#s1.pulse')).toBe(true)
+    expect(isAnchor('right.pulse')).toBe(false)
+    expect(isAnchor('#s1.pulse')).toBe(false)
+    expect(isAnchor('arch.pulse#')).toBe(false)
+  })
+
+  it('an unreadable shard in an archive that exists is unknown, a missing archive is missing', () => {
+    const ref = { filename: 'arch.pulse#s1.pulse', data_dir: '.' }
+    expect(anchorUnreadable(ref, new Error('inspect_failed: pulse: inspect anchor: PULSE_SHARD_MISSING'))).toBe(true)
+    expect(anchorUnreadable(ref, new Error('not_found: no such file'))).toBe(false)
+    expect(anchorUnreadable({ filename: 'right.pulse', data_dir: '.' }, new Error('inspect_failed: bad'))).toBe(false)
+  })
+
+  it('an anchored right read like any other is joined normally', () => {
+    const g = graphOf(model, { ...ctx, rightFields: (r) => (r === 'arch.pulse#s1.pulse' ? right : null) })
+    expect(node(g, 'joins[0]').data.join).toMatchObject({ right: 'arch.pulse#s1.pulse', state: 'known' })
+  })
+
+  it('unknown fields: no field handles, no red, no missing-right issue', () => {
+    const unknown = (r: string): RightSide => (r === 'arch.pulse#s1.pulse' ? 'unknown' : null)
+    const g = graphOf(model, { ...ctx, rightFields: unknown })
+    const join = node(g, 'joins[0]')
+    expect(join.data.join).toMatchObject({ right: 'arch.pulse#s1.pulse', state: 'unknown' })
+    expect(join.data.rows.some((r) => r.invalid)).toBe(false)
+    // A joined name the request uses still reaches the join by its prefix.
+    expect(node(g, 'aggregations[0]').data.rows.find((r) => r.key === 'field')).toMatchObject({ ref: 'r_bonus', resolved: true })
+    const issues = joinIssues(model, { manifest, rightFields: unknown, leftFields: () => left })
+    expect(issues.filter((i) => i.code === 'JOIN_RIGHT' || i.code === 'JOIN_FIELD')).toEqual([])
   })
 })

@@ -18,7 +18,7 @@ import type { JsonNode } from './jsonTree.ts'
 import { buildModel, emitModel, updateNode, type GraphModel } from './model.ts'
 import { formatPath, frameOf, parsePath, type PathSegment } from './nodePath.ts'
 import { FACET_NODE } from './facetGraph.ts'
-import { emitsType, findOperator, refusal, slotFor, vectorMemberRefusal } from './ports.ts'
+import { emitsType, findOperator, isVectorRole, refusal, slotFor, vectorMemberRefusal } from './ports.ts'
 import { groupKeyColumn, PARTITION_PATH, removePartitionItem, wireRefusal, type GroupEntry } from './partition.ts'
 import { canSee, joinKeyCheck, LAYOUT, type ColumnKey, type RequestGraph } from './requestGraph.ts'
 
@@ -101,7 +101,7 @@ export function checkConnection(graph: Pick<RequestGraph, 'nodes'>, wire: Wire, 
   }
   if (src.type === 'cohort' && wire.sourceHandle?.startsWith('field:')) {
     ref = wire.sourceHandle.slice('field:'.length)
-    if (role === 'vector') return { ok: false, reason: 'vector inputs take a vector, not a cohort field' }
+    if (isVectorRole(role)) return { ok: false, reason: `${role} inputs take a vector, not a cohort field` }
     type = ctx.cohortFields?.find((f) => f.name === ref)?.type
     from = `field ${ref}`
     if (section === 'joins') {
@@ -119,11 +119,14 @@ export function checkConnection(graph: Pick<RequestGraph, 'nodes'>, wire: Wire, 
   } else if (src.type === 'op' && wire.sourceHandle?.startsWith('field:') && src.data.join) {
     // A joined field, from its join node.
     ref = wire.sourceHandle.slice('field:'.length)
-    if (role === 'vector') return { ok: false, reason: 'vector inputs take a vector, not a joined field' }
+    if (isVectorRole(role)) return { ok: false, reason: `${role} inputs take a vector, not a joined field` }
     type = src.data.join.fields.find((f) => f.name === ref)?.type || undefined
     from = `joined field ${ref}`
   } else if (src.type === 'op' && wire.sourceHandle === 'out' && src.data.name !== undefined) {
     ref = src.data.name
+    if (isVectorRole(role) && src.data.section !== 'vectors') {
+      return { ok: false, reason: `${role} inputs take a vector, not ${src.data.title.toLowerCase()} ${ref}` }
+    }
     if (!across && !canSee(section, indexOf(tgt.id), src.data.section, indexOf(src.id), role)) {
       return { ok: false, reason: `${tgt.data.title.toLowerCase()} runs before ${src.data.title.toLowerCase()} ${ref} exists` }
     }

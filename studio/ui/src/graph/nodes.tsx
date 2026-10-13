@@ -8,6 +8,7 @@ import { JoinViewContext } from './joinView.ts'
 import { FACET_PROPS } from './facetGraph.ts'
 import { FacetResult } from './FacetPreview.tsx'
 import { FIT_HANDLE } from './wiring.ts'
+import { isVectorRole } from './ports.ts'
 import { NodePreview } from './NodePreview.tsx'
 import { NodeIssues } from './NodeIssues.tsx'
 import { NodeRunHeadline } from './ResultsPanel.tsx'
@@ -61,7 +62,7 @@ function Row({ r }: { r: ParamRow }) {
       {(r.ref !== undefined || r.port) && <Handle type="target" position={Position.Left} id={`in:${r.key}`} title={r.accepts ?? r.key} />}
       <span className="k">{r.key}</span>
       <span className="v" title={r.value}>
-        {r.port === 'append' ? '+ wire to add' : r.port === 'empty' ? (r.fit ? 'bind a fit' : r.key === 'vector' ? 'wire a vector' : 'wire a field') : r.value}
+        {r.port === 'append' ? '+ wire to add' : r.port === 'empty' ? (r.fit ? 'bind a fit' : isVectorRole(r.key) ? 'wire a vector' : 'wire a field') : r.value}
       </span>
     </li>
   )
@@ -97,7 +98,10 @@ function PairRow({ pair }: { pair: Extract<JoinBodyRow, { kind: 'pair' }> }) {
 // node). Collapsed, every field's handle is still drawn, stacked on the
 // summary line and not draggable, so wires from joined fields keep
 // their source handle and land on the summary row; only the handles of
-// fields in use show.
+// fields in use show. A grab dot over the stacked handles starts a
+// joined-field drag the only way a collapsed list can: pressing it
+// expands the list, whose per-field handles are then draggable (a
+// stacked handle cannot know which field the drag means).
 function JoinedFields({ id, join }: { id: string; join: JoinInfo }) {
   const view = use(JoinViewContext)
   const expanded = view?.expanded.has(id) ?? false
@@ -119,7 +123,9 @@ function JoinedFields({ id, join }: { id: string; join: JoinInfo }) {
         : `${join.right} not found`
       : join.state === 'pending'
         ? 'reading right cohort…'
-        : undefined
+        : join.state === 'unknown'
+          ? 'shard fields unknown'
+          : undefined
   const canToggle = join.fields.length > 0 && view !== null
   return (
     <ul className="gnode-rows gnode-joined" data-testid="joined-fields" data-state={join.state} data-expanded={expanded}>
@@ -142,6 +148,19 @@ function JoinedFields({ id, join }: { id: string; join: JoinInfo }) {
           <span className="k">{join.fields.length > 0 ? joinedSummary(join) : 'joined fields'}</span>
         )}
         {note !== undefined && <span className="v">{note}</span>}
+        {!expanded && canToggle && (
+          <span
+            className="joined-grab nodrag"
+            data-testid="joined-grab"
+            role="button"
+            aria-label="Expand joined fields to drag one"
+            title="Drag a joined field: expands the list"
+            onPointerDown={(e) => {
+              e.stopPropagation()
+              view.toggle(id)
+            }}
+          />
+        )}
         {!expanded &&
           join.fields.map((f) => (
             <Handle
