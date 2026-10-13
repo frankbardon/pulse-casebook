@@ -1483,3 +1483,57 @@
   color: var(--text);
   font-weight: 600;
 }
+
+/* Response node parts (responseParts.ts): a header line per part, a row
+   per entry, struck through when the frame's return drops it. */
+.gnode.result .response-part {
+  border-top: 1px dashed var(--border);
+}
+
+.gnode.result .response-part:first-child {
+  border-top: 0;
+}
+
+.gnode.result .gnode-head {
+  position: relative;
+}
+
+.gnode.result .response-part .k {
+  color: var(--muted);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.gnode.result .response-row .k {
+  color: var(--text);
+}
+
+.gnode.result .response-row .v {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.gnode.result .response-fanout {
+  color: var(--muted);
+}
+
+.gnode.result .response-adj {
+  color: var(--accent);
+  font-size: 10px;
+}
+
+.gnode.result .response-headline {
+  color: var(--text);
+}
+
+.gnode.result .trimmed .k,
+.gnode.result .trimmed .v {
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+
+.react-flow__handle.response-handle {
+  background: var(--accent);
+  border-color: var(--accent);
+}

@@ -1,5 +1,6 @@
 // resultGraph derives the view-only parts of a request frame's graph:
-// the Result node (the table the frame returns), the group fan-out
+// the Response node (the table the frame returns, then every other part
+// of the response: responseParts.ts), the group fan-out
 // ("scope") wires and the attribute output columns. Nothing here is ever
 // written into the request JSON; it is all read off the entries the
 // request already has (pulse v1.0.0-alpha.10 semantics):
@@ -19,9 +20,10 @@
 //
 // Pure and deterministic, like buildRequestGraph.
 
-import { formatPath, parsePath, type PathSegment } from './nodePath.ts'
+import { formatPath, parsePath, splitFrame, type PathSegment } from './nodePath.ts'
 import { groupKeyColumn, type GroupEntry } from './partition.ts'
-import type { GraphEdge, OpNode, ResultColumn, ResultNode } from './requestGraph.ts'
+import type { GraphEdge, OpNode, ResponsePart, ResponseRow, ResultColumn, ResultNode } from './requestGraph.ts'
+import { crosstabLong, multiplicityOn, PART_KEYS, PART_TITLES, returnTrim, testAdjusted, type PartKey } from './responseParts.ts'
 
 // RESULT_KEY is the last segment of a Result node's id: a quoted key no
 // request section uses (`["(result)"]`, `requests[1]["(result)"]`), so
@@ -36,6 +38,13 @@ export const KEY_HANDLE = 'key'
 export const SCOPE_HANDLE = 'scope'
 export const SCOPE_TARGET = 'scope:in'
 export const columnHandle = (name: string) => `col:${name}`
+// Response node handles: a part row's input (`part:tests[0]`), a part
+// header's input (`sec:tests`, multiplicity), the node header's input
+// (`return`), and an entry's output into its row (`response`).
+export const partHandle = (id: string) => `part:${id}`
+export const sectionHandle = (key: string) => `sec:${key}`
+export const HEAD_HANDLE = 'head'
+export const RESPONSE_HANDLE = 'response'
 
 // Sections whose entries run once per group bucket.
 const PER_GROUP = new Set(['aggregations', 'tests', 'matrices'])
@@ -112,8 +121,11 @@ export function columnUsed(doc: Record<string, unknown>, attr: OpNode, edges: re
 }
 
 // addDerived adds a frame's view-only parts to its graph: group key and
-// fan-out wires, attribute output usage, and (with result) the Result
-// node wired from its columns' sources.
+// fan-out wires, attribute output usage, and (with result) the Response
+// node: its table columns wired from their sources, a row per analysis
+// entry wired from it, multiplicity into the tests' part headers and
+// `return` into the node header. The node keeps R1's Result id, so
+// layout sidecars saved then still place it.
 export function addDerived(
   doc: Record<string, unknown>,
   ops: readonly OpNode[],
@@ -148,23 +160,62 @@ export function addDerived(
   }
   if (!result) return null
   const id = resultId(base)
-  for (const c of cols) {
-    if (c.source === undefined) continue
-    const sourceHandle = c.kind === 'key' ? KEY_HANDLE : 'out'
-    const targetHandle = columnHandle(c.name)
+  const trim = returnTrim(doc.return)
+  const wire = (source: string, sourceHandle: string, targetHandle: string, ref: string, extra = '') => {
     edges.push({
-      id: `${c.source}|${sourceHandle}->${id}|${targetHandle}`,
-      source: c.source,
+      id: `${source}|${sourceHandle}->${id}|${targetHandle}`,
+      source,
       sourceHandle,
       target: id,
       targetHandle,
-      className: 'result-wire',
+      className: 'result-wire' + extra,
       deletable: false,
-      data: { ref: c.name, role: 'result' },
+      data: { ref, role: 'result' },
     })
+  }
+  for (const c of cols) {
+    if (trim?.column(c.name)) c.trimmed = true
+    if (c.source === undefined) continue
+    wire(c.source, c.kind === 'key' ? KEY_HANDLE : 'out', columnHandle(c.name), c.name)
+  }
+  const parts = responseParts(doc, ops, groups, targets)
+  let trims = cols.some((c) => c.trimmed)
+  for (const p of parts) {
+    const dropped = trim?.part(p.key === 'crosstab' && crosstabLong(doc) ? 'data' : p.key)
+    if (dropped) {
+      p.trimmed = true
+      trims = true
+    }
+    for (const r of p.rows) {
+      if (dropped) r.trimmed = true
+      const n = ops.find((o) => o.id === r.source)
+      if (n) n.data.response = true
+      wire(r.source, RESPONSE_HANDLE, partHandle(r.id), r.label)
+    }
+  }
+  const single = (section: string) => ops.find((n) => n.data.section === section)
+  const mult = single('multiplicity')
+  if (mult) {
+    // The correction acts on the tests' and post-tests' p-values; with
+    // neither, on the overlays (request-family layers) or the response.
+    const into = parts.filter((p) => p.key === 'tests' || p.key === 'post_tests').map((p) => sectionHandle(p.key))
+    const overlays = parts.some((p) => p.key === 'overlays')
+    mult.data.response = true
+    for (const h of into.length > 0 ? into : [overlays ? sectionHandle('overlays') : HEAD_HANDLE]) wire(mult.id, RESPONSE_HANDLE, h, 'multiplicity', ' multiplicity-wire')
+  }
+  const ret = single('return')
+  if (ret) {
+    ret.data.response = true
+    wire(ret.id, RESPONSE_HANDLE, HEAD_HANDLE, 'return', ' return-wire')
   }
   const last = (section: string) => ops.filter((n) => n.data.section === section).at(-1)?.id
   const previewFrom = last('sort') ?? last('windows') ?? last('aggregations') ?? last('groups')
+  const aggregated = groups.length > 0 || ops.some((n) => n.data.section === 'aggregations')
+  // No groups and no aggregations: the rows themselves, unless the
+  // request only asks for analysis parts (a crosstab-only request
+  // returns no data).
+  const rowLevel = !aggregated && parts.length === 0
+  const table = cols.length > 0 || rowLevel
   return {
     id,
     type: 'result',
@@ -175,10 +226,66 @@ export function addDerived(
       path: id,
       column: 'result',
       columns: cols,
-      rowLevel: groups.length === 0 && !ops.some((n) => n.data.section === 'aggregations'),
+      rowLevel,
       ...(previewFrom !== undefined && { previewFrom }),
+      table,
+      ...(table && trim?.part('data') && { tableTrimmed: true }),
+      parts,
+      ...(ret && { ret: true }),
+      ...(trims && { trims: true }),
     },
   }
+}
+
+// responseParts lists the frame's non-empty response parts below its
+// table, in Response order, one row per entry: its label (else the
+// operator), where it fans out, whether multiplicity adjusts it.
+// Vectors produce no part.
+export function responseParts(doc: Record<string, unknown>, ops: readonly OpNode[], groups: readonly OpNode[], fanned: readonly OpNode[]): ResponsePart[] {
+  const adjusting = multiplicityOn(doc) && ops.some((n) => n.data.section === 'multiplicity')
+  const perGroup = new Set(fanned.map((n) => n.id))
+  const lastGroup = groups.at(-1)?.id
+  const out: ResponsePart[] = []
+  for (const key of PART_KEYS) {
+    const rows: ResponseRow[] = []
+    for (const n of ops) {
+      if (n.data.section !== key) continue
+      const rel = formatPath(splitFrame(n.id).rest)
+      const entry = entryOf(doc, key, n.id)
+      const row: ResponseRow = { id: rel, source: n.id, label: n.data.name ?? (key === 'crosstab' ? 'crosstab' : `(${n.data.op})`) }
+      const detail = detailOf(doc, key, groups.length > 0)
+      if (detail) row.detail = detail
+      if (perGroup.has(n.id) && lastGroup !== undefined) {
+        row.fanout = key === 'post_tests' ? { from: partitionGroup(entry, groups), noun: 'partitions' } : { from: lastGroup, noun: 'groups' }
+      }
+      if (adjusting && (key === 'tests' || key === 'post_tests') && testAdjusted(entry)) row.adjusted = true
+      rows.push(row)
+    }
+    if (rows.length > 0) out.push({ key, title: PART_TITLES[key], rows })
+  }
+  return out
+}
+
+// partitionGroup is the group whose preview counts a post-test's
+// partitions: the last grouper of its partition_by prefix (default all
+// but the last grouper).
+function partitionGroup(entry: unknown, groups: readonly OpNode[]): string {
+  const params = isObject(entry) ? entry.params : undefined
+  const by = isObject(params) ? params.partition_by : undefined
+  const k = Array.isArray(by) && by.length > 0 ? Math.min(by.length, groups.length) : groups.length - 1
+  return groups[Math.max(0, k - 1)].id
+}
+
+function detailOf(doc: Record<string, unknown>, key: PartKey, grouped: boolean): string | undefined {
+  if (key === 'crosstab' && crosstabLong(doc)) return 'long: cells land in data'
+  // An overlay layer sits beside its host, keyed to its coordinates.
+  if (key === 'overlays') return doc.crosstab !== undefined ? 'on crosstab cells' : grouped ? 'series over groups' : undefined
+  return undefined
+}
+
+function entryOf(doc: Record<string, unknown>, key: string, id: string): unknown {
+  const v = doc[key]
+  return Array.isArray(v) ? v[indexOf(id)] : v
 }
 
 // names says whether any string inside v matches word.

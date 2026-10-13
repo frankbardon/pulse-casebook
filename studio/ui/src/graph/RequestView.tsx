@@ -50,7 +50,8 @@ import {
   type Wire,
   type WireCheck,
 } from './wiring.ts'
-import { CohortNodeView, FacetNodeView, LaneNodeView, OpNodeView, RawNodeView, ResultNodeView, type LaneNode } from './nodes.tsx'
+import { CohortNodeView, FacetNodeView, LaneNodeView, OpNodeView, RawNodeView, type LaneNode } from './nodes.tsx'
+import { ResultNodeView } from './ResponseNode.tsx'
 import { Inspector } from './Inspector.tsx'
 import { HistoryPanel } from './HistoryPanel.tsx'
 import { groupKeysOfModel } from './partition.ts'
@@ -390,7 +391,7 @@ function RequestGraphView({ path, kind, catalog, history }: { path: string; kind
   // Flow skips measuring it) and keeps the bar; Restore brings both back.
   const [resultsMax, setResultsMax] = useState(false)
   const runResults = useMemo(
-    (): RunResults => ({ get: (id) => run.last?.view.headlines.get(id), stale: run.stale }),
+    (): RunResults => ({ get: (id) => run.last?.view.headlines.get(id), response: (frame) => run.last?.view.responses.get(frame), stale: run.stale }),
     [run.last, run.stale],
   )
   const runNow = run.run

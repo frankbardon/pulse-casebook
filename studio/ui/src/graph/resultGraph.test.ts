@@ -64,6 +64,11 @@ describe('result columns', () => {
       ['aggregations[0]', 'out', 'col:users', 'result'],
       ['aggregations[1]', 'out', 'col:avg_pages', 'result'],
       ['windows[0]', 'out', 'col:rank', 'result'],
+      // Then every other part of the response, one row per entry.
+      ['tests[0]', 'response', 'part:tests[0]', 'result'],
+      ['regressions[0]', 'response', 'part:regressions[0]', 'result'],
+      ['matrices[0]', 'response', 'part:matrices[0]', 'result'],
+      ['post_tests[0]', 'response', 'part:post_tests[0]', 'result'],
     ])
     for (const e of wires) expect(e.deletable).toBe(false)
     // The Result node sits right of everything.
@@ -71,10 +76,14 @@ describe('result columns', () => {
     expect(r.position.x).toBe(Math.max(...g.nodes.map((n) => n.position.x)))
   })
 
-  it('says row-level output without groups or aggregations', () => {
-    const g = buildRequestGraph({ cohort, tests: grouped.tests }, { result: true })
-    expect(result(g.nodes)!.data).toMatchObject({ rowLevel: true, columns: [] })
+  it('says row-level output without groups, aggregations or analysis parts', () => {
+    const g = buildRequestGraph({ cohort, filterers: [{ type: 'FILTER_INCLUDE', field: 'arm', values: ['control'] }] }, { result: true })
+    expect(result(g.nodes)!.data).toMatchObject({ rowLevel: true, columns: [], table: true, parts: [] })
     expect(result(g.nodes)!.data.previewFrom).toBeUndefined()
+    // Only analysis parts: no data table.
+    const tests = buildRequestGraph({ cohort, tests: grouped.tests }, { result: true })
+    expect(result(tests.nodes)!.data).toMatchObject({ rowLevel: false, table: false })
+    expect(result(tests.nodes)!.data.parts.map((p) => p.key)).toEqual(['tests'])
   })
 
   it('is left out unless asked for', () => {

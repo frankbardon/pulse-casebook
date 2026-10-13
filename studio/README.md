@@ -101,12 +101,30 @@ A request is drawn as a set of nodes, one node per entry in the request JSON:
   the downstream entry names in the JSON. Ports are type-checked against the engine's operator
   catalog, and a connection that the engine would refuse is rejected with the reason. Dragging a wire
   to empty canvas opens a menu of operators that accept that field's type.
-- **Result node.** Each request (each compose slot, each chain stage) ends in a **Result** node: the
-  table it returns, one row per group key combination. Its columns are listed in order (group key
-  columns marked `key`, then aggregation labels, then window labels), each wired from the node that
-  produces it, and its footer previews the row count and first rows. With no groups and no
-  aggregations it says **Row-level output**. It is not part of the request JSON: it has no inspector
-  and cannot be deleted (you can move it; its position is saved like any node's).
+- **Response node.** Each request (each compose slot, each chain stage) ends in a **Response** node
+  that mirrors the Pulse response, one part per section, shown only when the request fills it:
+  - **Table**: the `data` rows, one per group key combination. Its columns are listed in order (group
+    key columns marked `key`, then aggregation labels, then window labels), each wired from the node
+    that produces it. The header reads `Table · N rows` once a preview knows the count, and the
+    footer previews the first rows. With no groups, no aggregations and no analysis it says
+    **Row-level output**.
+  - **Tests**, **Regressions**, **Matrices**, **Crosstab**, **Post-tests**, **Overlays**: one row per
+    entry (its label, or the operator), wired from that entry. Tests and matrices in a grouped request
+    read `× N groups`; post-tests that run per partition read `× N partitions`. Overlays note where
+    their layer sits (crosstab cells, or the series over groups). Vectors feed other nodes and add no
+    part.
+  - Once a preview or a Run has the result, a row shows a headline: `p = 0.031` for tests and
+    post-tests (the largest p over the groups when grouped, `×4`), `R² 0.41` for regressions, the
+    shape (`5×5`) for matrices and the crosstab. A grouped test's preview carries one group's result,
+    so its headline comes from Run.
+  - A `multiplicity` block wires into the Tests (and Post-tests) header and tags those rows `adj.`.
+  - A `return` block wires into the node header. Parts, rows and table columns it drops (by the
+    documented `include` / `exclude` paths) are struck through with "trimmed by return". A `return`
+    Studio cannot read is left alone: nothing is struck.
+
+  The Response node is not part of the request JSON: it has no inspector and cannot be deleted (you
+  can move it; its position is saved like any node's, under the same id the earlier Result node
+  used). A compose file's root lane has none: its overlays and `return` act on the compose response.
 - **Group fan-out.** A group's bottom handle draws thick dotted "scope" wires to everything that runs
   once per group bucket: aggregations, tests and matrices, plus post-tests when there are two or more
   groupers. The first wire is labelled `per <key>` and, once the group's preview has run, the bucket
@@ -181,7 +199,7 @@ Tools in this repository that walk the showcase request files skip `*.layout.jso
   has to be added in the JSON.
 - **`coef("fit", ...)` references inside `ATTR_FORMULA` expressions are not drawn as wires.**
   Formula expressions are not parsed, so only fields named in explicit slots are wired.
-- **The Result preview needs an aggregation, window, sort or group to preview.** It reuses that
+- **The Response table preview needs an aggregation, window, sort or group to preview.** It reuses that
   node's preview, so a request with none of them shows only its columns. Run shows the full result.
 - **Renaming a Compose slot label does not update overlays that name it.**
 - **Some inspectors are incomplete.** The test inspector lacks `split_by`, `rows` and `cols` fields

@@ -1,5 +1,6 @@
-// The view-only parts of a request frame: its Result node (the table it
-// returns), group fan-out wires and attribute output columns. None of
+// The view-only parts of a request frame: its Response node (the table it
+// returns, then every other part of the response), group fan-out wires
+// and attribute output columns. None of
 // them is request JSON: opening and saving leaves the request's bytes
 // alone.
 import { writeFileSync } from 'node:fs'
@@ -40,8 +41,23 @@ test.describe('grouped request', () => {
     await expect(result.locator('.result-col .k')).toHaveText(['region', 'users', 'avg_pages'])
     await expect(result.locator('[data-col="region"]')).toHaveAttribute('data-kind', 'key')
     const resultWires = graph.locator('.react-flow__edge.result-wire')
-    await expect(resultWires).toHaveCount(3)
+    // Three columns, the test and the regression.
+    await expect(resultWires).toHaveCount(5)
     await expect(graph.locator(`.react-flow__edge[data-id='groups[0]|key->${RESULT}|col:region']`)).toHaveCount(1)
+
+    // Below the table: Tests (per group) and Regressions (not), each row
+    // wired from its entry.
+    await expect(result.locator('.gnode-head')).toContainText('Response')
+    await expect(result.getByTestId('response-part')).toHaveText([/^Table · 4 rows/, /^Tests/, /^Regressions/])
+    await expect(graph.locator(`.react-flow__edge[data-id='tests[0]|response->${RESULT}|part:tests[0]']`)).toHaveCount(1)
+    await expect(graph.locator(`.react-flow__edge[data-id='regressions[0]|response->${RESULT}|part:regressions[0]']`)).toHaveCount(1)
+    const testRow = result.locator('[data-testid="response-row"][data-row="tests[0]"]')
+    await expect(testRow.locator('.k')).toHaveText('pages')
+    await expect(testRow.getByTestId('response-fanout')).toHaveText('× 4 groups')
+    const regRow = result.locator('[data-testid="response-row"][data-row="regressions[0]"]')
+    await expect(regRow.getByTestId('response-fanout')).toHaveCount(0)
+    // The regression's own preview gives its headline.
+    await expect(regRow.getByTestId('response-headline')).toContainText(/R² [\d.]+/, { timeout: 30_000 })
     // The last aggregation's preview holds the whole table.
     const preview = result.getByTestId('result-preview')
     await expect(preview).toHaveAttribute('data-state', 'ok')
@@ -103,6 +119,62 @@ test.describe('grouped request', () => {
     await expect(result.locator('[data-kind="key"]')).toHaveCount(0)
     // With the group gone nothing reads the column again.
     await expect(attr.getByTestId('attr-output')).toHaveAttribute('data-used', 'false')
+    // ... and the test no longer fans out.
+    await expect(testRow.getByTestId('response-fanout')).toHaveCount(0)
+  })
+
+  test('a run gives the grouped test its headline', async ({ page, studio }) => {
+    writeFileSync(join(studio.dir, FILE), TEXT)
+    await page.goto('/')
+    await page.getByRole('button', { name: FILE }).click()
+    const testRow = page.getByTestId('request-graph').locator('[data-testid="response-row"][data-row="tests[0]"]')
+    await expect(testRow).toHaveCount(1)
+    // A grouped test's probe carries one result, not one per group: only
+    // the run has them all.
+    await expect(testRow.getByTestId('response-headline')).toHaveCount(0)
+    await page.getByTestId('run-button').click()
+    await expect(page.getByTestId('run-status')).toHaveAttribute('data-phase', 'done', { timeout: 30_000 })
+    await expect(testRow.getByTestId('response-headline')).toContainText(/p = [<\d.]+ ×4/)
+  })
+
+  test('return strikes what it drops; multiplicity tags the tests', async ({ page, studio }) => {
+    const file = 'req/r2_shaped.json'
+    const text = `{
+  "cohort": {"filename": "ab_test.pulse", "data_dir": "."},
+  "multiplicity": {"method": "holm", "family": "request"},
+  "aggregations": [{"type": "AGG_COUNT", "field": "user_id", "label": "users"}],
+  "tests": [
+    {"type": "TEST_WELCH", "field": "pages_viewed", "split_by": "arm", "label": "pages"},
+    {"type": "TEST_WELCH", "field": "revenue", "split_by": "arm", "label": "revenue"}
+  ],
+  "regressions": [{"type": "REG_OLS", "name": "fit", "target": "revenue", "predictors": ["pages_viewed"]}],
+  "return": {"exclude": ["tests", "data[*].users"]}
+}
+`
+    writeFileSync(join(studio.dir, file), text)
+    await page.goto('/')
+    await page.getByRole('button', { name: file }).click()
+    const graph = page.getByTestId('request-graph')
+    const result = graph.getByTestId('result-node')
+    await expect(result.getByTestId('response-part')).toHaveText([/^Table/, /^Tests/, /^Regressions/])
+    // Return wires into the header; tests and the users column are struck.
+    await expect(graph.locator(`.react-flow__edge.return-wire[data-id='return|response->${RESULT}|head']`)).toHaveCount(1)
+    await expect(result.getByTestId('response-return')).toHaveText('trimmed')
+    const tests = result.locator('[data-testid="response-part"][data-part="tests"]')
+    await expect(tests).toHaveAttribute('data-trimmed', 'true')
+    await expect(tests).toHaveAttribute('title', 'trimmed by return')
+    const rows = result.locator('[data-testid="response-row"][data-part="tests"]')
+    await expect(rows).toHaveCount(2)
+    for (const row of await rows.all()) {
+      await expect(row).toHaveAttribute('data-trimmed', 'true')
+      await expect(row).toHaveAttribute('title', 'trimmed by return')
+      await expect(row.getByTestId('response-adj')).toHaveCount(1)
+    }
+    await expect(result.locator('[data-col="users"]')).toHaveAttribute('data-trimmed', 'true')
+    await expect(result.locator('[data-testid="response-row"][data-row="regressions[0]"]')).not.toHaveAttribute('data-trimmed', 'true')
+    // Multiplicity wires into the Tests header.
+    await expect(graph.locator(`.react-flow__edge.multiplicity-wire[data-id='multiplicity|response->${RESULT}|sec:tests']`)).toHaveCount(1)
+    expect(studio.read(file)).toBe(text)
   })
 })
 

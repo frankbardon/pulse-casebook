@@ -38,7 +38,12 @@ export type RunView = {
   warnings: EnvelopeEntry[]
   // Node id → its headline number.
   headlines: Map<string, RunHeadline>
+  // Request frame id ("", `requests[1]`, `stages[0].request`) → its
+  // response and the request frame that ran.
+  responses: Map<string, RunResponse>
 }
+
+export type RunResponse = { request: unknown; response: unknown }
 
 // Data rows shown per aggregation table; the raw tab has everything.
 export const MAX_ROWS = 200
@@ -52,7 +57,7 @@ const arr = (v: unknown): unknown[] => (Array.isArray(v) ? v : [])
 // result entries back to node ids).
 export function readRun(root: string, text: string, doc: unknown): RunView {
   const env = JSON.parse(text) as Envelope
-  const view: RunView = { sections: [], errors: arr(env.errors) as EnvelopeEntry[], warnings: arr(env.warnings) as EnvelopeEntry[], headlines: new Map() }
+  const view: RunView = { sections: [], errors: arr(env.errors) as EnvelopeEntry[], warnings: arr(env.warnings) as EnvelopeEntry[], headlines: new Map(), responses: new Map() }
   const data = env.data
   const d = isObj(doc) ? doc : {}
   if (!isObj(data)) return view
@@ -64,6 +69,7 @@ export function readRun(root: string, text: string, doc: unknown): RunView {
       const base: PathSegment[] = ['requests', i]
       view.sections.push(responseSection(formatPath(base), label, resp))
       responseHeadlines(view.headlines, base, r, resp)
+      view.responses.set(formatPath(base), { request: r, response: resp })
     })
     const other = otherParts(data, ['overlays', 'ranking', 'returned'])
     if (other.length > 0) view.sections.push({ id: 'compose', title: 'compose', tables: [], other })
@@ -75,6 +81,7 @@ export function readRun(root: string, text: string, doc: unknown): RunView {
       const base: PathSegment[] = ['stages', i, 'request']
       view.sections.push(responseSection(`stages[${i}]`, name, resp))
       responseHeadlines(view.headlines, base, isObj(st) ? st.request : undefined, resp)
+      view.responses.set(formatPath(base), { request: isObj(st) ? st.request : undefined, response: resp })
     })
     const other = otherParts(data, ['overlays'])
     if (other.length > 0) view.sections.push({ id: 'chain', title: 'chain', tables: [], other })
@@ -85,6 +92,7 @@ export function readRun(root: string, text: string, doc: unknown): RunView {
   } else {
     view.sections.push(responseSection('', 'request', data))
     responseHeadlines(view.headlines, [], d, data)
+    view.responses.set('', { request: d, response: data })
   }
   return view
 }

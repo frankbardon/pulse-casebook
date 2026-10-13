@@ -2,7 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import { postRun, type RunResult } from '../api.ts'
 import { toPlain } from './jsonTree.ts'
 import { emitModel, emitModelText, type GraphModel } from './model.ts'
-import { readRun, type RunHeadline, type RunView } from './results.ts'
+import { readRun, type RunHeadline, type RunResponse, type RunView } from './results.ts'
 
 // A finished run: the server's result (envelope text, run id for Save),
 // its panel model, and the document text that was run (to tell when the
@@ -88,7 +88,10 @@ export function useRun(path: string, model: GraphModel | null): Run {
 // RunResults is what nodes read through RunContext: the latest run's
 // headline per node id. Like previews, results travel by context, never
 // by node data, so a run finishing never rebuilds the React Flow nodes.
-export type RunResults = { get: (id: string) => RunHeadline | undefined; stale: boolean }
+// response is the latest run's response of one request frame ("" for a
+// plain request, `requests[1]`, `stages[0].request`) with the request
+// frame that produced it (Response node headlines).
+export type RunResults = { get: (id: string) => RunHeadline | undefined; response?: (frame: string) => RunResponse | undefined; stale: boolean }
 
 export const RunContext = createContext<RunResults>({ get: () => undefined, stale: false })
 

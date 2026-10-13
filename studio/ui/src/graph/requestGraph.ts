@@ -17,6 +17,7 @@ import { describeAccept, isGlob, isVectorRole, readsMembers, slotFor, slotsFor, 
 import { groupKeyColumn, type GroupEntry } from './partition.ts'
 import { joinBodyLines, joinedFields, joinKeyRefusal, type RightSide } from './joins.ts'
 import { addDerived } from './resultGraph.ts'
+import type { PartKey } from './responseParts.ts'
 
 export type ColumnKey =
   | 'source'
@@ -45,8 +46,8 @@ export const COLUMNS: { key: ColumnKey; title: string }[] = [
   { key: 'sort', title: 'Sort' },
   { key: 'analysis', title: 'Analysis' },
   { key: 'output', title: 'Output' },
-  // The view-only Result node (resultGraph.ts): the table the frame returns.
-  { key: 'result', title: 'Result' },
+  // The view-only Response node (resultGraph.ts): what the frame returns.
+  { key: 'result', title: 'Response' },
 ]
 
 // ParamRow is one line of a node's compact body. key is the JSON path of
@@ -107,6 +108,9 @@ export type OpNodeData = {
   keyColumn?: string
   perGroup?: true
   output?: { used: boolean }
+  // View-only: the entry lands in a part of its frame's Response node
+  // (its `response` source handle, wired into that part's row or header).
+  response?: true
 }
 
 export type CohortFieldRow = { name: string; type: string; used: boolean }
@@ -128,14 +132,47 @@ export type RawNodeData = { path: string; column: ColumnKey; section: string; js
 export type FacetNodeData = { path: string; column: ColumnKey; rows: ParamRow[] }
 
 // ResultColumn is one column of a frame's result table: a group key, an
-// aggregation label or a window label, wired from source when known.
-export type ResultColumn = { name: string; kind: 'key' | 'aggregation' | 'window'; source?: string }
+// aggregation label or a window label, wired from source when known;
+// trimmed when the frame's `return` drops it.
+export type ResultColumn = { name: string; kind: 'key' | 'aggregation' | 'window'; source?: string; trimmed?: boolean }
 
-// ResultNodeData is a frame's view-only Result node (resultGraph.ts):
-// its result table's columns in order, whether the output is row-level
-// (no groups, no aggregations), and the node whose preview probe holds
-// the whole table (the sort, else the last window, aggregation or group).
-export type ResultNodeData = { path: string; column: ColumnKey; columns: ResultColumn[]; rowLevel: boolean; previewFrom?: string }
+// ResponseRow is one entry's row in a Response part (responseParts.ts):
+// id is the entry id relative to its frame (`tests[0]`, the row's
+// `part:` handle), source the entry's node; fanout names the group whose
+// preview counts the groups / partitions it runs over; adjusted marks a
+// test whose p-values the frame's multiplicity block corrects.
+export type ResponseRow = {
+  id: string
+  source: string
+  label: string
+  detail?: string
+  fanout?: { from: string; noun: 'groups' | 'partitions' }
+  adjusted?: true
+  trimmed?: true
+}
+
+// ResponsePart is one non-empty part of the Response below its table.
+export type ResponsePart = { key: PartKey; title: string; rows: ResponseRow[]; trimmed?: true }
+
+// ResultNodeData is a frame's view-only Response node (resultGraph.ts):
+// its data table (columns in order, whether the output is row-level, the
+// node whose preview probe holds the whole table: the sort, else the
+// last window, aggregation or group; table false when the response has
+// no `data`), then every other part of the response with a row per
+// entry. ret: the frame has a `return` block (wired into the header);
+// trims: it drops something here.
+export type ResultNodeData = {
+  path: string
+  column: ColumnKey
+  columns: ResultColumn[]
+  rowLevel: boolean
+  previewFrom?: string
+  table: boolean
+  tableTrimmed?: true
+  parts: ResponsePart[]
+  ret?: true
+  trims?: true
+}
 
 export type OpNode = Node<OpNodeData, 'op'>
 export type CohortNode = Node<CohortNodeData, 'cohort'>
@@ -687,8 +724,15 @@ export function estimateHeight(n: GraphNode): number {
     case 'facet':
       return headerHeight + n.data.rows.length * rowHeight + padding + LAYOUT.facetPreviewHeight
     case 'result':
-      return headerHeight + Math.max(1, n.data.columns.length + (n.data.rowLevel ? 1 : 0)) * rowHeight + padding + LAYOUT.resultPreviewHeight
+      return headerHeight + Math.max(1, responseLines(n)) * rowHeight + padding + (n.data.table ? LAYOUT.resultPreviewHeight : 0)
   }
+}
+
+// responseLines counts a Response node's body lines: the table's header
+// and columns (or its row-level line), then each part's header and rows.
+function responseLines(n: ResultNode): number {
+  const table = n.data.table ? 1 + Math.max(1, n.data.columns.length) : 0
+  return table + n.data.parts.reduce((k, p) => k + 1 + p.rows.length, 0)
 }
 
 // extraLines counts an op node's view-only rows: a group's key column
