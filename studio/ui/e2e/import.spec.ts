@@ -6,7 +6,7 @@
 // cohort whose source changed or went missing.
 import { appendFileSync, readFileSync, rmSync } from 'node:fs'
 import { join } from 'node:path'
-import { catalogRow, expect, openCohorts, test, type Studio } from './harness.ts'
+import { catalogRow, expect, newAnalysis, openCohorts, test, type Studio } from './harness.ts'
 import type { Page } from '@playwright/test'
 
 test.use({ workspace: 'ab-test-readout' })
@@ -86,9 +86,11 @@ test('upload, edit a type, save the schema, import, and start an analysis on the
 
   // New analysis on the new cohort (in its workspace).
   await page.getByTestId('cohort-new-request').click()
-  await expect(page.getByTestId('new-cohort')).toHaveValue('cohorts/retail.pulse')
-  await page.getByTestId('new-name').fill('retail_first')
-  await page.getByTestId('new-create').click()
+  await page.getByTestId('mode-card').first().click()
+  await page.getByTestId('wizard-next').click()
+  await expect(page.locator('[data-testid="cohort-option"][data-path="cohorts/retail.pulse"] input')).toBeChecked()
+  await page.getByTestId('wizard-back').click()
+  await newAnalysis(page, { mode: 'standalone', name: 'retail_first' })
   const graph = page.getByTestId('request-graph')
   await expect(graph.locator('[data-path="cohort"]')).toContainText('retail.pulse')
   await expect(graph.locator('[data-path="cohort"] [data-testid="preview"]')).toContainText('8 rows')

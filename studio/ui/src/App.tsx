@@ -24,6 +24,9 @@ export function App() {
   const [creating, setCreating] = useState(false)
   const [newAnalysis, setNewAnalysis] = useState<NewAnalysisOpen | null>(null)
   const [seq, setSeq] = useState(0)
+  // Cohorts › Import asked for from elsewhere (New analysis with no
+  // cohorts): n opens the import wizard once per ask.
+  const [importAsk, setImportAsk] = useState<{ area?: string; n: number } | null>(null)
   // Git-backed history of the open workspace (or of the global area when
   // there is none): on unless --no-git or git is missing (then a banner
   // says why and the History panel is not offered).
@@ -55,6 +58,7 @@ export function App() {
 
   const setTab = (t: Tab) => {
     setTabState(t)
+    setImportAsk(null)
     savePrefs({ tab: t })
   }
   const setWs = (slug: string) => {
@@ -62,8 +66,8 @@ export function App() {
     setNewAnalysis(null)
     savePrefs({ workspace: slug })
   }
-  // openNewAnalysis opens New analysis (W5: the mode wizard) in the
-  // open workspace, optionally on a cohort.
+  // openNewAnalysis opens New analysis (the mode wizard) in the open
+  // workspace, optionally on a cohort.
   const openNewAnalysis = (open: { cohort?: string } | null) => {
     setSeq((n) => n + 1)
     setNewAnalysis(open ? { ...open, n: seq + 1 } : null)
@@ -80,6 +84,13 @@ export function App() {
     setSeq((n) => n + 1)
     setNewAnalysis({ cohort: refPath, n: seq + 1 })
   }
+  // openImport goes to Cohorts › Import, into the open workspace.
+  const openImport = () => {
+    setTabState('cohorts')
+    savePrefs({ tab: 'cohorts' })
+    setSeq((n) => n + 1)
+    setImportAsk({ area: ws ?? undefined, n: seq + 1 })
+  }
   const workspaces = lib?.workspaces ?? []
   const current = workspaces.find((w) => w.slug === ws)
 
@@ -91,7 +102,7 @@ export function App() {
       </main>
     )
   } else if (tab === 'cohorts') {
-    body = <CohortsView libraryName={lib.name} workspaces={workspaces} onNewAnalysisOn={newAnalysisOn} />
+    body = <CohortsView libraryName={lib.name} workspaces={workspaces} onNewAnalysisOn={newAnalysisOn} importAsk={importAsk} />
   } else if (!current) {
     body = (
       <main className="canvas wide">
@@ -112,10 +123,12 @@ export function App() {
       <AnalysesView
         key={current.slug}
         workspace={current.slug}
+        workspaceName={current.name}
         catalog={catalog}
         history={git?.enabled ?? false}
         newAnalysis={newAnalysis}
         onNewAnalysis={openNewAnalysis}
+        onImport={openImport}
       />
     )
   }

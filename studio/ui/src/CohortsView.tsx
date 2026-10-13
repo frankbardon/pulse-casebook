@@ -18,6 +18,8 @@ type Props = {
   // "New analysis on this cohort": the cohort as a workspace refers to
   // it, and the workspace it is local to (null for a global cohort).
   onNewAnalysisOn: (refPath: string, workspace: string | null) => void
+  // Open the import wizard (into area) when n changes.
+  importAsk?: { area?: Area; n: number } | null
 }
 
 const KINDS: { kind: CatalogKind; title: string; key: keyof Omit<CohortsCatalog, 'truncated'> }[] = [
@@ -46,7 +48,7 @@ function entryOf(area: Area, path: string, extra: Partial<CatalogEntry> = {}): C
 // ones apart (local ones tagged with their workspace), the import
 // wizard (into Global or a workspace), and the selected item's view
 // (Rebuild, Export, Make global for local items).
-export function CohortsView({ libraryName, workspaces, onNewAnalysisOn }: Props) {
+export function CohortsView({ libraryName, workspaces, onNewAnalysisOn, importAsk }: Props) {
   const [catalog, setCatalog] = useState<CohortsCatalog | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [reload, setReload] = useState(0)
@@ -59,6 +61,12 @@ export function CohortsView({ libraryName, workspaces, onNewAnalysisOn }: Props)
   const [making, setMaking] = useState<Selected | null>(null)
   const [seq, setSeq] = useState(0)
   const [dragging, setDragging] = useState(false)
+  const [askedImport, setAskedImport] = useState<number | null>(null)
+  if (importAsk && importAsk.n !== askedImport) {
+    // Asked from elsewhere (New analysis with no cohorts): open Import.
+    setAskedImport(importAsk.n)
+    setWizard({ start: importAsk.area ? { area: importAsk.area } : {}, n: -importAsk.n })
+  }
 
   useEffect(() => {
     const ctl = new AbortController()

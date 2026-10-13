@@ -3,7 +3,7 @@ import { listFiles, type Catalog, type FileListing, type WorkspaceFile } from '.
 import { AreaContext } from './area.ts'
 import { RequestView } from './graph/RequestView.tsx'
 import { analysisName, filterAnalyses, groupByFolder, isAnalysis, modeCounts, modeOf, MODES, type ModeFilter } from './modes.ts'
-import { NewAnalysis } from './NewAnalysis.tsx'
+import { NewAnalysisWizard } from './NewAnalysisWizard.tsx'
 import './Sidebar.css'
 
 // NewAnalysisOpen is an open New analysis: the cohort it starts on, if
@@ -13,17 +13,20 @@ export type NewAnalysisOpen = { cohort?: string; n: number }
 
 type Props = {
   workspace: string
+  workspaceName: string
   catalog?: Catalog
   // The workspace is kept in git: the History panel is offered.
   history: boolean
   newAnalysis: NewAnalysisOpen | null
   onNewAnalysis: (open: { cohort?: string } | null) => void
+  // Cohorts › Import (New analysis found no cohorts).
+  onImport: () => void
 }
 
 // AnalysesView is the Analyses tab for one workspace: its analyses
 // listed together (by folder) with their mode, search and a mode filter,
 // and the editor for the selected one.
-export function AnalysesView({ workspace, catalog, history, newAnalysis, onNewAnalysis }: Props) {
+export function AnalysesView({ workspace, workspaceName, catalog, history, newAnalysis, onNewAnalysis, onImport }: Props) {
   const [listing, setListing] = useState<FileListing | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [selected, setSelected] = useState<WorkspaceFile | null>(null)
@@ -55,11 +58,9 @@ export function AnalysesView({ workspace, catalog, history, newAnalysis, onNewAn
     list = (
       <div className="empty-list" data-testid="analyses-empty">
         <p className="muted">No analyses yet.</p>
-        {!newAnalysis && (
-          <button type="button" className="primary" onClick={() => onNewAnalysis({})} data-testid="empty-new-analysis">
-            New analysis
-          </button>
-        )}
+        <button type="button" className="primary" onClick={() => onNewAnalysis({})} data-testid="empty-new-analysis">
+          New analysis
+        </button>
       </div>
     )
   else
@@ -124,31 +125,35 @@ export function AnalysesView({ workspace, catalog, history, newAnalysis, onNewAn
     <AreaContext.Provider value={workspace}>
       <aside className="sidebar">
         <nav className="files" aria-label="Analyses" data-testid="sidebar">
-          {newAnalysis && listing ? (
-            <NewAnalysis
-              key={newAnalysis.n}
-              files={listing.files}
-              initialCohort={newAnalysis.cohort}
-              onCancel={() => onNewAnalysis(null)}
-              onCreated={(f) => {
-                onNewAnalysis(null)
-                setCreated((n) => n + 1)
-                setSelected(f)
-              }}
-            />
-          ) : (
-            <div className="sidebar-actions">
-              <button type="button" className="new-request-open" data-testid="new-request-open" onClick={() => onNewAnalysis({})}>
-                New analysis
-              </button>
-            </div>
-          )}
+          <div className="sidebar-actions">
+            <button type="button" className="new-request-open" data-testid="new-request-open" onClick={() => onNewAnalysis({})}>
+              New analysis
+            </button>
+          </div>
           {list}
         </nav>
       </aside>
       <main className="canvas">
         <RequestView file={selected} catalog={catalog} history={history} />
       </main>
+      {newAnalysis && listing && (
+        <NewAnalysisWizard
+          key={newAnalysis.n}
+          files={listing.files}
+          workspaceName={workspaceName}
+          initialCohort={newAnalysis.cohort}
+          onCancel={() => onNewAnalysis(null)}
+          onImport={() => {
+            onNewAnalysis(null)
+            onImport()
+          }}
+          onCreated={(f) => {
+            onNewAnalysis(null)
+            setCreated((n) => n + 1)
+            setSelected(f)
+          }}
+        />
+      )}
     </AreaContext.Provider>
   )
 }

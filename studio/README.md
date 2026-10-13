@@ -143,9 +143,20 @@ grouped by folder, each with its **mode** and what that mode runs:
 | **Chained** | steps, each reading the previous step's result table | a request with `stages` |
 
 Search by name and filter by mode above the list. Click an analysis to open it in the graph.
-**New analysis** creates one in a mode you pick, on a cohort of this workspace or a global one,
-under `analyses/` (subfolders allowed), with a minimal valid body. It never overwrites an existing
-file.
+**New analysis** opens a wizard in three steps:
+
+1. **Mode.** One card per mode with its one-line summary, what it **reads**, what it **returns**, how
+   it **runs**, an example question it suits, and a small diagram. Click a card (or use the arrow
+   keys; Enter goes on). The last mode you chose is preselected next time.
+2. **Cohort.** This workspace's own cohorts and the global ones, grouped and labelled, with field
+   and row counts, and a search box. A Composed analysis's cohort seeds its first part; each part can
+   use its own cohort later. With no cohorts at all, the wizard links to Cohorts › Import.
+3. **Name & folder.** A name (letters, digits, spaces, `-`, `_`, `.`; unique in its folder whatever
+   the mode) and a folder under `analyses/`: an existing one or a new one. A summary shows the mode,
+   the cohort and the file to be written; **Create** writes a minimal valid body and opens it in the
+   editor.
+
+Back and Next move between steps, Escape closes. It never overwrites an existing file.
 
 ### Cohorts
 

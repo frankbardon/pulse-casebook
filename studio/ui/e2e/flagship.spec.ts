@@ -5,7 +5,7 @@
 // order is not: it is the engine's output order) and an identical engine
 // result for both.
 import type { Locator, Page } from '@playwright/test'
-import { drag, expect, test } from './harness.ts'
+import { drag, expect, newAnalysis, test } from './harness.ts'
 
 test.use({ workspace: 'ab-test-readout', viewport: { width: 1800, height: 1600 } })
 
@@ -156,12 +156,8 @@ test('the flagship readout rebuilds from an empty canvas and saves equal to the 
 
   // 1. A new composed analysis over the synthesized cohort.
   await page.getByTestId('new-request-open').click()
-  await page.getByTestId('new-root').selectOption('compose')
-  await expect(page.getByTestId('new-mode-runs')).toContainText('several standalone runs together')
-  await page.getByTestId('new-cohort').selectOption('cohorts/ab_test.pulse')
-  await expect(page.getByTestId('new-dir')).toHaveValue('analyses')
-  await page.getByTestId('new-name').fill('readout_rebuilt')
-  await page.getByTestId('new-create').click()
+  await expect(page.locator('[data-testid="mode-card"][data-mode="composed"]')).toContainText('several standalone runs together')
+  await newAnalysis(page, { mode: 'composed', cohort: 'cohorts/ab_test.pulse', name: 'readout_rebuilt' })
   const s = new Studio(page)
   await expect(s.graph.getByTestId('lane-title')).toHaveText(['request_1'])
   expect(studio.exists(REBUILT)).toBe(true)

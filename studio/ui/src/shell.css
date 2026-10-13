@@ -246,10 +246,6 @@ code + .scope-tag,
   align-items: flex-start;
 }
 
-.new-mode-runs {
-  font-size: 11px;
-}
-
 /* Make global */
 .mg-body {
   display: flex;

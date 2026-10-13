@@ -192,3 +192,27 @@ export async function openCohorts(page: Page): Promise<void> {
 export function analysisAt(page: Page, path: string): Locator {
   return page.locator(`[data-testid="analysis-row"][data-path="${path}"]`)
 }
+
+// newAnalysis walks the open New analysis wizard: picks the mode, the
+// cohort (by workspace path; default: the one it starts on), optionally
+// a new folder under analyses/, types the name and creates it.
+export async function newAnalysis(
+  page: Page,
+  o: { mode: 'standalone' | 'composed' | 'faceted' | 'chained'; cohort?: string; name: string; folder?: string },
+): Promise<void> {
+  const wizard = page.getByTestId('new-analysis-wizard')
+  await expect(wizard).toHaveAttribute('data-step', 'mode')
+  await wizard.locator(`[data-testid="mode-card"][data-mode="${o.mode}"]`).click()
+  await wizard.getByTestId('wizard-next').click()
+  await expect(wizard).toHaveAttribute('data-step', 'cohort')
+  if (o.cohort) await wizard.locator(`[data-testid="cohort-option"][data-path="${o.cohort}"]`).click()
+  await wizard.getByTestId('wizard-next').click()
+  await expect(wizard).toHaveAttribute('data-step', 'name')
+  if (o.folder !== undefined) {
+    await wizard.getByTestId('new-folder').selectOption({ label: 'New folder…' })
+    await wizard.getByTestId('new-folder-input').fill(o.folder)
+  }
+  await wizard.getByTestId('new-name').fill(o.name)
+  await wizard.getByTestId('new-create').click()
+  await expect(wizard).toBeHidden()
+}

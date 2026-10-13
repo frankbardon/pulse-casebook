@@ -8,7 +8,7 @@
 // name).
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
-import { analysisRow, catalogRow, expect, openCohorts, test } from './harness.ts'
+import { analysisRow, catalogRow, expect, newAnalysis, openCohorts, test } from './harness.ts'
 
 test.use({ workspace: 'ab-test-readout' })
 
@@ -55,9 +55,14 @@ test('analyses are listed with their mode; workspaces are created, switched, ren
   await expect(page.getByTestId('workspace-select')).toHaveValue('churn-study')
   await expect(page.getByTestId('analyses-empty')).toBeVisible()
   await page.getByTestId('empty-new-analysis').click()
-  await expect(page.getByTestId('new-cohort')).toHaveValue('_global/cohorts/design.pulse')
-  await page.getByTestId('new-name').fill('first')
-  await page.getByTestId('new-create').click()
+  await page.getByTestId('mode-card').first().click()
+  await page.getByTestId('wizard-next').click()
+  const only = page.getByTestId('cohort-option')
+  await expect(only).toHaveCount(1)
+  await expect(only).toHaveAttribute('data-scope', 'global')
+  await expect(only.locator('input')).toBeChecked()
+  await page.getByTestId('wizard-back').click()
+  await newAnalysis(page, { mode: 'standalone', name: 'first' })
   await expect(page.getByTestId('request-graph').locator('[data-path="cohort"]')).toContainText('design.pulse')
   await expect(analysisRow(page, 'first.json').getByTestId('mode-badge')).toHaveText('Standalone')
   const first = JSON.parse(readFileSync(join(studio.dir, 'workspaces/churn-study/analyses/first.json'), 'utf8'))
