@@ -73,7 +73,7 @@ studio-ui: $(STUDIO_DEPS) ## Build the Studio UI into studio/web/dist (embedded 
 studio: studio-ui ## Build the Studio binary (UI then Go) into bin/studio
 	@mkdir -p $(BIN)
 	cd studio && CGO_ENABLED=0 go build -trimpath -o $(abspath $(BIN))/studio .
-	@echo "· installed $(BIN)/studio (run: $(BIN)/studio showcase/ab-test-readout)"
+	@echo "· installed $(BIN)/studio (run: $(BIN)/studio ~/pulse-library; a new or empty dir becomes a library)"
 
 studio-bump: ## Pin studio/go.mod to PULSE_REF in PULSE_SRC (a tag pins that release)
 	@set -e; ver=$$(git -C "$(PULSE_SRC)" describe --tags --exact-match "$(PULSE_REF)^{commit}" 2>/dev/null \
@@ -82,7 +82,7 @@ studio-bump: ## Pin studio/go.mod to PULSE_REF in PULSE_SRC (a tag pins that rel
 	cd studio && GOWORK=off go get github.com/frankbardon/pulse@$$ver && GOWORK=off go mod tidy; \
 	grep 'github.com/frankbardon/pulse ' go.mod
 
-studio-check: studio ## Studio gate: go vet, go test, tsc, eslint, vitest, Playwright e2e (temp workspaces)
+studio-check: studio ## Studio gate: go vet, go test, tsc, eslint, vitest, Playwright e2e (temp libraries)
 	cd studio && go vet ./... && go test ./...
 	cd $(STUDIO_UI) && npm run typecheck && npm run lint && npm test
 	cd $(STUDIO_UI) && npx playwright install chromium && npm run e2e
