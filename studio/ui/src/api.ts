@@ -278,6 +278,10 @@ export type PreviewProbe = {
   component?: unknown
   facet?: unknown
   result?: unknown
+  // A grouped test, matrix or post-test: its entries, one per group (or
+  // partition) in Data row order, capped; results_total counts them all.
+  results?: unknown[]
+  results_total?: number
 }
 
 export type PreviewResult = {

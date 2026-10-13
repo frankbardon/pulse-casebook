@@ -1,6 +1,6 @@
 import type { MouseEvent, ReactNode } from 'react'
 import type { PreviewProbe, PreviewStats } from '../api.ts'
-import { fmtCount, fmtNum, fmtPct, headlines, tableSummary, vectorSummary, type PreviewState } from './previews.ts'
+import { fmtCount, fmtNum, fmtPct, groupedSummary, headlines, tableSummary, vectorSummary, type PreviewState } from './previews.ts'
 import { usePreview } from './usePreviews.ts'
 
 // NodePreview is a node's fixed-height preview footer: two lines of
@@ -208,6 +208,26 @@ function ProbeBody({
       )
     }
     default: {
+      // A grouped test, matrix or post-test: one result per group.
+      const g = groupedSummary(probe)
+      if (g) {
+        const list = g.groups.map((x) => `${x.key} ${x.v}`).join(' · ')
+        return (
+          <>
+            <Line>
+              <span className="pv-strong" data-testid="preview-grouped">
+                {g.headline}
+              </span>
+              {g.significant && <span className="pv-muted">{g.significant}</span>}
+            </Line>
+            <Line>
+              <span className="pv-groups" title={list + (g.total > g.groups.length ? ` · … (${g.total})` : '')}>
+                {list}
+              </span>
+            </Line>
+          </>
+        )
+      }
       const hs = headlines(probe)
       if (hs.length === 0) return <Line muted>{probe.kind} ready</Line>
       return (

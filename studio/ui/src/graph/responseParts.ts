@@ -105,10 +105,12 @@ function match(s: Seg, name: string): boolean {
 // largest when there are several, adjusted when corrected), regressions
 // their R², matrices and the crosstab their shape. Undefined when there
 // is nothing to say.
-export function partHeadline(key: PartKey, results: readonly unknown[]): string | undefined {
+// total overrides the count shown when results is a capped sample.
+export function partHeadline(key: PartKey, results: readonly unknown[], total?: number): string | undefined {
   const rs = results.filter(isObject)
   if (rs.length === 0) return undefined
-  const many = rs.length > 1 ? ` ×${rs.length}` : ''
+  const n = Math.max(total ?? 0, rs.length)
+  const many = n > 1 ? ` ×${n}` : ''
   switch (key) {
     case 'tests':
     case 'post_tests': {
@@ -137,7 +139,7 @@ function shapeOf(m: unknown): string | undefined {
   return `${m.row_keys.length}×${m.column_keys.length}`
 }
 
-function fmtP(p: number): string {
+export function fmtP(p: number): string {
   if (p < 1e-4) return '<0.0001'
   return String(Number(p.toPrecision(2)))
 }

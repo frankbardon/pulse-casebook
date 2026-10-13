@@ -123,18 +123,24 @@ test.describe('grouped request', () => {
     await expect(testRow.getByTestId('response-fanout')).toHaveCount(0)
   })
 
-  test('a run gives the grouped test its headline', async ({ page, studio }) => {
+  test('a grouped test previews every group; a run agrees', async ({ page, studio }) => {
     writeFileSync(join(studio.dir, FILE), TEXT)
     await page.goto('/')
     await page.getByRole('button', { name: FILE }).click()
-    const testRow = page.getByTestId('request-graph').locator('[data-testid="response-row"][data-row="tests[0]"]')
+    const graph = page.getByTestId('request-graph')
+    const testRow = graph.locator('[data-testid="response-row"][data-row="tests[0]"]')
     await expect(testRow).toHaveCount(1)
-    // A grouped test's probe carries one result, not one per group: only
-    // the run has them all.
-    await expect(testRow.getByTestId('response-headline')).toHaveCount(0)
+    // A grouped test's probe carries one result per group: the node
+    // preview shows the worst p over the four regions and each group's p,
+    // and the Response row has its headline before any run.
+    const testPreview = graph.locator('[data-path="tests[0]"]').getByTestId('preview')
+    await expect(testPreview.getByTestId('preview-grouped')).toHaveText(/p = [<\d.]+ ×4/, { timeout: 30_000 })
+    await expect(testPreview).toContainText(/\/4 sig\./)
+    await expect(testRow.getByTestId('response-headline')).toContainText(/p = [<\d.]+ ×4/)
+    const previewed = (await testRow.getByTestId('response-headline').innerText()).trim()
     await page.getByTestId('run-button').click()
     await expect(page.getByTestId('run-status')).toHaveAttribute('data-phase', 'done', { timeout: 30_000 })
-    await expect(testRow.getByTestId('response-headline')).toContainText(/p = [<\d.]+ ×4/)
+    await expect(testRow.getByTestId('response-headline')).toHaveText(previewed)
   })
 
   test('return strikes what it drops; multiplicity tags the tests', async ({ page, studio }) => {

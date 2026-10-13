@@ -43,7 +43,11 @@ type Result struct {
 //	sort                    rows, table, component (aggregations only)
 //	test, post_test,
 //	regression, matrix,
-//	crosstab, overlay       rows, result (the engine's result entry)
+//	crosstab, overlay       rows, result (the engine's result entry);
+//	                        on a grouped request, tests and matrices
+//	                        (per group) and post-tests (per partition)
+//	                        carry results instead: every entry of the
+//	                        node, in Data row order
 //	facet                   rows, facet (per-field facet results)
 //	vector                  rows, vector (per-member means and counts)
 //	none                    reason
@@ -59,6 +63,10 @@ type Probe struct {
 	Component json.RawMessage `json:"component,omitempty"`
 	Facet     json.RawMessage `json:"facet,omitempty"`
 	Result    json.RawMessage `json:"result,omitempty"`
+	// Results are a grouped node's entries, one per group (or
+	// partition), capped at MaxTableRows; ResultsTotal counts them all.
+	Results      []json.RawMessage `json:"results,omitempty"`
+	ResultsTotal int               `json:"results_total,omitempty"`
 }
 
 // Rows are the run-wide record counts.
@@ -321,13 +329,13 @@ func summarize(res *Result, plan *Plan, raw []byte) error {
 		case KindWindow, KindSort:
 			p.Table = table(resp.Data)
 		case KindTest:
-			p.Result = pick(resp.Tests, np.Index)
+			p.setEntries(resp.Tests, np)
 		case KindPostTest:
-			p.Result = pick(resp.PostTests, np.Index)
+			p.setEntries(resp.PostTests, np)
 		case KindRegression:
 			p.Result = pick(resp.Regressions, np.Index)
 		case KindMatrix:
-			p.Result = pick(resp.Matrices, np.Index)
+			p.setEntries(resp.Matrices, np)
 		case KindCrosstab:
 			p.Result = resp.Crosstab
 			if len(p.Result) == 0 {
@@ -495,6 +503,38 @@ func capBuckets(raw json.RawMessage) json.RawMessage {
 		return raw
 	}
 	return out
+}
+
+// setEntries sets a test, post-test or matrix probe's result. An
+// ungrouped response holds one entry per request entry, in order. A
+// grouped one holds one per (entry x group) — per (post-test x
+// partition) — entry-major, each carrying group_key (pulse
+// types.Response.Tests / Matrices / PostTests): entry k belongs to
+// request entry k / (len / Count), so the node's block is all of its
+// groups, kept in Results.
+func (p *Probe) setEntries(list []json.RawMessage, np *NodePlan) {
+	if np.Count <= 0 || len(list) == 0 || len(list)%np.Count != 0 || !grouped(list[0]) {
+		p.Result = pick(list, np.Index)
+		return
+	}
+	per := len(list) / np.Count
+	if np.Index < 0 || np.Index >= np.Count {
+		return
+	}
+	block := list[np.Index*per : (np.Index+1)*per]
+	p.ResultsTotal = len(block)
+	if len(block) > MaxTableRows {
+		block = block[:MaxTableRows]
+	}
+	p.Results = block
+}
+
+// grouped says whether a result entry carries a group_key.
+func grouped(entry json.RawMessage) bool {
+	var e struct {
+		GroupKey json.RawMessage `json:"group_key"`
+	}
+	return json.Unmarshal(entry, &e) == nil && len(e.GroupKey) > 0 && string(e.GroupKey) != "null"
 }
 
 func pick(list []json.RawMessage, i int) json.RawMessage {

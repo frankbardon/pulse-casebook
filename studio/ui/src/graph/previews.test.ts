@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import type { PreviewResult } from '../api.ts'
 import { fromPlain, parseJson, toPlain } from './jsonTree.ts'
 import { emitModel, parseModel, updateNode, type GraphModel } from './model.ts'
-import { batches, changedIds, fingerprints, fmtCount, fmtNum, fmtPct, headlines, invalidated, tableSummary } from './previews.ts'
+import { batches, changedIds, fingerprints, fmtCount, fmtNum, fmtPct, groupedSummary, headlines, invalidated, tableSummary } from './previews.ts'
 import { buildRequestGraph } from './requestGraph.ts'
 import { land } from './usePreviews.ts'
 
@@ -217,5 +217,52 @@ describe('formatting', () => {
     expect(tableSummary(probe, 'nps')).toEqual({ count: '2 rows', detail: 'nps -5.01…0.95' })
     const group = { node: 'g', kind: 'group', table: { rows: [{ __probe0_n: 3, wave: 'W1' }], total_rows: 1 } }
     expect(tableSummary(group, undefined)).toEqual({ count: '1 group', detail: 'W1' })
+  })
+})
+
+describe('groupedSummary', () => {
+  it('summarizes a grouped test probe per group, worst p like the Response row', () => {
+    const probe = {
+      node: 'tests[0]',
+      kind: 'test',
+      results: [
+        { label: 'a', group_key: ['desktop'], p_value: 0.004, reject_null: true },
+        { label: 'a', group_key: ['mobile'], p_value: 0.31, reject_null: false },
+        { label: 'a', group_key: ['tablet'], p_value: null, reject_null: false },
+      ],
+      results_total: 3,
+    }
+    expect(groupedSummary(probe)).toEqual({
+      headline: 'p = 0.31 ×3',
+      significant: '1/3 sig.',
+      groups: [
+        { key: 'desktop', v: '0.004' },
+        { key: 'mobile', v: '0.31' },
+        { key: 'tablet', v: '–' },
+      ],
+      total: 3,
+    })
+  })
+
+  it('prefers adjusted p and counts every group of a capped list', () => {
+    const results = [{ group_key: ['a', 'w1'], p_value: 0.01, p_adjusted: 0.04, significant_adjusted: true }]
+    const g = groupedSummary({ node: 'post_tests[0]', kind: 'post_test', results, results_total: 120 })
+    expect(g?.headline).toBe('p = 0.04 ×120')
+    expect(g?.groups).toEqual([{ key: 'a/w1', v: '0.04' }])
+    expect(g?.significant).toBe('1/1 sig.')
+  })
+
+  it('reads a grouped matrix shape and first off-diagonal value', () => {
+    const primary = { row_keys: ['x', 'y'], column_keys: ['x', 'y'], values: [[1, 0.42], [0.42, 1]] }
+    const g = groupedSummary({ node: 'matrices[0]', kind: 'matrix', results: [{ group_key: ['g1'], primary }, { group_key: ['g2'], primary }] })
+    expect(g?.headline).toBe('2×2 ×2')
+    expect(g?.groups).toEqual([
+      { key: 'g1', v: '0.42' },
+      { key: 'g2', v: '0.42' },
+    ])
+  })
+
+  it('is undefined for an ungrouped probe', () => {
+    expect(groupedSummary({ node: 'tests[0]', kind: 'test', result: { p_value: 0.1 } })).toBeUndefined()
   })
 })

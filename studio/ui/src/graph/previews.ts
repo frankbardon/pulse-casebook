@@ -9,6 +9,7 @@ import type { GraphModel } from './model.ts'
 import { FACET_NODE } from './facetGraph.ts'
 import { frameOf, splitFrame } from './nodePath.ts'
 import { COLUMNS, REQUEST_SECTIONS, hasPreview, sectionInfo, type GraphEdge, type GraphNode } from './requestGraph.ts'
+import { fmtP, partHeadline, type PartKey } from './responseParts.ts'
 
 // PreviewState is what a node's preview footer shows.
 export type PreviewState =
@@ -276,6 +277,38 @@ export function headlines(probe: PreviewProbe): Headline[] {
     add(k, v)
   }
   return out
+}
+
+// GroupedSummary is a grouped test, matrix or post-test preview (the
+// probe's results, one per group or partition): the headline the
+// Response row shows (worst p ×N, matrix shape ×N), how many groups
+// reject the null (tests), and one compact value per group.
+export type GroupedSummary = { headline: string; significant?: string; groups: { key: string; v: string }[]; total: number }
+
+const PROBE_PART: Readonly<Record<string, PartKey>> = { test: 'tests', post_test: 'post_tests', matrix: 'matrices' }
+
+export function groupedSummary(probe: PreviewProbe): GroupedSummary | undefined {
+  const rs = Array.isArray(probe.results) ? probe.results.filter(isObj) : []
+  const part = PROBE_PART[probe.kind]
+  if (rs.length === 0 || part === undefined) return undefined
+  const total = Math.max(probe.results_total ?? 0, rs.length)
+  const headline = partHeadline(part, rs, total) ?? `×${total}`
+  const keyOf = (r: Record<string, unknown>, k: number) => (Array.isArray(r.group_key) ? r.group_key.map(String).join('/') : `#${k + 1}`)
+  if (part === 'matrices') {
+    const groups = rs.map((r, k) => {
+      const vals = isObj(r.primary) && Array.isArray(r.primary.values) ? r.primary.values : []
+      const row = Array.isArray(vals[0]) ? vals[0] : []
+      return { key: keyOf(r, k), v: fmtNum(row[1], 2) }
+    })
+    return { headline, groups, total }
+  }
+  const pOf = (r: Record<string, unknown>) => (typeof r.p_adjusted === 'number' ? r.p_adjusted : r.p_value)
+  const sig = (r: Record<string, unknown>) => (typeof r.significant_adjusted === 'boolean' ? r.significant_adjusted : r.reject_null === true)
+  const groups = rs.map((r, k) => {
+    const p = pOf(r)
+    return { key: keyOf(r, k), v: typeof p === 'number' && Number.isFinite(p) ? fmtP(p) : '–' }
+  })
+  return { headline, significant: `${rs.filter(sig).length}/${rs.length} sig.`, groups, total }
 }
 
 // tableSummary summarizes a group/aggregation/window/sort table: the row

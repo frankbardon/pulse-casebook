@@ -160,6 +160,10 @@ type NodePlan struct {
 	// Vector is a vector probe's hidden aggregations (nil when the vector
 	// cannot be probed; Reason says why).
 	Vector *VectorPlan
+	// Count is the number of entries in the node's section of the
+	// sub-request (tests, post-tests, matrices): a grouped response
+	// holds Count blocks of one entry per group, entry-major.
+	Count int
 }
 
 // VectorPlan maps a vector probe's hidden aggregations back to its
@@ -437,6 +441,9 @@ func (b *builder) requestFrame(section string, ids []string, indices []int) (*Pl
 		plan.Nodes = append(plan.Nodes, np)
 		if single || kind == KindCohort {
 			np.Index = -1
+		}
+		if arr, ok := frame[section].([]any); ok && isArray {
+			np.Count = len(arr)
 		}
 	}
 

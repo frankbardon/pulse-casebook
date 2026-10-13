@@ -120,6 +120,23 @@ var inlineRequests = map[string]string{
   "vectors": [{"name": "drivers", "fields": ["pages_viewed", "prior_sessions", "revenue"]}],
   "matrices": [{"type": "MAT_CORRELATION", "name": "corr", "vector": "drivers"}]
 }`,
+	"ab/req/grouped.json": `{
+  "cohort": ` + abCohort + `,
+  "groups": [{"type": "GROUP_CATEGORY", "field": "device"}, {"type": "GROUP_CATEGORY", "field": "assign_week"}],
+  "aggregations": [{"type": "AGG_AVERAGE", "field": "revenue", "label": "rev"}, {"type": "AGG_AVERAGE", "field": "pages_viewed", "label": "pages"}],
+  "tests": [
+    {"type": "TEST_WELCH", "field": "revenue", "split_by": "arm", "label": "rev_welch"},
+    {"type": "TEST_MANN_WHITNEY_U", "field": "pages_viewed", "split_by": "arm", "label": "pages_mwu"}
+  ],
+  "matrices": [
+    {"type": "MAT_CORRELATION", "name": "first", "fields": ["revenue", "prior_sessions"]},
+    {"type": "MAT_COVARIANCE", "name": "second", "fields": ["pages_viewed", "prior_sessions"]}
+  ],
+  "post_tests": [
+    {"type": "TEST_TREND", "field": "rev", "label": "trend_a", "order_by": [{"field": "assign_week"}]},
+    {"type": "TEST_TREND", "field": "pages", "label": "trend_b", "order_by": [{"field": "assign_week"}]}
+  ]
+}`,
 	"ab/req/join.json": `{
   "cohort": ` + abCohort + `,
   "joins": [{"right": "ab_half.pulse", "kind": "inner", "as": "r_", "on": [{"left_field": "user_id", "right_field": "user_id"}]}],
@@ -509,6 +526,57 @@ func TestPreviewProbes(t *testing.T) {
 			}
 			c.parity(t, probe, direct)
 		})
+	}
+}
+
+// A grouped request returns one test / matrix per (entry x group) and
+// one post-test per (entry x partition), entry-major: each node's probe
+// carries its own block, every group, in the full run's order.
+func TestPreviewGroupedEntries(t *testing.T) {
+	f := newPreviewFixture(t)
+	path := "ab/req/grouped.json"
+	var full map[string]any
+	mustUnmarshal(t, f.read(t, path), &full)
+	full["cohort"] = map[string]any{"filename": "ab/ab_test.pulse"}
+	direct := f.direct(t, "process", full)
+	groups := len(at(direct, "data").([]any))
+	for _, c := range []struct {
+		section, name string
+		per           int
+	}{
+		{"tests", "label", groups},
+		{"matrices", "name", groups},
+		// Two groupers: post-tests partition by every key but the last.
+		{"post_tests", "label", 3},
+	} {
+		list, _ := at(direct, c.section).([]any)
+		if len(list) != 2*c.per {
+			t.Fatalf("%s: full run has %d entries, want %d", c.section, len(list), 2*c.per)
+		}
+		for i := range 2 {
+			node := fmt.Sprintf("%s[%d]", c.section, i)
+			code, out := f.post(t, map[string]any{"path": path, "request": f.read(t, path), "node": node})
+			if code != http.StatusOK {
+				t.Fatalf("%s: status %d: %v", node, code, out)
+			}
+			probe, _ := at(out, "probes", 0).(map[string]any)
+			if probe["result"] != nil {
+				t.Fatalf("%s: grouped probe has a single result: %v", node, probe["result"])
+			}
+			got, _ := probe["results"].([]any)
+			if len(got) != c.per || probe["results_total"] != float64(c.per) {
+				t.Fatalf("%s: %d results (total %v), want %d", node, len(got), probe["results_total"], c.per)
+			}
+			want := list[i*c.per : (i+1)*c.per]
+			for k := range got {
+				if !reflect.DeepEqual(at(got[k], c.name), at(want[k], c.name)) || !reflect.DeepEqual(at(got[k], "group_key"), at(want[k], "group_key")) {
+					t.Fatalf("%s result %d = %v %v, want %v %v", node, k, at(got[k], c.name), at(got[k], "group_key"), at(want[k], c.name), at(want[k], "group_key"))
+				}
+				if !reflect.DeepEqual(at(got[k], "p_value"), at(want[k], "p_value")) {
+					t.Fatalf("%s result %d p = %v, want %v", node, k, at(got[k], "p_value"), at(want[k], "p_value"))
+				}
+			}
+		}
 	}
 }
 

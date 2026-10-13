@@ -115,16 +115,20 @@ function Part({ part, frame }: { part: ResponsePart; frame: string }) {
 
 // PartRow is one entry's row: its label, where it fans out ("× 4
 // groups"), whether its p is adjusted, and a headline from the entry's
-// own preview (when it does not fan out: a probe carries one result) or
-// else the latest run.
+// own preview (every group's result when it fans out, else its one
+// result) or else the latest run.
 function PartRow({ part, row, frame }: { part: ResponsePart; row: ResponseRow; frame: string }) {
   const { state } = usePreview(row.source)
   const { state: groupState } = usePreview(row.fanout?.from ?? '')
   const run = use(RunContext)
-  const buckets = row.fanout ? probeOf(groupState)?.table?.total_rows : undefined
-  let headline: string | undefined
   const probe = probeOf(state)
-  if (!row.fanout && probe?.result !== undefined && probe.result !== null) headline = partHeadline(part.key, [probe.result])
+  // A grouped probe carries every group's result (results), an
+  // ungrouped one its single result.
+  const grouped = Array.isArray(probe?.results) && probe.results.length > 0 ? probe.results : undefined
+  const buckets = row.fanout ? (probeOf(groupState)?.table?.total_rows ?? (grouped && probe?.results_total)) : undefined
+  let headline: string | undefined
+  if (grouped) headline = partHeadline(part.key, grouped, probe?.results_total)
+  else if (!row.fanout && probe?.result !== undefined && probe.result !== null) headline = partHeadline(part.key, [probe.result])
   if (headline === undefined) {
     const ran = run.response?.(frame)
     if (ran) headline = partHeadline(part.key, partResults(part.key, indexOf(row.id), ran.request, ran.response))
