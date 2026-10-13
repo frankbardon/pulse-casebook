@@ -5,9 +5,9 @@ import type { CohortField, Manifest, PreviewProbe } from '../api.ts'
 import { fromPlain, toPlain } from './jsonTree.ts'
 import { setIn } from './jsonEdit.ts'
 import { emitModel, emitModelText, parseModel, updateNode, type GraphModel } from './model.ts'
-import { applyField, buildForm, formProblems } from './paramForms.ts'
+import { applyField, buildForm, fieldText, formProblems, refChoices, vectorNamesOfModel, type FormField, type NodeForm } from './paramForms.ts'
 import { BLOCK_ITEMS, paletteItems, placeNode } from './palette.ts'
-import { slotsFor, vectorMemberRefusal, VECTOR_MEMBER } from './ports.ts'
+import { isVectorInput, slotsFor, vectorMemberRefusal, VECTOR_MEMBER } from './ports.ts'
 import { vectorSummary } from './previews.ts'
 import { buildRequestGraph, hasPreview, type OpNode } from './requestGraph.ts'
 import { clientIssues } from './validation.ts'
@@ -234,5 +234,78 @@ describe('matrix members: vector or fields', () => {
       ['vector', 'members'],
       ['fields', 'members'],
     ])
+  })
+})
+
+describe('vector picker', () => {
+  const vectorField = (form: NodeForm) => form.sections.find((s) => s.title === 'Members')?.fields.find((f) => f.key === 'vector') as FormField
+  const REQ = `{"cohort":{"filename":"ab_test.pulse"},
+    "vectors":[{"name":"drivers","fields":["revenue"]},{"name":"spend","fields":["revenue"]}],
+    "groups":[{"type":"GROUP_KMEANS","vector":"drivers","params":{"k":3}}],
+    "aggregations":[{"type":"AGG_VEC_MEAN","vector":"spend","label":"m"},{"type":"AGG_COUNT","field":"revenue","label":"n"}],
+    "attributes":[{"type":"ATTR_VEC_DISTANCE","vector":"gone","label":"d","params":{"reference":[0]}}],
+    "matrices":[{"type":"MAT_CORRELATION","vector":"drivers"}]}`
+  const m = parseModel(REQ, 'request')
+  const names = vectorNamesOfModel(m, '')
+  const formOf = (id: string) => buildForm(m.nodes.get(id)!, catalog, { vectorNames: names })
+
+  it("lists the frame's vector names in document order", () => {
+    expect(names).toEqual(['drivers', 'spend'])
+    const c = parseModel(
+      `{"requests":[{"cohort":{"filename":"a.pulse"},"vectors":[{"name":"a1","fields":[]}]},
+        {"cohort":{"filename":"a.pulse"},"vectors":[{"name":"b1","fields":[]},{"name":"b1","fields":[]},{"name":"b2","pattern":"^q"}]}]}`,
+      'compose',
+    )
+    expect(vectorNamesOfModel(c, 'requests[0]')).toEqual(['a1'])
+    expect(vectorNamesOfModel(c, 'requests[1]')).toEqual(['b1', 'b2'])
+    expect(vectorNamesOfModel(c, '')).toEqual([])
+  })
+
+  it('makes the matrix vector a picker of the defined vectors', () => {
+    const f = vectorField(formOf('matrices[0]'))
+    expect(f).toMatchObject({ type: 'vectorRef', options: ['drivers', 'spend'], oneOf: 'members' })
+    expect(refChoices(f, 'drivers')).toEqual([
+      { value: '', label: '(unset)' },
+      { value: 'drivers', label: 'drivers' },
+      { value: 'spend', label: 'spend' },
+    ])
+  })
+
+  it('keeps a name no vector defines selected, marked unknown', () => {
+    const f = vectorField(formOf('attributes[0]'))
+    const text = fieldText(f, m.nodes.get('attributes[0]')!.value)
+    expect(text).toBe('gone')
+    expect(refChoices(f, text)).toEqual([
+      { value: '', label: '(unset)' },
+      { value: 'gone', label: 'gone (unknown)' },
+      { value: 'drivers', label: 'drivers' },
+      { value: 'spend', label: 'spend' },
+    ])
+  })
+
+  it('gives vector-input operators the same picker', () => {
+    expect(isVectorInput('GROUP_KMEANS')).toBe(true)
+    expect(isVectorInput('AGG_VEC_SUM')).toBe(true)
+    expect(isVectorInput('AGG_VEC_FUTURE')).toBe(true)
+    expect(isVectorInput('ATTR_VEC_DISTANCE')).toBe(true)
+    expect(isVectorInput('AGG_COUNT')).toBe(false)
+    for (const id of ['groups[0]', 'aggregations[0]', 'attributes[0]']) {
+      expect(vectorField(formOf(id))).toMatchObject({ type: 'vectorRef', options: ['drivers', 'spend'] })
+    }
+    // A plain aggregation has no members section.
+    expect(formOf('aggregations[1]').sections.some((s) => s.title === 'Members')).toBe(false)
+    // A vector-input operator naming neither vector nor fields is flagged.
+    const bare = buildForm({ id: 'groups[0]', kind: 'entry', section: 'groups', value: fromPlain({ type: 'GROUP_KMEANS', params: { k: 3 } }) }, catalog)
+    expect(formProblems(bare, fromPlain({ type: 'GROUP_KMEANS', params: { k: 3 } }))).toContain('exactly one of vector, fields')
+  })
+
+  it('writes and clears the name losslessly', () => {
+    const node = m.nodes.get('aggregations[0]')!
+    const f = vectorField(formOf('aggregations[0]'))
+    const set = applyField(f, node.value, 'drivers')
+    expect(emitModelText(updateNode(m, node.id, set.value))).toContain('{"type":"AGG_VEC_MEAN","vector":"drivers","label":"m"}')
+    const cleared = applyField(f, node.value, '')
+    expect(emitModelText(updateNode(m, node.id, cleared.value))).toContain('{"type":"AGG_VEC_MEAN","label":"m"}')
+    expect(applyField(f, node.value, 'spend').value).toBe(node.value)
   })
 })

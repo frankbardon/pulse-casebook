@@ -71,7 +71,7 @@ export const BLOCK_ITEMS: readonly PaletteItem[] = [
   {
     key: 'joins/JOIN',
     section: 'joins',
-    column: 'source',
+    column: 'joins',
     kind: 'Join',
     op: 'JOIN',
     type: 'inner',

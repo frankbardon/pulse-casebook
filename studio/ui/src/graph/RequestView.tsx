@@ -50,12 +50,14 @@ import {
   deletable,
   deleteNode,
   disconnectWires,
+  homeToColumn,
   type Wire,
   type WireCheck,
 } from './wiring.ts'
 import { CohortNodeView, FacetNodeView, LaneNodeView, OpNodeView, RawNodeView, type LaneNode } from './nodes.tsx'
 import { Inspector } from './Inspector.tsx'
 import { groupKeysOfModel } from './partition.ts'
+import { vectorNamesOfModel } from './paramForms.ts'
 import { Palette } from './Palette.tsx'
 import { itemsForPort, PALETTE_MIME, paletteItems, placeNode, type PaletteItem, type PortSource } from './palette.ts'
 import { emitsType } from './ports.ts'
@@ -382,18 +384,22 @@ function RequestGraphView({ path, kind, catalog }: { path: string; kind: ViewKin
     runNow()
   }, [runNow])
 
-  // Sidecar positions override auto-layout; ids the graph no longer has
-  // are simply never looked up. Compose content positions are relative to
+  // Sidecar positions override auto-layout (re-homed to the node's own
+  // column when the columns moved since: wiring.homeToColumn); ids the
+  // graph no longer has are simply never looked up. Compose content positions are relative to
   // their lane; lanes stack top to bottom in lane order, each as tall as
   // its content (measured where React Flow has measured it).
   const content = useMemo((): GraphNode[] => {
     if (graph === null || typeof graph === 'string') return []
-    return graph.nodes.map((n) => ({
-      ...n,
-      position: positionOf(lay.layout, n.id) ?? n.position,
-      selected: n.id === selected,
-      measured: measured.get(n.id),
-    }))
+    return graph.nodes.map((n) => {
+      const saved = positionOf(lay.layout, n.id)
+      return {
+        ...n,
+        position: saved ? homeToColumn(saved, n.data.column, graph.columns) : n.position,
+        selected: n.id === selected,
+        measured: measured.get(n.id),
+      }
+    })
   }, [graph, lay.layout, selected, measured])
 
   const boxes = useMemo((): LaneBox[] => {
@@ -836,6 +842,11 @@ function RequestGraphView({ path, kind, catalog }: { path: string; kind: ViewKin
     () => (doc && selected !== null ? groupKeysOfModel(doc.model, frameOf(selected)) : undefined),
     [doc, selected],
   )
+  // ... and its vectors' names (a `vector` input's options).
+  const selectedVectorNames = useMemo(
+    () => (doc && selected !== null ? vectorNamesOfModel(doc.model, frameOf(selected)) : undefined),
+    [doc, selected],
+  )
 
   if (error) return <Empty title="Cannot open" body={error} />
   if (graph === null || doc === null) return <Empty title="Loading…" body={path} />
@@ -1029,6 +1040,7 @@ function RequestGraphView({ path, kind, catalog }: { path: string; kind: ViewKin
             onDelete={deletable(doc.model, node.id) ? () => remove([node.id], []) : undefined}
             groupKeys={selectedGroupKeys}
             cohortOptions={node.section === 'joins' ? cohortChoices : undefined}
+            vectorNames={selectedVectorNames}
           />
         )}
       </div>

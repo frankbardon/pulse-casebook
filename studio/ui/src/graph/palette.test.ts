@@ -52,7 +52,7 @@ describe('paletteItems', () => {
 
   it('groups by stage column in column order', () => {
     const groups = paletteGroups(items).map((g) => g.title)
-    expect(groups).toEqual(['Cohort', 'Features', 'Filters', 'Attributes', 'Group', 'Aggregate', 'Windows', 'Analysis', 'Output'])
+    expect(groups).toEqual(['Join', 'Features', 'Filters', 'Attributes', 'Group', 'Aggregate', 'Windows', 'Analysis', 'Output'])
   })
 
   it('splits tier-2 post-test variants', () => {

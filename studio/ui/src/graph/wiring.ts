@@ -284,6 +284,21 @@ export function clampToColumn(
   return { x: Math.min(col.x + half, Math.max(col.x - half, pos.x)), y: pos.y }
 }
 
+// homeToColumn places a sidecar position: kept as saved while its x is
+// still in the node's own column band, else moved to its column's x
+// (y kept). A sidecar written before the columns changed (the Join column
+// appearing or disappearing shifts every later column) would otherwise
+// park nodes in another stage's column.
+export function homeToColumn(
+  pos: { x: number; y: number },
+  column: ColumnKey,
+  columns: readonly { key: ColumnKey; x: number }[],
+): { x: number; y: number } {
+  const col = columns.find((c) => c.key === column)
+  if (!col || columnAt(pos.x, columns) === column) return pos
+  return { x: col.x, y: pos.y }
+}
+
 // columnAt says which laid-out column x falls in (nearest column x).
 export function columnAt(x: number, columns: readonly { key: ColumnKey; x: number }[]): ColumnKey | undefined {
   let best: { key: ColumnKey; d: number } | undefined

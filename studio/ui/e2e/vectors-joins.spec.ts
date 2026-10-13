@@ -28,6 +28,14 @@ test('a vector draws its member wires, feeds its matrix and previews member stat
   await expect(inspector.locator('[data-field="coerce"] select')).toHaveValue('binary')
   await expect(inspector.locator('[data-field="kind"] select')).toHaveValue('')
   await expect(page.getByTestId('dirty-state')).toHaveText('saved')
+
+  // The matrix picks its vector from the lane's vectors.
+  await graph.locator('[data-path="requests[0].matrices[0]"]').click()
+  await expect(inspector).toHaveAttribute('data-node', 'requests[0].matrices[0]')
+  const picker = inspector.locator('[data-field="vector"] select')
+  await expect(picker).toHaveValue('drivers')
+  await expect(picker.locator('option')).toHaveText(['(unset)', 'drivers'])
+  await expect(page.getByTestId('dirty-state')).toHaveText('saved')
 })
 
 test('a join draws its keys and joined fields, previews joined rows and flags an unknown right cohort', async ({ page }) => {
@@ -38,6 +46,12 @@ test('a join draws its keys and joined fields, previews joined rows and flags an
   const join = graph.locator('[data-path="requests[0].joins[0]"]')
   await expect(join).toContainText('Join')
   await expect(join).toContainText('inner')
+  // Joins have their own column right of the cohort, level with it, so
+  // the key wires run straight across.
+  const cohortBox = () => graph.locator('.react-flow__node[data-id="requests[0].cohort"]').boundingBox()
+  const joinBox = () => graph.locator('.react-flow__node[data-id="requests[0].joins[0]"]').boundingBox()
+  await expect.poll(async () => (await joinBox())!.x - ((await cohortBox())!.x + (await cohortBox())!.width)).toBeGreaterThan(0)
+  await expect.poll(async () => Math.abs((await joinBox())!.y - (await cohortBox())!.y)).toBeLessThan(2)
   // Eleven key pairs, one line each (left_field = right_field), every
   // left key wired from the cohort.
   await expect(join.locator('.gnode-pair:not(.port)[data-row$=".left_field"]')).toHaveCount(11)
@@ -59,7 +73,7 @@ test('a join draws its keys and joined fields, previews joined rows and flags an
   await expect(joined.locator('[data-field="src_products_held"]')).toBeVisible()
   await expect(joined.locator('[data-field="src_region"] .react-flow__handle')).toHaveCount(1)
   await expect.poll(async () => (await join.boundingBox())!.height).toBeGreaterThan(collapsed + 100)
-  // Nodes below the join move to make room (measured size feeds layout).
+  // The aggregation the joined field gets wired to.
   const agg = graph.locator('.react-flow__node[data-id="requests[0].aggregations[0]"]')
   await expect(agg).toBeVisible()
 

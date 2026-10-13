@@ -2,7 +2,7 @@ import { useMemo, useState, type ReactNode } from 'react'
 import { getIn, parseEdit, prettyJson, setIn } from './jsonEdit.ts'
 import { fromPlain, type JsonNode } from './jsonTree.ts'
 import type { ModelNode } from './model.ts'
-import { applyField, buildForm, fieldText, formProblems, type Catalog, type FormField } from './paramForms.ts'
+import { applyField, buildForm, fieldText, formProblems, refChoices, type Catalog, type FormField } from './paramForms.ts'
 import { clearPartition, partitionProblem, removePartitionItem } from './partition.ts'
 import { stringValue } from './jsonTree.ts'
 import type { CohortOption } from './joins.ts'
@@ -19,14 +19,20 @@ type Props = {
   groupKeys?: readonly string[]
   // The workspace's cohort files as a join's right side (joins.ts).
   cohortOptions?: readonly CohortOption[]
+  // The vectors entries' names of the node's request frame (a `vector`
+  // input's options).
+  vectorNames?: readonly string[]
 }
 
 // Inspector edits one model node: a form generated from the manifest (or
 // hand-written for free-form operators) plus the node's JSON as text.
 // Every edit replaces the node's jsonTree value; nothing round-trips
 // through JSON.parse.
-export function Inspector({ node, catalog, onChange, onClose, onDelete, groupKeys, cohortOptions }: Props) {
-  const form = useMemo(() => buildForm(node, catalog, { groupKeys, cohortOptions }), [node, catalog, groupKeys, cohortOptions])
+export function Inspector({ node, catalog, onChange, onClose, onDelete, groupKeys, cohortOptions, vectorNames }: Props) {
+  const form = useMemo(
+    () => buildForm(node, catalog, { groupKeys, cohortOptions, vectorNames }),
+    [node, catalog, groupKeys, cohortOptions, vectorNames],
+  )
   const problems = form.mode === 'raw' ? [] : formProblems(form, node.value)
   const title = node.kind === 'cohort' ? 'Cohort' : node.kind === 'raw' ? `Raw ${node.section}` : node.section
   return (
@@ -138,6 +144,19 @@ function Field({
       )
       break
     }
+    case 'vectorRef':
+      // A ref picker: the request's vector names; a name none defines
+      // stays selected, marked unknown.
+      input = (
+        <select id={id} value={text} onChange={(e) => commit(e.target.value)}>
+          {refChoices(f, text).map((c) => (
+            <option key={c.value} value={c.value}>
+              {c.label}
+            </option>
+          ))}
+        </select>
+      )
+      break
     case 'keys':
       input = <KeysEditor field={f} value={value} onChange={onChange} />
       break

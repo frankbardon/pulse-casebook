@@ -99,6 +99,34 @@ export function vectorMemberRefusal(type: string | undefined, coerce: string | u
 // one that sets neither offers both inputs.
 export const VECTOR_OR_FIELDS: ReadonlySet<string> = new Set(['matrices'])
 
+// VECTOR_INPUT_OPS are the operators that read their members from a
+// top-level `vector` (a vectors entry by name) or inline `fields`,
+// exactly one of them (pulse types Group / Aggregation / Attribute /
+// Test `Vector`). The manifest does not flag them, so the list follows
+// the pulse request schema's descriptions; isVectorInput adds any
+// AGG_VEC_* aggregator.
+export const VECTOR_INPUT_OPS: ReadonlySet<string> = new Set([
+  'GROUP_KMEANS',
+  'AGG_VEC_MEAN',
+  'AGG_VEC_SUM',
+  'ATTR_MAHALANOBIS',
+  'ATTR_PC_SCORE',
+  'ATTR_FACTOR_SCORE',
+  'ATTR_SCALE_SCORE',
+  'ATTR_PROFILE_SIMILARITY',
+  'ATTR_VEC_DISTANCE',
+  'TEST_HOTELLING_T2',
+  'TEST_MANOVA',
+  'TEST_BOX_M',
+  'TEST_BARTLETT_SPHERICITY',
+  'TEST_MARDIA',
+])
+
+// isVectorInput says whether an operator reads a `vector` member set.
+export function isVectorInput(op: string | undefined): boolean {
+  return op !== undefined && (VECTOR_INPUT_OPS.has(op) || op.startsWith('AGG_VEC_'))
+}
+
 // VECTOR_INPUT is the tooltip of the `vector` input such an entry offers.
 export const VECTOR_INPUT = 'vector: a vectors entry of this request, by name (or wire fields instead)'
 

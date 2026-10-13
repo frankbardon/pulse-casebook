@@ -46,10 +46,14 @@ describe('join node', () => {
   const g = graphOf(model)
   const join = node(g, 'joins[0]')
 
-  it('is an op node in the cohort column with a preview', () => {
+  it('is an op node in its own Join column right of the cohort, with a preview', () => {
     expect(join.type).toBe('op')
-    expect(join.data).toMatchObject({ column: 'source', section: 'joins', title: 'Join', op: 'inner' })
-    expect(join.position.x).toBe(node(g, 'cohort' as string)?.position.x ?? 0)
+    expect(join.data).toMatchObject({ column: 'joins', section: 'joins', title: 'Join', op: 'inner' })
+    expect(g.columns.map((c) => c.title)).toEqual(['Cohort', 'Join', 'Filters', 'Aggregate'])
+    const cohortX = node(g, 'cohort' as string)?.position.x ?? 0
+    expect(join.position.x).toBe(cohortX + LAYOUT.nodeWidth + LAYOUT.columnGap)
+    // Top of its column, level with the cohort: key wires run straight across.
+    expect(join.position.y).toBe(node(g, 'cohort' as string)?.position.y)
     expect(hasPreview(join)).toBe(true)
   })
 
@@ -97,6 +101,21 @@ describe('join node', () => {
       { manifest, fieldsFor: () => left, rightFields: rights },
     )
     expect(c.edges.some((e) => e.source === 'requests[0].joins[0]' && e.target === 'requests[0].aggregations[0]')).toBe(true)
+  })
+
+  it('gives compose lanes a shared Join column only lanes with joins draw', () => {
+    const plainSlot = { label: 'b', cohort: { filename: 'left.pulse' }, aggregations: [{ type: 'AGG_COUNT', field: 'amount', label: 'n' }] }
+    const alone = buildComposeGraph({ requests: [plainSlot] }, { manifest, fieldsFor: () => left, rightFields: rights })
+    expect(alone.columns.map((c) => c.key)).toEqual(['source', 'aggregations'])
+    const c = buildComposeGraph(
+      { requests: [{ label: 'a', ...(JSON.parse(JOINED) as object) }, plainSlot] },
+      { manifest, fieldsFor: () => left, rightFields: rights },
+    )
+    expect(c.columns.map((col) => col.key)).toEqual(['source', 'joins', 'filterers', 'aggregations'])
+    expect(c.lanes.find((l) => l.id === 'requests[0]')?.columns).toContain('joins')
+    expect(c.lanes.find((l) => l.id === 'requests[1]')?.columns).toEqual(['source', 'aggregations'])
+    const xOf = (id: string) => c.nodes.find((n) => n.id === id)?.position.x
+    expect(xOf('requests[0].joins[0]')).toBe(c.columns[1].x)
   })
 
   it('stales everything downstream in its frame on an edit, but not the cohort', () => {
@@ -161,7 +180,7 @@ describe('join palette block and form', () => {
   const base = parseModel('{"cohort":{"filename":"l.pulse"}}', 'request')
 
   it('places one join per request in JoinSpec key order', () => {
-    expect(item).toMatchObject({ column: 'source', kind: 'Join', type: 'inner' })
+    expect(item).toMatchObject({ column: 'joins', kind: 'Join', type: 'inner' })
     const r = placeNode(base, item, ctx)
     expect(r.id).toBe('joins[0]')
     expect(emitModelText(r.model)).toContain('"joins":[{"right":"","kind":"inner","on":[]}]')

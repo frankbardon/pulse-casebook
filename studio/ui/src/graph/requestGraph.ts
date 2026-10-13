@@ -19,6 +19,7 @@ import { joinBodyLines, joinedFields, joinKeyRefusal, type RightSide } from './j
 
 export type ColumnKey =
   | 'source'
+  | 'joins'
   | 'features'
   | 'filterers'
   | 'attributes'
@@ -31,6 +32,8 @@ export type ColumnKey =
 
 export const COLUMNS: { key: ColumnKey; title: string }[] = [
   { key: 'source', title: 'Cohort' },
+  // Joins sit right of the cohort so key wires run straight across.
+  { key: 'joins', title: 'Join' },
   { key: 'features', title: 'Features' },
   { key: 'filterers', title: 'Filters' },
   { key: 'attributes', title: 'Attributes' },
@@ -165,9 +168,10 @@ const ROW_LEVEL = ['features', 'attributes']
 // Stage order. Also the order nodes stack within a column and the order
 // producers are searched (downstream-most visible producer wins).
 const SECTIONS: SectionSpec[] = [
-  // Joins run at load, beside the cohort: their keys read the left
-  // cohort only; every later section sees the joined fields.
-  { key: 'joins', title: 'Join', column: 'source', opKey: 'kind', opFallback: 'JOIN', sees: [] },
+  // Joins run at load, in their own column right of the cohort: their
+  // keys read the left cohort only; every later section sees the joined
+  // fields.
+  { key: 'joins', title: 'Join', column: 'joins', opKey: 'kind', opFallback: 'JOIN', sees: [] },
   { key: 'features', title: 'Feature', column: 'features', opKey: 'type', opFallback: 'FEATURE', catalog: (m) => m.components?.features, nameKey: 'label', produces: true, sees: [], seesSelf: true },
   { key: 'filterers', title: 'Filter', column: 'filterers', opKey: 'type', opFallback: 'FILTER', catalog: (m) => m.components?.filterers, sees: ['features'] },
   { key: 'attributes', title: 'Attribute', column: 'attributes', opKey: 'type', opFallback: 'ATTRIBUTE', catalog: (m) => m.components?.attributes, nameKey: 'label', produces: true, sees: ['features'], seesSelf: true },

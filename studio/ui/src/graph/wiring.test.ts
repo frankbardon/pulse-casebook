@@ -12,6 +12,7 @@ import {
   deleteNode,
   disconnectWire,
   disconnectWires,
+  homeToColumn,
 } from './wiring.ts'
 import catalogText from './testdata/catalog.slim.json?raw'
 import abFields from './testdata/ab_test.fields.json?raw'
@@ -165,5 +166,15 @@ describe('column placement', () => {
   it('finds the column under an x', () => {
     expect(columnAt(0, columns)).toBe('source')
     expect(columnAt(step * 0.9, columns)).toBe(columns[1].key)
+  })
+
+  it('keeps a saved position in its own column band and re-homes one from another column', () => {
+    const tests = columns.find((c) => c.key === 'analysis')!
+    expect(homeToColumn({ x: tests.x + 30, y: 120 }, 'analysis', columns)).toEqual({ x: tests.x + 30, y: 120 })
+    // A sidecar written before a column appeared: the x now lands one
+    // column left of the node's own stage.
+    expect(homeToColumn({ x: tests.x - step, y: 120 }, 'analysis', columns)).toEqual({ x: tests.x, y: 120 })
+    // A column the graph does not draw leaves the position alone.
+    expect(homeToColumn({ x: 5, y: 6 }, 'joins', columns)).toEqual({ x: 5, y: 6 })
   })
 })

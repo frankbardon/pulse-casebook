@@ -14,11 +14,11 @@
 import type { Manifest, ManifestOperator, ManifestParam } from '../api.ts'
 import { getIn, parseEdit, prettyJson, sameJson, setIn, stringItems } from './jsonEdit.ts'
 import { fromPlain, stringValue, type JsonNode } from './jsonTree.ts'
-import type { ModelNode } from './model.ts'
-import type { PathSegment } from './nodePath.ts'
+import type { GraphModel, ModelNode } from './model.ts'
+import { frameOf, type PathSegment } from './nodePath.ts'
 import { sectionInfo } from './requestGraph.ts'
 import { joinKinds, type CohortOption } from './joins.ts'
-import { VECTOR_OR_FIELDS } from './ports.ts'
+import { isVectorInput, VECTOR_OR_FIELDS } from './ports.ts'
 
 export type FieldType =
   | 'number' // float
@@ -35,6 +35,7 @@ export type FieldType =
   | 'keys' // string array of group key columns (post-test partition_by)
   | 'cohortFile' // a cohort file path (a join's right side)
   | 'pairs' // [{left_field, right_field}] join keys
+  | 'vectorRef' // a vectors entry of the same request, by name (options)
 
 export type FormField = {
   key: string
@@ -82,6 +83,10 @@ export type FormContext = {
   // The workspace's cohort files, as a join's right side would name them
   // from this request (joins.cohortOptions).
   cohortOptions?: readonly CohortOption[]
+  // The vectors entries' names in the node's request frame, the names a
+  // `vector` input can resolve (requestGraph canSee: vector refs see the
+  // frame's vectors only), in document order.
+  vectorNames?: readonly string[]
 }
 
 // buildForm returns the inspector form for a node.
@@ -127,7 +132,12 @@ export function buildForm(node: ModelNode, catalog: Catalog = {}, ctx: FormConte
     )
   }
   const sections: FormSection[] = [{ title: 'Slot', fields: slot }]
-  if (VECTOR_OR_FIELDS.has(node.section)) sections.push({ title: 'Members', fields: MATRIX_MEMBER_FIELDS })
+  // A matrix and the vector-input operators (k-means, AGG_VEC_*,
+  // ATTR_VEC_DISTANCE, ...) read members from a vector or inline fields;
+  // an entry that already names a vector gets the picker too.
+  if (node.section !== 'vectors' && (VECTOR_OR_FIELDS.has(node.section) || isVectorInput(op) || getIn(value, ['vector']) !== undefined)) {
+    sections.push({ title: 'Members', fields: memberFields(ctx.vectorNames ?? []) })
+  }
   const base = { op, ...(opKnown !== undefined && { opKnown }) }
 
   if (node.section === 'multiplicity') {
@@ -282,21 +292,60 @@ const MULTIPLICITY_FIELDS: FormField[] = [
   { key: 'alpha', rel: ['alpha'], type: 'number', hint: 'overlay significance level, in (0, 1)' },
 ]
 
-// VECTOR_COERCES and VECTOR_KINDS are pulse's closed VectorCoerce and
-// MATRIX_MEMBER_FIELDS edit where a matrix's members come from: exactly
-// one of a vectors entry by name and inline fields (pulse
-// types.MatrixSpec), so formProblems flags both or neither.
-const MATRIX_MEMBER_FIELDS: FormField[] = [
-  { key: 'vector', rel: ['vector'], type: 'string', oneOf: 'members', hint: 'a vectors entry of this request, by name (or wire one into the node)' },
-  {
-    key: 'fields',
-    rel: ['fields'],
-    type: 'strings',
-    oneOf: 'members',
-    hint: 'inline member columns, one per line (or wire fields into the node); globs like q_* expand in schema order',
-  },
-]
+// memberFields edit where a matrix's (or vector-input operator's)
+// members come from: exactly one of a vectors entry by name, picked from
+// the request's vector names, and inline fields (pulse types.MatrixSpec),
+// so formProblems flags both or neither.
+function memberFields(vectorNames: readonly string[]): FormField[] {
+  return [
+    {
+      key: 'vector',
+      rel: ['vector'],
+      type: 'vectorRef',
+      options: [...new Set(vectorNames)],
+      oneOf: 'members',
+      hint: 'a vectors entry of this request, by name (or wire one into the node)',
+    },
+    {
+      key: 'fields',
+      rel: ['fields'],
+      type: 'strings',
+      oneOf: 'members',
+      hint: 'inline member columns, one per line (or wire fields into the node); globs like q_* expand in schema order',
+    },
+  ]
+}
 
+// RefChoice is one option of a picker select.
+export type RefChoice = { value: string; label: string }
+
+// refChoices lists a vectorRef picker's options for the current text:
+// "(unset)", then a current name no option lists, kept selected as
+// "<name> (unknown)" so it is never dropped silently, then the options.
+export function refChoices(f: FormField, text: string): RefChoice[] {
+  const opts = f.options ?? []
+  return [
+    { value: '', label: '(unset)' },
+    ...(text !== '' && !opts.includes(text) ? [{ value: text, label: `${text} (unknown)` }] : []),
+    ...opts.map((o) => ({ value: o, label: o })),
+  ]
+}
+
+// vectorNamesOfModel lists the names of a request frame's vectors
+// entries ('' = the plain request, `requests[1]`, `stages[0].request`),
+// in document order, without repeats: what a `vector` ref in that frame
+// can name.
+export function vectorNamesOfModel(model: GraphModel, frame: string): string[] {
+  const out: string[] = []
+  for (const n of model.nodes.values()) {
+    if (n.kind !== 'entry' || n.section !== 'vectors' || frameOf(n.id) !== frame) continue
+    const name = stringValue(getIn(n.value, ['name']))
+    if (name !== undefined && name !== '' && !out.includes(name)) out.push(name)
+  }
+  return out
+}
+
+// VECTOR_COERCES and VECTOR_KINDS are pulse's closed VectorCoerce and
 // VectorKind enums (types/vector.go, payload-schema "Vector slot").
 export const VECTOR_COERCES = ['binary'] as const
 export const VECTOR_KINDS = ['measure', 'scale', 'composition', 'binary'] as const
@@ -411,6 +460,7 @@ export function fieldText(f: FormField, value: JsonNode): string {
     case 'enum':
     case 'expression':
     case 'cohortFile':
+    case 'vectorRef':
       return v.type === 'string' ? (stringValue(v) as string) : prettyJson(v)
     case 'enumItem':
       return v.type === 'array' && v.items.length === 1 && v.items[0].type === 'string'
@@ -457,6 +507,7 @@ function encodeRaw(f: FormField, text: string, current: JsonNode | undefined): E
     case 'enum':
     case 'expression':
     case 'cohortFile':
+    case 'vectorRef':
       return { value: { type: 'string', raw: JSON.stringify(t) } }
     case 'enumItem':
       return { value: stringItems(current, [t]) }
