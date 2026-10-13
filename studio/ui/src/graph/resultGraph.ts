@@ -8,7 +8,8 @@
 //   - Result `data`: one row per observed group key combination; each row
 //     carries every grouper's key column (groups order), then the
 //     aggregation labels, then the window labels. With no groups and no
-//     aggregations the request returns row-level output.
+//     aggregations only windows (row-level output) or a long crosstab
+//     (its cells) produce data; otherwise there is none (tableShape).
 //   - A grouped request runs every aggregation, tier-1 test and matrix
 //     once per bucket; post-tests run once per partition when there are
 //     two or more groupers (unless `params.partition_by` is []).
@@ -173,6 +174,8 @@ export function addDerived(
       data: { ref, role: 'result' },
     })
   }
+  const shape = tableShape(doc)
+  if (shape.cells) cols.push(...crosstabColumns(doc))
   for (const c of cols) {
     if (trim?.column(c.name)) c.trimmed = true
     if (c.source === undefined) continue
@@ -209,13 +212,9 @@ export function addDerived(
     wire(ret.id, RESPONSE_HANDLE, HEAD_HANDLE, 'return', ' return-wire')
   }
   const last = (section: string) => ops.filter((n) => n.data.section === section).at(-1)?.id
-  const previewFrom = last('sort') ?? last('windows') ?? last('aggregations') ?? last('groups')
-  const aggregated = groups.length > 0 || ops.some((n) => n.data.section === 'aggregations')
-  // No groups and no aggregations: the rows themselves, unless the
-  // request only asks for analysis parts (a crosstab-only request
-  // returns no data).
-  const rowLevel = !aggregated && parts.length === 0
-  const table = cols.length > 0 || rowLevel
+  // A long crosstab's cells are the table: its preview holds them.
+  const previewFrom = shape.cells ? last('crosstab') : (last('sort') ?? last('windows') ?? last('aggregations') ?? last('groups'))
+  const { table, rowLevel } = shape
   return {
     id,
     type: 'result',
@@ -227,6 +226,7 @@ export function addDerived(
       column: 'result',
       columns: cols,
       rowLevel,
+      ...(shape.cells && { cells: true }),
       ...(previewFrom !== undefined && { previewFrom }),
       table,
       ...(table && trim?.part('data') && { tableTrimmed: true }),
@@ -235,6 +235,45 @@ export function addDerived(
       ...(trims && { trims: true }),
     },
   }
+}
+
+// tableShape says whether a frame's response has `data` and what its rows
+// are. Observed with the pulse v1.0.0-alpha.10 engine on ab_test.pulse
+// (`pulse api process --json`): only groups, aggregations, windows or a
+// long crosstab produce `data`:
+//
+//   - cohort only, filterers only, attributes only, features only, sort
+//     only, overlays only: no `data` key at all;
+//   - tests only, regressions only, matrices only (also with sort or
+//     attributes): no `data`, only the analysis part;
+//   - crosstab (shape matrix, the default): `crosstab`, no `data`;
+//     shape long: `data` holds the cells (row keys, column keys, cell
+//     label), `crosstab` is just {"shape":"long"};
+//   - windows without groups or aggregations: `data` is row-level, one
+//     row per filtered record (40,000 rows) with the window columns;
+//   - groups without aggregations: one row per bucket (its key);
+//     aggregations without groups: one row.
+export function tableShape(doc: Record<string, unknown>): { table: boolean; rowLevel: boolean; cells: boolean } {
+  const has = (k: string) => Array.isArray(doc[k]) && doc[k].length > 0
+  const aggregated = has('groups') || has('aggregations')
+  const cells = !aggregated && isObject(doc.crosstab) && crosstabLong(doc)
+  return { table: aggregated || has('windows') || cells, rowLevel: !aggregated && has('windows'), cells }
+}
+
+// crosstabColumns are a long crosstab's data columns: each row and column
+// grouper's key column, then the cell label.
+function crosstabColumns(doc: Record<string, unknown>): ResultColumn[] {
+  const x = isObject(doc.crosstab) ? doc.crosstab : {}
+  const out: ResultColumn[] = []
+  for (const k of ['rows', 'columns'] as const) {
+    for (const g of Array.isArray(x[k]) ? x[k] : []) {
+      const name = isObject(g) ? groupKeyColumn(g as GroupEntry) : ''
+      if (name !== '') out.push({ name, kind: 'key' })
+    }
+  }
+  const cell = isObject(x.cell) && typeof x.cell.label === 'string' ? x.cell.label : undefined
+  if (cell !== undefined) out.push({ name: cell, kind: 'aggregation' })
+  return out
 }
 
 // responseParts lists the frame's non-empty response parts below its

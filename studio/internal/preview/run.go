@@ -337,8 +337,10 @@ func summarize(res *Result, plan *Plan, raw []byte) error {
 		case KindMatrix:
 			p.setEntries(resp.Matrices, np)
 		case KindCrosstab:
+			// Shape long lands the cells on data (crosstab is then
+			// just {"shape":"long"}): the table holds them.
 			p.Result = resp.Crosstab
-			if len(p.Result) == 0 {
+			if len(p.Result) == 0 || len(resp.Data) > 0 {
 				p.Table = table(resp.Data)
 			}
 		case KindOverlay:

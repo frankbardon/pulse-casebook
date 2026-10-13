@@ -168,6 +168,8 @@ export type ResultNodeData = {
   rowLevel: boolean
   previewFrom?: string
   table: boolean
+  // The table holds a long crosstab's cells (resultGraph.tableShape).
+  cells?: true
   tableTrimmed?: true
   parts: ResponsePart[]
   ret?: true

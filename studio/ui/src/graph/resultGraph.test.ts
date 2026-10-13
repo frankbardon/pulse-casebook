@@ -76,14 +76,57 @@ describe('result columns', () => {
     expect(r.position.x).toBe(Math.max(...g.nodes.map((n) => n.position.x)))
   })
 
-  it('says row-level output without groups, aggregations or analysis parts', () => {
-    const g = buildRequestGraph({ cohort, filterers: [{ type: 'FILTER_INCLUDE', field: 'arm', values: ['control'] }] }, { result: true })
-    expect(result(g.nodes)!.data).toMatchObject({ rowLevel: true, columns: [], table: true, parts: [] })
-    expect(result(g.nodes)!.data.previewFrom).toBeUndefined()
-    // Only analysis parts: no data table.
-    const tests = buildRequestGraph({ cohort, tests: grouped.tests }, { result: true })
-    expect(result(tests.nodes)!.data).toMatchObject({ rowLevel: false, table: false })
-    expect(result(tests.nodes)!.data.parts.map((p) => p.key)).toEqual(['tests'])
+  // Table shapes observed with `pulse api process --json` (v1.0.0-alpha.10)
+  // on ab_test.pulse: see resultGraph.tableShape.
+  describe('table follows the engine', () => {
+    const shape = (doc: Record<string, unknown>) => {
+      const d = result(buildRequestGraph({ cohort, ...doc }, { result: true }).nodes)!.data
+      return { table: d.table, rowLevel: d.rowLevel, parts: d.parts.map((p) => p.key), columns: d.columns.map((c) => c.name) }
+    }
+    const welch = [{ type: 'TEST_WELCH', field: 'revenue', split_by: 'arm' }]
+    const xt = { rows: [{ type: 'GROUP_CATEGORY', field: 'arm' }], columns: [{ type: 'GROUP_CATEGORY', field: 'device' }], cell: { type: 'AGG_AVERAGE', field: 'revenue', label: 'rev' } }
+    it.each([
+      // keys: components, metadata (no data)
+      ['cohort only', {}],
+      ['filterers only', { filterers: [{ type: 'FILTER_INCLUDE', field: 'arm', values: ['new_page'] }] }],
+      ['attributes only', { attributes: [{ type: 'ATTR_FORMULA', field: 'revenue', label: 'r2', expression: 'revenue * 2' }] }],
+      ['sort only', { sort: [{ field: 'revenue' }] }],
+    ])('%s: no data, no output', (_, doc) => {
+      expect(shape(doc)).toEqual({ table: false, rowLevel: false, parts: [], columns: [] })
+    })
+    it.each([
+      // keys: components, metadata, tests
+      ['tests only', { tests: welch }, 'tests'],
+      // ... plus sort: still no data
+      ['tests and sort', { tests: welch, sort: [{ field: 'revenue' }] }, 'tests'],
+      // keys: components, metadata, regressions
+      ['regressions only', { regressions: [{ type: 'REG_OLS', target: 'revenue', predictors: ['is_variant'] }] }, 'regressions'],
+      // keys: components, matrices, metadata
+      ['matrices only', { matrices: [{ type: 'MAT_CORRELATION', fields: ['revenue', 'prior_sessions'] }] }, 'matrices'],
+      // keys: components, crosstab, metadata (crosstab.matrix)
+      ['crosstab only', { crosstab: xt }, 'crosstab'],
+    ])('%s: the part, no data', (_, doc, part) => {
+      expect(shape(doc)).toEqual({ table: false, rowLevel: false, parts: [part], columns: [] })
+    })
+    it('windows only: row-level data, one row per record with the window column', () => {
+      // keys: components, data (40,000 rows: revenue, ra), metadata
+      expect(shape({ windows: [{ type: 'WIN_RUNNING_AVG', field: 'revenue', label: 'ra' }] })).toEqual({ table: true, rowLevel: true, parts: [], columns: ['ra'] })
+    })
+    it('long crosstab: data holds the cells', () => {
+      // keys: components, crosstab ({"shape":"long"}), data (6 rows: arm, device, rev), metadata
+      const g = buildRequestGraph({ cohort, crosstab: { ...xt, shape: 'long' } }, { result: true })
+      const d = result(g.nodes)!.data
+      expect(d).toMatchObject({ table: true, rowLevel: false, cells: true, previewFrom: 'crosstab' })
+      expect(d.columns.map((c) => [c.name, c.kind])).toEqual([
+        ['arm', 'key'],
+        ['device', 'key'],
+        ['rev', 'aggregation'],
+      ])
+    })
+    it('groups only: one row per bucket', () => {
+      // keys: components, data ([{device: desktop}, {device: mobile}, {device: tablet}]), metadata
+      expect(shape({ groups: [{ type: 'GROUP_CATEGORY', field: 'device' }] })).toEqual({ table: true, rowLevel: false, parts: [], columns: ['device'] })
+    })
   })
 
   it('is left out unless asked for', () => {

@@ -48,3 +48,37 @@ func TestSetEntries(t *testing.T) {
 		})
 	}
 }
+
+// A long crosstab lands its cells on data (observed: crosstab is then
+// just {"shape":"long"}); the probe's table holds them.
+func TestSummarizeLongCrosstab(t *testing.T) {
+	plan := &Plan{Verb: VerbProcess, Slot: -1, Nodes: []*NodePlan{{ID: "crosstab", Kind: KindCrosstab, Index: -1}}}
+	cases := []struct {
+		name, raw string
+		rows      int
+	}{
+		{"long", `{"crosstab":{"shape":"long"},"data":[{"arm":"a","device":"d","rev":1},{"arm":"b","device":"d","rev":2}]}`, 2},
+		{"matrix", `{"crosstab":{"matrix":{"row_keys":["a"],"column_keys":["d"]}}}`, -1},
+	}
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			res := &Result{}
+			if err := summarize(res, plan, []byte(c.raw)); err != nil {
+				t.Fatal(err)
+			}
+			p := res.Probes[0]
+			if len(p.Result) == 0 {
+				t.Fatal("no crosstab result")
+			}
+			if c.rows < 0 {
+				if p.Table != nil {
+					t.Fatalf("matrix crosstab has a table: %+v", p.Table)
+				}
+				return
+			}
+			if p.Table == nil || p.Table.TotalRows != c.rows {
+				t.Fatalf("table = %+v, want %d rows", p.Table, c.rows)
+			}
+		})
+	}
+}

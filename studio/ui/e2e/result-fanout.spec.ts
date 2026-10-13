@@ -184,6 +184,39 @@ test.describe('grouped request', () => {
   })
 })
 
+test.describe('table follows the engine', () => {
+  test.use({ workspace: 'ab-test-readout' })
+
+  test('analysis-only has no table, windows-only is row-level', async ({ page, studio }) => {
+    const testsOnly = 'req/r3_tests_only.json'
+    const testsText = `{
+  "cohort": {"filename": "ab_test.pulse", "data_dir": "."},
+  "tests": [{"type": "TEST_WELCH", "field": "revenue", "split_by": "arm", "label": "rev"}]
+}
+`
+    const windowsOnly = 'req/r3_windows_only.json'
+    const windowsText = `{
+  "cohort": {"filename": "ab_test.pulse", "data_dir": "."},
+  "windows": [{"type": "WIN_RUNNING_AVG", "field": "revenue", "label": "ra"}]
+}
+`
+    writeFileSync(join(studio.dir, testsOnly), testsText)
+    writeFileSync(join(studio.dir, windowsOnly), windowsText)
+    await page.goto('/')
+    await page.getByRole('button', { name: testsOnly }).click()
+    let result = page.getByTestId('request-graph').getByTestId('result-node')
+    await expect(result.getByTestId('response-part')).toHaveText([/^Tests/])
+    await expect(result.getByTestId('result-preview')).toHaveCount(0)
+    await page.getByRole('button', { name: windowsOnly }).click()
+    result = page.getByTestId('request-graph').getByTestId('result-node')
+    await expect(result.getByTestId('response-part')).toHaveText([/^Table/])
+    await expect(result.getByTestId('result-row-level')).toHaveCount(1)
+    await expect(result.locator('.result-col .k')).toHaveText(['ra'])
+    expect(studio.read(testsOnly)).toBe(testsText)
+    expect(studio.read(windowsOnly)).toBe(windowsText)
+  })
+})
+
 test('every compose slot lane gets its own Result node', async ({ page }) => {
   await page.goto('/')
   await page.getByRole('button', { name: 'req/11_readout.compose.json' }).click()
