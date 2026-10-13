@@ -181,6 +181,9 @@ An analysis is drawn as a set of nodes, one node per entry in its request JSON:
 - **Stage layout.** An analysis first opens laid out left to right in the order Pulse evaluates it:
   Cohort, Features, Filters, Attributes, Group, Aggregate, Windows, Sort, Analysis, Output. After that
   nodes go wherever you drag them; the layout is saved next to the analysis.
+- **Snap to grid.** The toolbar's **Snap** control is Off, **1** or **½**. One unit is the gap between
+  the canvas dots: with 1, dragged and dropped nodes land on a dot; with ½ they may also land halfway
+  between dots. The choice is remembered per browser. Auto-laid-out nodes are not moved.
 - **Field wires.** A wire means "this node reads that field". It is the label (or cohort field) that
   the downstream entry names in the JSON. Ports are type-checked against the engine's operator
   catalog, and a connection that the engine would refuse is rejected with the reason. Dragging a wire

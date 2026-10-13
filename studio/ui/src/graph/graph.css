@@ -1537,3 +1537,36 @@
   background: var(--accent);
   border-color: var(--accent);
 }
+
+/* Snap to grid (snap.ts): Off / 1 / ½ unit. */
+.graph-bar .snap-mode {
+  display: inline-flex;
+  align-items: stretch;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.graph-bar .snap-mode .snap-label {
+  font-size: var(--text-sm);
+  padding: 1px var(--space-2);
+  color: var(--muted);
+  border-right: 1px solid var(--border);
+}
+
+.graph-bar .snap-mode button {
+  border: 0;
+  border-radius: 0;
+  padding: 1px var(--space-2);
+  color: var(--muted);
+  min-width: 2em;
+}
+
+.graph-bar .snap-mode button + button {
+  border-left: 1px solid var(--border);
+}
+
+.graph-bar .snap-mode button.on {
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  color: var(--accent);
+}

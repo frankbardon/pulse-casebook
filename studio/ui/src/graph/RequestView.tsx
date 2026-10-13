@@ -67,6 +67,7 @@ import { proposal, unusedColumnIssues, worst, type Issue } from './validation.ts
 import { createFocusStore, hoverTarget } from './focus.ts'
 import { EdgeRouter, FocusStyle, WireEdge, type RouteStatus } from './WireEdge.tsx'
 import { readWireMode, RouteContext, RouteStore, writeWireMode, type WireMode } from './wires.ts'
+import { GRID_UNIT, readSnapMode, SNAP_LABEL, SNAP_MODES, SNAP_TITLE, snapPoint, snapStep, writeSnapMode, type SnapMode } from './snap.ts'
 import './graph.css'
 import { useArea } from '../area.ts'
 import { modeOf } from '../modes.ts'
@@ -178,6 +179,13 @@ function RequestGraphView({ path, kind, catalog, history }: { path: string; kind
     if (st.ms !== undefined) el.dataset.routeMs = st.ms.toFixed(1)
     if (st.error !== undefined) el.title = `Wire routing unavailable: ${st.error}`
   }, [])
+  const [snap, setSnapState] = useState<SnapMode>(readSnapMode)
+  const setSnap = useCallback((m: SnapMode) => {
+    writeSnapMode(m)
+    setSnapState(m)
+  }, [])
+  const step = snapStep(snap)
+  const snapGrid = useMemo((): [number, number] | undefined => (step !== null ? [step, step] : undefined), [step])
   const toggleWires = useCallback(() => {
     setWireMode((m) => {
       const next = m === 'routed' ? 'curves' : 'routed'
@@ -682,7 +690,8 @@ function RequestGraphView({ path, kind, catalog, history }: { path: string; kind
       setDoc({ ...doc, model: r.model })
       // Compose: the drop point is made relative to the node's lane.
       const box = boxes.find((b) => b.id === lane)
-      const pos = at && (compose ? box && { x: at.x - box.x, y: Math.max(LANE.head, at.y - box.y) } : at)
+      const p = at && snapPoint(at, snap)
+      const pos = p && (compose ? box && { x: p.x - box.x, y: Math.max(LANE.head, p.y - box.y) } : p)
       setLay((l) => {
         // A stale sidecar entry for the reused id never positions the new node.
         const layout = renameNodes(l.layout, (x) => x === r.id, new Map())
@@ -692,7 +701,7 @@ function RequestGraphView({ path, kind, catalog, history }: { path: string; kind
       setSelectedEdge(null)
       show(null)
     },
-    [doc, catalog, laneFields, baseOf, boxes, compose, show, kind, laneById],
+    [doc, catalog, laneFields, baseOf, boxes, compose, show, kind, laneById, snap],
   )
 
   // A palette item dropped on the canvas lands where it is dropped.
@@ -926,6 +935,22 @@ function RequestGraphView({ path, kind, catalog, history }: { path: string; kind
           <span className={wireMode === 'curves' ? 'on' : undefined}>Curves</span>
           <span className={wireMode === 'routed' ? 'on' : undefined}>Routed</span>
         </button>
+        <div className="snap-mode" role="group" aria-label="Snap to grid" data-testid="snap-mode" data-mode={snap}>
+          <span className="snap-label">Snap</span>
+          {SNAP_MODES.map((m) => (
+            <button
+              key={m}
+              type="button"
+              data-testid={`snap-${m}`}
+              className={snap === m ? 'on' : undefined}
+              aria-pressed={snap === m}
+              onClick={() => setSnap(m)}
+              title={SNAP_TITLE[m]}
+            >
+              {SNAP_LABEL[m]}
+            </button>
+          ))}
+        </div>
         {compose && kind === 'compose' && (
           <button type="button" data-testid="lane-add" onClick={newLane} title="Add a slot to the composed analysis (reads the last slot's cohort)">
             + Slot
@@ -1019,11 +1044,15 @@ function RequestGraphView({ path, kind, catalog, history }: { path: string; kind
                   onInit={(i: ReactFlowInstance<FlowNode, GraphEdge>) => {
                     rf.current = i
                   }}
+                  snapToGrid={step !== null}
+                  snapGrid={snapGrid}
                   fitView
                   minZoom={0.2}
                   proOptions={{ hideAttribution: true }}
                 >
-                  <Background />
+                  {/* Dots sit on whole grid units (React Flow centres them
+                      half a gap off the origin by default). */}
+                  <Background gap={GRID_UNIT} offset={-GRID_UNIT / 2 + 0.5} />
                   <Controls showInteractive={false} />
                   <RemeasureUnready />
                   <EdgeRouter store={routes} enabled={wireMode === 'routed'} onStatus={routeStatus} />
