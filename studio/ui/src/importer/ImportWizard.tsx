@@ -52,6 +52,9 @@ import {
   type SchemaDiff,
   type Settings,
 } from './schemaEdit.ts'
+// PULSE-GAP(column-rename): RenameCell + rename.ts are the rename shim's UI.
+import { RenameCell, SuggestNamesButton } from './RenameCell.tsx'
+import { fieldName, nameIssues, parseSavedSchema, renameDiff, renameOf, setRename, sourceNamer, suggestAll, type NameIssue } from './rename.ts'
 import './import.css'
 
 // WizardStart is what the wizard opens with: a dropped file to upload,
@@ -221,7 +224,10 @@ export function ImportWizard({ start, onImported, onClose }: Props) {
   useEffect(() => () => predictCtl.current?.abort(), [])
 
   const schema = useMemo(() => schemaOf(cols), [cols])
-  const schemaJson = JSON.stringify(schema)
+  // PULSE-GAP(column-rename): renames are part of what is saved.
+  const rename = useMemo(() => renameOf(cols), [cols])
+  const issues = useMemo(() => nameIssues(cols), [cols])
+  const schemaJson = JSON.stringify([schema, rename ?? null])
   const savedCurrent = saved !== null && saved.json === schemaJson
   const allTyped = cols.length > 0 && cols.every((c) => !c.include || c.type !== '')
   const checked = checkedKey !== null && checkedKey === keyOf(cols, settings)
@@ -265,7 +271,7 @@ export function ImportWizard({ start, onImported, onClose }: Props) {
     if (!validName(schemaName)) return
     setSaving(true)
     setSaveError(null)
-    saveSchema(schemaName, schema, overwrite)
+    saveSchema(schemaName, schema, overwrite, undefined, rename) // PULSE-GAP(column-rename)
       .then((s) => {
         setSaved({ name: s.name, path: s.path, json: schemaJson })
         setConflict(null)
@@ -274,13 +280,13 @@ export function ImportWizard({ start, onImported, onClose }: Props) {
       .catch((e: unknown) => {
         if (e instanceof ApiCallError && e.code === 'exists') {
           const text = (e.details as { text?: string; path?: string } | undefined)?.text ?? '[]'
-          let current: SchemaField[] = []
+          let current: { fields: SchemaField[]; rename?: Record<string, string> } = { fields: [] }
           try {
-            current = JSON.parse(text) as SchemaField[]
+            current = parseSavedSchema(text)
           } catch {
             // An unreadable saved file: everything shows as added.
           }
-          const diff = schemaDiff(current, schema)
+          const diff: SchemaDiff = { ...schemaDiff(current.fields, schema), renamed: renameDiff(current.rename, rename) }
           if (isEmptyDiff(diff)) {
             // Same fields: reuse the saved schema as it is.
             setSaved({ name: schemaName, path: `schemas/${schemaName}.schema.json`, json: schemaJson })
@@ -311,14 +317,15 @@ export function ImportWizard({ start, onImported, onClose }: Props) {
 
   const shown = filterColumns(cols, filter)
   const included = cols.filter((c) => c.include).length
-  const chips = groupChips(pred?.group_candidates?.candidates, settings.groups)
+  // PULSE-GAP(column-rename): candidates come back under renamed names.
+  const chips = groupChips(pred?.group_candidates?.candidates, settings.groups, sourceNamer(pred?.options?.rename))
   const setTypes = cols.some((c) => c.include && isSetType(c.type))
 
   const showRefused = () => {
     if (!refusal?.column) return
     setFilter('')
     requestAnimationFrame(() => {
-      tableRef.current?.querySelector(`[data-col="${CSS.escape(refusal.column!)}"]`)?.scrollIntoView({ block: 'center' })
+      tableRef.current?.querySelector(`[data-field="${CSS.escape(refusal.column!)}"]`)?.scrollIntoView({ block: 'center' })
     })
   }
 
@@ -559,6 +566,8 @@ export function ImportWizard({ start, onImported, onClose }: Props) {
             <button type="button" className="link" onClick={() => edit((c) => setAllIncluded(c, false, filter ? new Set(shown.map((x) => x.name)) : undefined))}>
               Exclude {filter ? 'shown' : 'all'}
             </button>
+            {/* PULSE-GAP(column-rename) */}
+            <SuggestNamesButton onClick={() => edit(suggestAll)} disabled={cols.length === 0} />
           </div>
           <div className="schema-table-wrap" ref={tableRef}>
             <table className="schema-table" data-testid="schema-table">
@@ -581,7 +590,9 @@ export function ImportWizard({ start, onImported, onClose }: Props) {
                     key={c.name}
                     c={c}
                     types={pred?.field_types ?? []}
-                    refused={refusal?.column === c.name}
+                    refused={refusal?.column === fieldName(c)}
+                    nameIssue={issues.get(c.name)}
+                    onRename={(n) => edit((x) => setRename(x, c.name, n))}
                     onType={(t) => edit((x) => setType(x, c.name, t))}
                     onInclude={(v) => edit((x) => setInclude(x, c.name, v))}
                     onNullable={(v) => edit((x) => setNullable(x, c.name, v))}
@@ -608,8 +619,16 @@ export function ImportWizard({ start, onImported, onClose }: Props) {
             <button type="button" onClick={() => setStep('upload')}>
               Back
             </button>
-            <span className="muted">{!allTyped && 'Give every included column a type.'}</span>
-            <button type="button" className="primary" disabled={!allTyped || predicting || included === 0} onClick={next} data-testid="schema-next">
+            <span className="muted">
+              {!allTyped ? 'Give every included column a type.' : issues.size > 0 ? 'Fix the column names marked above.' : ''}
+            </span>
+            <button
+              type="button"
+              className="primary"
+              disabled={!allTyped || predicting || included === 0 || issues.size > 0}
+              onClick={next}
+              data-testid="schema-next"
+            >
               {checked ? 'Next: save schema' : 'Check and continue'}
             </button>
           </footer>
@@ -766,15 +785,18 @@ type RowProps = {
   onInclude: (v: boolean) => void
   onNullable: (v: boolean) => void
   onDecimal: (precision: number, scale: number) => void
+  nameIssue?: NameIssue
+  onRename: (name: string) => void
 }
 
-function ColumnRow({ c, types, refused, onType, onInclude, onNullable, onDecimal }: RowProps) {
+function ColumnRow({ c, types, refused, onType, onInclude, onNullable, onDecimal, nameIssue, onRename }: RowProps) {
   const nudge = c.include ? compactNudge(c) : null
   const samples = c.samples.filter((v): v is string => v !== null && v !== '').slice(0, 4)
   const opts = c.type !== '' && !types.includes(c.type) ? [c.type, ...types] : types
   return (
     <tr
       data-col={c.name}
+      data-field={fieldName(c)}
       data-refused={refused || undefined}
       data-match={c.fromMatch}
       className={(c.include ? '' : 'excluded ') + (refused ? 'refused' : '')}
@@ -790,7 +812,8 @@ function ColumnRow({ c, types, refused, onType, onInclude, onNullable, onDecimal
         />
       </td>
       <td className="c-name mono">
-        {c.name}
+        {/* PULSE-GAP(column-rename) */}
+        <RenameCell c={c} issue={nameIssue} onRename={onRename} />
         {c.fromMatch === 'new' && (
           <span className="tag new" title="Not in the applied saved schema">
             new
@@ -872,6 +895,11 @@ function SchemaDiffView({ d }: { d: SchemaDiff }) {
       {d.changed.map((c) => (
         <li key={'c' + c.name}>
           ~ {c.name}: {c.from} → {c.to}
+        </li>
+      ))}
+      {d.renamed?.map((c) => (
+        <li key={'n' + c.name}>
+          ~ column {c.name} named {c.from} → {c.to}
         </li>
       ))}
     </ul>

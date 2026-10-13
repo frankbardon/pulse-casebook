@@ -513,6 +513,8 @@ export type ImportOptions = {
   ignore_extra?: boolean
   groups?: GroupDecl[]
   suggest_groups?: boolean
+  // Source column → field name. PULSE-GAP(column-rename)
+  rename?: Record<string, string>
   [key: string]: unknown
 }
 
@@ -594,6 +596,8 @@ export type SchemaMatch = {
   suggest: boolean
   diff: MatchDiff
   merged: MergedField[]
+  // The saved schema's renames, applied with it. PULSE-GAP(column-rename)
+  rename?: Record<string, string>
 }
 
 export type GroupCandidate = {
@@ -648,6 +652,7 @@ export type SavedSchemaInfo = {
   fields: number
   fingerprint: { name: string; type: string }[]
   invalid?: string
+  rename?: Record<string, string> // PULSE-GAP(column-rename)
 }
 
 export function listSchemas(signal?: AbortSignal): Promise<{ schemas: SavedSchemaInfo[]; field_types: string[] }> {
@@ -661,13 +666,21 @@ export type SavedSchema = {
   text: string
   created: boolean
   commit?: HistoryCommit
+  rename?: Record<string, string>
 }
 
 // saveSchema writes schemas/<name>.schema.json. An existing schema is
 // refused with ApiCallError code "exists" (details.text = the file now)
-// unless overwrite.
-export function saveSchema(name: string, schema: SchemaField[], overwrite: boolean, signal?: AbortSignal): Promise<SavedSchema> {
-  return postJSON<SavedSchema>('/api/schemas', JSON.stringify({ name, schema, overwrite }), signal)
+// unless overwrite. rename (source column → field name) saves the
+// object form {fields, rename}. PULSE-GAP(column-rename)
+export function saveSchema(
+  name: string,
+  schema: SchemaField[],
+  overwrite: boolean,
+  signal?: AbortSignal,
+  rename?: Record<string, string>,
+): Promise<SavedSchema> {
+  return postJSON<SavedSchema>('/api/schemas', JSON.stringify({ name, schema, overwrite, ...(rename && { rename }) }), signal)
 }
 
 export type ImportReport = {

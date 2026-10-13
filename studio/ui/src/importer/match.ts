@@ -10,6 +10,9 @@ import type { EditColumn } from './schemaEdit.ts'
 // the others keep their type and are flagged new. Input names win
 // (Pulse matches schema fields to columns by exact name).
 //
+// The saved schema's renames (PULSE-GAP(column-rename)) are applied to
+// the columns it names: merged names are the input's SOURCE names.
+//
 // dropNew also excludes the new columns: for a file that holds every
 // field of a saved schema plus columns it left out (an earlier import
 // that excluded them, via ignore_extra).
@@ -20,6 +23,9 @@ export function applyMatch(cols: EditColumn[], m: SchemaMatch, dropNew = false):
     if (!f) return c
     if (f.new) return { ...c, fromMatch: 'new', ...(dropNew && c.index >= 0 && { include: false }) }
     const next: EditColumn = { ...c, type: f.type, nullable: f.nullable, description: f.description, fromMatch: 'matched' }
+    const renamed = m.rename?.[c.name]
+    if (renamed !== undefined && renamed !== c.name) next.rename = renamed
+    else delete next.rename
     if (f.type === 'decimal128') {
       next.precision = f.precision
       next.scale = f.scale

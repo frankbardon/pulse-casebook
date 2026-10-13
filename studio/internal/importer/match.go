@@ -6,6 +6,8 @@ import (
 	"unicode"
 
 	"github.com/frankbardon/pulse/encoding"
+
+	"github.com/frankbardon/pulse-casebook/studio/internal/importer/rename"
 )
 
 // Coarse type classes a fingerprint compares. Rungs of one class (u8 vs
@@ -112,6 +114,24 @@ func ColumnsOf(fields []SchemaField) []Column {
 	return out
 }
 
+// SourceColumns is ColumnsOf under the source column names a rename map
+// records: a saved schema is matched against the next upload's ORIGINAL
+// headers. PULSE-GAP(column-rename).
+func SourceColumns(fields []SchemaField, m map[string]string) []Column {
+	cols := ColumnsOf(fields)
+	if len(m) == 0 {
+		return cols
+	}
+	names := make([]string, len(cols))
+	for i, c := range cols {
+		names[i] = c.Name
+	}
+	for i, n := range rename.Sources(names, m) {
+		cols[i].Name = n
+	}
+	return cols
+}
+
 // Thresholds the UI applies to a ranked match (G3): an exact match is
 // auto-selected; matches at or above SuggestScore are offered.
 const SuggestScore = 0.8
@@ -120,7 +140,8 @@ const SuggestScore = 0.8
 type Candidate struct {
 	Name    string
 	Path    string
-	Columns []Column
+	Columns []Column          // under source column names (SourceColumns)
+	Rename  map[string]string // PULSE-GAP(column-rename): the saved schema's map
 }
 
 // Retyped is a column both sides have with different coarse types.
@@ -158,6 +179,9 @@ type Match struct {
 	Suggest bool          `json:"suggest"` // score >= SuggestScore
 	Diff    Diff          `json:"diff"`
 	Merged  []MergedField `json:"merged"`
+	// Rename is the saved schema's rename map, applied with the match.
+	// PULSE-GAP(column-rename).
+	Rename map[string]string `json:"rename,omitempty"`
 }
 
 // Score is the weighted Jaccard of two fingerprints: matched names count
@@ -202,7 +226,7 @@ func Rank(input []Column, cands []Candidate, limit int) []Match {
 			continue
 		}
 		sc = float64(int(sc*1000+0.5)) / 1000
-		m := Match{Name: c.Name, Path: c.Path, Score: sc, Exact: sc == 1, Suggest: sc >= SuggestScore}
+		m := Match{Name: c.Name, Path: c.Path, Score: sc, Exact: sc == 1, Suggest: sc >= SuggestScore, Rename: c.Rename}
 		m.Diff, m.Merged = diffMerge(input, c.Columns)
 		out = append(out, m)
 	}

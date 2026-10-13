@@ -18,6 +18,8 @@ import (
 	"strings"
 
 	"github.com/frankbardon/pulse/encoding"
+
+	"github.com/frankbardon/pulse-casebook/studio/internal/importer/rename"
 )
 
 // SchemaField is one entry of a schema document: the JSON array
@@ -75,16 +77,70 @@ func FieldTypeNames() []string {
 // ParseSchema decodes and validates a schema document. It returns the
 // decoded entries and the encoding.Schema an ImportJob takes.
 func ParseSchema(raw []byte) ([]SchemaField, *encoding.Schema, error) {
+	fields, _, s, err := ParseSchemaDoc(raw)
+	return fields, s, err
+}
+
+// ParseSchemaDoc is ParseSchema plus the saved schema's rename map. A
+// schema document is the JSON array of fields; a saved schema whose
+// columns were renamed on import is the object {"fields": [...],
+// "rename": {"<source column>": "<field name>"}} instead, its fields
+// carrying the NEW names. PULSE-GAP(column-rename): keep reading the
+// object form after the rename shim goes; the map is what a Pulse rename
+// option is fed from.
+func ParseSchemaDoc(raw []byte) ([]SchemaField, map[string]string, *encoding.Schema, error) {
 	var defs []SchemaField
-	if err := json.Unmarshal(raw, &defs); err != nil {
-		return nil, nil, &SchemaError{Reason: "malformed", Index: -1,
+	var rename map[string]string
+	if t := strings.TrimSpace(string(raw)); strings.HasPrefix(t, "{") {
+		var doc struct {
+			Fields []SchemaField     `json:"fields"`
+			Rename map[string]string `json:"rename"`
+		}
+		if err := json.Unmarshal(raw, &doc); err != nil || doc.Fields == nil {
+			msg := "schema object has no fields array"
+			if err != nil {
+				msg = err.Error()
+			}
+			return nil, nil, nil, &SchemaError{Reason: "malformed", Index: -1,
+				Message: "schema is not a JSON array of {name, type, nullable, description} objects (or a saved {fields, rename} object): " + msg}
+		}
+		defs, rename = doc.Fields, doc.Rename
+	} else if err := json.Unmarshal(raw, &defs); err != nil {
+		return nil, nil, nil, &SchemaError{Reason: "malformed", Index: -1,
 			Message: "schema is not a JSON array of {name, type, nullable, description} objects: " + err.Error()}
 	}
 	s, err := BuildSchema(defs)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
-	return defs, s, nil
+	return defs, rename, s, nil
+}
+
+// WithRename is the saved-schema text for a schema document and a rename
+// map: the document itself when nothing is renamed, else the object
+// {"fields": doc, "rename": m} after checking m against the fields
+// (rename.ValidateFields; a *perrors.CodedError with rename.Code).
+// PULSE-GAP(column-rename).
+func WithRename(doc []byte, fields []SchemaField, m map[string]string) ([]byte, error) {
+	m = rename.Normalize(m)
+	if len(m) == 0 {
+		return doc, nil
+	}
+	if strings.HasPrefix(strings.TrimSpace(string(doc)), "{") {
+		return nil, &SchemaError{Reason: "malformed", Index: -1, Message: "pass rename alongside a schema array, not inside a schema object"}
+	}
+	names := make([]string, len(fields))
+	for i, f := range fields {
+		names[i] = f.Name
+	}
+	if err := rename.ValidateFields(names, m); err != nil {
+		return nil, err
+	}
+	mapped, err := json.Marshal(m)
+	if err != nil {
+		return nil, err
+	}
+	return []byte(`{"fields":` + string(doc) + `,"rename":` + string(mapped) + `}`), nil
 }
 
 // BuildSchema validates decoded entries and builds the encoding.Schema.

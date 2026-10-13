@@ -269,6 +269,7 @@ type schemaEntry struct {
 	Fields      int                  `json:"fields"`
 	Fingerprint importer.Fingerprint `json:"fingerprint"`
 	Invalid     string               `json:"invalid,omitempty"`
+	Rename      map[string]string    `json:"rename,omitempty"` // PULSE-GAP(column-rename)
 
 	columns []importer.Column
 }
@@ -298,12 +299,13 @@ func (s *Server) savedSchemas() []schemaEntry {
 			continue
 		}
 		ent.SHA256 = importer.HashBytes(data)
-		fields, _, err := importer.ParseSchema(data)
+		fields, ren, _, err := importer.ParseSchemaDoc(data)
 		if err != nil {
 			ent.Invalid = err.Error()
 		} else {
 			ent.Fields = len(fields)
-			ent.columns = importer.ColumnsOf(fields)
+			ent.Rename = ren
+			ent.columns = importer.SourceColumns(fields, ren)
 			ent.Fingerprint = importer.FingerprintOf(ent.columns)
 		}
 		out = append(out, ent)
@@ -330,9 +332,10 @@ func (s *Server) handleListSchemas(w http.ResponseWriter, _ *http.Request) {
 }
 
 type saveSchemaRequest struct {
-	Name      string          `json:"name"`
-	Schema    json.RawMessage `json:"schema"`
-	Overwrite bool            `json:"overwrite"`
+	Name      string            `json:"name"`
+	Schema    json.RawMessage   `json:"schema"`
+	Rename    map[string]string `json:"rename"` // PULSE-GAP(column-rename)
+	Overwrite bool              `json:"overwrite"`
 }
 
 type saveSchemaResponse struct {
@@ -343,6 +346,7 @@ type saveSchemaResponse struct {
 	Text        string               `json:"text"`
 	Created     bool                 `json:"created"`
 	Commit      *history.Commit      `json:"commit,omitempty"`
+	Rename      map[string]string    `json:"rename,omitempty"` // PULSE-GAP(column-rename)
 }
 
 // handleSaveSchema is POST /api/schemas {name, schema:[fields], overwrite?}.
@@ -365,11 +369,19 @@ func (s *Server) handleSaveSchema(w http.ResponseWriter, r *http.Request) {
 		WriteError(w, http.StatusBadRequest, "missing_schema", "schema is required", nil)
 		return
 	}
-	if _, _, err := importer.ParseSchema(req.Schema); err != nil {
+	fields, _, err := importer.ParseSchema(req.Schema)
+	if err != nil {
 		writeSchemaError(w, err)
 		return
 	}
-	doc, err := jsonfmt.Parse(req.Schema)
+	// PULSE-GAP(column-rename): the rename map rides along.
+	text, err := importer.WithRename(req.Schema, fields, req.Rename)
+	if err != nil {
+		cb := toCoded(err, "invalid_rename")
+		WriteError(w, http.StatusBadRequest, cb.Code, cb.Message, cb.Details)
+		return
+	}
+	doc, err := jsonfmt.Parse(text)
 	if err != nil {
 		WriteError(w, http.StatusBadRequest, "invalid_json", err.Error(), nil)
 		return
@@ -399,15 +411,15 @@ func (s *Server) handleSaveSchema(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	commit := s.commitPaths(r.Context(), "studio: save schema "+rel, rel)
-	fields, _, _ := importer.ParseSchema(out)
+	fields, ren, _, _ := importer.ParseSchemaDoc(out)
 	status := http.StatusOK
 	if created {
 		status = http.StatusCreated
 	}
 	WriteJSON(w, status, saveSchemaResponse{
 		Name: name, Path: rel, SHA256: importer.HashBytes(out),
-		Fingerprint: importer.FingerprintOf(importer.ColumnsOf(fields)),
-		Text:        string(out), Created: created, Commit: commit,
+		Fingerprint: importer.FingerprintOf(importer.SourceColumns(fields, ren)),
+		Text:        string(out), Created: created, Commit: commit, Rename: ren,
 	})
 }
 
@@ -445,7 +457,7 @@ func (s *Server) rankSchemas(cols []importer.Column, limit int) []importer.Match
 	var cands []importer.Candidate
 	for _, e := range s.savedSchemas() {
 		if e.Invalid == "" {
-			cands = append(cands, importer.Candidate{Name: e.Name, Path: e.Path, Columns: e.columns})
+			cands = append(cands, importer.Candidate{Name: e.Name, Path: e.Path, Columns: e.columns, Rename: e.Rename})
 		}
 	}
 	return importer.Rank(cols, cands, limit)
@@ -743,7 +755,8 @@ func (s *Server) handleImportPredict(w http.ResponseWriter, r *http.Request) {
 	}
 	resp.Columns = predictColumns(sample, resp.Schema, resp.Warnings, resp.Refusal)
 	if resp.Valid {
-		resp.Matches = s.rankSchemas(importer.ColumnsOf(resp.Schema), 10)
+		// Ranked under the source's own column names. PULSE-GAP(column-rename)
+		resp.Matches = s.rankSchemas(importer.SourceColumns(resp.Schema, rs.opts.Rename), 10)
 	}
 	WriteJSON(w, http.StatusOK, resp)
 }

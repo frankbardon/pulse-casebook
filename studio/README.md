@@ -225,6 +225,42 @@ in the sidebar, where each row downloads the file. `exports/` is ignored by git 
 committed. The dialog remembers the last format and options you used for each cohort, in this
 browser only.
 
+### Renaming columns on import
+
+<!-- PULSE-GAP(column-rename) -->
+In the import wizard's Schema step, each column has an editable field name. A renamed column shows
+its source header next to the name, with **reset** to restore it. **Suggest clean names** gives every
+included column a snake_case name: `Living Space (sq ft)` becomes `living_space_sq_ft` and
+`List Price ($)` becomes `list_price`. A name that is empty, starts or ends with a space, or matches
+another column's name is flagged on its row, and **Next** stays disabled until it is fixed. The server
+applies the same checks and refuses a bad name with `invalid_rename`.
+
+The renames are stored as one map, `{"<source column>": "<field name>"}`, under the key `rename` in
+two places. The import spec has it at `options.rename`, so **Rebuild** applies the same names again.
+A saved schema with renames is written as `{"fields": [...], "rename": {...}}`, where the fields carry
+the new names. A schema without renames stays the plain array. The next upload whose headers match a
+saved schema's original column names is matched to that schema, and applying the match applies its
+renames. Every other per-column setting, such as types, set delimiters and groups, uses the new name.
+
+#### Removing the rename shim
+
+Pulse alpha.10 matches an import schema to columns by exact name and cannot rename, so Studio renames
+columns itself by wrapping the source reader. When Pulse can rename columns natively:
+
+1. Translate `Options.Rename` to the Pulse option in `Options.Apply`
+   (`internal/importer/spec.go`), and remove the `rename.Wrap` call in `OpenReader`.
+2. Delete `internal/importer/rename/` and `internal/server/imports_rename_test.go`. Replace the few
+   uses of `rename.*` in `importer/schema.go` (`WithRename`) and `importer/match.go`
+   (`SourceColumns`) with whatever the Pulse version provides, or keep small copies of those helpers.
+3. In the UI, delete `src/importer/RenameCell.tsx`, `rename.css`, `rename.test.ts` and
+   `e2e/import-rename.spec.ts` with its `zillow*.csv` fixtures. Move `parseSavedSchema` and
+   `fieldName` out of `rename.ts` first if they are still needed.
+4. Keep the `rename` key in files (`options.rename` in import specs and the `{fields, rename}`
+   saved-schema form). Users' files do not need to change, and the Pulse option reads the same map.
+
+Run `grep -rn "PULSE-GAP(column-rename)"` to list every place to change. Known gap: an SPSS import
+with renames keeps the source variable names in Pulse's metadata sidecar.
+
 ### Sidecars
 
 Studio only ever writes two kinds of files: the request JSON, and a layout sidecar next to it.

@@ -13,6 +13,7 @@ import {
 } from '../api.ts'
 import { commitTime } from '../history.ts'
 import { formatBytes, formatCount } from './format.ts'
+import { parseSavedSchema } from './rename.ts'
 import { RebuildPanel } from './RebuildPanel.tsx'
 import { ImportReportView } from './report.tsx'
 import './import.css'
@@ -241,16 +242,18 @@ export function ImportSpecView({ file, dir, onOpen, onFilesChanged, onRecheck }:
 
 // SchemaView lists a saved schema's fields.
 export function SchemaView({ file }: { file: WorkspaceFile }) {
-  const [st, setSt] = useState<{ fields?: SchemaField[]; error?: string }>({})
+  const [st, setSt] = useState<{ fields?: SchemaField[]; rename?: Record<string, string>; error?: string }>({})
   useEffect(() => {
     const ctl = new AbortController()
     readFile(file.path, ctl.signal)
-      .then((f) => setSt({ fields: JSON.parse(f.text) as SchemaField[] }))
+      .then((f) => setSt(parseSavedSchema(f.text)))
       .catch((e: unknown) => {
         if (!ctl.signal.aborted) setSt({ error: String(e) })
       })
     return () => ctl.abort()
   }, [file.path])
+  // PULSE-GAP(column-rename): field → the source column it was renamed from.
+  const from = st.rename ? new Map(Object.entries(st.rename).map(([k, v]) => [v, k])) : null
   return (
     <div className="file-view" data-testid="schema-file">
       <header className="file-view-head">
@@ -270,6 +273,7 @@ export function SchemaView({ file }: { file: WorkspaceFile }) {
               <th>Type</th>
               <th>Nullable</th>
               <th>Description</th>
+              {from && <th>Source column</th>}
             </tr>
           </thead>
           <tbody>
@@ -282,6 +286,11 @@ export function SchemaView({ file }: { file: WorkspaceFile }) {
                 </td>
                 <td>{f.nullable ? 'yes' : ''}</td>
                 <td className="muted">{f.description}</td>
+                {from && (
+                  <td className="mono muted" data-testid="schema-field-source">
+                    {from.get(f.name) ?? ''}
+                  </td>
+                )}
               </tr>
             ))}
           </tbody>

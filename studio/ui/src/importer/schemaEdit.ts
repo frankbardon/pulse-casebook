@@ -21,9 +21,14 @@ import type {
   PredictColumn,
   SchemaField,
 } from '../api.ts'
+import { fieldName, fieldNamer, renameOf, sourceNamer } from './rename.ts'
 
 export type EditColumn = {
+  // The SOURCE column name: the editor's key for a column.
   name: string
+  // The field name Pulse gets, when renamed (fieldName in rename.ts).
+  // PULSE-GAP(column-rename)
+  rename?: string
   // Source column index; -1 for a field Pulse generates (SPSS
   // `_missing` siblings), which has no source column to exclude.
   index: number
@@ -56,9 +61,13 @@ export type Settings = {
 
 export const DEFAULT_SETTINGS: Settings = { floatWidth: 'f64', sourceTz: '', setDelimiter: '', groups: [] }
 
-function fromPredictColumn(c: PredictColumn): EditColumn {
+// Predict reports columns under the names Pulse saw (renamed, when
+// options.rename was sent); src maps them back to source columns.
+// PULSE-GAP(column-rename)
+function fromPredictColumn(c: PredictColumn, src: (n: string) => string = (n) => n): EditColumn {
   return {
-    name: c.name,
+    name: src(c.name),
+    ...(src(c.name) !== c.name && { rename: c.name }),
     index: c.index,
     type: c.type ?? '',
     nullable: c.nullable ?? false,
@@ -78,7 +87,8 @@ function fromPredictColumn(c: PredictColumn): EditColumn {
 // columnsFromPredict is the editor's first state for a source: every
 // column included, typed as Pulse inferred it.
 export function columnsFromPredict(p: ImportPredict): EditColumn[] {
-  return p.columns.map(fromPredictColumn)
+  const src = sourceNamer(p.options?.rename)
+  return p.columns.map((c) => fromPredictColumn(c, src))
 }
 
 // mergeRerun folds a re-run predict (sent with overrides) into the
@@ -89,9 +99,10 @@ export function columnsFromPredict(p: ImportPredict): EditColumn[] {
 // set is not cleared. Stats, samples and warnings are the response's.
 export function mergeRerun(prev: EditColumn[], p: ImportPredict): EditColumn[] {
   const byName = new Map(prev.map((c) => [c.name, c]))
+  const src = sourceNamer(p.options?.rename)
   return p.columns.map((rc) => {
-    const old = byName.get(rc.name)
-    if (!old) return fromPredictColumn(rc)
+    const old = byName.get(src(rc.name))
+    if (!old) return fromPredictColumn(rc, src)
     const typed = p.valid && rc.type !== undefined && rc.type !== ''
     return {
       ...old,
@@ -146,7 +157,7 @@ export function setDecimal(cols: EditColumn[], name: string, precision: number, 
 export function overridesOf(cols: EditColumn[]): Record<string, string> {
   const out: Record<string, string> = {}
   for (const c of cols) {
-    if (c.include && c.index >= 0 && c.type !== '' && c.type !== c.inferred) out[c.name] = c.type
+    if (c.include && c.index >= 0 && c.type !== '' && c.type !== c.inferred) out[fieldName(c)] = c.type
   }
   return out
 }
@@ -157,7 +168,7 @@ export function schemaOf(cols: EditColumn[]): SchemaField[] {
   return cols
     .filter((c) => c.include)
     .map((c) => {
-      const f: SchemaField = { name: c.name, type: c.type, description: c.description, nullable: c.nullable }
+      const f: SchemaField = { name: fieldName(c), type: c.type, description: c.description, nullable: c.nullable }
       if (c.type === 'decimal128') {
         f.precision = c.precision ?? 18
         f.scale = c.scale ?? 0
@@ -177,18 +188,22 @@ export function isSetType(t: string): boolean {
 
 // optionsOf lowers the settings to the options object. For an import
 // (and the spec it writes), excluded columns set ignore_extra; predict
-// asks Pulse for group suggestions instead.
+// asks Pulse for group suggestions instead. Per-column settings name
+// fields by the name Pulse sees (settings.groups hold source names).
 export function optionsOf(s: Settings, cols: EditColumn[], mode: 'predict' | 'import'): ImportOptions {
   const o: ImportOptions = {}
+  const field = fieldNamer(cols)
   if (s.sheet) o.sheet = s.sheet
   if (s.floatWidth === 'f32') o.float_width = 'f32'
   if (s.sourceTz.trim() !== '') o.source_tz = s.sourceTz.trim()
   if (s.setDelimiter !== '') {
     const delims: Record<string, string> = {}
-    for (const c of cols) if (c.include && isSetType(c.type)) delims[c.name] = s.setDelimiter
+    for (const c of cols) if (c.include && isSetType(c.type)) delims[fieldName(c)] = s.setDelimiter
     if (Object.keys(delims).length > 0) o.set_delimiters = delims
   }
-  if (s.groups.length > 0) o.groups = s.groups
+  if (s.groups.length > 0) o.groups = s.groups.map((g) => ({ ...(g.key && { key: g.key.map(field) }), members: g.members.map(field) }))
+  const rename = renameOf(cols) // PULSE-GAP(column-rename)
+  if (rename) o.rename = rename
   if (mode === 'predict') o.suggest_groups = true
   if (mode === 'import' && excludedCount(cols) > 0) o.ignore_extra = true
   return o
@@ -197,7 +212,9 @@ export function optionsOf(s: Settings, cols: EditColumn[], mode: 'predict' | 'im
 // --- schema diff (save over an existing schema) ------------------------------
 
 export type FieldChange = { name: string; from: string; to: string }
-export type SchemaDiff = { added: string[]; removed: string[]; changed: FieldChange[] }
+// renamed: source columns whose saved field name changes (rename.ts,
+// PULSE-GAP(column-rename)).
+export type SchemaDiff = { added: string[]; removed: string[]; changed: FieldChange[]; renamed?: FieldChange[] }
 
 function describe(f: SchemaField): string {
   let s = f.type
@@ -223,7 +240,7 @@ export function schemaDiff(saved: SchemaField[], next: SchemaField[]): SchemaDif
 }
 
 export function isEmptyDiff(d: SchemaDiff): boolean {
-  return d.added.length === 0 && d.removed.length === 0 && d.changed.length === 0
+  return d.added.length === 0 && d.removed.length === 0 && d.changed.length === 0 && (d.renamed?.length ?? 0) === 0
 }
 
 // --- groups ------------------------------------------------------------------
@@ -232,10 +249,13 @@ function groupKey(g: GroupDecl): string {
   return JSON.stringify([[...(g.key ?? [])].sort(), [...g.members].sort()])
 }
 
-// groupChips are Pulse's suggested groups not declared yet.
-export function groupChips(candidates: GroupCandidate[] | undefined, declared: GroupDecl[]): GroupCandidate[] {
+// groupChips are Pulse's suggested groups not declared yet, under
+// source column names (src maps the names Pulse reported back).
+export function groupChips(candidates: GroupCandidate[] | undefined, declared: GroupDecl[], src: (n: string) => string = (n) => n): GroupCandidate[] {
   const have = new Set(declared.map(groupKey))
-  return (candidates ?? []).filter((c) => c.suggested && !have.has(groupKey({ key: c.key, members: c.members })))
+  return (candidates ?? [])
+    .map((c) => ({ ...c, key: c.key.map(src), members: c.members.map(src) }))
+    .filter((c) => c.suggested && !have.has(groupKey({ key: c.key, members: c.members })))
 }
 
 export function declOf(c: GroupCandidate): GroupDecl {
@@ -390,7 +410,7 @@ export function filterColumns(cols: EditColumn[], q: string): EditColumn[] {
   const words = q.toLowerCase().split(/\s+/).filter(Boolean)
   if (words.length === 0) return cols
   return cols.filter((c) => {
-    const hay = `${c.name} ${c.type}`.toLowerCase()
+    const hay = `${c.name} ${c.rename ?? ''} ${c.type}`.toLowerCase()
     return words.every((w) => hay.includes(w))
   })
 }

@@ -11,6 +11,8 @@ import (
 	"github.com/frankbardon/pulse/encoding"
 	pio "github.com/frankbardon/pulse/io"
 	"github.com/spf13/afero"
+
+	"github.com/frankbardon/pulse-casebook/studio/internal/importer/rename"
 )
 
 // Options are the import knobs a predict, an import and a spec share.
@@ -46,6 +48,13 @@ type Options struct {
 
 	// Predict only: detect candidate parent groups (a full row pass).
 	SuggestGroups bool `json:"suggest_groups,omitempty"`
+
+	// Rename maps source columns to field names: {"<source column>":
+	// "<field name>"}. Pulse sees the new names, so every per-column
+	// option above names fields by their NEW name. Applied by the reader
+	// OpenReader builds. PULSE-GAP(column-rename): when Pulse can rename,
+	// feed this map to its option in Apply and drop the reader wrap.
+	Rename map[string]string `json:"rename,omitempty"`
 }
 
 // OptionError is an option the studio refuses before Pulse sees it.
@@ -208,7 +217,11 @@ func OpenReader(abs string, format pio.Format, o Options) (pio.Reader, pio.Forma
 		return nil, format, &FormatError{Format: format}
 	}
 	r, err := pio.NewReader(format, afero.NewOsFs(), abs, o.ReaderOptions())
-	return r, format, err
+	if err != nil {
+		return nil, format, err
+	}
+	// PULSE-GAP(column-rename): the one place renames are applied.
+	return rename.Wrap(r, o.Rename), format, nil
 }
 
 // FormatError reports a source whose format cannot be read.
