@@ -2,15 +2,15 @@
 // over a small orders cohort synthesized from its committed January spec
 // (global-setup.ts): stages as lanes with live previews, stage-to-stage
 // wires, editing and saving, adding a stage, and a full run.
-import { drag, expect, test } from './harness.ts'
+import { analysisAt, drag, expect, test } from './harness.ts'
 
 test.use({ workspace: 'retail-chain', viewport: { width: 1600, height: 1000 } })
 
-const CHAIN = 'req/06_spend_distribution_chain.json'
+const CHAIN = 'analyses/06_spend_distribution_chain.json'
 
 test('a chain opens as stage lanes with previews and stage-to-stage wires', async ({ page }) => {
   await page.goto('/')
-  await page.getByRole('button', { name: CHAIN }).click()
+  await analysisAt(page, CHAIN).click()
   const graph = page.getByTestId('request-graph')
   await expect(graph.getByTestId('lane-title')).toHaveText(['per_customer', 'by_spend_band'])
   await expect(graph.locator('[data-path="cohort"]')).toContainText('orders.pulse')
@@ -28,7 +28,7 @@ test('a chain opens as stage lanes with previews and stage-to-stage wires', asyn
 test('chain edits save to disk; a new stage reads the last one', async ({ page, studio }) => {
   const before = JSON.parse(studio.read(CHAIN)) as { stages: { name: string; request: Record<string, unknown> }[] }
   await page.goto('/')
-  await page.getByRole('button', { name: CHAIN }).click()
+  await analysisAt(page, CHAIN).click()
   const graph = page.getByTestId('request-graph')
   await expect(graph.getByTestId('lane-title')).toHaveCount(2)
 

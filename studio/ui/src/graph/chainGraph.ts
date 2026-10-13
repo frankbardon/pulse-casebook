@@ -55,7 +55,7 @@ export function buildChainGraph(req: unknown, opts: ChainOptions = {}): ChainGra
   const rootDoc = Object.fromEntries(Object.entries(req).filter(([k]) => !(stages && (k === 'stages' || k === 'cohort'))))
   if (Object.keys(rootDoc).length > 0) {
     add(
-      { id: ROOT_LANE, role: 'root', index: -1, base: [], title: 'Chain', named: false },
+      { id: ROOT_LANE, role: 'root', index: -1, base: [], title: 'Chained', named: false },
       buildRequestGraph(rootDoc, { manifest: opts.manifest, cohortFields: opts.cohortFields, withCohort: !stages && 'cohort' in req }),
     )
   }

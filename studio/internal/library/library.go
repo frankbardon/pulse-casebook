@@ -17,11 +17,9 @@
 // GlobalPrefix ("_global/cohorts/x.pulse"): that is the only way out of
 // a workspace (scope.Root mounts, routefs for the engine).
 //
-// A directory without library.json that holds Studio content of the
-// pre-library flat layout (request JSON or cohorts anywhere below it, or
-// req/, imports/, exports/ at its root) is a legacy folder: it opens in place as a
-// single workspace (Mode Legacy) until it is migrated (story W2). Any
-// other directory without library.json becomes a new, empty library.
+// An empty directory (hidden entries such as .git or .DS_Store aside)
+// becomes a new, empty library. Any other directory without
+// library.json is refused (ErrNotLibrary): Studio only serves libraries.
 package library
 
 import (
@@ -38,7 +36,6 @@ import (
 	"unicode"
 
 	"github.com/frankbardon/pulse-casebook/studio/internal/jsonfmt"
-	"github.com/frankbardon/pulse-casebook/studio/internal/workspace"
 )
 
 // Layout names.
@@ -63,30 +60,19 @@ const (
 	Version = 1
 )
 
-// Mode says how a directory is served.
-type Mode string
-
-const (
-	// ModeLibrary: library.json is present (or was just written).
-	ModeLibrary Mode = "library"
-	// ModeLegacy: a pre-library flat folder served in place as one
-	// workspace (W2 migrates it).
-	ModeLegacy Mode = "legacy"
-)
-
 // Errors.
 var (
-	ErrNotFound    = errors.New("no such workspace")
-	ErrBadName     = errors.New("workspace name must not be empty")
-	ErrLegacy      = errors.New("a legacy folder has exactly one workspace")
+	ErrNotFound = errors.New("no such workspace")
+	ErrBadName  = errors.New("workspace name must not be empty")
+	// ErrNotLibrary: a non-empty directory without library.json.
+	ErrNotLibrary  = errors.New("not a Pulse Studio library")
 	ErrBadMetadata = errors.New("workspace.json is not a JSON object")
 )
 
 // Library is an opened library directory.
 type Library struct {
-	dir  string // absolute, symlinks evaluated
-	mode Mode
-	mu   sync.Mutex // serializes workspace creation / metadata writes
+	dir string     // absolute, symlinks evaluated
+	mu  sync.Mutex // serializes workspace creation / metadata writes
 }
 
 // Workspace is one workspace's metadata. Dir is its absolute directory.
@@ -95,111 +81,36 @@ type Workspace struct {
 	Name        string `json:"name"`
 	Description string `json:"description,omitempty"`
 	Created     string `json:"created,omitempty"`
-	// Legacy: the library directory itself, served in place.
-	Legacy bool   `json:"legacy,omitempty"`
-	Dir    string `json:"-"`
+	Dir         string `json:"-"`
 	// Invalid says why workspace.json could not be read (the workspace
 	// is still listed, named after its slug).
 	Invalid string `json:"invalid,omitempty"`
 }
 
-// Detect reports how dir would be served: ModeLibrary when library.json
-// exists, ModeLegacy for a pre-library flat folder, else ModeLibrary with
-// fresh = true (Open writes library.json).
-func Detect(dir string) (mode Mode, fresh bool, err error) {
+// Detect reports whether dir is a library (library.json present) or a
+// fresh one to initialise (fresh: the directory is empty but for hidden
+// entries). Anything else is ErrNotLibrary.
+func Detect(dir string) (fresh bool, err error) {
 	if _, err := os.Stat(filepath.Join(dir, MarkerFile)); err == nil {
-		return ModeLibrary, false, nil
+		return false, nil
 	} else if !errors.Is(err, fs.ErrNotExist) {
-		return "", false, err
+		return false, err
 	}
-	if IsLegacy(dir) {
-		return ModeLegacy, false, nil
-	}
-	return ModeLibrary, true, nil
-}
-
-// IsLegacy reports whether dir (without library.json) holds pre-library
-// Studio content: an imports/, exports/ or req/ directory at its root,
-// or a .pulse cohort or request JSON file anywhere below it (casebook
-// layouts nest them: showcase/<case>/req/*.json). The walk skips hidden
-// directories and node_modules and gives up (not legacy) after
-// legacyWalkLimit entries or below legacyWalkDepth levels.
-func IsLegacy(dir string) bool {
 	entries, err := os.ReadDir(dir)
 	if err != nil {
-		return false
+		return false, err
 	}
 	for _, e := range entries {
-		if e.IsDir() && (e.Name() == "req" || e.Name() == "imports" || e.Name() == "exports") {
-			return true
+		if !strings.HasPrefix(e.Name(), ".") {
+			return false, fmt.Errorf("%w: %s has files but no %s (create a library with `studio <new or empty dir>`)", ErrNotLibrary, dir, MarkerFile)
 		}
 	}
-	seen := 0
-	found := false
-	_ = filepath.WalkDir(dir, func(p string, d fs.DirEntry, err error) error {
-		if err != nil {
-			if p == dir {
-				return err
-			}
-			return nil
-		}
-		if seen++; seen > legacyWalkLimit {
-			return fs.SkipAll
-		}
-		name := d.Name()
-		if p != dir && (strings.HasPrefix(name, ".") || name == "node_modules") {
-			if d.IsDir() {
-				return filepath.SkipDir
-			}
-			return nil
-		}
-		if d.IsDir() {
-			if rel, err := filepath.Rel(dir, p); err == nil && rel != "." && strings.Count(filepath.ToSlash(rel), "/") >= legacyWalkDepth {
-				return filepath.SkipDir
-			}
-			return nil
-		}
-		if !d.Type().IsRegular() {
-			return nil
-		}
-		lower := strings.ToLower(name)
-		switch {
-		case strings.HasSuffix(lower, ".pulse"):
-			found = true
-		case strings.HasSuffix(lower, ".json") && !(name == MarkerFile && filepath.Dir(p) == dir):
-			if data, err := readSmall(p); err == nil {
-				if k, _ := workspace.Classify(name, data); k != workspace.KindUnopenable {
-					found = true
-				}
-			}
-		}
-		if found {
-			return fs.SkipAll
-		}
-		return nil
-	})
-	return found
+	return true, nil
 }
 
-// Bounds of IsLegacy's walk.
-const (
-	legacyWalkLimit = 20000
-	legacyWalkDepth = 6
-)
-
-func readSmall(p string) ([]byte, error) {
-	info, err := os.Stat(p)
-	if err != nil {
-		return nil, err
-	}
-	if info.Size() > workspace.MaxRequestBytes {
-		return nil, errors.New("too large")
-	}
-	return os.ReadFile(p)
-}
-
-// Open opens dir as a library. A fresh directory gets library.json and a
-// workspaces/ directory; a legacy folder is left untouched.
+// Open opens dir as a library. A fresh (empty) directory gets
+// library.json; every library gets a workspaces/ directory. A non-empty
+// directory without library.json is ErrNotLibrary.
 func Open(dir string) (*Library, error) {
 	abs, err := filepath.Abs(dir)
 	if err != nil {
@@ -209,20 +120,18 @@ func Open(dir string) (*Library, error) {
 	if err != nil {
 		return nil, err
 	}
-	mode, fresh, err := Detect(real)
+	fresh, err := Detect(real)
 	if err != nil {
 		return nil, err
 	}
-	l := &Library{dir: real, mode: mode}
+	l := &Library{dir: real}
 	if fresh {
 		if err := writeFileAtomic(filepath.Join(real, MarkerFile), Marker()); err != nil {
 			return nil, fmt.Errorf("initialise library: %w", err)
 		}
 	}
-	if mode == ModeLibrary {
-		if err := os.MkdirAll(filepath.Join(real, WorkspacesDir), 0o755); err != nil {
-			return nil, fmt.Errorf("initialise library: %w", err)
-		}
+	if err := os.MkdirAll(filepath.Join(real, WorkspacesDir), 0o755); err != nil {
+		return nil, fmt.Errorf("initialise library: %w", err)
 	}
 	return l, nil
 }
@@ -233,33 +142,12 @@ func Marker() []byte { return []byte(fmt.Sprintf("{\"version\": %d}\n", Version)
 // Dir is the library directory (absolute, symlinks evaluated).
 func (l *Library) Dir() string { return l.dir }
 
-// Mode is how the directory is served.
-func (l *Library) Mode() Mode { return l.mode }
-
-// Legacy reports ModeLegacy.
-func (l *Library) Legacy() bool { return l.mode == ModeLegacy }
-
-// GlobalDir is the global area's directory (the library directory), or
-// "" for a legacy folder (no global area).
-func (l *Library) GlobalDir() string {
-	if l.Legacy() {
-		return ""
-	}
-	return l.dir
-}
-
-// legacyWorkspace is the folder itself, named after it.
-func (l *Library) legacyWorkspace() Workspace {
-	base := filepath.Base(l.dir)
-	return Workspace{Slug: Slugify(base), Name: base, Legacy: true, Dir: l.dir}
-}
+// GlobalDir is the global area's directory (the library directory).
+func (l *Library) GlobalDir() string { return l.dir }
 
 // Workspaces lists the workspaces sorted by slug. A library with none is
 // valid (an empty list).
 func (l *Library) Workspaces() ([]Workspace, error) {
-	if l.Legacy() {
-		return []Workspace{l.legacyWorkspace()}, nil
-	}
 	entries, err := os.ReadDir(filepath.Join(l.dir, WorkspacesDir))
 	if err != nil {
 		if errors.Is(err, fs.ErrNotExist) {
@@ -280,12 +168,6 @@ func (l *Library) Workspaces() ([]Workspace, error) {
 
 // Workspace returns one workspace by slug.
 func (l *Library) Workspace(slug string) (Workspace, error) {
-	if l.Legacy() {
-		if ws := l.legacyWorkspace(); ws.Slug == slug {
-			return ws, nil
-		}
-		return Workspace{}, ErrNotFound
-	}
 	if !ValidSlug(slug) {
 		return Workspace{}, ErrNotFound
 	}
@@ -328,9 +210,6 @@ func (l *Library) read(slug string) Workspace {
 // the name (deduplicated with -2, -3, ...), the layout directories and
 // workspace.json. Its repository is the caller's business (history).
 func (l *Library) CreateWorkspace(name, description string, now time.Time) (Workspace, error) {
-	if l.Legacy() {
-		return Workspace{}, ErrLegacy
-	}
 	name = strings.TrimSpace(name)
 	if name == "" {
 		return Workspace{}, ErrBadName
@@ -379,9 +258,6 @@ func (l *Library) CreateWorkspace(name, description string, now time.Time) (Work
 // (directory) never changes. workspace.json is edited losslessly: other
 // keys and their order are kept.
 func (l *Library) UpdateWorkspace(slug string, name, description *string) (Workspace, error) {
-	if l.Legacy() {
-		return Workspace{}, ErrLegacy
-	}
 	if name != nil && strings.TrimSpace(*name) == "" {
 		return Workspace{}, ErrBadName
 	}

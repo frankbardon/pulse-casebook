@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { ApiCallError, rebuildImport, uploadSource, type ImportResult, type ImportSpecDoc } from '../api.ts'
 import { formatBytes } from './format.ts'
 import { ImportReportView } from './report.tsx'
+import { useArea } from '../area.ts'
 
 type Props = {
   specPath: string
@@ -28,11 +29,12 @@ type State =
 // silently: the user re-checks the schema in the wizard or forces it. A
 // missing source says where the file belongs and takes it again.
 export function RebuildPanel({ specPath, spec, dir, onRebuilt, onRecheck }: Props) {
+  const area = useArea()
   const [st, setSt] = useState<State>({ phase: 'idle' })
 
   const rebuild = (force: boolean) => {
     setSt({ phase: 'running' })
-    rebuildImport(specPath, force)
+    rebuildImport(area, specPath, force)
       .then((r) => {
         setSt({ phase: 'done', result: r })
         onRebuilt(r)
@@ -46,7 +48,7 @@ export function RebuildPanel({ specPath, spec, dir, onRebuilt, onRecheck }: Prop
 
   const putBack = (file: File) => {
     setSt({ phase: 'missing', uploading: true })
-    uploadSource(file)
+    uploadSource(area, file)
       .then((up) => {
         if (up.path !== spec.source.path) {
           setSt({

@@ -266,6 +266,7 @@ func (s *Server) ensureDir(w http.ResponseWriter, rel string) (string, bool) {
 type schemaEntry struct {
 	Name        string               `json:"name"`
 	Path        string               `json:"path"`
+	Scope       string               `json:"scope,omitempty"` // "global" | "local" in a library
 	SHA256      string               `json:"sha256"`
 	Fields      int                  `json:"fields"`
 	Fingerprint importer.Fingerprint `json:"fingerprint"`
@@ -275,10 +276,28 @@ type schemaEntry struct {
 	columns []importer.Column
 }
 
-// savedSchemas reads every schemas/*.schema.json, sorted by name.
+// savedSchemas reads every schemas/*.schema.json of the area, sorted by
+// name. In a library workspace the global schemas follow, as
+// "_global/schemas/..." paths with scope "global" (the workspace's own
+// are "local"; the global area's own are "global").
 func (s *Server) savedSchemas() []schemaEntry {
+	if !s.cfg.Library {
+		return s.schemasIn(importer.SchemasDir, "")
+	}
+	if s.cfg.Global {
+		return s.schemasIn(importer.SchemasDir, "global")
+	}
+	out := s.schemasIn(importer.SchemasDir, "local")
+	if s.root.Mounted(library.GlobalPrefix) != nil {
+		out = append(out, s.schemasIn(library.GlobalPrefix+"/"+importer.SchemasDir, "global")...)
+	}
+	return out
+}
+
+// schemasIn reads the saved schemas in the area directory dirRel.
+func (s *Server) schemasIn(dirRel, scopeName string) []schemaEntry {
 	out := []schemaEntry{}
-	dir, err := s.root.Resolve(importer.SchemasDir)
+	dir, err := s.root.Resolve(dirRel)
 	if err != nil {
 		return out
 	}
@@ -291,8 +310,8 @@ func (s *Server) savedSchemas() []schemaEntry {
 		if !e.Type().IsRegular() || strings.HasPrefix(name, ".") || !strings.HasSuffix(strings.ToLower(name), importer.SchemaSuffix) {
 			continue
 		}
-		rel := importer.SchemasDir + "/" + name
-		ent := schemaEntry{Name: name[:len(name)-len(importer.SchemaSuffix)], Path: rel, Fingerprint: importer.Fingerprint{}}
+		rel := dirRel + "/" + name
+		ent := schemaEntry{Name: name[:len(name)-len(importer.SchemaSuffix)], Path: rel, Scope: scopeName, Fingerprint: importer.Fingerprint{}}
 		data, err := readSmall(filepath.Join(dir, name))
 		if err != nil {
 			ent.Invalid = err.Error()
@@ -458,7 +477,7 @@ func (s *Server) rankSchemas(cols []importer.Column, limit int) []importer.Match
 	var cands []importer.Candidate
 	for _, e := range s.savedSchemas() {
 		if e.Invalid == "" {
-			cands = append(cands, importer.Candidate{Name: e.Name, Path: e.Path, Columns: e.columns, Rename: e.Rename})
+			cands = append(cands, importer.Candidate{Name: e.Name, Path: e.Path, Columns: e.columns, Rename: e.Rename, Scope: e.Scope})
 		}
 	}
 	return importer.Rank(cols, cands, limit)
@@ -546,6 +565,9 @@ func (s *Server) resolveSchema(w http.ResponseWriter, raw json.RawMessage, rs *r
 	if strings.HasPrefix(trimmed, "\"") {
 		var ref string
 		_ = json.Unmarshal(raw, &ref)
+		if name, ok := s.globalSchemaRef(ref); ok {
+			return s.loadSavedSchema(w, name, ref, rs)
+		}
 		name, ok := importer.SchemaName(ref)
 		if !ok {
 			WriteError(w, http.StatusBadRequest, "invalid_name", "schema must be a saved schema name or an inline schema document", map[string]any{"schema": ref})
@@ -561,6 +583,25 @@ func (s *Server) resolveSchema(w http.ResponseWriter, raw json.RawMessage, rs *r
 	rs.fields, rs.schema = fields, sch
 	rs.ref = &importer.SpecSchema{Inline: fields}
 	return true
+}
+
+// globalSchemaRef recognises a global saved schema a library workspace
+// names by its path, "_global/schemas/<name>.schema.json", and returns
+// its name. The spec then records that path (rebuild follows it).
+func (s *Server) globalSchemaRef(ref string) (string, bool) {
+	prefix := library.GlobalPrefix + "/" + importer.SchemasDir + "/"
+	if s.cfg.Global || s.root.Mounted(library.GlobalPrefix) == nil || !strings.HasPrefix(ref, prefix) {
+		return "", false
+	}
+	base := strings.TrimPrefix(ref, prefix)
+	if !strings.HasSuffix(base, importer.SchemaSuffix) {
+		return "", false
+	}
+	name := strings.TrimSuffix(base, importer.SchemaSuffix)
+	if n, ok := importer.SchemaName(name); !ok || n != name {
+		return "", false
+	}
+	return name, true
 }
 
 // loadSavedSchema reads the saved schema name at relPath (its area's

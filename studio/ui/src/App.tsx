@@ -1,126 +1,171 @@
 import { useEffect, useState } from 'react'
-import { getStatus, type GitStatus, type ImportResult, type WorkspaceFile } from './api.ts'
+import { getLibrary, getStatus, type GitStatus, type LibraryInfo } from './api.ts'
 import { useCatalog } from './catalog.ts'
-import { Sidebar, type NewRequestOpen } from './Sidebar.tsx'
-import { RequestView } from './graph/RequestView.tsx'
-import { ImportWizard, type WizardStart } from './importer/ImportWizard.tsx'
-import { CohortView, ImportSpecView, SchemaView, type Recheck } from './importer/views.tsx'
-import { ExportDialog } from './exporter/ExportDialog.tsx'
+import { AnalysesView, type NewAnalysisOpen } from './AnalysesView.tsx'
+import { CohortsView } from './CohortsView.tsx'
+import { WorkspaceSwitcher } from './WorkspaceSwitcher.tsx'
+import { loadPrefs, pickWorkspace, savePrefs, type Tab } from './prefs.ts'
 import './App.css'
+import './shell.css'
 
-// The canvas shows the selected file, or the import wizard (n remounts
-// it for each new start).
-type Main = { mode: 'file' } | { mode: 'import'; start: WizardStart; n: number }
-
+// App is the library shell: the header (Analyses | Cohorts, and on
+// Analyses the workspace switcher) over the open tab. The last
+// workspace and tab are remembered per viewer.
 export function App() {
-  const [selected, setSelected] = useState<WorkspaceFile | null>(null)
-  const [main, setMain] = useState<Main>({ mode: 'file' })
-  // Bumps make the sidebar re-list (imports and rebuilds add files).
-  const [reload, setReload] = useState(0)
-  const [seq, setSeq] = useState(0)
-  const [newRequest, setNewRequest] = useState<NewRequestOpen | null>(null)
-  const [justImported, setJustImported] = useState<ImportResult | null>(null)
-  // The open export dialog (n remounts it for each open).
-  const [exporting, setExporting] = useState<{ cohort: string; n: number } | null>(null)
   // The catalog annotates nodes (known operators), drives inspector forms
   // and the palette, and is reloaded when the engine changes.
   const { health, catalog, error } = useCatalog()
-  // Git-backed history: on unless --no-git or git is missing (then a
-  // banner says why and the History panel is not offered).
-  const [git, setGit] = useState<GitStatus | null>(null)
+  const [prefs] = useState(loadPrefs)
+  const [lib, setLib] = useState<LibraryInfo | null>(null)
+  const [libError, setLibError] = useState<string | null>(null)
+  const [libReload, setLibReload] = useState(0)
+  const [tab, setTabState] = useState<Tab>(prefs.tab ?? 'analyses')
+  const [ws, setWsState] = useState<string | null>(null)
+  const [creating, setCreating] = useState(false)
+  const [newAnalysis, setNewAnalysis] = useState<NewAnalysisOpen | null>(null)
+  const [seq, setSeq] = useState(0)
+  // Git-backed history of the open workspace (or of the global area when
+  // there is none): on unless --no-git or git is missing (then a banner
+  // says why and the History panel is not offered).
+  const [wsGit, setWsGit] = useState<{ ws: string; git: GitStatus } | null>(null)
+
   useEffect(() => {
     const ctl = new AbortController()
-    getStatus(ctl.signal)
-      .then((s) => setGit(s.git))
+    getLibrary(ctl.signal)
+      .then((l) => {
+        setLib(l)
+        setLibError(null)
+        setWsState((cur) => pickWorkspace(cur ?? prefs.workspace, l.workspaces.map((w) => w.slug), l.default))
+      })
+      .catch((e: unknown) => {
+        if (!ctl.signal.aborted) setLibError(String(e))
+      })
+    return () => ctl.abort()
+  }, [libReload, prefs.workspace])
+
+  useEffect(() => {
+    if (!ws) return
+    const ctl = new AbortController()
+    getStatus(ws, ctl.signal)
+      .then((s) => setWsGit({ ws, git: s.git }))
       .catch(() => {})
     return () => ctl.abort()
-  }, [])
+  }, [ws, libReload])
+  const git = ws ? (wsGit?.ws === ws ? wsGit.git : null) : (lib?.git ?? null)
 
-  const startImport = (start: WizardStart) => {
+  const setTab = (t: Tab) => {
+    setTabState(t)
+    savePrefs({ tab: t })
+  }
+  const setWs = (slug: string) => {
+    setWsState(slug)
+    setNewAnalysis(null)
+    savePrefs({ workspace: slug })
+  }
+  // openNewAnalysis opens New analysis (W5: the mode wizard) in the
+  // open workspace, optionally on a cohort.
+  const openNewAnalysis = (open: { cohort?: string } | null) => {
     setSeq((n) => n + 1)
-    setMain({ mode: 'import', start, n: seq + 1 })
+    setNewAnalysis(open ? { ...open, n: seq + 1 } : null)
   }
-  const select = (f: WorkspaceFile) => {
-    setSelected(f)
-    // A source opens the wizard on it; everything else opens as a file.
-    if (f.kind === 'source') return startImport({ source: f.path })
-    setMain({ mode: 'file' })
-  }
-  const openNewRequest = (open: { cohort?: string } | null) => {
+  // "New analysis on this cohort" from Cohorts: a local cohort opens in
+  // its workspace, a global one in the open workspace.
+  const newAnalysisOn = (refPath: string, workspace: string | null) => {
+    setTab('analyses')
+    if (workspace) setWs(workspace)
+    if (!workspace && !ws) {
+      setCreating(true)
+      return
+    }
     setSeq((n) => n + 1)
-    setNewRequest(open ? { ...open, n: seq + 1 } : null)
+    setNewAnalysis({ cohort: refPath, n: seq + 1 })
   }
-  const openExport = (cohort: string) => {
-    setSeq((n) => n + 1)
-    setExporting({ cohort, n: seq + 1 })
-  }
-  const recheck = (r: Recheck) => startImport({ source: r.source, schema: r.schema, target: r.target })
-  const filesChanged = () => setReload((n) => n + 1)
-  const dir = health?.dir ?? ''
+  const workspaces = lib?.workspaces ?? []
+  const current = workspaces.find((w) => w.slug === ws)
 
-  let canvas: React.ReactNode
-  if (main.mode === 'import') {
-    canvas = (
-      <ImportWizard
-        key={main.n}
-        start={main.start}
-        onClose={() => setMain({ mode: 'file' })}
-        onImported={(r) => {
-          setJustImported(r)
-          filesChanged()
-          setSelected(r.file)
-          setMain({ mode: 'file' })
-        }}
-      />
+  let body: React.ReactNode
+  if (!lib) {
+    body = (
+      <main className="canvas wide">
+        {libError ? <p className="err">{libError}</p> : <p className="muted pad">Loading the library…</p>}
+      </main>
     )
-  } else if (selected?.kind === 'cohort') {
-    canvas = (
-      <CohortView
-        key={selected.path}
-        file={selected}
-        dir={dir}
-        justImported={justImported ?? undefined}
-        onNewRequest={(cohort) => openNewRequest({ cohort })}
-        onExport={openExport}
-        onFilesChanged={filesChanged}
-        onRecheck={recheck}
-      />
+  } else if (tab === 'cohorts') {
+    body = <CohortsView libraryName={lib.name} workspaces={workspaces} onNewAnalysisOn={newAnalysisOn} />
+  } else if (!current) {
+    body = (
+      <main className="canvas wide">
+        <div className="empty-state" data-testid="no-workspaces">
+          <h2>No workspaces yet</h2>
+          <p className="muted">
+            A workspace holds a set of analyses (and, if you like, cohorts and schemas of its own). Cohorts and schemas in the global
+            area are shared by every workspace.
+          </p>
+          <button type="button" className="primary" onClick={() => setCreating(true)} data-testid="empty-create-workspace">
+            Create workspace
+          </button>
+        </div>
+      </main>
     )
-  } else if (selected?.kind === 'import') {
-    canvas = <ImportSpecView key={selected.path} file={selected} dir={dir} onOpen={select} onFilesChanged={filesChanged} onRecheck={recheck} />
-  } else if (selected?.kind === 'schema') {
-    canvas = <SchemaView key={selected.path} file={selected} />
   } else {
-    canvas = <RequestView file={selected} catalog={catalog} history={git?.enabled ?? false} />
+    body = (
+      <AnalysesView
+        key={current.slug}
+        workspace={current.slug}
+        catalog={catalog}
+        history={git?.enabled ?? false}
+        newAnalysis={newAnalysis}
+        onNewAnalysis={openNewAnalysis}
+      />
+    )
   }
 
   return (
     <div className="shell">
       <header className="topbar">
         <h1>Pulse Studio</h1>
-        <span className="dir" data-testid="studio-dir">
-          {dir}
+        <nav className="tabs" role="tablist" aria-label="Studio">
+          {(['analyses', 'cohorts'] as const).map((t) => (
+            <button
+              key={t}
+              type="button"
+              role="tab"
+              aria-selected={tab === t}
+              className={tab === t ? 'on' : undefined}
+              onClick={() => setTab(t)}
+              data-testid={`nav-${t}`}
+            >
+              {t === 'analyses' ? 'Analyses' : 'Cohorts'}
+            </button>
+          ))}
+        </nav>
+        {lib && (tab === 'analyses' || creating) && (
+          <WorkspaceSwitcher
+            workspaces={workspaces}
+            current={ws}
+            onSwitch={setWs}
+            creating={creating}
+            onCreatingChange={setCreating}
+            onChanged={(slug) => {
+              if (slug) {
+                setWs(slug)
+                setTab('analyses')
+              }
+              setLibReload((n) => n + 1)
+            }}
+          />
+        )}
+        <span className="dir" data-testid="studio-dir" title="Library folder">
+          {health?.dir ?? lib?.name ?? ''}
         </span>
-        {error && <span className="err">{error}</span>}
+        {(error || libError) && <span className="err">{error ?? libError}</span>}
         {git && !git.enabled && (
           <span className="history-off" data-testid="history-banner" title={git.reason}>
             No history: {git.reason ?? 'git is off'}
           </span>
         )}
       </header>
-      <aside className="sidebar">
-        <Sidebar
-          selected={main.mode === 'file' ? (selected?.path ?? null) : null}
-          onSelect={select}
-          reload={reload}
-          newRequest={newRequest}
-          onNewRequest={openNewRequest}
-          onImport={(file) => startImport({ file })}
-          onExport={openExport}
-        />
-      </aside>
-      <main className="canvas">{canvas}</main>
-      {exporting && <ExportDialog key={exporting.n} cohort={exporting.cohort} onClose={() => setExporting(null)} />}
+      {body}
     </div>
   )
 }

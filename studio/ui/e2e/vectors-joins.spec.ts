@@ -1,13 +1,13 @@
 // Vectors and joins end to end, against a temp copy of
 // privacy-safe-sharing's requests over small synthesized source and twin
 // cohorts (global-setup.ts).
-import { expect, test } from './harness.ts'
+import { analysisRow, expect, test } from './harness.ts'
 
 test.use({ workspace: 'privacy-safe-sharing', viewport: { width: 1600, height: 1000 } })
 
 test('a vector draws its member wires, feeds its matrix and previews member stats', async ({ page }) => {
   await page.goto('/')
-  await page.getByRole('button', { name: 'req/09_correlation_matrix.json' }).click()
+  await analysisRow(page, '09_correlation_matrix.json').click()
   const graph = page.getByTestId('request-graph')
   await expect(graph.getByTestId('lane-title')).toHaveText(['source', 'twin'])
   const vector = graph.locator('[data-path="requests[0].vectors[0]"]')
@@ -40,7 +40,7 @@ test('a vector draws its member wires, feeds its matrix and previews member stat
 
 test('a join draws its keys and joined fields, previews joined rows and flags an unknown right cohort', async ({ page }) => {
   await page.goto('/')
-  await page.getByRole('button', { name: 'req/10_exact_record_match.json' }).click()
+  await analysisRow(page, '10_exact_record_match.json').click()
   const graph = page.getByTestId('request-graph')
   await expect(graph.getByTestId('lane-title')).toHaveText(['control_source_vs_itself', 'twin_vs_source'])
   const join = graph.locator('[data-path="requests[0].joins[0]"]')
@@ -121,13 +121,13 @@ test('a join draws its keys and joined fields, previews joined rows and flags an
   await join.click()
   const inspector = page.getByTestId('inspector')
   await expect(inspector).toHaveAttribute('data-node', 'requests[0].joins[0]')
-  await expect(inspector.locator('[data-field="right"] input')).toHaveValue('customers.pulse')
+  await expect(inspector.locator('[data-field="right"] input')).toHaveValue('cohorts/customers.pulse')
   await expect(inspector.locator('[data-field="kind"] select')).toHaveValue('inner')
   await expect(inspector.getByTestId('join-pairs').locator('.insp-pair')).toHaveCount(11)
   await inspector.locator('[data-field="right"] input').fill('ghost.pulse')
   await expect(page.getByTestId('dirty-state')).toContainText('unsaved')
   await expect(joined).toHaveAttribute('data-state', 'missing')
   await expect(join.getByTestId('node-badge')).toHaveAttribute('data-severity', 'error')
-  await inspector.locator('[data-field="right"] input').fill('twin.pulse')
+  await inspector.locator('[data-field="right"] input').fill('cohorts/twin.pulse')
   await expect(joined).toHaveAttribute('data-state', 'known')
 })

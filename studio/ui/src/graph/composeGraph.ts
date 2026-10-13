@@ -108,7 +108,7 @@ export function buildComposeGraph(req: unknown, opts: ComposeOptions = {}): Comp
   )
   const hasRoot = Object.keys(rootDoc).length > 0 || (fits?.length ?? 0) > 0
   const rootGraph = hasRoot ? buildRequestGraph(rootDoc, { manifest: opts.manifest, withCohort: false }) : null
-  if (rootGraph) add({ id: ROOT_LANE, role: 'root', index: -1, base: [], title: 'Compose', named: false }, rootGraph)
+  if (rootGraph) add({ id: ROOT_LANE, role: 'root', index: -1, base: [], title: 'Composed', named: false }, rootGraph)
 
   // Fit lanes.
   const fitSources = new Map<string, string>()

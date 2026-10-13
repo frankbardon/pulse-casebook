@@ -9,8 +9,6 @@ import (
 	"regexp"
 	"strings"
 	"testing"
-
-	"github.com/frankbardon/pulse-casebook/studio/internal/library"
 )
 
 // runData runs an analysis file of a workspace as it is on disk and
@@ -323,26 +321,5 @@ func TestPromoteShardArchiveAndSchema(t *testing.T) {
 	}
 	if msg := gitOut(t, ws, "log", "-1", "--format=%s"); msg != "studio: make schema schemas/people.schema.json global as schemas/people-lab.schema.json" {
 		t.Errorf("workspace commit: %q", msg)
-	}
-}
-
-// A legacy folder has no global area.
-func TestPromoteLegacyRefused(t *testing.T) {
-	dir := t.TempDir()
-	if err := os.WriteFile(filepath.Join(dir, "a.json"), []byte(`{"cohort": {"filename": "ab.pulse"}}`), 0o644); err != nil {
-		t.Fatal(err)
-	}
-	_ = os.WriteFile(filepath.Join(dir, "ab.pulse"), []byte("x"), 0o644)
-	lib, err := library.Open(dir)
-	if err != nil || !lib.Legacy() {
-		t.Fatalf("legacy: %v", err)
-	}
-	l, err := NewLibrary(context.Background(), lib, LibraryOptions{NoGit: true, Logf: t.Logf}, nil, false)
-	if err != nil {
-		t.Fatal(err)
-	}
-	code, out := call(t, l, http.MethodPost, "/api/cohorts/promote", map[string]any{"workspace": "x", "kind": "cohort", "name": "ab"})
-	if code != 409 || errCode(out) != "legacy_folder" {
-		t.Fatalf("legacy: %d %v", code, out)
 	}
 }

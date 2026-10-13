@@ -1,5 +1,5 @@
 // Package fileops holds the crash-safe file steps the journaled
-// operations (internal/migrate, internal/promote) are built from: each
+// operations (internal/promote) are built from: each
 // is idempotent, so a journal can replay it, and none overwrites.
 package fileops
 

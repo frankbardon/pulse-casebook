@@ -1,4 +1,4 @@
-import { drag, expect, test } from './harness.ts'
+import { analysisRow, catalogRow, drag, expect, openCohorts, test } from './harness.ts'
 
 // Field and label wires only: the view-only Result wires and group
 // fan-out wires (result-fanout.spec.ts) are left out of the counts.
@@ -17,7 +17,7 @@ test('studio shell loads', async ({ page }) => {
 
 test('opens a plain request as a stage-column graph', async ({ page }) => {
   await page.goto('/')
-  await page.getByRole('button', { name: 'req/04_metric_battery.json' }).click()
+  await analysisRow(page, '04_metric_battery.json').click()
   const graph = page.getByTestId('request-graph')
   await expect(graph).toBeVisible()
   await expect(graph.locator('[data-path="tests[2]"]')).toContainText('TEST_WELCH')
@@ -27,7 +27,7 @@ test('opens a plain request as a stage-column graph', async ({ page }) => {
 
 test('wires route around nodes, light up on hover, stay deletable, and remember Curves', async ({ page }) => {
   await page.goto('/')
-  await page.getByRole('button', { name: 'req/04_metric_battery.json' }).click()
+  await analysisRow(page, '04_metric_battery.json').click()
   const graph = page.getByTestId('request-graph')
   const flow = graph.locator('.graph-flow')
   const edges = graph.locator(DATA_WIRES)
@@ -81,7 +81,7 @@ test('wires route around nodes, light up on hover, stay deletable, and remember 
   await expect(graph.locator('.react-flow__edge-path.routed')).toHaveCount(0)
   await expect(edges).toHaveCount(12)
   await page.reload()
-  await page.getByRole('button', { name: 'req/04_metric_battery.json' }).click()
+  await analysisRow(page, '04_metric_battery.json').click()
   await expect(page.getByTestId('wire-mode')).toHaveAttribute('data-mode', 'curves')
   await expect(edges).toHaveCount(13)
   await expect(graph.locator('.react-flow__edge-path.routed')).toHaveCount(0)
@@ -89,7 +89,7 @@ test('wires route around nodes, light up on hover, stay deletable, and remember 
 
 test('facet files open with a live facet preview and editable settings', async ({ page }) => {
   await page.goto('/')
-  await page.getByRole('button', { name: 'req/02_srm_gof.facet.json' }).click()
+  await analysisRow(page, '02_srm_gof.facet.json').click()
   const graph = page.getByTestId('request-graph')
   const facet = graph.locator('[data-path="fields"]')
   await expect(facet).toContainText('FACET')
@@ -108,18 +108,21 @@ test('facet files open with a live facet preview and editable settings', async (
   await expect(facet.getByTestId('facet-result')).toHaveAttribute('data-state', 'ok')
 })
 
-test('cohort and non-request files do not open as graphs', async ({ page }) => {
+test('only analyses are listed; cohorts open in the Cohorts area', async ({ page }) => {
   await page.goto('/')
-  await page.getByRole('button', { name: 'ab_test.pulse' }).click()
-  await expect(page.getByTestId('cohort-file')).toContainText('New request')
-  const spec = page.getByRole('button', { name: 'data/ab_test.synth.json' })
-  await expect(spec).toBeDisabled()
-  await expect(spec).toHaveAttribute('title', /not a Pulse/)
+  await expect(analysisRow(page, '04_metric_battery.json')).toBeVisible()
+  // Data files, cohorts and other files of the workspace are not analyses.
+  await expect(page.locator('[data-testid="analysis-row"][data-path^="data/"]')).toHaveCount(0)
+  await expect(page.locator('[data-testid="analysis-row"][data-path$=".pulse"]')).toHaveCount(0)
+  await openCohorts(page)
+  await catalogRow(page, 'cohort', 'cohorts/ab_test.pulse', 'local').click()
+  await expect(page.getByTestId('cohort-file')).toContainText('New analysis')
+  await expect(page.getByTestId('request-graph')).toHaveCount(0)
 })
 
 test('compose files open as parallel lanes with per-lane previews', async ({ page }) => {
   await page.goto('/')
-  await page.getByRole('button', { name: 'req/11_readout.compose.json' }).click()
+  await analysisRow(page, '11_readout.compose.json').click()
   const graph = page.getByTestId('request-graph')
   await expect(graph.getByTestId('lane-title')).toHaveText(['guardrails', 'scorecard', 'revenue_sensitivity', 'regression_adjustment'])
   await expect(graph.locator('[data-path="requests[1].tests[3]"]')).toContainText('TEST_WELCH')
@@ -133,7 +136,7 @@ test('compose files open as parallel lanes with per-lane previews', async ({ pag
 
 test('compose lanes reorder, rename and add', async ({ page }) => {
   await page.goto('/')
-  await page.getByRole('button', { name: 'req/11_readout.compose.json' }).click()
+  await analysisRow(page, '11_readout.compose.json').click()
   const graph = page.getByTestId('request-graph')
   const titles = graph.getByTestId('lane-title')
   await expect(titles).toHaveCount(4)
@@ -152,7 +155,7 @@ test('compose lanes reorder, rename and add', async ({ page }) => {
 
 test('selecting a node opens the inspector and edits mark the file dirty', async ({ page }) => {
   await page.goto('/')
-  await page.getByRole('button', { name: 'req/04_metric_battery.json' }).click()
+  await analysisRow(page, '04_metric_battery.json').click()
   const graph = page.getByTestId('request-graph')
   await graph.locator('[data-path="tests[0]"]').click()
   const inspector = page.getByTestId('inspector')
@@ -168,7 +171,7 @@ test('selecting a node opens the inspector and edits mark the file dirty', async
 // Dragging stays unsaved here; workspace.spec.ts saves and reloads a layout.
 test('dragging a node moves it and marks the layout dirty', async ({ page }) => {
   await page.goto('/')
-  await page.getByRole('button', { name: 'req/04_metric_battery.json' }).click()
+  await analysisRow(page, '04_metric_battery.json').click()
   const node = page.getByTestId('request-graph').locator('.react-flow__node').filter({ has: page.locator('[data-path="tests[0]"]') })
   await expect(page.getByTestId('dirty-state')).toHaveText('saved')
   const before = await node.boundingBox()
@@ -185,7 +188,7 @@ test('dragging a node moves it and marks the layout dirty', async ({ page }) => 
 // default --auto-preview-rows, so nothing is deferred).
 test('nodes show live previews and an edit re-runs only downstream ones', async ({ page }) => {
   await page.goto('/')
-  await page.getByRole('button', { name: 'req/08_cuped_welch.json' }).click()
+  await analysisRow(page, '08_cuped_welch.json').click()
   const graph = page.getByTestId('request-graph')
   const preview = (id: string) => graph.locator(`[data-path="${id}"] [data-testid="preview"]`)
   await expect(preview('cohort')).toHaveAttribute('data-state', 'ok')
@@ -196,7 +199,7 @@ test('nodes show live previews and an edit re-runs only downstream ones', async 
   await expect(preview('tests[1]')).toContainText('p')
   const requests: string[] = []
   page.on('request', (r) => {
-    if (r.url().endsWith('/api/preview')) requests.push(String(r.postDataJSON()?.nodes))
+    if (r.url().endsWith('/preview')) requests.push(String(r.postDataJSON()?.nodes))
   })
   await graph.locator('[data-path="attributes[0]"]').click()
   await page.getByTestId('inspector').locator('[data-field="expression"] textarea').fill('pages_viewed - 0.5 * (prior_sessions - 10)')
@@ -211,7 +214,7 @@ test('nodes show live previews and an edit re-runs only downstream ones', async 
 
 test('wiring a label into an input updates the param; bad types are refused', async ({ page }) => {
   await page.goto('/')
-  await page.getByRole('button', { name: 'req/08_cuped_welch.json' }).click()
+  await analysisRow(page, '08_cuped_welch.json').click()
   const graph = page.getByTestId('request-graph')
   await expect(graph.locator('[data-path="cohort"]')).toContainText('categorical_u8')
   const fieldIn = graph.locator('[data-path="tests[0]"] [data-row="field"] .react-flow__handle')
@@ -235,7 +238,7 @@ test('wiring a label into an input updates the param; bad types are refused', as
 
 test('deleting a node removes it and its wires; drags land where dropped', async ({ page }) => {
   await page.goto('/')
-  await page.getByRole('button', { name: 'req/08_cuped_welch.json' }).click()
+  await analysisRow(page, '08_cuped_welch.json').click()
   const graph = page.getByTestId('request-graph')
   await expect(graph.locator('[data-path="cohort"]')).toContainText('categorical_u8')
   const edges = graph.locator(DATA_WIRES)
@@ -269,7 +272,7 @@ test('the palette lists every manifest operator, searches, and places a node', a
     ['tests', 'regressions', 'matrices', 'post_tests', 'overlays'].reduce((n, k) => n + (m[k]?.length ?? 0), 0)
 
   await page.goto('/')
-  await page.getByRole('button', { name: 'req/08_cuped_welch.json' }).click()
+  await analysisRow(page, '08_cuped_welch.json').click()
   const graph = page.getByTestId('request-graph')
   await expect(graph.locator('[data-path="tests[1]"]')).toBeVisible()
   await page.getByTestId('palette-toggle').click()
@@ -295,7 +298,7 @@ test('the palette lists every manifest operator, searches, and places a node', a
 
 test('dragging a field port to the canvas offers only compatible operators and wires the new node', async ({ page }) => {
   await page.goto('/')
-  await page.getByRole('button', { name: 'req/08_cuped_welch.json' }).click()
+  await analysisRow(page, '08_cuped_welch.json').click()
   const graph = page.getByTestId('request-graph')
   await expect(graph.locator('[data-path="cohort"]')).toContainText('categorical_u8')
   const edges = graph.locator(DATA_WIRES)
@@ -333,7 +336,7 @@ test('dragging a field port to the canvas offers only compatible operators and w
 // gains an operator; a focus poll reloads it into the open palette.
 test('a changed feature_set_digest reloads the catalog and the palette', async ({ page }) => {
   await page.goto('/')
-  await page.getByRole('button', { name: 'req/08_cuped_welch.json' }).click()
+  await analysisRow(page, '08_cuped_welch.json').click()
   await expect(page.getByTestId('request-graph').locator('[data-path="tests[1]"]')).toBeVisible()
   await page.getByTestId('palette-toggle').click()
   const palette = page.getByTestId('palette')
@@ -358,7 +361,7 @@ test('a changed feature_set_digest reloads the catalog and the palette', async (
 
 test('palette items dropped on the canvas land where they are dropped', async ({ page }) => {
   await page.goto('/')
-  await page.getByRole('button', { name: 'req/08_cuped_welch.json' }).click()
+  await analysisRow(page, '08_cuped_welch.json').click()
   const graph = page.getByTestId('request-graph')
   await expect(graph.locator('[data-path="tests[1]"]')).toBeVisible()
   await page.getByTestId('palette-toggle').click()
@@ -384,7 +387,7 @@ test('palette items dropped on the canvas land where they are dropped', async ({
 // engine's suggestion; hovering a node shows its explain text.
 test('validation badges show predict errors and suggestions; hover shows explain text', async ({ page }) => {
   await page.goto('/')
-  await page.getByRole('button', { name: 'req/04_metric_battery.json' }).click()
+  await analysisRow(page, '04_metric_battery.json').click()
   const graph = page.getByTestId('request-graph')
   const node = graph.locator('[data-path="aggregations[0]"]')
   await expect(node).toContainText('AGG_COUNT')
@@ -409,7 +412,7 @@ test('validation badges show predict errors and suggestions; hover shows explain
 // A full run is read-only; workspace.spec.ts saves a run to out/ for real.
 test('Run executes the edited compose and shows per-lane results and node headlines', async ({ page }) => {
   await page.goto('/')
-  await page.getByRole('button', { name: 'req/11_readout.compose.json' }).click()
+  await analysisRow(page, '11_readout.compose.json').click()
   const graph = page.getByTestId('request-graph')
   await expect(graph.getByTestId('lane-title')).toHaveCount(4)
   await page.getByTestId('run-button').click()
@@ -434,7 +437,7 @@ test('Run executes the edited compose and shows per-lane results and node headli
 
 test('Run of a plain request and a facet; an in-flight run cancels', async ({ page }) => {
   await page.goto('/')
-  await page.getByRole('button', { name: 'req/04_metric_battery.json' }).click()
+  await analysisRow(page, '04_metric_battery.json').click()
   const graph = page.getByTestId('request-graph')
   await page.getByTestId('run-button').click()
   const panel = page.getByTestId('results-panel')
@@ -442,7 +445,7 @@ test('Run of a plain request and a facet; an in-flight run cancels', async ({ pa
   await expect(panel.getByTestId('results-table-tests')).toContainText('trial_start')
   await expect(graph.locator('[data-path="aggregations[0]"] [data-testid="node-run"]')).toHaveText('40,000')
 
-  await page.getByRole('button', { name: 'req/02_srm_gof.facet.json' }).click()
+  await analysisRow(page, '02_srm_gof.facet.json').click()
   await page.getByTestId('run-button').click()
   await expect(page.getByTestId('run-status')).toHaveAttribute('data-phase', 'done', { timeout: 30_000 })
   await expect(page.getByTestId('results-table-fields')).toContainText('arm')
@@ -451,7 +454,7 @@ test('Run of a plain request and a facet; an in-flight run cancels', async ({ pa
   // Hold the next run so Cancel has something to abort.
   let release: () => void = () => {}
   const held = new Promise<void>((r) => (release = r))
-  await page.route('**/api/run', async (route) => {
+  await page.route('**/api/w/*/run', async (route) => {
     await held
     await route.continue().catch(() => {})
   })
@@ -467,7 +470,7 @@ test('the results panel resizes by drag and keyboard, maximises, restores, and r
   await page.goto('/')
   await page.evaluate(() => localStorage.removeItem('studio.resultsHeight'))
   const openAndRun = async () => {
-    await page.getByRole('button', { name: 'req/11_readout.compose.json' }).click()
+    await analysisRow(page, '11_readout.compose.json').click()
     await expect(page.getByTestId('request-graph').getByTestId('lane-title')).toHaveCount(4)
     await page.getByTestId('run-button').click()
     await expect(page.getByTestId('run-status')).toHaveAttribute('data-phase', 'done', { timeout: 30_000 })

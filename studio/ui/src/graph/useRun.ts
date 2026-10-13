@@ -3,6 +3,7 @@ import { postRun, type RunResult } from '../api.ts'
 import { toPlain } from './jsonTree.ts'
 import { emitModel, emitModelText, type GraphModel } from './model.ts'
 import { readRun, type RunHeadline, type RunResponse, type RunView } from './results.ts'
+import { useArea } from '../area.ts'
 
 // A finished run: the server's result (envelope text, run id for Save),
 // its panel model, and the document text that was run (to tell when the
@@ -28,6 +29,7 @@ export type Run = RunState & {
 // file on disk) through POST /api/run and keeps the result in memory.
 // Cancel aborts the request, which cancels the engine call server-side.
 export function useRun(path: string, model: GraphModel | null): Run {
+  const area = useArea()
   const [state, setState] = useState<RunState>({ phase: 'idle' })
   const ctl = useRef<AbortController | null>(null)
   const modelRef = useRef(model)
@@ -52,7 +54,7 @@ export function useRun(path: string, model: GraphModel | null): Run {
     // node ids.
     const plain = toPlain(emitModel(m))
     setState((s) => ({ phase: 'running', last: s.last }))
-    postRun(path, text, mine.signal)
+    postRun(area, path, text, mine.signal)
       .then((result) => {
         if (ctl.current !== mine) return
         ctl.current = null
@@ -74,7 +76,7 @@ export function useRun(path: string, model: GraphModel | null): Run {
         }
         setState((s) => ({ phase: 'error', last: s.last, error: e instanceof Error ? e.message : String(e) }))
       })
-  }, [path])
+  }, [area, path])
 
   const cancel = useCallback(() => {
     ctl.current?.abort()

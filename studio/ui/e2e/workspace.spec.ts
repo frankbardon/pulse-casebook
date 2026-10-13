@@ -1,16 +1,16 @@
 // Flows that write files, each against its own temp copy of
-// ab-test-readout (harness.ts): saving an edit, creating a request,
+// ab-test-readout (harness.ts): saving an edit, creating an analysis,
 // saving and reloading a layout sidecar, and saving a run to out/.
 import { writeFileSync } from 'node:fs'
 import { join } from 'node:path'
-import { expect, test } from './harness.ts'
+import { analysisAt, analysisRow, catalogRow, expect, openCohorts, test } from './harness.ts'
 
 test.use({ workspace: 'ab-test-readout' })
 
 test('an inspector edit saves to disk as a one-line change', async ({ page, studio }) => {
-  const before = studio.read('req/04_metric_battery.json')
+  const before = studio.read('analyses/04_metric_battery.json')
   await page.goto('/')
-  await page.getByRole('button', { name: 'req/04_metric_battery.json' }).click()
+  await analysisRow(page, '04_metric_battery.json').click()
   const graph = page.getByTestId('request-graph')
   await graph.locator('[data-path="tests[0]"]').click()
   await page.getByTestId('inspector').locator('[data-field="success"] input').fill('no')
@@ -18,30 +18,33 @@ test('an inspector edit saves to disk as a one-line change', async ({ page, stud
   await page.keyboard.press('ControlOrMeta+s')
   await expect(page.getByTestId('dirty-state')).toHaveText('saved')
 
-  const after = studio.read('req/04_metric_battery.json')
+  const after = studio.read('analyses/04_metric_battery.json')
   const changed = after.split('\n').filter((line, i) => line !== before.split('\n')[i])
   expect(after.split('\n')).toHaveLength(before.split('\n').length)
   expect(changed).toHaveLength(1)
   expect(changed[0]).toContain('"success": "no"')
 })
 
-test('New request creates a file bound to the cohort, opens it, and never overwrites', async ({ page, studio }) => {
+test('New analysis on a cohort creates a file bound to it, opens it, and never overwrites', async ({ page, studio }) => {
   await page.goto('/')
-  await page.getByRole('button', { name: 'ab_test.pulse' }).click()
-  await page.getByTestId('new-request-open').click()
+  await openCohorts(page)
+  await catalogRow(page, 'cohort', 'cohorts/ab_test.pulse', 'local').click()
+  await page.getByTestId('cohort-new-request').click()
+  await expect(page.getByTestId('nav-analyses')).toHaveAttribute('aria-selected', 'true')
   const form = page.getByTestId('new-request')
-  await expect(page.getByTestId('new-cohort')).toHaveValue('ab_test.pulse')
-  await expect(page.getByTestId('new-dir')).toHaveValue('req')
+  await expect(page.getByTestId('new-cohort')).toHaveValue('cohorts/ab_test.pulse')
+  await expect(page.getByTestId('new-dir')).toHaveValue('analyses')
   await page.getByTestId('new-name').fill('fresh')
-  await expect(form).toContainText('req/fresh.json')
+  await expect(form).toContainText('analyses/fresh.json')
   await page.getByTestId('new-create').click()
 
   // Opened as a graph over the cohort, and on disk.
   const graph = page.getByTestId('request-graph')
   await expect(graph.locator('[data-path="cohort"]')).toContainText('ab_test.pulse')
   await expect(graph.locator('[data-path="cohort"] [data-testid="preview"]')).toContainText('40,000 rows')
-  await expect(page.getByRole('button', { name: 'req/fresh.json' })).toBeVisible()
-  expect(JSON.parse(studio.read('req/fresh.json'))).toEqual({ cohort: { filename: 'ab_test.pulse', data_dir: '.' } })
+  await expect(analysisRow(page, 'fresh.json')).toBeVisible()
+  expect(JSON.parse(studio.read('analyses/fresh.json'))).toEqual({ cohort: { filename: 'ab_test.pulse', data_dir: 'cohorts' } })
+  await expect(analysisRow(page, 'fresh.json').getByTestId('mode-badge')).toHaveText('Standalone')
 
   // Build on it and save: the new file runs.
   await page.getByTestId('palette-toggle').click()
@@ -50,24 +53,24 @@ test('New request creates a file bound to the cohort, opens it, and never overwr
   await page.getByTestId('inspector').locator('[data-field="field"] input').fill('user_id')
   await page.keyboard.press('ControlOrMeta+s')
   await expect(page.getByTestId('dirty-state')).toHaveText('saved')
-  expect(JSON.parse(studio.read('req/fresh.json')).aggregations).toEqual([{ type: 'AGG_COUNT', label: 'count', field: 'user_id' }])
+  expect(JSON.parse(studio.read('analyses/fresh.json')).aggregations).toEqual([{ type: 'AGG_COUNT', label: 'count', field: 'user_id' }])
   await page.getByTestId('run-button').click()
   await expect(page.getByTestId('run-status')).toHaveAttribute('data-phase', 'done', { timeout: 30_000 })
   await expect(graph.locator('[data-path="aggregations[0]"] [data-testid="node-run"]')).toHaveText('40,000')
 
   // The same name again is refused; the file is untouched.
-  const saved = studio.read('req/fresh.json')
+  const saved = studio.read('analyses/fresh.json')
   await page.getByTestId('new-request-open').click()
   await page.getByTestId('new-name').fill('fresh')
   await page.getByTestId('new-create').click()
   await expect(page.getByTestId('new-error')).toContainText(/exists/)
-  expect(studio.read('req/fresh.json')).toBe(saved)
+  expect(studio.read('analyses/fresh.json')).toBe(saved)
 })
 
 test('a dragged layout saves to a sidecar and comes back on reopen', async ({ page, studio }) => {
-  const request = studio.read('req/04_metric_battery.json')
+  const request = studio.read('analyses/04_metric_battery.json')
   await page.goto('/')
-  await page.getByRole('button', { name: 'req/04_metric_battery.json' }).click()
+  await analysisRow(page, '04_metric_battery.json').click()
   const node = page.getByTestId('request-graph').locator('.react-flow__node[data-id="tests[0]"]')
   await expect(page.getByTestId('dirty-state')).toHaveText('saved')
   const before = (await node.boundingBox())!
@@ -82,26 +85,26 @@ test('a dragged layout saves to a sidecar and comes back on reopen', async ({ pa
   await expect(page.getByTestId('dirty-state')).toHaveText('saved')
 
   // Only the sidecar changed, and it holds just the placed node.
-  expect(studio.read('req/04_metric_battery.json')).toBe(request)
-  const sidecar = JSON.parse(studio.read('req/04_metric_battery.layout.json')) as { version: number; nodes: Record<string, unknown> }
+  expect(studio.read('analyses/04_metric_battery.json')).toBe(request)
+  const sidecar = JSON.parse(studio.read('analyses/04_metric_battery.layout.json')) as { version: number; nodes: Record<string, unknown> }
   expect(sidecar.version).toBe(1)
   expect(Object.keys(sidecar.nodes)).toEqual(['tests[0]'])
 
   // A fresh page lays the node out where it was saved.
   await page.reload()
-  await page.getByRole('button', { name: 'req/04_metric_battery.json' }).click()
+  await analysisRow(page, '04_metric_battery.json').click()
   await expect(page.getByTestId('dirty-state')).toHaveText('saved')
   const back = (await node.boundingBox())!
   expect(Math.abs(back.x - moved.x)).toBeLessThan(2)
   expect(Math.abs(back.y - moved.y)).toBeLessThan(2)
-  // The sidecar is not listed as a request.
-  await expect(page.getByRole('button', { name: 'req/04_metric_battery.layout.json' })).toBeDisabled()
+  // The sidecar is not listed as an analysis.
+  await expect(analysisRow(page, '04_metric_battery.layout.json')).toHaveCount(0)
 })
 
 test('a run saves to out/ for real and refuses to overwrite until confirmed', async ({ page, studio }) => {
   expect(studio.exists('out/11_readout.json')).toBe(false)
   await page.goto('/')
-  await page.getByRole('button', { name: 'req/11_readout.compose.json' }).click()
+  await analysisRow(page, '11_readout.compose.json').click()
   await expect(page.getByTestId('request-graph').getByTestId('lane-title')).toHaveCount(4)
   await page.getByTestId('run-button').click()
   const panel = page.getByTestId('results-panel')
@@ -132,16 +135,16 @@ test('a run saves to out/ for real and refuses to overwrite until confirmed', as
   await expect(panel.getByTestId('save-out-done')).toContainText('saved out/11_readout_copy.json')
   expect(studio.exists('out/11_readout_copy.json')).toBe(true)
 
-  // Envelopes list as non-requests (the sidebar picks them up on reload).
+  // Envelopes are not analyses: the list leaves them out.
   await page.reload()
-  await expect(page.getByRole('button', { name: 'out/11_readout.json' })).toBeDisabled()
-  await expect(page.getByRole('button', { name: 'out/11_readout.json' })).toHaveAttribute('title', /not a Pulse/)
+  await expect(analysisRow(page, '11_readout.compose.json')).toBeVisible()
+  await expect(page.locator('[data-testid="analysis-row"][data-path^="out/"]')).toHaveCount(0)
 })
 
 test('grouper fit and post-test partition_by edit as first-class fields', async ({ page, studio }) => {
-  const rel = 'req/50_partitioned.json'
+  const rel = 'analyses/50_partitioned.json'
   const request = {
-    cohort: { filename: 'ab_test.pulse', data_dir: '.' },
+    cohort: { filename: 'ab_test.pulse', data_dir: 'cohorts' },
     groups: [
       { type: 'GROUP_CATEGORY', field: 'region' },
       { type: 'GROUP_QUANTILE', field: 'pages_viewed', params: { n: 2 } },
@@ -153,9 +156,9 @@ test('grouper fit and post-test partition_by edit as first-class fields', async 
     ],
     post_tests: [{ type: 'TEST_PEARSON_R', field: 'rev', field2: 'pv', params: { variant: 'pearson_post', partition_by: ['region'] } }],
   }
-  writeFileSync(join(studio.dir, rel), JSON.stringify(request, null, 2) + '\n')
+  writeFileSync(join(studio.ws, rel), JSON.stringify(request, null, 2) + '\n')
   await page.goto('/')
-  await page.getByRole('button', { name: rel }).click()
+  await analysisAt(page, rel).click()
   const graph = page.getByTestId('request-graph')
   const inspector = page.getByTestId('inspector')
 

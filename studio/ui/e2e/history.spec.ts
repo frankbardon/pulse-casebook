@@ -3,13 +3,13 @@
 // the developer's config): a save auto-commits, the History panel lists
 // the file's commits and diffs one against the file on disk, and Restore
 // writes it back as a new commit that the canvas reloads.
-import { expect, test } from './harness.ts'
+import { analysisAt, analysisRow, expect, test } from './harness.ts'
 
 test.describe('with git', () => {
   test.use({ workspace: 'ab-test-readout' })
 
   test('save auto-commits; history diffs and restores', async ({ page, studio }) => {
-    const file = 'req/04_metric_battery.json'
+    const file = 'analyses/04_metric_battery.json'
     const before = studio.read(file)
     // The studio initialized the copy and snapshotted its JSON files.
     expect(studio.git('log', '--format=%s|%an')).toBe('studio: initial snapshot|Pulse Studio')
@@ -17,7 +17,7 @@ test.describe('with git', () => {
 
     await page.goto('/')
     await expect(page.getByTestId('history-banner')).toHaveCount(0)
-    await page.getByRole('button', { name: file }).click()
+    await analysisAt(page, file).click()
     const graph = page.getByTestId('request-graph')
     await graph.locator('[data-path="tests[0]"]').click()
     await page.getByTestId('inspector').locator('[data-field="success"] input').fill('no')
@@ -67,7 +67,7 @@ test.describe('with --no-git', () => {
   test('runs without history and says so', async ({ page, studio }) => {
     await page.goto('/')
     await expect(page.getByTestId('history-banner')).toContainText('--no-git')
-    await page.getByRole('button', { name: 'req/04_metric_battery.json' }).click()
+    await analysisRow(page, '04_metric_battery.json').click()
     await expect(page.getByTestId('request-graph')).toBeVisible()
     await expect(page.getByTestId('history-toggle')).toHaveCount(0)
     expect(studio.exists('.git')).toBe(false)

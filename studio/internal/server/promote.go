@@ -36,18 +36,13 @@ type promoteBody struct {
 //
 // Errors: invalid_json/missing_workspace/invalid_kind/invalid_name
 // 400 (details {field}), not_promotable 400 (already global, outside
-// cohorts/), workspace_not_found/not_found 404, legacy_folder 409 (no
-// global area until migrated), name_clash 409 (details {item, name,
+// cohorts/), workspace_not_found/not_found 404, name_clash 409 (details {item, name,
 // existing, field, suggested}: retry with that field), plan_changed 409
 // (details {plan}), interrupted 409, promotion_failed 500 (details
 // {phase, rolled_back}).
 func (l *Library) handlePromote(w http.ResponseWriter, r *http.Request) {
 	var body promoteBody
 	if !decodeBody(w, r, &body) {
-		return
-	}
-	if l.lib.Legacy() {
-		WriteError(w, http.StatusConflict, "legacy_folder", promote.ErrLegacy.Error(), nil)
 		return
 	}
 	if strings.TrimSpace(body.Workspace) == "" {
@@ -67,10 +62,6 @@ func (l *Library) handlePromote(w http.ResponseWriter, r *http.Request) {
 	}
 	l.gate.Lock()
 	defer l.gate.Unlock()
-	if next := l.next.Load(); next != nil {
-		next.ServeHTTP(w, r)
-		return
-	}
 	area, err := l.area(body.Workspace)
 	if err != nil {
 		writeAreaError(w, body.Workspace, err)
@@ -95,8 +86,6 @@ func writePromoteError(w http.ResponseWriter, ws string, err error) {
 	var changed *promote.PlanChangedError
 	var failed *promote.FailedError
 	switch {
-	case errors.Is(err, promote.ErrLegacy):
-		WriteError(w, http.StatusConflict, "legacy_folder", err.Error(), nil)
 	case errors.Is(err, library.ErrNotFound):
 		writeAreaError(w, ws, err)
 	case errors.Is(err, promote.ErrBadKind):

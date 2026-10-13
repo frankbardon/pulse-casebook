@@ -64,7 +64,7 @@ describe('readRun', () => {
     }
     const data = { responses: [{ tests: [testResult('srm', 0.3, false)] }, { tests: [testResult('', 0.00001, true)] }], overlays: [{ name: 'lift' }] }
     const v = readRun('compose', env(data), doc)
-    expect(v.sections.map((s) => s.title)).toEqual(['guardrails', 'request_2', 'compose'])
+    expect(v.sections.map((s) => s.title)).toEqual(['guardrails', 'request_2', 'Composed'])
     expect(v.sections[2].other[0].title).toBe('overlays')
     expect(v.headlines.get('requests[0].tests[0]')?.text).toBe('p 0.3')
     // Unlabelled test matched by position.

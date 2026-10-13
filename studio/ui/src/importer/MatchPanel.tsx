@@ -2,8 +2,9 @@ import { useState } from 'react'
 import type { SchemaMatch } from '../api.ts'
 import { isSuperset, rankMatches, scorePct } from './match.ts'
 
-// Applied is the saved schema the editor took its types from.
-export type Applied = { name: string; score: number; exact: boolean }
+// Applied is the saved schema the editor took its types from (global: a
+// library's shared schema, referred to by path).
+export type Applied = { name: string; path: string; score: number; exact: boolean; global?: boolean; local?: boolean }
 
 type Props = {
   matches: SchemaMatch[]
@@ -24,7 +25,8 @@ export function MatchPanel({ matches, applied, onApply, onRevert }: Props) {
       {applied && (
         <div className={'notice match ' + (applied.exact ? 'ok' : 'info')} data-testid="match-banner" data-exact={applied.exact}>
           <span>
-            {applied.exact ? 'Matches saved schema' : 'Applied saved schema'} <code>{applied.name}</code> — {scorePct(applied.score)}
+            {applied.exact ? 'Matches saved schema' : 'Applied saved schema'} <code>{applied.name}</code>
+            <ScopeTag global={applied.global} local={applied.local} /> — {scorePct(applied.score)}
             {!applied.exact && '. Columns it does not know are flagged new.'}
           </span>
           <button type="button" className="link" onClick={onRevert} data-testid="match-undo">
@@ -40,16 +42,17 @@ export function MatchPanel({ matches, applied, onApply, onRevert }: Props) {
           </p>
           <ul className="matches">
             {suggestions.map((m) => (
-              <li key={m.name} data-match={m.name}>
+              <li key={m.path} data-match={m.name} data-scope={m.scope}>
                 <div className="match-row">
                   <code>{m.name}</code>
+                  <ScopeTag global={m.scope === 'global'} local={m.scope === 'local'} />
                   <span className="score">{scorePct(m.score)}</span>
                   {isSuperset(m) && <span className="tag">has all its fields</span>}
                   <span className="muted">
                     {m.diff.added.length} new, {m.diff.missing.length} missing, {m.diff.retyped.length} retyped
                   </span>
-                  <button type="button" className="link push" onClick={() => setOpenDiff(openDiff === m.name ? null : m.name)} data-testid="match-diff-toggle">
-                    {openDiff === m.name ? 'Hide differences' : 'Show differences'}
+                  <button type="button" className="link push" onClick={() => setOpenDiff(openDiff === m.path ? null : m.path)} data-testid="match-diff-toggle">
+                    {openDiff === m.path ? 'Hide differences' : 'Show differences'}
                   </button>
                   {isSuperset(m) && (
                     <button
@@ -65,7 +68,7 @@ export function MatchPanel({ matches, applied, onApply, onRevert }: Props) {
                     Apply
                   </button>
                 </div>
-                {openDiff === m.name && <MatchDiffView m={m} />}
+                {openDiff === m.path && <MatchDiffView m={m} />}
               </li>
             ))}
           </ul>
@@ -73,7 +76,8 @@ export function MatchPanel({ matches, applied, onApply, onRevert }: Props) {
       )}
       {exact && !applied && (
         <p className="muted">
-          Saved schema <code>{exact.name}</code> matches these columns exactly.{' '}
+          Saved schema <code>{exact.name}</code>
+          <ScopeTag global={exact.scope === 'global'} local={exact.scope === 'local'} /> matches these columns exactly.{' '}
           <button type="button" className="link" onClick={() => onApply(exact)}>
             Use it
           </button>
@@ -81,6 +85,24 @@ export function MatchPanel({ matches, applied, onApply, onRevert }: Props) {
       )}
     </>
   )
+}
+
+// ScopeTag labels a saved schema Global (shared by the library) or
+// Local (this workspace's); nothing outside a library.
+function ScopeTag({ global, local }: { global?: boolean; local?: boolean }) {
+  if (global)
+    return (
+      <span className="scope-tag global" data-testid="match-scope">
+        Global
+      </span>
+    )
+  if (local)
+    return (
+      <span className="scope-tag local" data-testid="match-scope">
+        Local
+      </span>
+    )
+  return null
 }
 
 function MatchDiffView({ m }: { m: SchemaMatch }) {

@@ -35,6 +35,7 @@ import {
 import { ExportOptionFields } from './OptionFields.tsx'
 import '../importer/import.css'
 import './export.css'
+import { useArea } from '../area.ts'
 
 type Props = {
   cohort: string
@@ -44,17 +45,18 @@ type Props = {
 type Loaded = { formats: ExportFormat[]; common: ExportCommon; fields: CohortField[] }
 
 export function ExportDialog({ cohort, onClose }: Props) {
+  const area = useArea()
   const [loaded, setLoaded] = useState<Loaded | null>(null)
   const [error, setError] = useState<string | null>(null)
   useEffect(() => {
     const ctl = new AbortController()
-    Promise.all([getExportFormats(ctl.signal), inspectCohort(cohort, ctl.signal)])
+    Promise.all([getExportFormats(area, ctl.signal), inspectCohort(area, cohort, ctl.signal)])
       .then(([f, insp]) => setLoaded({ formats: f.formats, common: f.common, fields: insp.fields }))
       .catch((e: unknown) => {
         if (!ctl.signal.aborted) setError(String(e))
       })
     return () => ctl.abort()
-  }, [cohort])
+  }, [area, cohort])
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose()
@@ -92,6 +94,7 @@ type RunState =
   | { status: 'error'; error: string }
 
 function ExportForm({ cohort, formats, common, fields }: FormProps) {
+  const area = useArea()
   const allFields = useMemo(() => fields.map((f) => f.name), [fields])
   const [initial] = useState(() => {
     const r = recall(cohort)
@@ -130,7 +133,7 @@ function ExportForm({ cohort, formats, common, fields }: FormProps) {
     if (bodyKey === '') return
     const ctl = new AbortController()
     const t = setTimeout(() => {
-      predictExport(JSON.parse(bodyKey), ctl.signal)
+      predictExport(area, JSON.parse(bodyKey), ctl.signal)
         .then((data) => setPredict({ key: bodyKey, data }))
         .catch((e: unknown) => {
           if (!ctl.signal.aborted) setPredict({ key: bodyKey, error: e instanceof Error ? e.message : String(e) })
@@ -140,7 +143,7 @@ function ExportForm({ cohort, formats, common, fields }: FormProps) {
       clearTimeout(t)
       ctl.abort()
     }
-  }, [bodyKey])
+  }, [area, bodyKey])
 
   const current = bodyKey !== '' && predict.key === bodyKey ? predict : null
   const pre = current?.data
@@ -159,7 +162,7 @@ function ExportForm({ cohort, formats, common, fields }: FormProps) {
   const doExport = () => {
     const ctl = new AbortController()
     setRun({ status: 'running', ctl })
-    runExport(body, ctl.signal)
+    runExport(area, body, ctl.signal)
       .then(({ result, file }) => {
         const url = URL.createObjectURL(file)
         saveDownload(url, result.name)

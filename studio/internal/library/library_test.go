@@ -23,21 +23,15 @@ func TestDetect(t *testing.T) {
 	cases := []struct {
 		name  string
 		files map[string]string
-		mode  Mode
 		fresh bool
+		err   bool
 	}{
-		{"empty", nil, ModeLibrary, true},
-		{"dotfiles only", map[string]string{".DS_Store": "x", ".git/HEAD": "x"}, ModeLibrary, true},
-		{"unrelated files", map[string]string{"README.md": "x", "notes.json": `[1]`}, ModeLibrary, true},
-		{"marker", map[string]string{"library.json": `{"version": 1}`, "a.pulse": "x"}, ModeLibrary, false},
-		{"root request", map[string]string{"a.json": `{"cohort": {"filename": "x.pulse"}}`}, ModeLegacy, false},
-		{"root cohort", map[string]string{"x.pulse": "x"}, ModeLegacy, false},
-		{"req dir", map[string]string{"req/a.json": "{}"}, ModeLegacy, false},
-		{"flat imports", map[string]string{"imports/x.import.json": "{}"}, ModeLegacy, false},
-		{"flat exports", map[string]string{"exports/x.csv": "a"}, ModeLegacy, false},
-		{"nested casebook", map[string]string{"showcase/ab/req2/a.json": `{"cohort": {"filename": "x.pulse"}}`}, ModeLegacy, false},
-		{"nested cohort", map[string]string{"data/x/y.pulse": "x"}, ModeLegacy, false},
-		{"hidden only", map[string]string{".cache/a.pulse": "x", "node_modules/p/a.pulse": "x"}, ModeLibrary, true},
+		{"empty", nil, true, false},
+		{"dotfiles only", map[string]string{".DS_Store": "x", ".git/HEAD": "x"}, true, false},
+		{"hidden dirs only", map[string]string{".cache/a.pulse": "x"}, true, false},
+		{"marker", map[string]string{"library.json": `{"version": 1}`, "a.pulse": "x"}, false, false},
+		{"unrelated files", map[string]string{"README.md": "x"}, false, true},
+		{"flat folder", map[string]string{"req/a.json": `{"cohort": {"filename": "x.pulse"}}`, "x.pulse": "x"}, false, true},
 	}
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
@@ -45,18 +39,18 @@ func TestDetect(t *testing.T) {
 			for rel, text := range c.files {
 				write(t, dir, rel, text)
 			}
-			mode, fresh, err := Detect(dir)
-			if err != nil || mode != c.mode || fresh != c.fresh {
-				t.Fatalf("Detect = %s %v %v, want %s %v", mode, fresh, err, c.mode, c.fresh)
+			fresh, err := Detect(dir)
+			if fresh != c.fresh || (err != nil) != c.err || (err != nil && !errors.Is(err, ErrNotLibrary)) {
+				t.Fatalf("Detect = %v %v, want fresh %v err %v", fresh, err, c.fresh, c.err)
 			}
 		})
 	}
 }
 
-func TestOpenFreshAndLegacy(t *testing.T) {
+func TestOpenFreshAndRefused(t *testing.T) {
 	dir := t.TempDir()
 	l, err := Open(dir)
-	if err != nil || l.Mode() != ModeLibrary || l.GlobalDir() != l.Dir() {
+	if err != nil || l.GlobalDir() != l.Dir() {
 		t.Fatalf("Open fresh: %v %v", l, err)
 	}
 	if b, _ := os.ReadFile(filepath.Join(dir, MarkerFile)); string(b) != "{\"version\": 1}\n" {
@@ -65,25 +59,18 @@ func TestOpenFreshAndLegacy(t *testing.T) {
 	if list, err := l.Workspaces(); err != nil || len(list) != 0 {
 		t.Fatalf("zero workspaces: %v %v", list, err)
 	}
+	// Reopening an initialised library works.
+	if _, err := Open(dir); err != nil {
+		t.Fatalf("reopen: %v", err)
+	}
 
-	legacy := filepath.Join(t.TempDir(), "My Case")
-	write(t, legacy, "req/a.json", "{}")
-	l, err = Open(legacy)
-	if err != nil || !l.Legacy() || l.GlobalDir() != "" {
-		t.Fatalf("Open legacy: %v %v", l, err)
+	flat := filepath.Join(t.TempDir(), "My Case")
+	write(t, flat, "req/a.json", "{}")
+	if _, err := Open(flat); !errors.Is(err, ErrNotLibrary) {
+		t.Fatalf("Open flat folder: %v", err)
 	}
-	if _, err := os.Stat(filepath.Join(legacy, MarkerFile)); err == nil {
-		t.Fatal("legacy folder got library.json")
-	}
-	list, _ := l.Workspaces()
-	if len(list) != 1 || list[0].Slug != "my-case" || list[0].Name != "My Case" || !list[0].Legacy || list[0].Dir != l.Dir() {
-		t.Fatalf("legacy workspaces = %+v", list)
-	}
-	if ws, err := l.Workspace("my-case"); err != nil || !ws.Legacy {
-		t.Fatalf("legacy Workspace = %+v %v", ws, err)
-	}
-	if _, err := l.CreateWorkspace("x", "", time.Now()); !errors.Is(err, ErrLegacy) {
-		t.Fatalf("create in legacy: %v", err)
+	if _, err := os.Stat(filepath.Join(flat, MarkerFile)); err == nil {
+		t.Fatal("refused folder got library.json")
 	}
 }
 

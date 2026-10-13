@@ -10,9 +10,8 @@
 //	population.cohort                      an overlay's population cohort path
 //
 // and in an import spec, its "target". Where a reference goes is decided
-// by a Mapper: the legacy-folder migration (internal/migrate) moves every
-// cohort into a workspace, a promotion (internal/promote) moves one
-// workspace cohort into the global area.
+// by a Mapper: a promotion (internal/promote) moves one workspace cohort
+// into the global area.
 package refedit
 
 import (

@@ -13,6 +13,7 @@ import {
   type HeightBounds,
 } from './resultsSize.ts'
 import { useRunHeadline, type Run } from './useRun.ts'
+import { useArea } from '../area.ts'
 
 // ResultsPanel is the bottom panel of a full run: per-response result
 // tables (one tab per compose slot or chain stage), the raw envelope,
@@ -346,12 +347,13 @@ type SaveState = { phase: 'idle' | 'saving' | 'exists' | 'saved' | 'error'; mess
 // written until the button is clicked; an existing file is replaced only
 // after an explicit Overwrite.
 function SaveToOut({ runId, outDir, outName }: { runId: string; outDir: string; outName: string }) {
+  const area = useArea()
   const [name, setName] = useState(outName)
   const [st, setSt] = useState<SaveState>({ phase: 'idle' })
   const save = async (overwrite: boolean) => {
     setSt({ phase: 'saving' })
     try {
-      const res = await saveRun(runId, name.trim(), overwrite)
+      const res = await saveRun(area, runId, name.trim(), overwrite)
       setSt({ phase: 'saved', message: `${res.overwritten ? 'replaced' : 'saved'} ${res.path}` })
     } catch (e) {
       if (e instanceof ApiCallError && e.code === 'exists') setSt({ phase: 'exists', message: `${outDir}/${name.trim()} exists` })
@@ -411,7 +413,7 @@ export function NodeRunHeadline({ id }: { id: string }) {
     <span
       className={'gnode-run' + (headline.tone ? ' ' + headline.tone : '') + (stale ? ' stale' : '')}
       data-testid="node-run"
-      title={stale ? 'Full-run result (the request was edited since)' : 'Full-run result'}
+      title={stale ? 'Full-run result (the analysis was edited since)' : 'Full-run result'}
     >
       {headline.text}
     </span>

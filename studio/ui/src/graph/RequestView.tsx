@@ -68,6 +68,8 @@ import { createFocusStore, hoverTarget } from './focus.ts'
 import { EdgeRouter, FocusStyle, WireEdge, type RouteStatus } from './WireEdge.tsx'
 import { readWireMode, RouteContext, RouteStore, writeWireMode, type WireMode } from './wires.ts'
 import './graph.css'
+import { useArea } from '../area.ts'
+import { modeOf } from '../modes.ts'
 
 const nodeTypes = { op: OpNodeView, cohort: CohortNodeView, raw: RawNodeView, facet: FacetNodeView, lane: LaneNodeView, result: ResultNodeView }
 const edgeTypes = { wire: WireEdge }
@@ -89,19 +91,19 @@ type Props = { file: WorkspaceFile | null; catalog?: Catalog; history?: boolean 
 // (facetGraph.ts). A cohort file is data, not a request: it points at
 // New request.
 export function RequestView({ file, catalog, history = false }: Props) {
-  if (!file) return <Empty title="No file open" body="Pick a request from the sidebar." />
+  if (!file) return <Empty title="No analysis open" body="Pick an analysis from the list, or start a New analysis." />
   if (file.kind === 'cohort') {
     return (
       <Empty
         testId="cohort-file"
         title="Cohort file"
-        body={`${file.path} is a cohort. Use New request in the sidebar to build a request on it.`}
+        body={`${file.path} is a cohort. Use New analysis to build an analysis on it.`}
       />
     )
   }
   if (file.kind === 'unopenable') return <Empty testId="unopenable" title="Cannot open" body={file.reason ?? file.path} />
   // Import files have their own views (importer/views.tsx).
-  if (file.kind === 'source' || file.kind === 'schema' || file.kind === 'import') return <Empty title="Not a request" body={file.path} />
+  if (file.kind === 'source' || file.kind === 'schema' || file.kind === 'import') return <Empty title="Not an analysis" body={file.path} />
   return <RequestGraphView key={file.path} path={file.path} kind={file.kind} catalog={catalog} history={history} />
 }
 
@@ -127,6 +129,7 @@ type LayoutDoc = { layout: Layout; saved: string }
 const EMPTY_LAYOUT: LayoutDoc = { layout: emptyLayout(), saved: layoutText(emptyLayout()) }
 
 function RequestGraphView({ path, kind, catalog, history }: { path: string; kind: ViewKind; catalog?: Catalog; history: boolean }) {
+  const area = useArea()
   const [doc, setDoc] = useState<Doc | null>(null)
   // The history panel, and a counter bumped by every save or restore so
   // it refetches the file's commits.
@@ -188,23 +191,23 @@ function RequestGraphView({ path, kind, catalog, history }: { path: string; kind
 
   useEffect(() => {
     const ctl = new AbortController()
-    listFiles(ctl.signal)
+    listFiles(area, ctl.signal)
       .then((l) => setCohortFiles(l.files.filter((f) => f.kind === 'cohort').map((f) => f.path)))
       .catch(() => {})
     return () => ctl.abort()
-  }, [path])
+  }, [area, path])
   const cohortChoices = useMemo(() => cohortOptions(path, cohortFiles), [path, cohortFiles])
 
   useEffect(() => {
     const ctl = new AbortController()
     // A missing or unreadable sidecar means auto-layout, never an error.
-    readLayout(path, ctl.signal)
+    readLayout(area, path, ctl.signal)
       .then((f) => {
         const layout = parseLayout(f.layout)
         setLay({ layout, saved: layoutText(layout) })
       })
       .catch(() => {})
-    readFile(path, ctl.signal)
+    readFile(area, path, ctl.signal)
       .then((f) => {
         let model: GraphModel
         try {
@@ -218,7 +221,7 @@ function RequestGraphView({ path, kind, catalog, history }: { path: string; kind
         if (!ctl.signal.aborted) setError(String(e))
       })
     return () => ctl.abort()
-  }, [path, kind])
+  }, [area, path, kind])
 
   const text = useMemo(() => (doc ? emitModelText(doc.model) : ''), [doc])
   const textDirty = doc !== null && text !== doc.saved
@@ -255,7 +258,7 @@ function RequestGraphView({ path, kind, catalog, history }: { path: string; kind
         const ref = JSON.parse(key) as unknown
         for (const c of cohortCandidates(path, ref)) {
           try {
-            const res = await inspectCohort(c, ctl.signal)
+            const res = await inspectCohort(area, c, ctl.signal)
             mine.delete(key)
             setCohorts((m) => new Map(m).set(key, { fields: res.fields }))
             return
@@ -273,7 +276,7 @@ function RequestGraphView({ path, kind, catalog, history }: { path: string; kind
       ctl.abort()
       for (const key of mine) seen.delete(key)
     }
-  }, [cohortKeys, path])
+  }, [area, cohortKeys, path])
 
   const fieldsFor = useCallback(
     (lane: string) => {
@@ -454,7 +457,7 @@ function RequestGraphView({ path, kind, catalog, history }: { path: string; kind
           place: order.indexOf(b.id),
           count: order.length,
           removable: doc !== null && removable(doc.model, b.id),
-          ...(kind === 'chain' && lane.role === 'root' && { roleLabel: 'chain' }),
+          ...(kind === 'chain' && lane.role === 'root' && { roleLabel: 'chained' }),
         },
       }
     })
@@ -705,7 +708,7 @@ function RequestGraphView({ path, kind, catalog, history }: { path: string; kind
       if (compose) {
         const box = laneAt(boxes, pos.y)
         if (!box || box.id === ROOT_LANE) {
-          show({ text: `${item.op} goes into a request: drop it in a ${kind === 'chain' ? 'stage' : 'slot'}`, testId: 'place-refused' })
+          show({ text: `${item.op} goes into a ${kind === 'chain' ? 'stage' : 'slot'}: drop it in one`, testId: 'place-refused' })
           return
         }
         lane = box.id
@@ -799,7 +802,7 @@ function RequestGraphView({ path, kind, catalog, history }: { path: string; kind
     try {
       if (textDirty) {
         const sent = text
-        const res = await saveFile(path, sent)
+        const res = await saveFile(area, path, sent)
         const onDisk = parseModel(res.text, kind)
         // Edits made while the save was in flight stay dirty.
         setDoc((d) => (d && emitModelText(d.model) === sent ? { model: onDisk, saved: emitModelText(onDisk) } : d && { ...d, saved: sent }))
@@ -810,7 +813,7 @@ function RequestGraphView({ path, kind, catalog, history }: { path: string; kind
         const sent = layoutText(lay.layout)
         let pruned = pruneLayout(lay.layout, graph.nodes.map((n) => n.id))
         if (graph.compose && pruned.lanes !== undefined) pruned = { ...pruned, lanes: laneOrder(graph.compose.lanes, pruned.lanes) }
-        const res = await saveLayout(path, layoutText(pruned))
+        const res = await saveLayout(area, path, layoutText(pruned))
         const onDisk = parseLayout(res.layout)
         const savedText = layoutText(onDisk)
         setLay((l) => (layoutText(l.layout) === sent ? { layout: onDisk, saved: savedText } : { ...l, saved: savedText }))
@@ -821,7 +824,7 @@ function RequestGraphView({ path, kind, catalog, history }: { path: string; kind
     } finally {
       setSaving(false)
     }
-  }, [doc, saving, dirty, textDirty, layoutDirty, text, lay, graph, path, kind])
+  }, [area, doc, saving, dirty, textDirty, layoutDirty, text, lay, graph, path, kind])
 
   // A restore from the history panel replaces the document the way a
   // save's response does: the restored bytes become the saved model, and
@@ -876,6 +879,11 @@ function RequestGraphView({ path, kind, catalog, history }: { path: string; kind
     <div className="graph" data-testid="request-graph">
       <div className="graph-bar">
         <span className="graph-path">{path}</span>
+        {modeOf(kind) && (
+          <span className={'mode-badge mode-' + modeOf(kind)!.id} title={`${modeOf(kind)!.label}: ${modeOf(kind)!.runs}`} data-testid="graph-mode">
+            {modeOf(kind)!.label}
+          </span>
+        )}
         <span className={dirty ? 'dirty' : 'muted'} data-testid="dirty-state">
           {saving ? 'saving…' : dirty ? '● unsaved changes' : 'saved'}
         </span>
@@ -897,7 +905,7 @@ function RequestGraphView({ path, kind, catalog, history }: { path: string; kind
             Cancel run
           </button>
         ) : (
-          <button type="button" className="run" data-testid="run-button" onClick={startRun} title="Run the whole request as edited (nothing is written)">
+          <button type="button" className="run" data-testid="run-button" onClick={startRun} title="Run the whole analysis as edited (nothing is written)">
             ▶ Run
           </button>
         )}
@@ -919,12 +927,12 @@ function RequestGraphView({ path, kind, catalog, history }: { path: string; kind
           <span className={wireMode === 'routed' ? 'on' : undefined}>Routed</span>
         </button>
         {compose && kind === 'compose' && (
-          <button type="button" data-testid="lane-add" onClick={newLane} title="Add a compose slot (reads the last slot's cohort)">
+          <button type="button" data-testid="lane-add" onClick={newLane} title="Add a slot to the composed analysis (reads the last slot's cohort)">
             + Slot
           </button>
         )}
         {kind === 'chain' && (
-          <button type="button" data-testid="lane-add" onClick={newLane} title="Add a chain stage (reads the last stage's output)">
+          <button type="button" data-testid="lane-add" onClick={newLane} title="Add a stage to the chained analysis (reads the last stage's output)">
             + Stage
           </button>
         )}

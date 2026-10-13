@@ -48,7 +48,7 @@ describe('buildComposeGraph', () => {
   it('draws fits as lanes bound to the slots that read them', () => {
     const g = buildComposeGraph(JSON.parse(fitsCompose), { manifest, fieldsFor: () => fields })
     expect(g.lanes.map((l) => [l.id, l.role, l.title])).toEqual([
-      [ROOT_LANE, 'root', 'Compose'],
+      [ROOT_LANE, 'root', 'Composed'],
       ['fits[0]', 'fit', 'pages_model'],
       ['requests[0]', 'slot', 'train'],
       ['requests[1]', 'slot', 'holdout'],

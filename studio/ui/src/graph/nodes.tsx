@@ -317,7 +317,7 @@ export type LaneNodeData = {
 
 export type LaneNode = Node<LaneNodeData, 'lane'>
 
-const ROLE_LABEL: Record<LaneRole, string> = { root: 'compose', slot: 'slot', fit: 'fit', stage: 'stage' }
+const ROLE_LABEL: Record<LaneRole, string> = { root: 'composed', slot: 'slot', fit: 'fit', stage: 'stage' }
 
 // LaneNodeView is one compose or chain lane: a labeled band holding a
 // slot's, fit's or chain stage's nodes. The header renames (double-click the title),

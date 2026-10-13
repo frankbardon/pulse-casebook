@@ -1,0 +1,331 @@
+/* Library shell (App.tsx): header navigation, workspace switcher, the
+   Analyses and Cohorts lists, empty states and the Make global dialog. */
+
+.canvas.wide {
+  grid-column: 1 / -1;
+}
+
+.pad {
+  padding: var(--space-3);
+}
+
+.topbar button,
+.list-filters button,
+.empty-state button,
+.empty-list button,
+.mg-dialog button {
+  padding: 2px var(--space-2);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: var(--surface);
+  color: var(--text);
+  font: var(--text-sm) / 1.4 var(--font-ui);
+  cursor: pointer;
+}
+
+.topbar button:disabled,
+.mg-dialog button:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.topbar button.primary:not(:disabled),
+.empty-state button.primary,
+.empty-list button.primary,
+.mg-dialog button.primary:not(:disabled) {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--surface);
+}
+
+.topbar button.link {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--accent);
+}
+
+.topbar input,
+.list-filters input,
+.list-filters select,
+.mg-dialog input {
+  min-width: 0;
+  padding: 2px var(--space-1);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: var(--bg);
+  color: var(--text);
+  font: var(--text-sm) / 1.4 var(--font-ui);
+}
+
+/* Analyses | Cohorts */
+.tabs {
+  display: flex;
+  gap: 2px;
+  align-self: stretch;
+}
+
+.topbar .tabs button {
+  padding: 0 var(--space-2);
+  border: 0;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  background: none;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.topbar .tabs button.on {
+  border-bottom-color: var(--accent);
+  color: var(--text);
+}
+
+.ws-switcher,
+.ws-form {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.ws-switcher select {
+  max-width: 220px;
+  padding: 1px var(--space-1);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: var(--bg);
+  color: var(--text);
+  font: var(--text-sm) / 1.4 var(--font-ui);
+}
+
+/* Search + filter above a list. */
+.list-filters {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.scope-filter {
+  display: flex;
+  gap: 2px;
+}
+
+.scope-filter button {
+  flex: 1;
+}
+
+.scope-filter button.on {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* Analyses */
+.file-group h2.folder {
+  font-family: var(--font-mono);
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.file.analysis {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+  padding: 3px var(--space-1);
+  white-space: normal;
+}
+
+.analysis-line {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.analysis-line .file-name {
+  white-space: nowrap;
+}
+
+.analysis-runs {
+  color: var(--muted);
+  font: 11px / 1.3 var(--font-ui);
+}
+
+.mode-badge,
+.scope-tag {
+  flex: none;
+  margin-left: auto;
+  padding: 0 5px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  font: 600 10px / 15px var(--font-ui);
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.mode-badge.mode-standalone {
+  border-color: color-mix(in srgb, var(--stage-aggregate) 50%, transparent);
+  color: var(--stage-aggregate);
+}
+
+.mode-badge.mode-composed {
+  border-color: color-mix(in srgb, var(--stage-derive) 50%, transparent);
+  color: var(--stage-derive);
+}
+
+.mode-badge.mode-faceted {
+  border-color: color-mix(in srgb, var(--stage-filter) 50%, transparent);
+  color: var(--stage-filter);
+}
+
+.mode-badge.mode-chained {
+  border-color: color-mix(in srgb, var(--stage-analysis) 50%, transparent);
+  color: var(--stage-analysis);
+}
+
+/* Global vs local */
+.scope-tag.global {
+  border-color: color-mix(in srgb, var(--accent) 50%, transparent);
+  color: var(--accent);
+}
+
+.scope-tag.local {
+  color: var(--muted);
+  font-weight: 400;
+  max-width: 10em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+h2 .scope-tag,
+code + .scope-tag,
+.match-row .scope-tag {
+  margin-left: var(--space-1);
+  vertical-align: 2px;
+}
+
+.scope-section + .scope-section {
+  margin-top: var(--space-1);
+}
+
+.scope-head {
+  margin: 2px 0;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.scope-head.global {
+  color: var(--accent);
+}
+
+.file-size {
+  flex: none;
+  font-size: 11px;
+}
+
+/* Empty states */
+.empty-state {
+  max-width: 60ch;
+  margin: 10vh auto 0;
+  padding: var(--space-3);
+}
+
+.empty-state h2 {
+  margin: 0 0 var(--space-2);
+  font-size: 15px;
+}
+
+.empty-state p {
+  margin-bottom: var(--space-3);
+}
+
+.empty-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  align-items: flex-start;
+}
+
+.new-mode-runs {
+  font-size: 11px;
+}
+
+/* Make global */
+.mg-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3);
+}
+
+.mg-body p {
+  margin: 0;
+}
+
+.mg-plan h3 {
+  margin: var(--space-2) 0 var(--space-1);
+  font-size: var(--text-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+.mg-plan .count {
+  font-family: var(--font-mono);
+  font-weight: 400;
+  text-transform: none;
+}
+
+.mg-list {
+  margin: 0;
+  padding-left: var(--space-3);
+  font-size: var(--text-sm);
+}
+
+.mg-list ul {
+  padding-left: var(--space-3);
+}
+
+.mg-name {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: var(--text-sm);
+  color: var(--muted);
+}
+
+.mg-actions {
+  display: flex;
+  gap: var(--space-2);
+  justify-content: flex-end;
+}
+
+.mg-foot {
+  padding: var(--space-2) var(--space-3);
+  border-top: 1px solid var(--border);
+}
+
+.file-history {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--text-sm);
+}
+
+.file-history li {
+  padding: 1px 0;
+}
+
+.import-into {
+  max-width: 360px;
+}
+
+.graph-bar .mode-badge {
+  margin-left: 0;
+}
+
+.file.selected .scope-tag,
+.file.selected .mode-badge {
+  border-color: currentColor;
+  color: inherit;
+}

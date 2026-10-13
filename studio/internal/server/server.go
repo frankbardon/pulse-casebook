@@ -7,6 +7,7 @@ import (
 	"io/fs"
 	"net/http"
 	"path/filepath"
+	"strings"
 	"sync"
 	"time"
 
@@ -37,7 +38,7 @@ type Config struct {
 	MaxUpload int64
 
 	// Library: this server is one area of a library (a workspace, or
-	// the global area) rather than a legacy flat folder. A bare import
+	// the global area); false only in tests of the bare Server. A bare import
 	// target then lands in cohorts/, a new analysis's cohort ref is
 	// always {filename, data_dir: <root-relative dir>}, and a
 	// workspace's file listing adds the global cohorts.
@@ -57,6 +58,24 @@ type Config struct {
 	// ListSkip names top-level directories GET /api/files does not walk
 	// (the global area skips workspaces/).
 	ListSkip []string
+
+	// Global: this server is the library's global area, which holds
+	// shared cohorts, schemas and imports but never analyses (creating
+	// one there is refused 403 global_area; see refuseGlobalAnalysis).
+	Global bool
+}
+
+// refuseGlobalAnalysis refuses (403 global_area) creating an analysis
+// in the global area: through the global area's own URL, or a
+// "_global/..." path through a workspace's. Analyses live in
+// workspaces; only cohorts, schemas, imports and sources are global.
+func (s *Server) refuseGlobalAnalysis(w http.ResponseWriter, rel string) bool {
+	viaMount := s.cfg.Library && (rel == library.GlobalPrefix || strings.HasPrefix(rel, library.GlobalPrefix+"/"))
+	if !s.cfg.Global && !viaMount {
+		return false
+	}
+	WriteError(w, http.StatusForbidden, "global_area", "analyses live in workspaces: the global area holds only shared cohorts, schemas and imports", map[string]any{"path": rel})
+	return true
 }
 
 // Server wires the scoped directory, the single Pulse engine and the UI.

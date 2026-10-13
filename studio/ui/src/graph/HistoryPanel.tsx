@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { ApiCallError, getHistory, getHistoryFile, readFile, restoreHistory, type HistoryCommit, type Restored } from '../api.ts'
 import { commitTime, diffStats, foldDiff, lineDiff, type DiffLine } from '../history.ts'
 import './history.css'
+import { useArea } from '../area.ts'
 
 type Props = {
   path: string
@@ -23,6 +24,7 @@ type Diff = { rev: string; lines?: DiffLine[]; missing?: true; error?: string }
 // that version; Restore writes it back (a new commit) and the view
 // reloads the restored content as it does after a save.
 export function HistoryPanel({ path, version, dirty, onRestored, onClose }: Props) {
+  const area = useArea()
   const [commits, setCommits] = useState<HistoryCommit[] | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [selected, setSelected] = useState<string | null>(null)
@@ -32,7 +34,7 @@ export function HistoryPanel({ path, version, dirty, onRestored, onClose }: Prop
 
   useEffect(() => {
     const ctl = new AbortController()
-    getHistory(path, ctl.signal)
+    getHistory(area, path, ctl.signal)
       .then((h) => {
         setCommits(h.commits)
         setError(null)
@@ -41,20 +43,20 @@ export function HistoryPanel({ path, version, dirty, onRestored, onClose }: Prop
         if (!ctl.signal.aborted) setError(String(e))
       })
     return () => ctl.abort()
-  }, [path, version])
+  }, [area, path, version])
 
   useEffect(() => {
     if (selected === null) return
     const ctl = new AbortController()
     Promise.all([
-      getHistoryFile(path, selected, ctl.signal).then(
+      getHistoryFile(area, path, selected, ctl.signal).then(
         (f) => f.text,
         (e: unknown) => {
           if (String(e).includes('not_found:')) return null
           throw e
         },
       ),
-      readFile(path, ctl.signal).then(
+      readFile(area, path, ctl.signal).then(
         (f) => f.text,
         (e: unknown) => {
           if (String(e).includes('not_found:')) return ''
@@ -69,14 +71,14 @@ export function HistoryPanel({ path, version, dirty, onRestored, onClose }: Prop
         if (!ctl.signal.aborted) setDiff({ rev: selected, error: String(e) })
       })
     return () => ctl.abort()
-  }, [path, selected, version])
+  }, [area, path, selected, version])
 
   const restore = async (rev: string) => {
     if (dirty && !window.confirm('Restoring replaces the file and discards your unsaved changes. Restore?')) return
     setRestoring(true)
     setRestoreError(null)
     try {
-      onRestored(await restoreHistory(path, rev))
+      onRestored(await restoreHistory(area, path, rev))
     } catch (e) {
       setRestoreError(e instanceof ApiCallError ? e.message : String(e))
     } finally {

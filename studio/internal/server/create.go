@@ -117,6 +117,9 @@ func (s *Server) handleCreateFile(w http.ResponseWriter, r *http.Request) {
 	if !ok {
 		return
 	}
+	if s.refuseGlobalAnalysis(w, rel) {
+		return
+	}
 	if !strings.HasSuffix(strings.ToLower(rel), ".json") {
 		WriteError(w, http.StatusBadRequest, "not_json", "a request file name must end in .json", map[string]any{"path": rel})
 		return

@@ -162,8 +162,6 @@ type Plan struct {
 
 // Errors.
 var (
-	// ErrLegacy: a legacy folder has no global area.
-	ErrLegacy = errors.New("a legacy folder has no global area: migrate it to a library first")
 	// ErrBadKind: kind is neither cohort nor schema.
 	ErrBadKind = errors.New("kind must be cohort or schema")
 )
@@ -217,12 +215,9 @@ type planner struct {
 }
 
 // MakePlan computes the promotion req asks for in lib. It never writes.
-// Errors: ErrLegacy, library.ErrNotFound (workspace), ErrBadKind,
+// Errors: library.ErrNotFound (workspace), ErrBadKind,
 // *NotFoundError, *InvalidError, *ClashError.
 func MakePlan(ctx context.Context, lib *library.Library, req Request) (*Plan, error) {
-	if lib.Legacy() {
-		return nil, ErrLegacy
-	}
 	ws, err := lib.Workspace(req.Workspace)
 	if err != nil {
 		return nil, err

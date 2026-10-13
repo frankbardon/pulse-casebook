@@ -63,6 +63,9 @@ func (s *Server) handleSaveFile(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 	case errors.Is(err, fs.ErrNotExist):
+		if k, _ := workspace.Classify(rel, body); isAnalysisKind(k) && s.refuseGlobalAnalysis(w, rel) {
+			return
+		}
 		if pinfo, perr := os.Stat(filepath.Dir(abs)); perr != nil || !pinfo.IsDir() {
 			WriteError(w, http.StatusNotFound, "not_found", "parent directory does not exist", map[string]any{"path": rel})
 			return
@@ -113,4 +116,14 @@ func writeAtomic(path string, data []byte, mode fs.FileMode) (err error) {
 		return err
 	}
 	return os.Rename(tmp.Name(), path)
+}
+
+// isAnalysisKind reports whether k is one of the request roots (an
+// analysis).
+func isAnalysisKind(k workspace.Kind) bool {
+	switch k {
+	case workspace.KindRequest, workspace.KindCompose, workspace.KindFacet, workspace.KindChain:
+		return true
+	}
+	return false
 }

@@ -339,6 +339,8 @@ func TestOutPathFor(t *testing.T) {
 		{"a/b/x.chain.json", "a/b/out", "x.json"},
 		{"x.json", "out", "x.json"},
 		{"case/req/05_kpi_tracker.JSON", "case/out", "05_kpi_tracker.json"},
+		{"analyses/11_readout.compose.json", "out", "11_readout.json"},
+		{"analyses/q1/deep/x.facet.json", "out/q1/deep", "x.json"},
 	} {
 		dir, name := outPathFor(tc.in)
 		if dir != tc.dir || name != tc.name {

@@ -3,6 +3,7 @@ import { postPreview, type PreviewResult } from '../api.ts'
 import { emitModelText, type GraphModel } from './model.ts'
 import { batches, changedIds, fingerprints, invalidated, type PreviewState } from './previews.ts'
 import type { RequestGraph } from './requestGraph.ts'
+import { useArea } from '../area.ts'
 
 // Quiet time after the last edit before stale previews are re-requested.
 export const PREVIEW_DEBOUNCE_MS = 300
@@ -49,6 +50,7 @@ export function usePreviews(
   graph: RequestGraph | null,
   off: string | undefined,
 ): Previews {
+  const area = useArea()
   const enabled = off === undefined && model !== null && graph !== null
   const [states, setStates] = useState<ReadonlyMap<string, PreviewState>>(new Map())
   const sent = useRef<Map<string, string> | null>(null)
@@ -88,7 +90,7 @@ export function usePreviews(
         const flight: Flight = { gens: mine, ctl: new AbortController() }
         flights.current.add(flight)
         const current = (id: string) => gens.current.get(id) === mine.get(id)
-        postPreview({ path, nodes, requestText, force }, flight.ctl.signal)
+        postPreview(area, { path, nodes, requestText, force }, flight.ctl.signal)
           .then((res) => {
             const retry = res.status === 'cancelled' && attempt < CANCEL_RETRIES ? nodes.filter(current) : []
             if (retry.length > 0) {
@@ -113,7 +115,7 @@ export function usePreviews(
           .finally(() => flights.current.delete(flight))
       }
     },
-    [path],
+    [area, path],
   )
 
   // Edits: debounce, diff, re-request what is downstream of the change.

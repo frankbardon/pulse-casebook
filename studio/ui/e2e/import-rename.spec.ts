@@ -7,7 +7,7 @@
 // the same names.
 import { rmSync } from 'node:fs'
 import { join } from 'node:path'
-import { expect, test } from './harness.ts'
+import { catalogRow, expect, openCohorts, test } from './harness.ts'
 
 test.use({ workspace: 'ab-test-readout' })
 
@@ -17,7 +17,9 @@ const CLEAN = ['living_space_sq_ft', 'list_price', 'city', 'year_built']
 
 test('rename columns on import, keep the names on rebuild and on the next file', async ({ page, studio, request }) => {
   await page.goto('/')
+  await openCohorts(page)
   await page.getByTestId('import-open').click()
+  await page.getByTestId('import-into').selectOption(studio.slug)
   const wizard = page.getByTestId('import-wizard')
   await page.getByTestId('import-file-input').setInputFiles(fixture('zillow.csv'))
   await expect(wizard).toHaveAttribute('data-step', 'schema')
@@ -63,7 +65,7 @@ test('rename columns on import, keep the names on rebuild and on the next file',
 
   await page.getByTestId('import-target').fill('homes')
   await page.getByTestId('import-run').click()
-  await expect(page.getByTestId('cohort-file')).toHaveAttribute('data-path', 'homes.pulse')
+  await expect(page.getByTestId('cohort-file')).toHaveAttribute('data-path', 'cohorts/homes.pulse')
   await expect(page.getByTestId('report-rows')).toHaveText('5')
   const fields = page.getByTestId('cohort-fields')
   for (const f of CLEAN) await expect(fields.locator(`tr[data-field="${f}"]`)).toHaveCount(1)
@@ -73,18 +75,20 @@ test('rename columns on import, keep the names on rebuild and on the next file',
   expect(spec.options.ignore_extra).toBe(true)
 
   // Rebuild re-applies the spec's renames.
-  rmSync(join(studio.dir, 'homes.pulse'))
-  const rebuilt = await request.post('/api/import/rebuild', { data: { spec: 'imports/homes.import.json' } })
+  rmSync(join(studio.ws, 'cohorts/homes.pulse'))
+  const rebuilt = await request.post(studio.api('/import/rebuild'), { data: { spec: 'imports/homes.import.json' } })
   expect(rebuilt.status()).toBe(200)
   expect(((await rebuilt.json()).report.schema as { name: string }[]).map((f) => f.name)).toEqual(CLEAN)
 
   // The saved schema view says where each field came from.
   await page.goto('/')
-  await page.getByRole('button', { name: 'zillow', exact: true }).click()
+  await openCohorts(page)
+  await catalogRow(page, 'schema', 'schemas/zillow.schema.json', 'local').click()
   await expect(page.getByTestId('schema-file').getByTestId('schema-field-source').first()).toHaveText('Living Space (sq ft)')
 
   // The next file with the same headers: matched and renamed the same way.
   await page.getByTestId('import-open').click()
+  await page.getByTestId('import-into').selectOption(studio.slug)
   await page.getByTestId('import-file-input').setInputFiles(fixture('zillow_more.csv'))
   await expect(page.getByTestId('match-suggestions').locator('[data-match="zillow"]')).toBeVisible()
   await page.getByTestId('match-suggestions').locator('[data-match="zillow"]').getByTestId('match-apply-drop').click()
@@ -98,16 +102,16 @@ test('rename columns on import, keep the names on rebuild and on the next file',
   await expect(wizard).toHaveAttribute('data-step', 'import')
   await page.getByTestId('import-target').fill('homes_more')
   await page.getByTestId('import-run').click()
-  await expect(page.getByTestId('cohort-file')).toHaveAttribute('data-path', 'homes_more.pulse')
+  await expect(page.getByTestId('cohort-file')).toHaveAttribute('data-path', 'cohorts/homes_more.pulse')
   for (const f of CLEAN) await expect(page.getByTestId('cohort-fields').locator(`tr[data-field="${f}"]`)).toHaveCount(1)
 })
 
-test('the server refuses a duplicate rename with a coded error', async ({ request }) => {
-  const up = await request.post('/api/sources', {
+test('the server refuses a duplicate rename with a coded error', async ({ request, studio }) => {
+  const up = await request.post(studio.api('/sources'), {
     multipart: { file: { name: 'zillow.csv', mimeType: 'text/csv', buffer: Buffer.from('A,B\n1,2\n') } },
   })
   expect(up.status()).toBe(201)
-  const res = await request.post('/api/import', { data: { source: 'sources/zillow.csv', target: 'dup', options: { rename: { A: 'B' } } } })
+  const res = await request.post(studio.api('/import'), { data: { source: 'sources/zillow.csv', target: 'dup', options: { rename: { A: 'B' } } } })
   expect(res.status()).toBe(422)
   expect((await res.json()).error.code).toBe('invalid_rename')
 })

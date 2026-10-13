@@ -1,13 +1,9 @@
 // Command studio serves Pulse Studio, a local visual request builder, for
 // one library directory (internal/library): global cohorts and schemas
-// plus workspaces of analyses. A pre-library flat folder (requests and
-// cohorts at its root or in req/) is served in place as one workspace.
+// plus workspaces of analyses. A missing or empty directory becomes a new
+// library; a non-empty directory without library.json is refused.
 //
 //	studio <dir> [--port N] [--preview-timeout 10s] [--auto-preview-rows 1000000] [--no-git] [--max-upload 2GiB]
-//
-// A legacy folder is migrated to the library layout on request (GET
-// /api/migration/plan, POST /api/migration/apply); a migration that was
-// interrupted is resumed or rolled back on the next start.
 //
 // The global area and every workspace are kept in git repositories of
 // their own (see internal/history): every studio write is committed,
@@ -25,14 +21,12 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"path/filepath"
 	"strconv"
 	"strings"
 	"syscall"
 	"time"
 
 	"github.com/frankbardon/pulse-casebook/studio/internal/library"
-	"github.com/frankbardon/pulse-casebook/studio/internal/migrate"
 	"github.com/frankbardon/pulse-casebook/studio/internal/server"
 	"github.com/frankbardon/pulse-casebook/studio/web"
 )
@@ -75,29 +69,27 @@ func run(args []string) error {
 		return errors.New("expected exactly one directory argument")
 	}
 
+	// A new directory becomes a library.
 	info, err := os.Stat(positional[0])
+	if errors.Is(err, os.ErrNotExist) {
+		if err := os.MkdirAll(positional[0], 0o755); err != nil {
+			return err
+		}
+		info, err = os.Stat(positional[0])
+	}
 	if err != nil {
 		return err
 	}
 	if !info.IsDir() {
 		return fmt.Errorf("%s is not a directory", positional[0])
 	}
-	// An interrupted migration (W2) is finished or rolled back first.
-	dir, err := filepath.EvalSymlinks(positional[0])
-	if err != nil {
-		return err
+	// The library (an empty directory gets library.json; any other
+	// directory without it is refused). Git-backed history per area is
+	// never fatal: problems turn it off.
+	lib, err := library.Open(positional[0])
+	if errors.Is(err, library.ErrNotLibrary) {
+		return fmt.Errorf("%s is not a Pulse Studio library (it has files but no %s): create one with `bin/studio <new or empty dir>`", positional[0], library.MarkerFile)
 	}
-	if dir, err = filepath.Abs(dir); err != nil {
-		return err
-	}
-	recovered, err := migrate.Recover(context.Background(), dir, migrate.Options{NoGit: *noGit, Logf: log.Printf})
-	if err != nil {
-		return err
-	}
-	// The library (a fresh directory gets library.json; a legacy flat
-	// folder is left as it is). Git-backed history per area is never
-	// fatal: problems turn it off.
-	lib, err := library.Open(dir)
 	if err != nil {
 		return err
 	}
@@ -107,9 +99,8 @@ func run(args []string) error {
 			AutoPreviewRows: *autoRows,
 			MaxUpload:       int64(maxUpload),
 		},
-		NoGit:     *noGit,
-		Logf:      log.Printf,
-		Recovered: recovered,
+		NoGit: *noGit,
+		Logf:  log.Printf,
 	}, web.FS(), web.Built())
 	if err != nil {
 		return err
@@ -120,7 +111,7 @@ func run(args []string) error {
 		return err
 	}
 	httpSrv := &http.Server{Handler: srv, ReadHeaderTimeout: 10 * time.Second}
-	log.Printf("serving %s (%s) at http://%s/", lib.Dir(), lib.Mode(), ln.Addr())
+	log.Printf("serving %s at http://%s/", lib.Dir(), ln.Addr())
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { WorkspaceFile } from './api.ts'
-import { defaultNewDir, fileBadge, fileLabel, groupFiles, isOpenable, newFilePath } from './files.ts'
+import { fileBadge, fileLabel, newFilePath } from './files.ts'
 
 const files: WorkspaceFile[] = [
   { path: 'data.pulse', kind: 'cohort' },
@@ -14,29 +14,6 @@ const files: WorkspaceFile[] = [
   { path: 'sources/orders.csv', kind: 'source', format: 'csv', size: 10 },
 ]
 
-describe('groupFiles', () => {
-  it('groups by kind in sidebar order and drops empty groups', () => {
-    const groups = groupFiles(files)
-    expect(groups.map((g) => g.kind)).toEqual(['request', 'compose', 'facet', 'cohort', 'source', 'schema', 'import', 'unopenable'])
-    expect(groups[0].files.map((f) => f.path)).toEqual(['req/01.json', 'req/03.json'])
-  })
-
-  it('returns nothing for an empty listing', () => {
-    expect(groupFiles([])).toEqual([])
-  })
-})
-
-describe('isOpenable', () => {
-  it.each([
-    ['request', true],
-    ['compose', true],
-    ['cohort', true],
-    ['unopenable', false],
-  ] as const)('%s -> %s', (kind, want) => {
-    expect(isOpenable({ path: 'x', kind })).toBe(want)
-  })
-})
-
 describe('newFilePath', () => {
   it('adds the root suffix unless the name is already .json', () => {
     expect(newFilePath('case/req', 'readout', 'request')).toBe('case/req/readout.json')
@@ -49,14 +26,6 @@ describe('newFilePath', () => {
     expect(newFilePath('req', '  ', 'request')).toBeNull()
     expect(newFilePath('req', '../x', 'request')).toBeNull()
     expect(newFilePath('req', '..', 'request')).toBeNull()
-  })
-})
-
-describe('defaultNewDir', () => {
-  it('prefers the req/ directory beside the cohort', () => {
-    expect(defaultNewDir('data.pulse', files)).toBe('req')
-    expect(defaultNewDir('case/c.pulse', files)).toBe('case')
-    expect(defaultNewDir('case/c.pulse', [{ path: 'case/req/a.json', kind: 'request' }])).toBe('case/req')
   })
 })
 

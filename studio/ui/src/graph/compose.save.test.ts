@@ -6,7 +6,7 @@
 // copy of the ab-test case; the showcase files are never written.
 
 import { spawn, spawnSync, type ChildProcess } from 'node:child_process'
-import { cpSync, existsSync, mkdtempSync, readFileSync, rmSync } from 'node:fs'
+import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
@@ -32,20 +32,23 @@ describe.skipIf(!hasGo)('compose lanes through the save API', () => {
     return res.json()
   }
   const predict = async (text: string) => {
-    const res = await fetch(`${base}/api/predict`, { method: 'POST', body: `{"path":${JSON.stringify(rel)},"request":${text}}` })
+    const res = await fetch(`${base}/api/w/ws/predict`, { method: 'POST', body: `{"path":${JSON.stringify(rel)},"request":${text}}` })
     expect(res.status).toBe(200)
     return (await res.json()) as { root: string; valid: boolean; issues: { path: string; severity: string }[] }
   }
 
   beforeAll(async () => {
     dir = mkdtempSync(join(tmpdir(), 'studio-compose-'))
-    const ws = join(dir, 'ws')
+    const ws = join(dir, 'lib', 'workspaces', 'ws')
     cpSync(join(caseDir, 'req'), join(ws, 'req'), { recursive: true })
     if (hasCohort) cpSync(join(caseDir, 'ab_test.pulse'), join(ws, 'ab_test.pulse'))
     const bin = join(dir, 'studio')
     const build = spawnSync('go', ['build', '-o', bin, '.'], { cwd: studioDir, encoding: 'utf8' })
     if (build.status !== 0) throw new Error(`go build failed: ${build.stderr}`)
-    server = spawn(bin, [ws, '--port', '0', '--no-git'], { stdio: ['ignore', 'ignore', 'pipe'] })
+    // A library with one workspace, ws (the copies above).
+    mkdirSync(join(dir, 'lib', 'workspaces', 'ws'), { recursive: true })
+    writeFileSync(join(dir, 'lib', 'library.json'), '{"version": 1}\n')
+    server = spawn(bin, [join(dir, 'lib'), '--port', '0', '--no-git'], { stdio: ['ignore', 'ignore', 'pipe'] })
     base = await new Promise<string>((ok, fail) => {
       let log = ''
       server!.stderr!.on('data', (chunk: Buffer) => {
@@ -63,13 +66,13 @@ describe.skipIf(!hasGo)('compose lanes through the save API', () => {
   })
 
   it('round-trips 11_readout byte-identically', async () => {
-    const body = (await put(`/api/file?path=${encodeURIComponent(rel)}`, emitModelText(parseModel(original, 'compose')))) as { text: string }
+    const body = (await put(`/api/w/ws/file?path=${encodeURIComponent(rel)}`, emitModelText(parseModel(original, 'compose')))) as { text: string }
     expect(body.text).toBe(original)
   })
 
   it('saves an added lane as valid Compose JSON', async () => {
     const r = addLane(parseModel(original, 'compose'))
-    const body = (await put(`/api/file?path=${encodeURIComponent(rel)}`, emitModelText(r.model))) as { kind: string; text: string }
+    const body = (await put(`/api/w/ws/file?path=${encodeURIComponent(rel)}`, emitModelText(r.model))) as { kind: string; text: string }
     expect(body.kind).toBe('compose')
     const doc = JSON.parse(body.text)
     expect(doc.requests).toHaveLength(5)
@@ -94,8 +97,8 @@ describe.skipIf(!hasGo)('compose lanes through the save API', () => {
 
   it('keeps the lane order in the layout sidecar', async () => {
     const lanes = ['requests[3]', 'requests[0]', 'requests[1]', 'requests[2]']
-    await put(`/api/layout?path=${encodeURIComponent(rel)}`, JSON.stringify({ version: 1, nodes: {}, lanes }))
-    const res = await fetch(`${base}/api/layout?path=${encodeURIComponent(rel)}`)
+    await put(`/api/w/ws/layout?path=${encodeURIComponent(rel)}`, JSON.stringify({ version: 1, nodes: {}, lanes }))
+    const res = await fetch(`${base}/api/w/ws/layout?path=${encodeURIComponent(rel)}`)
     const got = (await res.json()) as { layout: { lanes: string[] } }
     expect(got.layout.lanes).toEqual(lanes)
   })

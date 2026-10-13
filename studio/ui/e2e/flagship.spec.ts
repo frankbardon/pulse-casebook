@@ -1,18 +1,16 @@
 // Flagship acceptance: rebuild showcase/ab-test-readout/req/11_readout.compose.json
-// from an empty canvas through the UI only (New request, lanes, palette,
-// inspector, wires), save it, and prove the saved file is the same request
+// from an empty canvas through the UI only (New analysis, lanes, palette,
+// inspector, wires), save it, and prove the saved file is the same analysis
 // as the original: semantically equal JSON (object key order is free, array
 // order is not: it is the engine's output order) and an identical engine
 // result for both.
-import { readFileSync } from 'node:fs'
-import { join } from 'node:path'
 import type { Locator, Page } from '@playwright/test'
-import { drag, expect, REPO, test } from './harness.ts'
+import { drag, expect, test } from './harness.ts'
 
 test.use({ workspace: 'ab-test-readout', viewport: { width: 1800, height: 1600 } })
 
-const ORIGINAL = 'req/11_readout.compose.json'
-const REBUILT = 'req/readout_rebuilt.compose.json'
+const ORIGINAL = 'analyses/11_readout.compose.json'
+const REBUILT = 'analyses/readout_rebuilt.compose.json'
 
 // Inputs the flagship wires on the canvas rather than typing.
 const WIRED = new Set(['split_by', 'rows', 'cols', 'predictors'])
@@ -156,11 +154,12 @@ test('the flagship readout rebuilds from an empty canvas and saves equal to the 
   test.setTimeout(90_000)
   await page.goto('/')
 
-  // 1. A new compose request over the synthesized cohort.
+  // 1. A new composed analysis over the synthesized cohort.
   await page.getByTestId('new-request-open').click()
   await page.getByTestId('new-root').selectOption('compose')
-  await page.getByTestId('new-cohort').selectOption('ab_test.pulse')
-  await expect(page.getByTestId('new-dir')).toHaveValue('req')
+  await expect(page.getByTestId('new-mode-runs')).toContainText('several standalone runs together')
+  await page.getByTestId('new-cohort').selectOption('cohorts/ab_test.pulse')
+  await expect(page.getByTestId('new-dir')).toHaveValue('analyses')
   await page.getByTestId('new-name').fill('readout_rebuilt')
   await page.getByTestId('new-create').click()
   const s = new Studio(page)
@@ -251,13 +250,13 @@ test('the flagship readout rebuilds from an empty canvas and saves equal to the 
   await expect(page.getByTestId('dirty-state')).toHaveText('saved')
 
   // 8. The saved file is the original request.
-  const original = readFileSync(join(REPO, 'showcase/ab-test-readout', ORIGINAL), 'utf8')
+  const original = studio.read(ORIGINAL)
   const saved = studio.read(REBUILT)
   expect(JSON.parse(saved)).toEqual(JSON.parse(original))
 
   // 9. ...and runs to the same result.
   const run = async (path: string, text: string) => {
-    const res = await page.request.post('/api/run', { data: { path, request: JSON.parse(text), client: `flagship-${path}` } })
+    const res = await page.request.post(studio.api('/run'), { data: { path, request: JSON.parse(text), client: `flagship-${path}` } })
     expect(res.ok()).toBe(true)
     const body = (await res.json()) as { ok: boolean; text: string }
     expect(body.ok).toBe(true)

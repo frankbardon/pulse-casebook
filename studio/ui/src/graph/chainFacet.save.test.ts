@@ -5,7 +5,7 @@
 // Runs against a temp workspace; the showcase files are never written.
 
 import { spawn, spawnSync, type ChildProcess } from 'node:child_process'
-import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync } from 'node:fs'
+import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
@@ -46,19 +46,19 @@ describe.skipIf(!hasGo)('chain and facet roots through the save API', () => {
     expect(res.status, await res.clone().text()).toBe(200)
     return res.json()
   }
-  const put = (rel: string, text: string) => call('PUT', `/api/file?path=${encodeURIComponent(rel)}`, text) as Promise<{ kind: string; text: string }>
+  const put = (rel: string, text: string) => call('PUT', `/api/w/ws/file?path=${encodeURIComponent(rel)}`, text) as Promise<{ kind: string; text: string }>
   const predict = (rel: string, text: string) =>
-    call('POST', '/api/predict', `{"path":${JSON.stringify(rel)},"request":${text}}`) as Promise<{
+    call('POST', '/api/w/ws/predict', `{"path":${JSON.stringify(rel)},"request":${text}}`) as Promise<{
       root: string
       valid: boolean
       issues: { path: string; severity: string; message: string }[]
     }>
   const preview = (rel: string, text: string, nodes: string[]) =>
-    call('POST', '/api/preview', `{"path":${JSON.stringify(rel)},"nodes":${JSON.stringify(nodes)},"force":true,"request":${text}}`) as Promise<PreviewResult>
+    call('POST', '/api/w/ws/preview', `{"path":${JSON.stringify(rel)},"nodes":${JSON.stringify(nodes)},"force":true,"request":${text}}`) as Promise<PreviewResult>
 
   beforeAll(async () => {
     dir = mkdtempSync(join(tmpdir(), 'studio-chain-facet-'))
-    const ws = join(dir, 'ws')
+    const ws = join(dir, 'lib', 'workspaces', 'ws')
     cpSync(join(abDir, 'req'), join(ws, 'req'), { recursive: true })
     mkdirSync(join(ws, 'retail/req'), { recursive: true })
     cpSync(join(repoDir, 'showcase/retail-at-scale/req'), join(ws, 'retail/req'), { recursive: true })
@@ -69,7 +69,10 @@ describe.skipIf(!hasGo)('chain and facet roots through the save API', () => {
     const bin = join(dir, 'studio')
     const build = spawnSync('go', ['build', '-o', bin, '.'], { cwd: studioDir, encoding: 'utf8' })
     if (build.status !== 0) throw new Error(`go build failed: ${build.stderr}`)
-    server = spawn(bin, [ws, '--port', '0', '--no-git'], { stdio: ['ignore', 'ignore', 'pipe'] })
+    // A library with one workspace, ws (the copies above).
+    mkdirSync(join(dir, 'lib', 'workspaces', 'ws'), { recursive: true })
+    writeFileSync(join(dir, 'lib', 'library.json'), '{"version": 1}\n')
+    server = spawn(bin, [join(dir, 'lib'), '--port', '0', '--no-git'], { stdio: ['ignore', 'ignore', 'pipe'] })
     base = await new Promise<string>((ok, fail) => {
       let log = ''
       server!.stderr!.on('data', (chunk: Buffer) => {

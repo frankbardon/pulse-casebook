@@ -27,6 +27,19 @@ export async function getJSON<T>(path: string, signal?: AbortSignal): Promise<T>
   return body as T
 }
 
+// Area is where a workspace-scoped call goes: a workspace slug, or
+// GLOBAL_AREA (the library's global area). Every such endpoint is served
+// under /api/w/<area>/ (studio/internal/server/library.go).
+export type Area = string
+
+export const GLOBAL_AREA: Area = '_global'
+
+// areaUrl is the URL of a workspace-scoped endpoint: rest starts with
+// "/" (e.g. "/files", "/file?path=...").
+export function areaUrl(area: Area, rest: string): string {
+  return `/api/w/${encodeURIComponent(area)}${rest}`
+}
+
 export type FileKind =
   | 'request'
   | 'compose'
@@ -71,19 +84,19 @@ export type FileContent = {
   text: string
 }
 
-export function listFiles(signal?: AbortSignal): Promise<FileListing> {
-  return getJSON<FileListing>('/api/files', signal)
+export function listFiles(area: Area, signal?: AbortSignal): Promise<FileListing> {
+  return getJSON<FileListing>(areaUrl(area, '/files'), signal)
 }
 
-export function readFile(path: string, signal?: AbortSignal): Promise<FileContent> {
-  return getJSON<FileContent>(`/api/file?path=${encodeURIComponent(path)}`, signal)
+export function readFile(area: Area, path: string, signal?: AbortSignal): Promise<FileContent> {
+  return getJSON<FileContent>(areaUrl(area, `/file?path=${encodeURIComponent(path)}`), signal)
 }
 
 // saveFile PUTs a JSON document. The server re-formats it (house style, or
 // the existing file's expanded style) and writes it atomically; the result
 // carries the exact bytes now on disk.
-export function saveFile(path: string, text: string, signal?: AbortSignal): Promise<FileContent> {
-  return putJSON<FileContent>(`/api/file?path=${encodeURIComponent(path)}`, text, signal)
+export function saveFile(area: Area, path: string, text: string, signal?: AbortSignal): Promise<FileContent> {
+  return putJSON<FileContent>(areaUrl(area, `/file?path=${encodeURIComponent(path)}`), text, signal)
 }
 
 // NewRoot is the request root a new file is created with.
@@ -99,12 +112,13 @@ export type CreatedFile = FileContent & {
 // createFile creates a new request file of the given root bound to a
 // workspace cohort. The server refuses to overwrite (409 exists).
 export async function createFile(
+  area: Area,
   path: string,
   root: NewRoot,
   cohort: string,
   signal?: AbortSignal,
 ): Promise<CreatedFile> {
-  const res = await fetch('/api/file/new', {
+  const res = await fetch(areaUrl(area, '/file/new'), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ path, root, cohort }),
@@ -123,13 +137,13 @@ export async function createFile(
 // (invalid says why); see graph/layout.ts for the schema.
 export type LayoutFile = { path: string; layout: unknown; invalid?: string }
 
-export function readLayout(path: string, signal?: AbortSignal): Promise<LayoutFile> {
-  return getJSON<LayoutFile>(`/api/layout?path=${encodeURIComponent(path)}`, signal)
+export function readLayout(area: Area, path: string, signal?: AbortSignal): Promise<LayoutFile> {
+  return getJSON<LayoutFile>(areaUrl(area, `/layout?path=${encodeURIComponent(path)}`), signal)
 }
 
 // saveLayout PUTs the sidecar object for the request at path.
-export function saveLayout(path: string, text: string, signal?: AbortSignal): Promise<LayoutFile> {
-  return putJSON<LayoutFile>(`/api/layout?path=${encodeURIComponent(path)}`, text, signal)
+export function saveLayout(area: Area, path: string, text: string, signal?: AbortSignal): Promise<LayoutFile> {
+  return putJSON<LayoutFile>(areaUrl(area, `/layout?path=${encodeURIComponent(path)}`), text, signal)
 }
 
 async function putJSON<T>(url: string, text: string, signal?: AbortSignal): Promise<T> {
@@ -238,8 +252,8 @@ export type CohortInspect = {
   fields: CohortField[]
 }
 
-export function inspectCohort(path: string, signal?: AbortSignal): Promise<CohortInspect> {
-  return getJSON<CohortInspect>(`/api/cohort/inspect?path=${encodeURIComponent(path)}`, signal)
+export function inspectCohort(area: Area, path: string, signal?: AbortSignal): Promise<CohortInspect> {
+  return getJSON<CohortInspect>(areaUrl(area, `/cohort/inspect?path=${encodeURIComponent(path)}`), signal)
 }
 
 // Preview is POST /api/preview (studio/internal/server/preview.go). A
@@ -327,9 +341,9 @@ function newClientId(): string {
   return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`
 }
 
-export async function postPreview(q: PreviewQuery, signal?: AbortSignal): Promise<PreviewResult> {
+export async function postPreview(area: Area, q: PreviewQuery, signal?: AbortSignal): Promise<PreviewResult> {
   const body = `{"path":${JSON.stringify(q.path)},"nodes":${JSON.stringify(q.nodes)},"force":${q.force ? 'true' : 'false'},"client":${JSON.stringify(PREVIEW_CLIENT)},"request":${q.requestText}}`
-  const res = await fetch('/api/preview', {
+  const res = await fetch(areaUrl(area, '/preview'), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body,
@@ -365,8 +379,8 @@ export type ExplainResult = { root: string; summary: string; valid?: boolean; st
 
 // The in-memory document (emitModelText) is spliced in verbatim, so the
 // server validates exactly what the editor holds, never the saved file.
-async function postValidate<T>(endpoint: string, path: string, requestText: string, signal?: AbortSignal): Promise<T> {
-  const res = await fetch(endpoint, {
+async function postValidate<T>(area: Area, endpoint: string, path: string, requestText: string, signal?: AbortSignal): Promise<T> {
+  const res = await fetch(areaUrl(area, endpoint), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: `{"path":${JSON.stringify(path)},"request":${requestText}}`,
@@ -380,12 +394,12 @@ async function postValidate<T>(endpoint: string, path: string, requestText: stri
   return out as T
 }
 
-export function postPredict(path: string, requestText: string, signal?: AbortSignal): Promise<PredictVerdict> {
-  return postValidate<PredictVerdict>('/api/predict', path, requestText, signal)
+export function postPredict(area: Area, path: string, requestText: string, signal?: AbortSignal): Promise<PredictVerdict> {
+  return postValidate<PredictVerdict>(area, '/predict', path, requestText, signal)
 }
 
-export function postExplain(path: string, requestText: string, signal?: AbortSignal): Promise<ExplainResult> {
-  return postValidate<ExplainResult>('/api/explain', path, requestText, signal)
+export function postExplain(area: Area, path: string, requestText: string, signal?: AbortSignal): Promise<ExplainResult> {
+  return postValidate<ExplainResult>(area, '/explain', path, requestText, signal)
 }
 
 // RunResult is POST /api/run: one full run of the in-memory document.
@@ -433,9 +447,9 @@ async function postJSON<T>(url: string, body: string, signal?: AbortSignal): Pro
 // verbatim) with its root's engine call. Aborting signal cancels the run
 // on the server; a newer run of the same file from this page supersedes
 // an in-flight one.
-export function postRun(path: string, requestText: string, signal?: AbortSignal): Promise<RunResult> {
+export function postRun(area: Area, path: string, requestText: string, signal?: AbortSignal): Promise<RunResult> {
   return postJSON<RunResult>(
-    '/api/run',
+    areaUrl(area, '/run'),
     `{"path":${JSON.stringify(path)},"client":${JSON.stringify(PREVIEW_CLIENT)},"request":${requestText}}`,
     signal,
   )
@@ -446,8 +460,8 @@ export type SavedRun = { path: string; bytes: number; overwritten: boolean }
 // saveRun writes a run's envelope into its request's out/ directory as
 // name (default: the derived name). Without overwrite an existing file
 // is refused with ApiCallError code "exists".
-export function saveRun(runId: string, name: string, overwrite: boolean, signal?: AbortSignal): Promise<SavedRun> {
-  return postJSON<SavedRun>('/api/run/save', JSON.stringify({ run_id: runId, name, overwrite }), signal)
+export function saveRun(area: Area, runId: string, name: string, overwrite: boolean, signal?: AbortSignal): Promise<SavedRun> {
+  return postJSON<SavedRun>(areaUrl(area, '/run/save'), JSON.stringify({ run_id: runId, name, overwrite }), signal)
 }
 
 // GitStatus is /api/status `git`: whether the workspace is kept in git
@@ -461,30 +475,30 @@ export type GitStatus = {
   reason?: string
 }
 
-export function getStatus(signal?: AbortSignal): Promise<{ git: GitStatus }> {
-  return getJSON<{ git: GitStatus }>('/api/status', signal)
+export function getStatus(area: Area, signal?: AbortSignal): Promise<{ git: GitStatus; global_git?: GitStatus }> {
+  return getJSON<{ git: GitStatus; global_git?: GitStatus }>(areaUrl(area, '/status'), signal)
 }
 
 // HistoryCommit is one commit touching a file (newest first); time is the
 // author date in RFC 3339.
 export type HistoryCommit = { rev: string; short: string; time: string; author: string; email: string; message: string }
 
-export function getHistory(path: string, signal?: AbortSignal): Promise<{ path: string; commits: HistoryCommit[] }> {
-  return getJSON(`/api/history?path=${encodeURIComponent(path)}`, signal)
+export function getHistory(area: Area, path: string, signal?: AbortSignal): Promise<{ path: string; commits: HistoryCommit[] }> {
+  return getJSON(areaUrl(area, `/history?path=${encodeURIComponent(path)}`), signal)
 }
 
 // getHistoryFile is the file's text at rev (404 not_found when it did not
 // exist then).
-export function getHistoryFile(path: string, rev: string, signal?: AbortSignal): Promise<{ path: string; rev: string; text: string }> {
-  return getJSON(`/api/history/file?path=${encodeURIComponent(path)}&rev=${encodeURIComponent(rev)}`, signal)
+export function getHistoryFile(area: Area, path: string, rev: string, signal?: AbortSignal): Promise<{ path: string; rev: string; text: string }> {
+  return getJSON(areaUrl(area, `/history/file?path=${encodeURIComponent(path)}&rev=${encodeURIComponent(rev)}`), signal)
 }
 
 // Restored is POST /api/history/restore: the file as now on disk (GET
 // /api/file shape) and the restore commit (absent when nothing changed).
 export type Restored = FileContent & { rev: string; commit?: HistoryCommit }
 
-export function restoreHistory(path: string, rev: string, signal?: AbortSignal): Promise<Restored> {
-  return postJSON<Restored>('/api/history/restore', JSON.stringify({ path, rev }), signal)
+export function restoreHistory(area: Area, path: string, rev: string, signal?: AbortSignal): Promise<Restored> {
+  return postJSON<Restored>(areaUrl(area, '/history/restore'), JSON.stringify({ path, rev }), signal)
 }
 
 // ---------------------------------------------------------------- import (G1)
@@ -533,13 +547,14 @@ export type UploadedSource = {
 // with upload progress (fetch has none, hence XHR). Errors are
 // ApiCallError with the server's code.
 export function uploadSource(
+  area: Area,
   file: Blob & { name?: string },
   onProgress?: (loaded: number, total: number) => void,
   signal?: AbortSignal,
 ): Promise<UploadedSource> {
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest()
-    xhr.open('POST', '/api/sources')
+    xhr.open('POST', areaUrl(area, '/sources'))
     xhr.responseType = 'json'
     if (onProgress) xhr.upload.onprogress = (e) => onProgress(e.loaded, e.lengthComputable ? e.total : file.size)
     xhr.onload = () => {
@@ -599,6 +614,9 @@ export type SchemaMatch = {
   merged: MergedField[]
   // The saved schema's renames, applied with it. PULSE-GAP(column-rename)
   rename?: Record<string, string>
+  // In a library: global (shared; path is "_global/schemas/...", which
+  // predict/import accept as the schema) or local (this area's).
+  scope?: 'global' | 'local'
 }
 
 export type GroupCandidate = {
@@ -642,8 +660,8 @@ export type PredictBody = {
   preview_rows?: number
 }
 
-export function predictImport(body: PredictBody, signal?: AbortSignal): Promise<ImportPredict> {
-  return postJSON<ImportPredict>('/api/import/predict', JSON.stringify(body), signal)
+export function predictImport(area: Area, body: PredictBody, signal?: AbortSignal): Promise<ImportPredict> {
+  return postJSON<ImportPredict>(areaUrl(area, '/import/predict'), JSON.stringify(body), signal)
 }
 
 export type SavedSchemaInfo = {
@@ -654,10 +672,11 @@ export type SavedSchemaInfo = {
   fingerprint: { name: string; type: string }[]
   invalid?: string
   rename?: Record<string, string> // PULSE-GAP(column-rename)
+  scope?: 'global' | 'local'
 }
 
-export function listSchemas(signal?: AbortSignal): Promise<{ schemas: SavedSchemaInfo[]; field_types: string[] }> {
-  return getJSON('/api/schemas', signal)
+export function listSchemas(area: Area, signal?: AbortSignal): Promise<{ schemas: SavedSchemaInfo[]; field_types: string[] }> {
+  return getJSON(areaUrl(area, '/schemas'), signal)
 }
 
 export type SavedSchema = {
@@ -675,13 +694,14 @@ export type SavedSchema = {
 // unless overwrite. rename (source column → field name) saves the
 // object form {fields, rename}. PULSE-GAP(column-rename)
 export function saveSchema(
+  area: Area,
   name: string,
   schema: SchemaField[],
   overwrite: boolean,
   signal?: AbortSignal,
   rename?: Record<string, string>,
 ): Promise<SavedSchema> {
-  return postJSON<SavedSchema>('/api/schemas', JSON.stringify({ name, schema, overwrite, ...(rename && { rename }) }), signal)
+  return postJSON<SavedSchema>(areaUrl(area, '/schemas'), JSON.stringify({ name, schema, overwrite, ...(rename && { rename }) }), signal)
 }
 
 export type ImportReport = {
@@ -733,15 +753,15 @@ export type ImportBody = {
   overwrite?: boolean
 }
 
-export function runImport(body: ImportBody, signal?: AbortSignal): Promise<ImportResult> {
-  return postJSON<ImportResult>('/api/import', JSON.stringify(body), signal)
+export function runImport(area: Area, body: ImportBody, signal?: AbortSignal): Promise<ImportResult> {
+  return postJSON<ImportResult>(areaUrl(area, '/import'), JSON.stringify(body), signal)
 }
 
 // rebuildImport re-runs an import spec. A changed source is refused
 // (ApiCallError source_changed) unless force; a missing one is
 // source_missing.
-export function rebuildImport(spec: string, force: boolean, signal?: AbortSignal): Promise<ImportResult> {
-  return postJSON<ImportResult>('/api/import/rebuild', JSON.stringify({ spec, force }), signal)
+export function rebuildImport(area: Area, spec: string, force: boolean, signal?: AbortSignal): Promise<ImportResult> {
+  return postJSON<ImportResult>(areaUrl(area, '/import/rebuild'), JSON.stringify({ spec, force }), signal)
 }
 
 // Cohort export (X1, studio/internal/server/exports.go). Format
@@ -774,8 +794,8 @@ export type ExportFormat = {
 
 export type ExportCommon = { fields: string; time_zone: string; labels: string; label_modes: string[] }
 
-export function getExportFormats(signal?: AbortSignal): Promise<{ formats: ExportFormat[]; common: ExportCommon }> {
-  return getJSON('/api/export/formats', signal)
+export function getExportFormats(area: Area, signal?: AbortSignal): Promise<{ formats: ExportFormat[]; common: ExportCommon }> {
+  return getJSON(areaUrl(area, '/export/formats'), signal)
 }
 
 export type ExportOptionValue = boolean | string | number
@@ -809,8 +829,8 @@ export type ExportPredict = {
   name: string
 }
 
-export function predictExport(body: ExportBody, signal?: AbortSignal): Promise<ExportPredict> {
-  return postJSON<ExportPredict>('/api/export/predict', JSON.stringify(body), signal)
+export function predictExport(area: Area, body: ExportBody, signal?: AbortSignal): Promise<ExportPredict> {
+  return postJSON<ExportPredict>(areaUrl(area, '/export/predict'), JSON.stringify(body), signal)
 }
 
 export type ExportReport = {
@@ -836,8 +856,8 @@ export type ExportResult = {
 // (exports are never stored: each one streams back as a download) with
 // its report (X-Studio-Export-Report header). A Pulse refusal is an
 // ApiCallError carrying its Pulse code.
-export async function runExport(body: ExportBody, signal?: AbortSignal): Promise<{ result: ExportResult; file: Blob }> {
-  const res = await fetch('/api/export', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), signal })
+export async function runExport(area: Area, body: ExportBody, signal?: AbortSignal): Promise<{ result: ExportResult; file: Blob }> {
+  const res = await fetch(areaUrl(area, '/export'), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), signal })
   if (!res.ok) {
     const out: unknown = await res.json().catch(() => null)
     if (isApiError(out)) throw new ApiCallError(res.status, out.error.code, out.error.message, out.error.details)
@@ -858,4 +878,135 @@ export function saveDownload(url: string, name: string): void {
   document.body.appendChild(a)
   a.click()
   a.remove()
+}
+
+// ---------------------------------------------------------------- library (W1, W3)
+
+// Workspace is one workspace of the library (GET /api/workspaces).
+export type Workspace = {
+  slug: string
+  name: string
+  description?: string
+  created?: string
+  // workspace.json could not be read (the workspace is named by slug).
+  invalid?: string
+}
+
+export type LibraryInfo = {
+  name: string
+  // The global repository's status.
+  git?: GitStatus
+  workspaces: Workspace[]
+  // The first workspace by slug.
+  default?: string
+}
+
+export function getLibrary(signal?: AbortSignal): Promise<LibraryInfo> {
+  return getJSON<LibraryInfo>('/api/library', signal)
+}
+
+export function createWorkspace(name: string, description?: string): Promise<{ workspace: Workspace; git: GitStatus }> {
+  return postJSON('/api/workspaces', JSON.stringify({ name, ...(description !== undefined && { description }) }))
+}
+
+// renameWorkspace changes a workspace's display name (the slug and its
+// directory stay).
+export async function renameWorkspace(slug: string, name: string): Promise<{ workspace: Workspace; commit?: HistoryCommit }> {
+  const res = await fetch(`/api/workspaces/${encodeURIComponent(slug)}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name }),
+  })
+  const out: unknown = await res.json()
+  if (!res.ok || isApiError(out)) {
+    if (isApiError(out)) throw new ApiCallError(res.status, out.error.code, out.error.message, out.error.details)
+    throw new ApiCallError(res.status, 'http_error', `HTTP ${res.status}`)
+  }
+  return out as { workspace: Workspace; commit?: HistoryCommit }
+}
+
+// CatalogEntry is one cohort, schema, import spec or source of GET
+// /api/cohorts. path is relative to its area (global: GLOBAL_AREA;
+// local: workspace); ref_path is how a workspace refers to it.
+export type CatalogEntry = {
+  path: string
+  name: string
+  scope: 'global' | 'local'
+  workspace?: string
+  ref_path: string
+  ref?: { filename: string; data_dir: string }
+  spec?: string
+  target?: string
+  state?: ImportState
+  reason?: string
+  format?: string
+  size?: number
+}
+
+export type CohortsCatalog = {
+  cohorts: CatalogEntry[]
+  schemas: CatalogEntry[]
+  imports: CatalogEntry[]
+  sources: CatalogEntry[]
+  truncated?: boolean
+}
+
+export function getCohorts(signal?: AbortSignal): Promise<CohortsCatalog> {
+  return getJSON<CohortsCatalog>('/api/cohorts', signal)
+}
+
+// PromoteBody is POST /api/cohorts/promote: make a workspace's local
+// cohort (with its import spec, source and local schema) or schema
+// global. There is no way back.
+export type PromoteBody = {
+  workspace: string
+  kind: 'cohort' | 'schema'
+  name: string
+  new_name?: string
+  schema_name?: string
+  dry_run?: boolean
+  plan_id?: string
+}
+
+export type PromoteItem = {
+  kind: string
+  name: string
+  global_name: string
+  path: string
+  global_path: string
+  ref_path: string
+  action: string
+}
+
+export type PromoteChange = { pointer: string; field: string; old: string; new: string; resolved?: string }
+
+export type PromotePlan = {
+  plan_id: string
+  kind: 'cohort' | 'schema'
+  workspace: string
+  item: PromoteItem
+  schema?: PromoteItem
+  moves: { from: string; to: string; kind: string; action: 'move' | 'merge' }[]
+  rewrites: { path: string; from?: string; changes: PromoteChange[] }[]
+  warnings: { code: string; path: string; ref?: string; message: string }[]
+  commits: { workspace: string; global: string }
+  counts: { moves: number; rewrites: number; analyses: number; refs: number; warnings: number }
+}
+
+export type PromoteResult = {
+  plan_id: string
+  kind: string
+  workspace: string
+  item: PromoteItem
+  schema?: PromoteItem
+  moved: number
+  rewritten: number
+  commits: { workspace?: HistoryCommit; global?: HistoryCommit }
+  warnings: PromotePlan['warnings']
+}
+
+// promote plans (dry_run) or performs a promotion. Errors are
+// ApiCallError: name_clash 409 carries details {field, suggested}.
+export function promote(body: PromoteBody): Promise<PromotePlan | PromoteResult> {
+  return postJSON('/api/cohorts/promote', JSON.stringify(body))
 }

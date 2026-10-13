@@ -23,6 +23,7 @@ import (
 	pulseerrors "github.com/frankbardon/pulse/errors"
 	"github.com/frankbardon/pulse/types"
 
+	"github.com/frankbardon/pulse-casebook/studio/internal/library"
 	"github.com/frankbardon/pulse-casebook/studio/internal/validate"
 	"github.com/frankbardon/pulse-casebook/studio/internal/workspace"
 )
@@ -425,11 +426,18 @@ func envelopeBytes(env *descriptor.Envelope) ([]byte, error) {
 // requests live in <case>/req/ and envelopes in <case>/out/, named after
 // the request with its .json (and .compose / .facet / .chain) suffix
 // dropped — req/11_readout.compose.json → out/11_readout.json. A request
-// outside a req/ directory saves to an out/ beside it.
+// outside a req/ directory saves to an out/ beside it. A library
+// workspace's analyses save to its root out/, keeping their folder:
+// analyses/q1/x.json → out/q1/x.json.
 func outPathFor(rel string) (dir, name string) {
 	reqDir := path.Dir(rel)
 	base := path.Base(rel)
 	switch {
+	case strings.HasPrefix(rel, library.AnalysesDir+"/"):
+		dir = "out"
+		if sub := path.Dir(strings.TrimPrefix(rel, library.AnalysesDir+"/")); sub != "." {
+			dir += "/" + sub
+		}
 	case reqDir == ".":
 		dir = "out"
 	case path.Base(reqDir) == "req":

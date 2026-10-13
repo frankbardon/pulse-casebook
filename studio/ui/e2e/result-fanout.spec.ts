@@ -5,12 +5,12 @@
 // alone.
 import { writeFileSync } from 'node:fs'
 import { join } from 'node:path'
-import { drag, expect, test } from './harness.ts'
+import { analysisAt, analysisRow, drag, expect, test } from './harness.ts'
 
-const FILE = 'req/r1_grouped.json'
+const FILE = 'analyses/r1_grouped.json'
 // House style, as the studio writes it: saving unchanged keeps these bytes.
 const TEXT = `{
-  "cohort": {"filename": "ab_test.pulse", "data_dir": "."},
+  "cohort": {"filename": "ab_test.pulse", "data_dir": "cohorts"},
   "attributes": [{"type": "ATTR_FORMULA", "field": "device", "label": "mobile", "expression": "device == \\"mobile\\" ? 1 : 0"}],
   "groups": [{"type": "GROUP_CATEGORY", "field": "region"}],
   "aggregations": [
@@ -28,9 +28,9 @@ test.describe('grouped request', () => {
   test.use({ workspace: 'ab-test-readout', viewport: { width: 1800, height: 1000 } })
 
   test('shows its result table, fan-out and unused attribute column; edits follow', async ({ page, studio }) => {
-    writeFileSync(join(studio.dir, FILE), TEXT)
+    writeFileSync(join(studio.ws, FILE), TEXT)
     await page.goto('/')
-    await page.getByRole('button', { name: FILE }).click()
+    await analysisAt(page, FILE).click()
     const graph = page.getByTestId('request-graph')
     const result = graph.getByTestId('result-node')
     await expect(result).toHaveCount(1)
@@ -90,7 +90,7 @@ test.describe('grouped request', () => {
     await page.keyboard.press('ControlOrMeta+s')
     await expect(page.getByTestId('dirty-state')).toHaveText('saved')
     expect(studio.read(FILE)).toBe(TEXT)
-    expect(Object.keys((JSON.parse(studio.read('req/r1_grouped.layout.json')) as { nodes: object }).nodes)).toContain(RESULT)
+    expect(Object.keys((JSON.parse(studio.read('analyses/r1_grouped.layout.json')) as { nodes: object }).nodes)).toContain(RESULT)
 
     // The Result node and its wires cannot be deleted.
     await node.click()
@@ -124,9 +124,9 @@ test.describe('grouped request', () => {
   })
 
   test('a grouped test previews every group; a run agrees', async ({ page, studio }) => {
-    writeFileSync(join(studio.dir, FILE), TEXT)
+    writeFileSync(join(studio.ws, FILE), TEXT)
     await page.goto('/')
-    await page.getByRole('button', { name: FILE }).click()
+    await analysisAt(page, FILE).click()
     const graph = page.getByTestId('request-graph')
     const testRow = graph.locator('[data-testid="response-row"][data-row="tests[0]"]')
     await expect(testRow).toHaveCount(1)
@@ -144,9 +144,9 @@ test.describe('grouped request', () => {
   })
 
   test('return strikes what it drops; multiplicity tags the tests', async ({ page, studio }) => {
-    const file = 'req/r2_shaped.json'
+    const file = 'analyses/r2_shaped.json'
     const text = `{
-  "cohort": {"filename": "ab_test.pulse", "data_dir": "."},
+  "cohort": {"filename": "ab_test.pulse", "data_dir": "cohorts"},
   "multiplicity": {"method": "holm", "family": "request"},
   "aggregations": [{"type": "AGG_COUNT", "field": "user_id", "label": "users"}],
   "tests": [
@@ -157,9 +157,9 @@ test.describe('grouped request', () => {
   "return": {"exclude": ["tests", "data[*].users"]}
 }
 `
-    writeFileSync(join(studio.dir, file), text)
+    writeFileSync(join(studio.ws, file), text)
     await page.goto('/')
-    await page.getByRole('button', { name: file }).click()
+    await analysisAt(page, file).click()
     const graph = page.getByTestId('request-graph')
     const result = graph.getByTestId('result-node')
     await expect(result.getByTestId('response-part')).toHaveText([/^Table/, /^Tests/, /^Regressions/])
@@ -188,26 +188,26 @@ test.describe('table follows the engine', () => {
   test.use({ workspace: 'ab-test-readout' })
 
   test('analysis-only has no table, windows-only is row-level', async ({ page, studio }) => {
-    const testsOnly = 'req/r3_tests_only.json'
+    const testsOnly = 'analyses/r3_tests_only.json'
     const testsText = `{
-  "cohort": {"filename": "ab_test.pulse", "data_dir": "."},
+  "cohort": {"filename": "ab_test.pulse", "data_dir": "cohorts"},
   "tests": [{"type": "TEST_WELCH", "field": "revenue", "split_by": "arm", "label": "rev"}]
 }
 `
-    const windowsOnly = 'req/r3_windows_only.json'
+    const windowsOnly = 'analyses/r3_windows_only.json'
     const windowsText = `{
-  "cohort": {"filename": "ab_test.pulse", "data_dir": "."},
+  "cohort": {"filename": "ab_test.pulse", "data_dir": "cohorts"},
   "windows": [{"type": "WIN_RUNNING_AVG", "field": "revenue", "label": "ra"}]
 }
 `
-    writeFileSync(join(studio.dir, testsOnly), testsText)
-    writeFileSync(join(studio.dir, windowsOnly), windowsText)
+    writeFileSync(join(studio.ws, testsOnly), testsText)
+    writeFileSync(join(studio.ws, windowsOnly), windowsText)
     await page.goto('/')
-    await page.getByRole('button', { name: testsOnly }).click()
+    await analysisAt(page, testsOnly).click()
     let result = page.getByTestId('request-graph').getByTestId('result-node')
     await expect(result.getByTestId('response-part')).toHaveText([/^Tests/])
     await expect(result.getByTestId('result-preview')).toHaveCount(0)
-    await page.getByRole('button', { name: windowsOnly }).click()
+    await analysisAt(page, windowsOnly).click()
     result = page.getByTestId('request-graph').getByTestId('result-node')
     await expect(result.getByTestId('response-part')).toHaveText([/^Table/])
     await expect(result.getByTestId('result-row-level')).toHaveCount(1)
@@ -219,7 +219,7 @@ test.describe('table follows the engine', () => {
 
 test('every compose slot lane gets its own Result node', async ({ page }) => {
   await page.goto('/')
-  await page.getByRole('button', { name: 'req/11_readout.compose.json' }).click()
+  await analysisRow(page, '11_readout.compose.json').click()
   const graph = page.getByTestId('request-graph')
   await expect(graph.getByTestId('lane-title')).toHaveText(['guardrails', 'scorecard', 'revenue_sensitivity', 'regression_adjustment'])
   const results = graph.getByTestId('result-node')
@@ -232,10 +232,10 @@ test('every compose slot lane gets its own Result node', async ({ page }) => {
 })
 
 test('the compose root lane gets a Response node; its multiplicity reaches every slot', async ({ page, studio }) => {
-  const file = 'req/09_segments.compose.json'
+  const file = 'analyses/09_segments.compose.json'
   const before = studio.read(file)
   await page.goto('/')
-  await page.getByRole('button', { name: file }).click()
+  await analysisAt(page, file).click()
   const graph = page.getByTestId('request-graph')
   const root = graph.locator(`[data-path='${RESULT}']`)
   await expect(root).toHaveCount(1)
@@ -262,7 +262,7 @@ test.describe('chain', () => {
 
   test('every stage lane gets its own Result node', async ({ page }) => {
     await page.goto('/')
-    await page.getByRole('button', { name: 'req/06_spend_distribution_chain.json' }).click()
+    await analysisRow(page, '06_spend_distribution_chain.json').click()
     const graph = page.getByTestId('request-graph')
     await expect(graph.getByTestId('lane-title')).toHaveText(['per_customer', 'by_spend_band'])
     await expect(graph.getByTestId('result-node')).toHaveCount(2)

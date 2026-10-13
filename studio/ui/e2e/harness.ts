@@ -1,5 +1,6 @@
 // harness runs every e2e test against bin/studio serving a temp copy of a
-// workspace template (built by global-setup.ts), on a free port:
+// library template (built by global-setup.ts: a library with one
+// workspace named after the template), on a free port:
 //
 //   - by default, one read-only ab-test-readout copy and server per
 //     worker (`test` from this module);
@@ -30,23 +31,30 @@ export const STUDIO_BIN = { path: bin, exists: () => existsSync(bin) }
 export type Studio = {
   // Base URL, e.g. http://127.0.0.1:53211.
   url: string
-  // The served directory (a temp copy of the template).
+  // The served library directory (a temp copy of the template).
   dir: string
-  // Reads a workspace file as text.
+  // The template's workspace: its slug and directory.
+  slug: string
+  ws: string
+  // Reads a file of the workspace (workspace-relative) as text.
   read: (rel: string) => string
   exists: (rel: string) => boolean
-  // Runs git in the served directory (same isolated config as the
+  // Runs git in the workspace's repository (same isolated config as the
   // studio) and returns its trimmed stdout.
   git: (...args: string[]) => string
+  // Runs git in the library's global repository.
+  globalGit: (...args: string[]) => string
+  // Workspace-scoped API path: api('/files') = /api/w/<slug>/files.
+  api: (rest: string) => string
 }
 
 type Running = Studio & { stop: () => Promise<void> }
 
-// copyTemplate copies a workspace template into a fresh temp dir named
-// after it (the sidebar shows the directory's base name).
+// copyTemplate copies a library template into a fresh temp dir named
+// after it (the header shows the directory's base name).
 function copyTemplate(name: string): { dir: string; cleanup: () => void } {
   const src = join(TEMPLATES, name)
-  if (!existsSync(src)) throw new Error(`workspace template ${name} is missing (global setup builds ${TEMPLATES})`)
+  if (!existsSync(src)) throw new Error(`library template ${name} is missing (global setup builds ${TEMPLATES})`)
   const parent = mkdtempSync(join(tmpdir(), 'studio-e2e-'))
   const dir = join(parent, name)
   cpSync(src, dir, { recursive: true })
@@ -66,7 +74,7 @@ function gitEnv(dir: string): NodeJS.ProcessEnv {
 // startStudio launches bin/studio on dir with --port 0 (and --no-git
 // unless git) and resolves once it logs its address and /api/health
 // answers.
-async function startStudio(dir: string, git: boolean): Promise<Running> {
+async function startStudio(dir: string, slug: string, git: boolean): Promise<Running> {
   const args = [dir, '--port', '0', ...(git ? [] : ['--no-git'])]
   const env = gitEnv(dir)
   const proc: ChildProcess = spawn(bin, args, { stdio: ['ignore', 'ignore', 'pipe'], env })
@@ -94,6 +102,9 @@ async function startStudio(dir: string, git: boolean): Promise<Running> {
     if (i > 100) throw new Error(`studio at ${url} never became healthy`)
     await new Promise((r) => setTimeout(r, 100))
   }
+  // Open the workspace (its server and repository start lazily).
+  const warm = await fetch(`${url}/api/w/${slug}/status`)
+  if (!warm.ok) throw new Error(`workspace ${slug} did not open: ${warm.status} ${await warm.text()}`)
   const stop = () =>
     new Promise<void>((done) => {
       if (proc.exitCode !== null) return done()
@@ -101,12 +112,17 @@ async function startStudio(dir: string, git: boolean): Promise<Running> {
       proc.kill('SIGTERM')
       setTimeout(() => proc.kill('SIGKILL'), 5_000).unref()
     })
+  const ws = join(dir, 'workspaces', slug)
   return {
     url,
     dir,
-    read: (rel) => readFileSync(join(dir, rel), 'utf8'),
-    exists: (rel) => existsSync(join(dir, rel)),
-    git: (...a) => execFileSync('git', a, { cwd: dir, env, encoding: 'utf8' }).trim(),
+    slug,
+    ws,
+    read: (rel) => readFileSync(join(ws, rel), 'utf8'),
+    exists: (rel) => existsSync(join(ws, rel)),
+    git: (...a) => execFileSync('git', a, { cwd: ws, env, encoding: 'utf8' }).trim(),
+    globalGit: (...a) => execFileSync('git', a, { cwd: dir, env, encoding: 'utf8' }).trim(),
+    api: (rest) => `/api/w/${slug}${rest}`,
     stop,
   }
 }
@@ -115,7 +131,7 @@ async function serve(name: string, git: boolean, provide: (s: Studio) => Promise
   const ws = copyTemplate(name)
   let s: Running | undefined
   try {
-    s = await startStudio(ws.dir, git)
+    s = await startStudio(ws.dir, name, git)
     await provide(s)
   } finally {
     await s?.stop()
@@ -151,4 +167,28 @@ export async function drag(page: Page, from: Locator, to: Locator): Promise<() =
   await page.mouse.down()
   await page.mouse.move(b.x + b.width / 2, b.y + b.height / 2, { steps: 12 })
   return async () => page.mouse.up()
+}
+
+// analysisRow is an analysis in the Analyses list, by its path under
+// analyses/ (e.g. '04_metric_battery.json').
+export function analysisRow(page: Page, rel: string): Locator {
+  return page.locator(`[data-testid="analysis-row"][data-path="analyses/${rel}"]`)
+}
+
+// catalogRow is an entry of the Cohorts list: kind cohort | schema |
+// import | source, its area-relative path, and optionally its scope.
+export function catalogRow(page: Page, kind: string, path: string, scope?: 'global' | 'local'): Locator {
+  return page.locator(`[data-testid="catalog-row"][data-kind="${kind}"][data-path="${path}"]${scope ? `[data-scope="${scope}"]` : ''}`)
+}
+
+// openCohorts switches to the Cohorts tab.
+export async function openCohorts(page: Page): Promise<void> {
+  await page.getByTestId('nav-cohorts').click()
+  await expect(page.getByTestId('cohorts-sidebar')).toBeVisible()
+}
+
+// analysisAt is an analysis in the Analyses list by its workspace path
+// (e.g. 'analyses/04_metric_battery.json').
+export function analysisAt(page: Page, path: string): Locator {
+  return page.locator(`[data-testid="analysis-row"][data-path="${path}"]`)
 }

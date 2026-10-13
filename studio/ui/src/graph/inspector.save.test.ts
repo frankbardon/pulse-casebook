@@ -5,7 +5,7 @@
 // the showcase files are never written.
 
 import { spawn, spawnSync, type ChildProcess } from 'node:child_process'
-import { cpSync, mkdtempSync, readFileSync, rmSync } from 'node:fs'
+import { cpSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
@@ -73,11 +73,13 @@ describe.skipIf(!hasGo)('inspector edit + save', () => {
 
   beforeAll(async () => {
     dir = mkdtempSync(join(tmpdir(), 'studio-inspector-'))
-    for (const c of cases) cpSync(join(repoDir, c.file), join(dir, 'ws', c.file))
+    for (const c of cases) cpSync(join(repoDir, c.file), join(dir, 'lib', 'workspaces', 'ws', c.file))
     const bin = join(dir, 'studio')
     const build = spawnSync('go', ['build', '-o', bin, '.'], { cwd: studioDir, encoding: 'utf8' })
     if (build.status !== 0) throw new Error(`go build failed: ${build.stderr}`)
-    server = spawn(bin, [join(dir, 'ws'), '--port', '0', '--no-git'], { stdio: ['ignore', 'ignore', 'pipe'] })
+    // A library with one workspace, ws (the copies above).
+    writeFileSync(join(dir, 'lib', 'library.json'), '{"version": 1}\n')
+    server = spawn(bin, [join(dir, 'lib'), '--port', '0', '--no-git'], { stdio: ['ignore', 'ignore', 'pipe'] })
     base = await new Promise<string>((ok, fail) => {
       let log = ''
       server!.stderr!.on('data', (chunk: Buffer) => {
@@ -95,7 +97,7 @@ describe.skipIf(!hasGo)('inspector edit + save', () => {
   })
 
   it.each(cases)('$node.$param in $file: one-line diff', async (c) => {
-    const path = join(dir, 'ws', c.file)
+    const path = join(dir, 'lib', 'workspaces', 'ws', c.file)
     const original = readFileSync(path, 'utf8')
     const model = parseModel(original)
     const node = model.nodes.get(c.node)!
@@ -105,7 +107,7 @@ describe.skipIf(!hasGo)('inspector edit + save', () => {
       .find((f) => f.key === c.param)!
     const r = applyField(field, node.value, c.input)
     expect(r.error).toBeUndefined()
-    const res = await fetch(`${base}/api/file?path=${encodeURIComponent(c.file)}`, {
+    const res = await fetch(`${base}/api/w/ws/file?path=${encodeURIComponent(c.file)}`, {
       method: 'PUT',
       body: emitModelText(updateNode(model, c.node, r.value)),
     })

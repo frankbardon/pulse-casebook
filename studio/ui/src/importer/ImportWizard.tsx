@@ -6,11 +6,14 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   ApiCallError,
+  GLOBAL_AREA,
   listFiles,
   predictImport,
+  readFile,
   runImport,
   saveSchema,
   uploadSource,
+  type Area,
   type ImportPredict,
   type ImportResult,
   type PredictBody,
@@ -58,13 +61,20 @@ import { fieldName, nameIssues, parseSavedSchema, renameDiff, renameOf, setRenam
 import './import.css'
 
 // WizardStart is what the wizard opens with: a dropped file to upload,
-// or a source already in the workspace (optionally with the saved
-// schema to prefer and the cohort to rebuild, for a re-check).
-export type WizardStart = { file?: File; source?: string; schema?: string; target?: string }
+// or a source already in the area (optionally with the saved schema to
+// prefer and the cohort to rebuild, for a re-check). area is where the
+// import goes (default: the global area); it can be changed on the
+// Upload step, before anything is uploaded.
+export type WizardStart = { file?: File; source?: string; schema?: string; target?: string; area?: Area }
+
+// ImportTarget is one choice of the wizard's "Import into" picker.
+export type ImportTarget = { area: Area; label: string }
 
 type Props = {
   start: WizardStart
-  onImported: (r: ImportResult) => void
+  // Where an import may go: Global and each workspace.
+  targets: ImportTarget[]
+  onImported: (r: ImportResult, area: Area) => void
   onClose: () => void
 }
 
@@ -78,8 +88,15 @@ const STEPS: { id: Step; label: string }[] = [
 
 type Upload = { phase: 'idle' | 'uploading' | 'error'; name?: string; loaded?: number; total?: number; error?: string }
 
-type Saved = { name: string; path: string; json: string }
+// Saved is the saved schema the import references: ref is what the
+// import sends (a local schema's name, or a global schema's
+// "_global/schemas/..." path).
+type Saved = { name: string; path: string; ref: string; global?: boolean; json: string }
 type Conflict = { name: string; diff: SchemaDiff }
+
+function appliedOf(m: SchemaMatch): Applied {
+  return { name: m.name, path: m.path, score: m.score, exact: m.exact, global: m.scope === 'global', local: m.scope === 'local' }
+}
 
 function sourceOf(path: string): UploadedSource {
   const name = path.slice(path.lastIndexOf('/') + 1)
@@ -90,7 +107,8 @@ function message(e: unknown): string {
   return e instanceof Error ? e.message : String(e)
 }
 
-export function ImportWizard({ start, onImported, onClose }: Props) {
+export function ImportWizard({ start, targets, onImported, onClose }: Props) {
+  const [area, setArea] = useState<Area>(start.area ?? GLOBAL_AREA)
   const [step, setStep] = useState<Step>(start.source ? 'schema' : 'upload')
   const [upload, setUpload] = useState<Upload>(start.file ? { phase: 'uploading', name: start.file.name, loaded: 0, total: start.file.size } : { phase: 'idle' })
   const [source, setSource] = useState<UploadedSource | null>(start.source ? sourceOf(start.source) : null)
@@ -111,6 +129,9 @@ export function ImportWizard({ start, onImported, onClose }: Props) {
   const [saving, setSaving] = useState(false)
   const [saveError, setSaveError] = useState<string | null>(null)
   const [conflict, setConflict] = useState<Conflict | null>(null)
+  // The editor's differences from the applied global schema (Use global
+  // schema refused).
+  const [globalDiff, setGlobalDiff] = useState<SchemaDiff | null>(null)
 
   const [target, setTarget] = useState(start.target ? nameFromSource(start.target) : '')
   const [importing, setImporting] = useState(false)
@@ -143,7 +164,7 @@ export function ImportWizard({ start, onImported, onClose }: Props) {
       const ov = overridesOf(base)
       if (Object.keys(ov).length > 0) body.overrides = ov
     }
-    predictImport(body, ctl.signal)
+    predictImport(area, body, ctl.signal)
       .then((p) => {
         setPred(p)
         let next: EditColumn[]
@@ -153,10 +174,10 @@ export function ImportWizard({ start, onImported, onClose }: Props) {
           next = columnsFromPredict(p)
           // Reuse: an exact match (or the schema asked for) is applied
           // straight away; closer looks are offered as suggestions.
-          const m = (prefer && p.matches.find((x) => x.name === prefer)) || rankMatches(p.matches).exact
+          const m = (prefer && (p.matches.find((x) => x.path === prefer) ?? p.matches.find((x) => x.name === prefer))) || rankMatches(p.matches).exact
           if (m) {
             next = applyMatch(next, m)
-            setApplied({ name: m.name, score: m.score, exact: m.exact })
+            setApplied(appliedOf(m))
             setSchemaName(m.name)
           } else {
             setApplied(null)
@@ -191,7 +212,7 @@ export function ImportWizard({ start, onImported, onClose }: Props) {
   }
 
   const sendUpload = (file: File) => {
-    uploadSource(file, (loaded, total) => setUpload((u) => ({ ...u, loaded, total })))
+    uploadSource(area, file, (loaded, total) => setUpload((u) => ({ ...u, loaded, total })))
       .then((up) => {
         setUpload({ phase: 'idle' })
         begin(up)
@@ -212,14 +233,14 @@ export function ImportWizard({ start, onImported, onClose }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  // Sources already in the workspace, offered on the Upload step.
+  // Sources already in the target area, offered on the Upload step.
   useEffect(() => {
     const ctl = new AbortController()
-    listFiles(ctl.signal)
-      .then((l) => setExisting(l.files.filter((f) => f.kind === 'source')))
-      .catch(() => {})
+    listFiles(area, ctl.signal)
+      .then((l) => setExisting(l.files.filter((f) => f.kind === 'source' && f.scope !== 'global')))
+      .catch(() => setExisting([]))
     return () => ctl.abort()
-  }, [])
+  }, [area])
 
   useEffect(() => () => predictCtl.current?.abort(), [])
 
@@ -250,7 +271,7 @@ export function ImportWizard({ start, onImported, onClose }: Props) {
 
   const applySuggestion = (m: SchemaMatch, dropNew = false) => {
     edit((c) => applyMatch(c, m, dropNew))
-    setApplied({ name: m.name, score: m.score, exact: m.exact })
+    setApplied(appliedOf(m))
     setSchemaName(m.name)
   }
 
@@ -271,9 +292,9 @@ export function ImportWizard({ start, onImported, onClose }: Props) {
     if (!validName(schemaName)) return
     setSaving(true)
     setSaveError(null)
-    saveSchema(schemaName, schema, overwrite, undefined, rename) // PULSE-GAP(column-rename)
+    saveSchema(area, schemaName, schema, overwrite, undefined, rename) // PULSE-GAP(column-rename)
       .then((s) => {
-        setSaved({ name: s.name, path: s.path, json: schemaJson })
+        setSaved({ name: s.name, path: s.path, ref: s.name, json: schemaJson })
         setConflict(null)
         setStep('import')
       })
@@ -289,7 +310,7 @@ export function ImportWizard({ start, onImported, onClose }: Props) {
           const diff: SchemaDiff = { ...schemaDiff(current.fields, schema), renamed: renameDiff(current.rename, rename) }
           if (isEmptyDiff(diff)) {
             // Same fields: reuse the saved schema as it is.
-            setSaved({ name: schemaName, path: `schemas/${schemaName}.schema.json`, json: schemaJson })
+            setSaved({ name: schemaName, path: `schemas/${schemaName}.schema.json`, ref: schemaName, json: schemaJson })
             setConflict(null)
             setStep('import')
             return
@@ -302,12 +323,35 @@ export function ImportWizard({ start, onImported, onClose }: Props) {
       .finally(() => setSaving(false))
   }
 
+  // useGlobal reuses the applied global schema as it is, without a
+  // local copy: only when the editor still equals it (else the edits are
+  // saved as a local schema).
+  const useGlobal = () => {
+    if (!applied?.global) return
+    setSaving(true)
+    setSaveError(null)
+    readFile(area, applied.path)
+      .then((f) => {
+        const current = parseSavedSchema(f.text)
+        const diff: SchemaDiff = { ...schemaDiff(current.fields, schema), renamed: renameDiff(current.rename, rename) }
+        if (!isEmptyDiff(diff)) {
+          setGlobalDiff(diff)
+          return
+        }
+        setGlobalDiff(null)
+        setSaved({ name: applied.name, path: applied.path, ref: applied.path, global: true, json: schemaJson })
+        setStep('import')
+      })
+      .catch((e: unknown) => setSaveError(message(e)))
+      .finally(() => setSaving(false))
+  }
+
   const doImport = () => {
     if (!source || !saved || !validName(target)) return
     setImporting(true)
     setImportError(null)
-    runImport({ source: source.path, schema: saved.name, options: optionsOf(settings, cols, 'import'), target, overwrite: replace })
-      .then(onImported)
+    runImport(area, { source: source.path, schema: saved.ref, options: optionsOf(settings, cols, 'import'), target, overwrite: replace })
+      .then((r) => onImported(r, area))
       .catch((e: unknown) => {
         if (e instanceof ApiCallError) setImportError({ code: e.code, message: e.message.replace(/^[^:]+: /, '') })
         else setImportError({ code: 'error', message: message(e) })
@@ -350,9 +394,29 @@ export function ImportWizard({ start, onImported, onClose }: Props) {
 
       {step === 'upload' && (
         <section className="wizard-body upload-step">
+          <label className="field import-into">
+            Import into
+            <select
+              value={area}
+              onChange={(e) => setArea(e.target.value)}
+              disabled={upload.phase === 'uploading'}
+              data-testid="import-into"
+            >
+              {targets.map((t) => (
+                <option key={t.area} value={t.area}>
+                  {t.label}
+                </option>
+              ))}
+            </select>
+          </label>
+          <p className="muted">
+            {area === GLOBAL_AREA
+              ? 'Global: the cohort is shared by every workspace.'
+              : 'Local to this workspace: only its analyses see the cohort (Make global shares it later).'}
+          </p>
           <p className="lede">
-            Choose a data file. Pulse reads CSV, TSV, NDJSON, JSON arrays, Parquet, Arrow, Excel and SPSS. It is copied into this
-            workspace's <code>sources/</code> folder (kept out of git) and nothing is imported until the last step.
+            Choose a data file. Pulse reads CSV, TSV, NDJSON, JSON arrays, Parquet, Arrow, Excel and SPSS. It is copied into the{' '}
+            <code>sources/</code> folder of the area you import into (kept out of git) and nothing is imported until the last step.
           </p>
           <label
             className="dropzone"
@@ -637,9 +701,30 @@ export function ImportWizard({ start, onImported, onClose }: Props) {
 
       {step === 'save' && (
         <section className="wizard-body save-step">
+          {applied?.global && (
+            <div className="notice info" data-testid="schema-global">
+              <p>
+                These types come from the <strong>global</strong> schema <code>{applied.name}</code>, shared by every workspace. Use it as
+                it is, or save your edits as a schema of this {area === GLOBAL_AREA ? 'area' : 'workspace'} below.
+              </p>
+              {globalDiff && (
+                <>
+                  <p data-testid="schema-global-differs">
+                    <strong>The editor differs from the global schema</strong>; save it under a name below instead:
+                  </p>
+                  <SchemaDiffView d={globalDiff} />
+                </>
+              )}
+              <div className="rebuild-row">
+                <button type="button" className="primary" onClick={useGlobal} disabled={saving} data-testid="schema-use-global">
+                  Use global schema {applied.name}
+                </button>
+              </div>
+            </div>
+          )}
           <p className="lede">
             Save the schema so the next file with these columns is recognised and typed the same way. It is stored in{' '}
-            <code>schemas/</code> and kept in git.
+            <code>schemas/</code> {area === GLOBAL_AREA ? 'of the global area' : 'of this workspace'} and kept in git.
           </p>
           <label className="field">
             Schema name
@@ -656,7 +741,7 @@ export function ImportWizard({ start, onImported, onClose }: Props) {
           {!validName(schemaName) && <p className="err">Use letters, digits, ".", "_" or "-", starting with a letter or digit.</p>}
           <p className="muted">
             {schema.length} fields
-            {applied && applied.name === schemaName && ` · updates saved schema ${applied.name} if anything changed`}
+            {applied && !applied.global && applied.name === schemaName && ` · updates saved schema ${applied.name} if anything changed`}
           </p>
           {conflict && (
             <div className="notice warn" data-testid="schema-conflict">
@@ -702,7 +787,13 @@ export function ImportWizard({ start, onImported, onClose }: Props) {
             <div>
               <dt>Schema</dt>
               <dd>
-                <code>{saved.name}</code> ({schema.length} fields
+                <code>{saved.name}</code>
+                {saved.global && (
+                  <span className="scope-tag global" data-testid="import-schema-global">
+                    Global
+                  </span>
+                )}{' '}
+                ({schema.length} fields
                 {excludedCount(cols) > 0 && `, ${excludedCount(cols)} source columns dropped`})
               </dd>
             </div>
@@ -720,8 +811,8 @@ export function ImportWizard({ start, onImported, onClose }: Props) {
             />
           </label>
           <p className="muted">
-            Writes <code>{target}.pulse</code> to the workspace and records how it was built in <code>imports/{target}.import.json</code>, so it
-            can be rebuilt later.
+            Writes <code>cohorts/{target}.pulse</code> {area === GLOBAL_AREA ? 'to the global area' : 'to this workspace'} and records how it was
+            built in <code>imports/{target}.import.json</code>, so it can be rebuilt later.
           </p>
           {importError && (
             <div className="notice error" data-testid="import-error" data-code={importError.code}>

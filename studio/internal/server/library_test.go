@@ -82,20 +82,20 @@ func newLibraryFixture(t *testing.T, noGit bool) (*Library, string) {
 // path guard and in the engine (cohort refs, a shard archive and its
 // anchors, a join's right side, compose slots and fits, chains,
 // previews), repositories per area, imports per scope, the cohorts
-// catalog and the compatibility routes.
+// catalog; flat workspace routes are gone.
 func TestLibraryWorkspacesAndGlobalCohorts(t *testing.T) {
 	l, dir := newLibraryFixture(t, false)
 	spec := filepath.Join(showcaseDir(), "ab-test-readout/data/ab_test.synth.json")
 
 	code, out := call(t, l, http.MethodGet, "/api/library", nil)
-	if code != 200 || out["mode"] != "library" || len(out["workspaces"].([]any)) != 0 {
+	if code != 200 || len(out["workspaces"].([]any)) != 0 {
 		t.Fatalf("library: %d %v", code, out)
 	}
 	if g := out["git"].(map[string]any); g["enabled"] != true || g["initialized"] != true {
 		t.Fatalf("global git: %v", g)
 	}
-	if code, out = call(t, l, http.MethodGet, "/api/files", nil); code != 404 || errCode(out) != "no_workspace" {
-		t.Fatalf("compat with no workspace: %d %v", code, out)
+	if code, out = call(t, l, http.MethodGet, "/api/files", nil); code != 404 || errCode(out) != "unknown_endpoint" {
+		t.Fatalf("flat workspace path: %d %v", code, out)
 	}
 	if got := gitOut(t, dir, "ls-files"); !strings.Contains(got, "library.json") || !strings.Contains(got, ".gitignore") {
 		t.Fatalf("global repo files: %q", got)
@@ -321,16 +321,17 @@ func TestLibraryWorkspacesAndGlobalCohorts(t *testing.T) {
 		t.Fatalf("workspaces: %s", names)
 	}
 
-	// Compatibility: flat paths are the first workspace's.
-	_, flat := call(t, l, http.MethodGet, "/api/files", nil)
-	_, scoped := call(t, l, http.MethodGet, "/api/w/sales-q1/files", nil)
-	if stringOf(flat) != stringOf(scoped) {
-		t.Fatalf("compat files differ")
+	// No compatibility layer: flat workspace paths are unknown.
+	if code, out = call(t, l, http.MethodGet, "/api/files", nil); code != 404 || errCode(out) != "unknown_endpoint" {
+		t.Fatalf("flat files: %d %v", code, out)
+	}
+	if code, out = call(t, l, http.MethodGet, "/api/w/sales-q1/files", nil); code != 200 {
+		t.Fatalf("scoped files: %d %v", code, out)
 	}
 	if code, out = call(t, l, http.MethodGet, "/api/w/nope/files", nil); code != 404 || errCode(out) != "workspace_not_found" {
 		t.Fatalf("unknown workspace: %d %v", code, out)
 	}
-	if code, out = call(t, l, http.MethodGet, "/api/health", nil); code != 200 || out["mode"] != "library" || out["pulse_version"] == nil {
+	if code, out = call(t, l, http.MethodGet, "/api/health", nil); code != 200 || out["pulse_version"] == nil {
 		t.Fatalf("health: %d %v", code, out)
 	}
 	if code, _ = call(t, l, http.MethodGet, "/api/catalog", nil); code != 200 {
@@ -347,58 +348,6 @@ func uploadTo(t *testing.T, h http.Handler, target, name, content string) *httpt
 	rec := httptest.NewRecorder()
 	h.ServeHTTP(rec, req)
 	return rec
-}
-
-// A pre-library flat folder is served in place as its one workspace,
-// untouched (no library.json), with the flat routes as before.
-func TestLibraryLegacyFolder(t *testing.T) {
-	dir := t.TempDir()
-	spec := filepath.Join(showcaseDir(), "ab-test-readout/data/ab_test.synth.json")
-	if err := os.MkdirAll(filepath.Join(dir, "req"), 0o755); err != nil {
-		t.Fatal(err)
-	}
-	if err := os.WriteFile(filepath.Join(dir, "req", "a.json"), []byte(`{"cohort": {"filename": "ab.pulse", "data_dir": "."}}`), 0o644); err != nil {
-		t.Fatal(err)
-	}
-	synthCohort(t, spec, filepath.Join(dir, "ab.pulse"), 10, 1)
-	lib, err := library.Open(dir)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if !lib.Legacy() {
-		t.Fatal("not detected as legacy")
-	}
-	if _, err := os.Stat(filepath.Join(lib.Dir(), library.MarkerFile)); err == nil {
-		t.Fatal("legacy folder got library.json")
-	}
-	l, err := NewLibrary(context.Background(), lib, LibraryOptions{NoGit: true, Logf: t.Logf}, nil, false)
-	if err != nil {
-		t.Fatal(err)
-	}
-	slug := library.Slugify(filepath.Base(lib.Dir()))
-	code, out := call(t, l, http.MethodGet, "/api/library", nil)
-	wss := out["workspaces"].([]any)
-	if code != 200 || out["mode"] != "legacy" || len(wss) != 1 || wss[0].(map[string]any)["legacy"] != true || out["default"] != slug {
-		t.Fatalf("library: %d %v", code, out)
-	}
-	_, flat := call(t, l, http.MethodGet, "/api/files", nil)
-	_, scoped := call(t, l, http.MethodGet, "/api/w/"+slug+"/files", nil)
-	if stringOf(flat) != stringOf(scoped) || !strings.Contains(stringOf(flat), `"req/a.json"`) {
-		t.Fatalf("legacy files: %s vs %s", stringOf(flat), stringOf(scoped))
-	}
-	if code, out = call(t, l, http.MethodGet, "/api/w/_global/files", nil); code != 404 {
-		t.Fatalf("legacy global area: %d %v", code, out)
-	}
-	if code, out = call(t, l, http.MethodPost, "/api/workspaces", map[string]any{"name": "x"}); code != 409 || errCode(out) != "legacy_folder" {
-		t.Fatalf("create in legacy: %d %v", code, out)
-	}
-	code, out = call(t, l, http.MethodGet, "/api/cohorts", nil)
-	if c := out["cohorts"].([]any); code != 200 || len(c) != 1 || c[0].(map[string]any)["scope"] != "local" || c[0].(map[string]any)["workspace"] != slug {
-		t.Fatalf("legacy cohorts: %d %v", code, out)
-	}
-	if code, env := libRun(t, l, slug, "req/a.json", `{"cohort": {"filename": "ab.pulse", "data_dir": "."}, "aggregations": [{"type": "AGG_COUNT", "field": "user_id", "label": "n"}]}`); code != 200 || dataValue(env, "n") != float64(10) {
-		t.Fatalf("legacy run: %d %v", code, env)
-	}
 }
 
 // newMultipart writes a one-file multipart body (part "file") into buf

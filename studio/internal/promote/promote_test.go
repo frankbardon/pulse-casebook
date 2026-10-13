@@ -537,7 +537,7 @@ func TestRecover(t *testing.T) {
 
 // A cohort without an import spec moves alone; legacy folders have no
 // global area.
-func TestBareCohortAndLegacy(t *testing.T) {
+func TestBareCohort(t *testing.T) {
 	lib, wsDir, _ := fixture(t, false)
 	writeTree(t, wsDir, map[string]string{"cohorts/sub/bare.pulse": "B", "analyses/b.json": "{\"cohort\": {\"filename\": \"sub/bare.pulse\", \"data_dir\": \"cohorts\"}}"})
 	res, err := Apply(context.Background(), lib, Request{Workspace: "lab", Kind: KindCohort, Name: "cohorts/sub/bare.pulse"}, ApplyOptions{})
@@ -552,15 +552,5 @@ func TestBareCohortAndLegacy(t *testing.T) {
 	}
 	if _, err := os.Stat(filepath.Join(wsDir, "cohorts")); err != nil {
 		t.Error("cohorts/ removed")
-	}
-
-	legacy, _ := filepath.EvalSymlinks(t.TempDir())
-	writeTree(t, legacy, map[string]string{"ab.pulse": "x", "req/a.json": "{\"cohort\": {\"filename\": \"ab.pulse\"}}"})
-	llib, err := library.Open(legacy)
-	if err != nil || !llib.Legacy() {
-		t.Fatal(err)
-	}
-	if _, err := MakePlan(context.Background(), llib, Request{Workspace: "x", Kind: KindCohort, Name: "ab"}); !errors.Is(err, ErrLegacy) {
-		t.Errorf("legacy: %v", err)
 	}
 }

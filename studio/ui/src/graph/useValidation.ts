@@ -3,6 +3,7 @@ import { postExplain, postPredict, type CohortField, type ExplainStep } from '..
 import type { Catalog } from './paramForms.ts'
 import { emitModelText, type GraphModel } from './model.ts'
 import { attach, clientIssues, type Issue, type NodeValidation } from './validation.ts'
+import { useArea } from '../area.ts'
 
 // Quiet time after the last edit before the document is re-validated.
 export const VALIDATE_DEBOUNCE_MS = 300
@@ -44,6 +45,7 @@ export function useValidation(
   // Client findings computed outside the manifest checks (joins.ts).
   extra: readonly Issue[] = NONE,
 ): Validation {
+  const area = useArea()
   const [engine, setEngine] = useState<Engine | null>(null)
   const text = useMemo(() => (model ? emitModelText(model) : null), [model])
 
@@ -51,9 +53,9 @@ export function useValidation(
     if (text === null) return
     const ctl = new AbortController()
     const t = setTimeout(() => {
-      const issues = postPredict(path, text, ctl.signal).then((r) => r.issues.map((i): Issue => ({ ...i, source: 'engine' })))
+      const issues = postPredict(area, path, text, ctl.signal).then((r) => r.issues.map((i): Issue => ({ ...i, source: 'engine' })))
       // Explain is only hover text: its failure never hides predict's issues.
-      const explain = postExplain(path, text, ctl.signal).catch((e: unknown) => {
+      const explain = postExplain(area, path, text, ctl.signal).catch((e: unknown) => {
         if (ctl.signal.aborted) throw e
         return { steps: [] as ExplainStep[], summary: undefined }
       })
@@ -68,7 +70,7 @@ export function useValidation(
       clearTimeout(t)
       ctl.abort()
     }
-  }, [path, text])
+  }, [area, path, text])
 
   const client = useMemo(() => (model ? [...clientIssues(model, catalog, cohortFields), ...extra] : []), [model, catalog, cohortFields, extra])
   // Engine issues for an older text would point at nodes that may have

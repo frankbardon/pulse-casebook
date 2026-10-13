@@ -18,8 +18,7 @@ const (
 	ignoreEnd   = "# <<< pulse studio"
 )
 
-// IgnorePatterns are the managed block's lines of a workspace (and of a
-// legacy flat folder).
+// IgnorePatterns are the managed block's lines of a workspace.
 var IgnorePatterns = []string{
 	"*.pulse",
 	"/sources/",

@@ -72,7 +72,7 @@ describe('buildChainGraph', () => {
     const doc = JSON.parse(retention)
     doc.overlays = [{ name: 'growth', kind: 'OVERLAY_INDEX_VS_STAGE', scope: 'total' }]
     const g = buildChainGraph(doc, { manifest })
-    expect(g.lanes[0]).toMatchObject({ role: 'root', title: 'Chain' })
+    expect(g.lanes[0]).toMatchObject({ role: 'root', title: 'Chained' })
     expect(g.nodes.find((n) => n.id === 'overlays[0]')?.parentId).toBe('(compose)')
     expect(g.nodes.find((n) => n.id === 'cohort')?.parentId).toBe('stages[0]')
   })

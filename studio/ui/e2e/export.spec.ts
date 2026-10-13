@@ -5,7 +5,7 @@
 // nothing is stored in the workspace, and the last format and options
 // are remembered for the cohort.
 import { readFileSync } from 'node:fs'
-import { expect, test } from './harness.ts'
+import { catalogRow, expect, openCohorts, test } from './harness.ts'
 import type { Locator, Page } from '@playwright/test'
 
 test.use({ workspace: 'ab-test-readout' })
@@ -19,10 +19,11 @@ async function download(page: Page, control: Locator): Promise<{ name: string; d
 
 test('export a cohort to CSV with a field subset and to SPSS with options', async ({ page, studio }) => {
   await page.goto('/')
-  await page.locator('[data-kind="cohort"] button.file[data-path="ab_test.pulse"]').click()
+  await openCohorts(page)
+  await catalogRow(page, 'cohort', 'cohorts/ab_test.pulse', 'local').click()
   await page.getByTestId('cohort-export-open').click()
   const dialog = page.getByTestId('export-dialog')
-  await expect(dialog).toHaveAttribute('data-cohort', 'ab_test.pulse')
+  await expect(dialog).toHaveAttribute('data-cohort', 'cohorts/ab_test.pulse')
   const preflight = page.getByTestId('export-preflight')
 
   // CSV: no format options; pick three fields.
@@ -92,8 +93,8 @@ test('export a cohort to CSV with a field subset and to SPSS with options', asyn
   expect(studio.read('.gitignore')).not.toContain('/exports/')
   await expect(page.locator('[data-kind="export"]')).toHaveCount(0)
 
-  // Reopened from the sidebar row: the last format and options are remembered.
-  await page.locator('[data-testid="cohort-export"][data-path="ab_test.pulse"]').click()
+  // Reopened from the list row: the last format and options are remembered.
+  await page.locator('[data-testid="cohort-export"][data-path="cohorts/ab_test.pulse"][data-scope="local"]').click()
   await expect(page.getByTestId('export-format')).toHaveValue('spss')
   await expect(page.getByTestId('export-opt-uncompressed')).toBeChecked()
   await expect(page.getByTestId('export-opt-charset')).toHaveValue('windows-1252')
@@ -101,7 +102,9 @@ test('export a cohort to CSV with a field subset and to SPSS with options', asyn
 
 test('every format Pulse writes, and the transfer artifact, exports from the dialog', async ({ page, studio }) => {
   await page.goto('/')
-  await page.locator('[data-testid="cohort-export"][data-path="design.pulse"]').click()
+  await openCohorts(page)
+  // design.pulse is a global cohort: it exports from the global area.
+  await page.locator('[data-testid="cohort-export"][data-path="cohorts/design.pulse"][data-scope="global"]').click()
   const ids = await page.getByTestId('export-format').locator('option').evaluateAll((os) => os.map((o) => o.getAttribute('value')))
   expect(ids).toEqual(['csv', 'tsv', 'ndjson', 'jsonarray', 'parquet', 'arrow', 'excel', 'spss', 'transfer'])
   const ext: Record<string, string> = { csv: '.csv', tsv: '.tsv', ndjson: '.ndjson', jsonarray: '.json', parquet: '.parquet', arrow: '.arrow', excel: '.xlsx', spss: '.sav', transfer: '.pulse.zst' }

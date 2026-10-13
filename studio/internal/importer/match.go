@@ -142,6 +142,7 @@ type Candidate struct {
 	Path    string
 	Columns []Column          // under source column names (SourceColumns)
 	Rename  map[string]string // PULSE-GAP(column-rename): the saved schema's map
+	Scope   string            // "global" | "local" in a library ("" elsewhere)
 }
 
 // Retyped is a column both sides have with different coarse types.
@@ -182,6 +183,9 @@ type Match struct {
 	// Rename is the saved schema's rename map, applied with the match.
 	// PULSE-GAP(column-rename).
 	Rename map[string]string `json:"rename,omitempty"`
+	// Scope is "global" (a library's shared schema; a workspace refers to
+	// it by Path, "_global/schemas/...") or "local" in a library.
+	Scope string `json:"scope,omitempty"`
 }
 
 // Score is the weighted Jaccard of two fingerprints: matched names count
@@ -226,7 +230,7 @@ func Rank(input []Column, cands []Candidate, limit int) []Match {
 			continue
 		}
 		sc = float64(int(sc*1000+0.5)) / 1000
-		m := Match{Name: c.Name, Path: c.Path, Score: sc, Exact: sc == 1, Suggest: sc >= SuggestScore, Rename: c.Rename}
+		m := Match{Name: c.Name, Path: c.Path, Score: sc, Exact: sc == 1, Suggest: sc >= SuggestScore, Rename: c.Rename, Scope: c.Scope}
 		m.Diff, m.Merged = diffMerge(input, c.Columns)
 		out = append(out, m)
 	}

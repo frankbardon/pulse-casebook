@@ -75,7 +75,7 @@ export function readRun(root: string, text: string, doc: unknown): RunView {
     // ranking) for the root lane's Response node.
     view.responses.set('', { request: d, response: data })
     const other = otherParts(data, ['overlays', 'ranking', 'returned'])
-    if (other.length > 0) view.sections.push({ id: 'compose', title: 'compose', tables: [], other })
+    if (other.length > 0) view.sections.push({ id: 'compose', title: 'Composed', tables: [], other })
   } else if (root === 'chain') {
     const stages = arr(d.stages)
     arr(data.stages).forEach((resp, i) => {
@@ -87,7 +87,7 @@ export function readRun(root: string, text: string, doc: unknown): RunView {
       view.responses.set(formatPath(base), { request: isObj(st) ? st.request : undefined, response: resp })
     })
     const other = otherParts(data, ['overlays'])
-    if (other.length > 0) view.sections.push({ id: 'chain', title: 'chain', tables: [], other })
+    if (other.length > 0) view.sections.push({ id: 'chain', title: 'Chained', tables: [], other })
   } else if (root === 'facet') {
     view.sections.push(facetSection(data))
     const n = Object.keys(isObj(data.fields) ? data.fields : {}).length
@@ -213,7 +213,7 @@ function facetSection(data: Obj): ResultSection {
   })
   return {
     id: 'fields',
-    title: 'facet',
+    title: 'Faceted',
     summary: `${fmtCount(num(data.filtered_records))} of ${fmtCount(num(data.total_records))} rows`,
     tables: [{ key: 'fields', title: 'Fields', columns: ['field', 'type', 'kind', 'nulls', 'distinct', 'summary'], rows }],
     other: otherParts(data, ['additive', 'overlays', 'warnings']),

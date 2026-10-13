@@ -45,12 +45,12 @@ export function FacetInspector({ model, cohortFields, onChange, onClose }: Props
   return (
     <aside className="inspector" data-testid="inspector" data-node="fields">
       <header className="insp-head">
-        <span className="insp-title">Facet</span>
+        <span className="insp-title">Faceted</span>
         <span className="insp-op">FACET</span>
         <button type="button" className="insp-close" aria-label="Close inspector" onClick={onClose}>
           ×
         </button>
-        <span className="insp-path">facet settings</span>
+        <span className="insp-path">faceted analysis settings</span>
       </header>
       <fieldset className="insp-section">
         <legend>Fields</legend>
@@ -149,7 +149,7 @@ export function FacetInspector({ model, cohortFields, onChange, onClose }: Props
         )}
       </fieldset>
       <fieldset className="insp-section">
-        <legend>Request</legend>
+        <legend>Analysis</legend>
         <TextSetting
           label="time_zone"
           hint="IANA zone for zone-aware filters; empty inherits"
