@@ -11,7 +11,8 @@ UI dependencies are listed with their versions in `ui/package-lock.json`.
 - **Author:** Vladyslav Hnatiuk and contributors.
 - **Licence:** GNU Lesser General Public License, version 2.1 or (at your option) any later version
   (`LGPL-2.1-or-later`). The full text of version 2.1 is in [licenses/LGPL-2.1.txt](licenses/LGPL-2.1.txt),
-  copied from the package.
+  copied from the package. Both this notice and the licence text are also built into `bin/studio`
+  and served at `/licenses/THIRD_PARTY_NOTICES.md` and `/licenses/LGPL-2.1.txt`.
 - **Source:** <https://github.com/Aksem/libavoid-js> (the npm package `libavoid-js`, pinned to
   exactly `0.5.0-beta.5` in `ui/package.json`). The libavoid C++ sources it is built from are part
   of Adaptagrams: <https://github.com/mjwybrow/adaptagrams>.
