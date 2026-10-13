@@ -9,7 +9,10 @@
 //     inverse of `cohort_types[].compatible_<section>`.
 //   - Regressions: `target` and `predictors` take the operator's
 //     `accepts_types`.
-//   - Matrices: `fields` take the operator's `accepts_types`.
+//   - Matrices: `fields` take the operator's `accepts_types`. A matrix
+//     reads its members from exactly one of `vector` (a vectors entry
+//     by name) and inline `fields` (pulse types.MatrixSpec; both or
+//     neither is SERVICE_VALIDATION): see VECTOR_OR_FIELDS.
 //   - Vectors (`vectors[i].fields`, no manifest operator): integer and
 //     float columns (pulse payload-schema "Vector slot"); packed_bool
 //     only beside `coerce: "binary"` (vectorMemberRefusal).
@@ -89,6 +92,15 @@ export function vectorMemberRefusal(type: string | undefined, coerce: string | u
   if (type === 'packed_bool' && coerce !== 'binary') return 'takes packed_bool only with coerce: "binary"'
   return null
 }
+
+// VECTOR_OR_FIELDS lists the sections whose entries name their members
+// by exactly one of `vector` and inline `fields` (pulse
+// types.MatrixSpec). An entry that sets one does not ask for the other;
+// one that sets neither offers both inputs.
+export const VECTOR_OR_FIELDS: ReadonlySet<string> = new Set(['matrices'])
+
+// VECTOR_INPUT is the tooltip of the `vector` input such an entry offers.
+export const VECTOR_INPUT = 'vector: a vectors entry of this request, by name (or wire fields instead)'
 
 // isGlob says whether a vector member entry is a glob (`q_*`), which
 // expands over the cohort's columns rather than naming one.

@@ -13,9 +13,9 @@
 import type { Edge, Node } from '@xyflow/react'
 import type { CohortField, Manifest, ManifestOperator } from '../api.ts'
 import { formatPath, type PathSegment } from './nodePath.ts'
-import { describeAccept, isGlob, slotFor, slotsFor } from './ports.ts'
+import { describeAccept, isGlob, slotFor, slotsFor, VECTOR_INPUT, VECTOR_OR_FIELDS } from './ports.ts'
 import { groupKeyColumn, type GroupEntry } from './partition.ts'
-import { joinedFields, joinKeyRefusal, type RightSide } from './joins.ts'
+import { joinBodyLines, joinedFields, joinKeyRefusal, type RightSide } from './joins.ts'
 
 export type ColumnKey =
   | 'source'
@@ -444,6 +444,10 @@ function addPorts(manifest: Manifest, section: string, op: string, e: Record<str
     const slot = slotFor(manifest, section, op, row.key)
     if (slot.accept.types || slot.accept.kinds || slot.groupKey) row.accepts = describeAccept(slot)
   }
+  // A matrix names its members by vector or by inline fields, exactly
+  // one: neither set offers both inputs, either set asks for nothing.
+  const membersBy = VECTOR_OR_FIELDS.has(section) ? (e.vector !== undefined ? 'vector' : e.fields !== undefined ? 'fields' : null) : undefined
+  if (membersBy === null) rows.push({ key: 'vector', value: '', port: 'empty', accepts: VECTOR_INPUT })
   for (const slot of slotsFor(manifest, section, op)) {
     const v = plainAt(e, slot.key)
     if (slot.groupKey) {
@@ -456,6 +460,7 @@ function addPorts(manifest: Manifest, section: string, op: string, e: Record<str
     if (!slot.required) continue
     // A vector names its members by fields or by pattern, never both.
     if (section === 'vectors' && e.pattern !== undefined) continue
+    if (slot.key === 'fields' && membersBy === 'vector') continue
     const accepts = slot.accept.types || slot.accept.kinds ? { accepts: describeAccept(slot) } : {}
     if (!slot.list) {
       if (v === undefined) rows.push({ key: slot.key, value: '', port: 'empty', ...accepts })
@@ -618,7 +623,10 @@ export function estimateHeight(n: GraphNode): number {
   const preview = hasPreview(n) ? LAYOUT.previewHeight : 0
   switch (n.type) {
     case 'op':
-      return headerHeight + (n.data.rows.length + (n.data.join ? Math.max(1, n.data.join.fields.length) + 1 : 0)) * rowHeight + padding + preview
+      // A join draws its key pairs one line each and its joined fields
+      // collapsed (nodes.tsx JoinedFields); measured sizes take over once
+      // a node is drawn, expanded or not.
+      return headerHeight + (n.data.join ? joinBodyLines(n.data.rows, n.data.join, false) : n.data.rows.length) * rowHeight + padding + preview
     case 'cohort':
       return headerHeight + Math.max(1, n.data.fields.length) * rowHeight + padding + preview
     case 'raw':

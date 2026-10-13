@@ -16,6 +16,8 @@ test('a vector draws its member wires, feeds its matrix and previews member stat
   await expect(vector.locator('[data-row="fields[6]"]')).toHaveClass(/port/)
   await expect(vector.locator('.gnode-row.unresolved')).toHaveCount(0)
   await expect(graph.locator('[data-path="requests[0].matrices[0]"] [data-row="vector"]')).not.toHaveClass(/unresolved/)
+  // A vector-backed matrix asks for no inline fields.
+  await expect(graph.locator('[data-path="requests[0].matrices[0]"] .gnode-row.port')).toHaveCount(0)
   const preview = vector.locator('[data-testid="preview"]')
   await expect(preview).toHaveAttribute('data-state', 'ok')
   await expect(preview).toContainText('6 members')
@@ -36,14 +38,55 @@ test('a join draws its keys and joined fields, previews joined rows and flags an
   const join = graph.locator('[data-path="requests[0].joins[0]"]')
   await expect(join).toContainText('Join')
   await expect(join).toContainText('inner')
-  // Eleven key pairs, every left key wired from the cohort.
-  await expect(join.locator('.gnode-row:not(.port)[data-row$=".left_field"]')).toHaveCount(11)
+  // Eleven key pairs, one line each (left_field = right_field), every
+  // left key wired from the cohort.
+  await expect(join.locator('.gnode-pair:not(.port)[data-row$=".left_field"]')).toHaveCount(11)
+  await expect(join.locator('[data-row$=".right_field"]')).toHaveCount(0)
+  await expect(join.locator('[data-row="on[0].left_field"]')).toHaveText('region = region')
+  await expect(join.locator('[data-row="on[0].left_field"] .react-flow__handle')).toHaveCount(1)
   await expect(join.locator('.gnode-row.unresolved')).toHaveCount(0)
-  // The right cohort's fields, prefixed with as, are the join's outputs.
+  // The right cohort's fields, prefixed with as, are the join's outputs,
+  // collapsed to one summary line.
   const joined = join.getByTestId('joined-fields')
   await expect(joined).toHaveAttribute('data-state', 'known')
+  await expect(joined).toHaveAttribute('data-expanded', 'false')
+  await expect(joined.getByTestId('joined-summary')).toContainText(/\d+ joined fields \(src_…\)/)
+  await expect(joined.locator('[data-field]')).toHaveCount(0)
+  const collapsed = (await join.boundingBox())!.height
+  const toggle = joined.getByTestId('joined-toggle')
+  await toggle.click()
+  await expect(joined).toHaveAttribute('data-expanded', 'true')
   await expect(joined.locator('[data-field="src_products_held"]')).toBeVisible()
   await expect(joined.locator('[data-field="src_region"] .react-flow__handle')).toHaveCount(1)
+  await expect.poll(async () => (await join.boundingBox())!.height).toBeGreaterThan(collapsed + 100)
+  // Nodes below the join move to make room (measured size feeds layout).
+  const agg = graph.locator('.react-flow__node[data-id="requests[0].aggregations[0]"]')
+  await expect(agg).toBeVisible()
+
+  // A joined field wired downstream keeps its wire collapsed or not: the
+  // wire lands on the summary line while the list is collapsed.
+  await agg.click()
+  await page.getByTestId('inspector').locator('[data-field="field"] input').fill('src_age')
+  const wire = graph.locator('.react-flow__edge[data-id^="requests[0].joins[0]|field:src_age->requests[0].aggregations[0]|"]')
+  await expect(wire).toHaveCount(1)
+  await expect(joined.locator('[data-field="src_age"]')).toHaveClass(/used/)
+  await toggle.click()
+  await expect(joined).toHaveAttribute('data-expanded', 'false')
+  await expect.poll(async () => (await join.boundingBox())!.height).toBeLessThan(collapsed + 1)
+  await expect(wire).toHaveCount(1)
+  await expect(joined.locator('[data-testid="joined-summary"] .react-flow__handle.used')).toHaveCount(1)
+  const box = (await joined.getByTestId('joined-summary').boundingBox())!
+  // One end of the wire sits at the summary line's right edge.
+  const ends = await wire.locator('.react-flow__edge-path').evaluate((el) => {
+    type Pt = { x: number; y: number; matrixTransform: (m: unknown) => Pt }
+    const p = el as unknown as { getScreenCTM: () => unknown; getTotalLength: () => number; getPointAtLength: (at: number) => Pt }
+    const m = p.getScreenCTM()
+    return [0, p.getTotalLength()].map((at) => {
+      const pt = p.getPointAtLength(at).matrixTransform(m)
+      return { x: pt.x, y: pt.y }
+    })
+  })
+  expect(ends.some((pt) => Math.abs(pt.y - (box.y + box.height / 2)) < box.height && Math.abs(pt.x - (box.x + box.width)) < 16)).toBe(true)
   const preview = join.locator('[data-testid="preview"]')
   await expect(preview).toHaveAttribute('data-state', 'ok')
   await expect(preview).toContainText('joined rows')

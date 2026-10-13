@@ -5,12 +5,12 @@ import { describe, expect, it } from 'vitest'
 import type { CohortField, Manifest } from '../api.ts'
 import { toPlain } from './jsonTree.ts'
 import { buildComposeGraph } from './composeGraph.ts'
-import { cohortOptions, joinIssues, joinKeyRefusal, joinKinds, maxJoins, type RightSide } from './joins.ts'
+import { cohortOptions, joinBodyLines, joinBodyRows, joinedSummary, joinIssues, joinKeyRefusal, joinKinds, maxJoins, type RightSide } from './joins.ts'
 import { emitModel, emitModelText, parseModel, type GraphModel } from './model.ts'
 import { applyField, buildForm } from './paramForms.ts'
 import { paletteItems, placeNode } from './palette.ts'
 import { invalidated } from './previews.ts'
-import { buildRequestGraph, hasPreview, type OpNode, type RequestGraph } from './requestGraph.ts'
+import { buildRequestGraph, estimateHeight, hasPreview, LAYOUT, type OpNode, type RequestGraph } from './requestGraph.ts'
 import { checkConnection, connectWire, disconnectWire } from './wiring.ts'
 import catalogText from './testdata/catalog.slim.json?raw'
 
@@ -229,5 +229,41 @@ describe('joinIssues', () => {
       ['requests[0].joins[0].right', 'JOIN_RIGHT', 'right is required: pick the cohort to join'],
       ['requests[0].joins[0].on[0].right_field', 'JOIN_FIELD', 'on[0] needs a right_field'],
     ])
+  })
+})
+
+describe('compact join body', () => {
+  const PAIRS = JOINED.replace(
+    '"on":[{"left_field":"id","right_field":"user_id"}]',
+    '"on":[{"left_field":"id","right_field":"user_id"},{"left_field":"region","right_field":"zone"},{"left_field":"amount"}]',
+  )
+  const join = node(graphOf(parseModel(PAIRS, 'request')), 'joins[0]')
+  const body = joinBodyRows(join.data.rows)
+
+  it('draws each on pair as one line keyed by its left_field, the append port as a plain row', () => {
+    expect(body.map((b) => (b.kind === 'pair' ? `${b.left?.value ?? '?'}=${b.right?.value ?? '?'}` : b.row.key))).toEqual([
+      'right',
+      'as',
+      'id=user_id',
+      'region=zone',
+      'amount=?',
+      'on[3].left_field',
+    ])
+    const pair = body.find((b) => b.kind === 'pair' && b.index === 1)
+    expect(pair).toMatchObject({ left: { key: 'on[1].left_field', ref: 'region', resolved: true }, right: { value: 'zone', invalid: true } })
+    expect(body.find((b) => b.kind === 'pair' && b.index === 0)).toMatchObject({ right: { value: 'user_id' } })
+    expect((body.find((b) => b.kind === 'pair' && b.index === 0) as { right: { invalid?: true } }).right.invalid).toBeUndefined()
+  })
+
+  it('summarises the joined fields with their prefix', () => {
+    expect(joinedSummary(join.data.join!)).toBe('4 joined fields (r_…)')
+    expect(joinedSummary({ as: '', state: 'known', fields: [{ name: 'x', type: 'u8', used: false }] })).toBe('1 joined field')
+  })
+
+  it('estimates the collapsed height: a line per pair and one summary line', () => {
+    expect(joinBodyLines(join.data.rows, join.data.join!, false)).toBe(6 + 1)
+    expect(joinBodyLines(join.data.rows, join.data.join!, true)).toBe(6 + 1 + 4)
+    const { headerHeight, rowHeight, padding, previewHeight } = LAYOUT
+    expect(estimateHeight(join)).toBe(headerHeight + 7 * rowHeight + padding + previewHeight)
   })
 })

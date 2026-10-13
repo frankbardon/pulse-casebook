@@ -1,8 +1,10 @@
-import { use, useState, type KeyboardEvent } from 'react'
-import { Handle, Position, type Node, type NodeProps } from '@xyflow/react'
+import { use, useEffect, useRef, useState, type KeyboardEvent } from 'react'
+import { Handle, Position, useUpdateNodeInternals, type Node, type NodeProps } from '@xyflow/react'
 import type { LaneRole } from './composeGraph.ts'
 import { LaneActionsContext } from './laneActions.ts'
-import { PREVIEW_SECTIONS, type ColumnKey, type CohortNode, type FacetNode, type JoinInfo, type OpNode, type RawNode } from './requestGraph.ts'
+import { PREVIEW_SECTIONS, type ColumnKey, type CohortNode, type FacetNode, type JoinInfo, type OpNode, type ParamRow, type RawNode } from './requestGraph.ts'
+import { joinBodyRows, joinedSummary, type JoinBodyRow } from './joins.ts'
+import { JoinViewContext } from './joinView.ts'
 import { FACET_PROPS } from './facetGraph.ts'
 import { FacetResult } from './FacetPreview.tsx'
 import { FIT_HANDLE } from './wiring.ts'
@@ -27,28 +29,11 @@ export function OpNodeView({ data }: NodeProps<OpNode>) {
         {data.name !== undefined && <span className="gnode-name">{data.name}</span>}
       </header>
       <ul className="gnode-rows">
-        {data.rows.map((r) => (
-          <li
-            key={r.key}
-            className={
-              'gnode-row' +
-              ((r.ref !== undefined && !r.resolved) || r.invalid ? ' unresolved' : '') +
-              (r.port ? ' port' : '') +
-              (r.fit ? ' fit' : '')
-            }
-            data-row={r.key}
-          >
-            {(r.ref !== undefined || r.port) && (
-              <Handle type="target" position={Position.Left} id={`in:${r.key}`} title={r.accepts ?? r.key} />
-            )}
-            <span className="k">{r.key}</span>
-            <span className="v" title={r.value}>
-              {r.port === 'append' ? '+ wire to add' : r.port === 'empty' ? (r.fit ? 'bind a fit' : 'wire a field') : r.value}
-            </span>
-          </li>
-        ))}
+        {data.join
+          ? joinBodyRows(data.rows).map((b) => (b.kind === 'pair' ? <PairRow key={`on[${b.index}]`} pair={b} /> : <Row key={b.row.key} r={b.row} />))
+          : data.rows.map((r) => <Row key={r.key} r={r} />)}
       </ul>
-      {data.join && <JoinedFields join={data.join} />}
+      {data.join && <JoinedFields id={data.path} join={data.join} />}
       {PREVIEW_SECTIONS.has(data.section) && <NodePreview id={data.path} label={data.name} />}
       {data.produces && <Handle type="source" position={Position.Right} id="out" title={`label ${data.name}`} />}
       {data.fit !== undefined && (
@@ -60,10 +45,73 @@ export function OpNodeView({ data }: NodeProps<OpNode>) {
   )
 }
 
+// Row is one param row: a target handle (`in:<row key>`) on rows that
+// reference a field and on input ports.
+function Row({ r }: { r: ParamRow }) {
+  return (
+    <li
+      className={
+        'gnode-row' +
+        ((r.ref !== undefined && !r.resolved) || r.invalid ? ' unresolved' : '') +
+        (r.port ? ' port' : '') +
+        (r.fit ? ' fit' : '')
+      }
+      data-row={r.key}
+    >
+      {(r.ref !== undefined || r.port) && <Handle type="target" position={Position.Left} id={`in:${r.key}`} title={r.accepts ?? r.key} />}
+      <span className="k">{r.key}</span>
+      <span className="v" title={r.value}>
+        {r.port === 'append' ? '+ wire to add' : r.port === 'empty' ? (r.fit ? 'bind a fit' : r.key === 'vector' ? 'wire a vector' : 'wire a field') : r.value}
+      </span>
+    </li>
+  )
+}
+
+// PairRow draws a join key pair on one line, `left_field = right_field`.
+// The left_field is the pair's input (its handle and data-row); either
+// side is drawn red when it is wrong: a left key no cohort field
+// resolves, a right key the right cohort lacks.
+function PairRow({ pair }: { pair: Extract<JoinBodyRow, { kind: 'pair' }> }) {
+  const { left, right, index } = pair
+  const leftBad = left !== undefined && left.ref !== undefined && !left.resolved
+  const rightBad = !!right?.invalid
+  const key = left?.key ?? right?.key ?? `on[${index}]`
+  return (
+    <li className={'gnode-row gnode-pair' + (leftBad || rightBad ? ' unresolved' : '')} data-row={key} data-pair={index}>
+      {left?.ref !== undefined && <Handle type="target" position={Position.Left} id={`in:${left.key}`} title={left.accepts ?? left.key} />}
+      <span className="v" title={`on[${index}]: left_field ${left?.value ?? '(none)'} = right_field ${right?.value ?? '(none)'}`}>
+        <span className={'side' + (leftBad ? ' bad' : '') + (left === undefined ? ' none' : '')}>{left?.value ?? '?'}</span>
+        <span className="eq"> = </span>
+        <span className={'side' + (rightBad ? ' bad' : '') + (right === undefined ? ' none' : '')} data-side="right">
+          {right?.value ?? '?'}
+        </span>
+      </span>
+    </li>
+  )
+}
+
 // JoinedFields lists the fields a join adds (the right cohort's,
 // prefixed with `as`); each is a source handle (`field:<name>`) wired
-// into downstream inputs the way cohort fields are.
-function JoinedFields({ join }: { join: JoinInfo }) {
+// into downstream inputs the way cohort fields are. The list starts
+// collapsed to a summary line (JoinViewContext keeps it expanded per
+// node). Collapsed, every field's handle is still drawn, stacked on the
+// summary line and not draggable, so wires from joined fields keep
+// their source handle and land on the summary row; only the handles of
+// fields in use show.
+function JoinedFields({ id, join }: { id: string; join: JoinInfo }) {
+  const view = use(JoinViewContext)
+  const expanded = view?.expanded.has(id) ?? false
+  const updateInternals = useUpdateNodeInternals()
+  const first = useRef(true)
+  useEffect(() => {
+    // The node's size and handle positions change: re-measure (React
+    // Flow's resize observer does too; this also covers handle moves).
+    if (first.current) {
+      first.current = false
+      return
+    }
+    updateInternals(id)
+  }, [expanded, id, updateInternals])
   const note =
     join.state === 'missing'
       ? join.right === undefined
@@ -72,20 +120,50 @@ function JoinedFields({ join }: { join: JoinInfo }) {
       : join.state === 'pending'
         ? 'reading right cohort…'
         : undefined
+  const canToggle = join.fields.length > 0 && view !== null
   return (
-    <ul className="gnode-rows gnode-joined" data-testid="joined-fields" data-state={join.state}>
-      <li className="gnode-row muted gnode-subhead">
-        <span className="k">joined fields</span>
+    <ul className="gnode-rows gnode-joined" data-testid="joined-fields" data-state={join.state} data-expanded={expanded}>
+      <li className="gnode-row muted gnode-subhead" data-testid="joined-summary">
+        {canToggle ? (
+          <button
+            type="button"
+            className="gnode-toggle nodrag"
+            data-testid="joined-toggle"
+            aria-expanded={expanded}
+            title={expanded ? 'Collapse joined fields' : 'Expand joined fields'}
+            onClick={(e) => {
+              e.stopPropagation()
+              view.toggle(id)
+            }}
+          >
+            {expanded ? '▾' : '▸'} <span className="k">{joinedSummary(join)}</span>
+          </button>
+        ) : (
+          <span className="k">{join.fields.length > 0 ? joinedSummary(join) : 'joined fields'}</span>
+        )}
         {note !== undefined && <span className="v">{note}</span>}
+        {!expanded &&
+          join.fields.map((f) => (
+            <Handle
+              key={f.name}
+              type="source"
+              position={Position.Right}
+              id={`field:${f.name}`}
+              className={'stacked' + (f.used ? ' used' : '')}
+              isConnectable={false}
+              title={`${f.name} ${f.type}`.trim()}
+            />
+          ))}
       </li>
       {join.state === 'known' && join.fields.length === 0 && <li className="gnode-row muted">No fields</li>}
-      {join.fields.map((f) => (
-        <li key={f.name} className={'gnode-row' + (f.used ? ' used' : '')} data-field={f.name}>
-          <span className="k">{f.name}</span>
-          <span className="v type">{f.type || '?'}</span>
-          <Handle type="source" position={Position.Right} id={`field:${f.name}`} title={`${f.name} ${f.type}`.trim()} />
-        </li>
-      ))}
+      {expanded &&
+        join.fields.map((f) => (
+          <li key={f.name} className={'gnode-row' + (f.used ? ' used' : '')} data-field={f.name}>
+            <span className="k">{f.name}</span>
+            <span className="v type">{f.type || '?'}</span>
+            <Handle type="source" position={Position.Right} id={`field:${f.name}`} title={`${f.name} ${f.type}`.trim()} />
+          </li>
+        ))}
     </ul>
   )
 }

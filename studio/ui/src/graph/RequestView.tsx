@@ -40,6 +40,7 @@ import { FacetInspector } from './FacetInspector.tsx'
 import { buildComposeGraph, LANE, laneAt, laneOrder, moveLane, ROOT_LANE, stackLanes, type ComposeGraph, type LaneBox } from './composeGraph.ts'
 import { addLane, moveStage, removable, removeLane, renameLane, renameLaneIds } from './lanes.ts'
 import { LaneActionsContext, type LaneActions } from './laneActions.ts'
+import { JoinViewContext, type JoinView } from './joinView.ts'
 import {
   checkConnection,
   clampToColumn,
@@ -704,6 +705,20 @@ function RequestGraphView({ path, kind, catalog }: { path: string; kind: ViewKin
     [items, placed, place, show, compose, boxes],
   )
 
+  // Join nodes whose joined fields are expanded (view state only).
+  const [joinsOpen, setJoinsOpen] = useState<ReadonlySet<string>>(() => new Set())
+  const joinView = useMemo(
+    (): JoinView => ({
+      expanded: joinsOpen,
+      toggle: (id) =>
+        setJoinsOpen((s) => {
+          const next = new Set(s)
+          if (!next.delete(id)) next.add(id)
+          return next
+        }),
+    }),
+    [joinsOpen],
+  )
   // Lane edits: rename, remove and add change the document; reordering
   // only the sidecar's lane order.
   const laneActions = useMemo((): LaneActions => {
@@ -918,6 +933,7 @@ function RequestGraphView({ path, kind, catalog }: { path: string; kind: ViewKin
             <ValidationContext value={validation}>
               <WireCheckContext value={check}>
                 <LaneActionsContext value={laneActions}>
+                <JoinViewContext value={joinView}>
                 <RouteContext value={routes}>
                 <ReactFlow<FlowNode, GraphEdge>
                   nodes={nodes}
@@ -972,6 +988,7 @@ function RequestGraphView({ path, kind, catalog }: { path: string; kind: ViewKin
                   <EdgeRouter store={routes} enabled={wireMode === 'routed'} onStatus={routeStatus} />
                 </ReactFlow>
                 </RouteContext>
+                </JoinViewContext>
                 <FocusStyle focus={focus} edges={edges} />
                 </LaneActionsContext>
               </WireCheckContext>

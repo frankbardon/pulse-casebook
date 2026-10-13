@@ -18,6 +18,7 @@ import type { ModelNode } from './model.ts'
 import type { PathSegment } from './nodePath.ts'
 import { sectionInfo } from './requestGraph.ts'
 import { joinKinds, type CohortOption } from './joins.ts'
+import { VECTOR_OR_FIELDS } from './ports.ts'
 
 export type FieldType =
   | 'number' // float
@@ -126,6 +127,7 @@ export function buildForm(node: ModelNode, catalog: Catalog = {}, ctx: FormConte
     )
   }
   const sections: FormSection[] = [{ title: 'Slot', fields: slot }]
+  if (VECTOR_OR_FIELDS.has(node.section)) sections.push({ title: 'Members', fields: MATRIX_MEMBER_FIELDS })
   const base = { op, ...(opKnown !== undefined && { opKnown }) }
 
   if (node.section === 'multiplicity') {
@@ -281,6 +283,20 @@ const MULTIPLICITY_FIELDS: FormField[] = [
 ]
 
 // VECTOR_COERCES and VECTOR_KINDS are pulse's closed VectorCoerce and
+// MATRIX_MEMBER_FIELDS edit where a matrix's members come from: exactly
+// one of a vectors entry by name and inline fields (pulse
+// types.MatrixSpec), so formProblems flags both or neither.
+const MATRIX_MEMBER_FIELDS: FormField[] = [
+  { key: 'vector', rel: ['vector'], type: 'string', oneOf: 'members', hint: 'a vectors entry of this request, by name (or wire one into the node)' },
+  {
+    key: 'fields',
+    rel: ['fields'],
+    type: 'strings',
+    oneOf: 'members',
+    hint: 'inline member columns, one per line (or wire fields into the node); globs like q_* expand in schema order',
+  },
+]
+
 // VectorKind enums (types/vector.go, payload-schema "Vector slot").
 export const VECTOR_COERCES = ['binary'] as const
 export const VECTOR_KINDS = ['measure', 'scale', 'composition', 'binary'] as const

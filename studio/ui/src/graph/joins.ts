@@ -12,6 +12,7 @@ import type { GraphModel } from './model.ts'
 import { frameOf, parsePath } from './nodePath.ts'
 import { fieldKind } from './ports.ts'
 import type { Issue } from './validation.ts'
+import type { JoinInfo, ParamRow } from './requestGraph.ts'
 
 // JoinEnvelope is the manifest `join` block (pulse descriptor
 // JoinCapability): the kinds the engine runs and how many joins one
@@ -180,4 +181,50 @@ export function joinIssues(model: GraphModel, ctx: JoinContext): Issue[] {
     }
   }
   return out
+}
+
+// JoinBodyRow is one line of a join node's compact body: an `on` key
+// pair drawn as `left_field = right_field` (keyed and wired by its
+// left_field row, the pair's only input), or any other param row.
+export type JoinBodyRow = { kind: 'pair'; index: number; left?: ParamRow; right?: ParamRow } | { kind: 'row'; row: ParamRow }
+
+const PAIR_ROW = /^on\[(\d+)\]\.(left_field|right_field)$/
+
+// joinBodyRows folds a join's on[i].left_field / on[i].right_field rows
+// into one pair line each, in row order. The next pair's append port
+// (a left_field input with no value yet) stays a plain row.
+export function joinBodyRows(rows: readonly ParamRow[]): JoinBodyRow[] {
+  const out: JoinBodyRow[] = []
+  const pairs = new Map<number, Extract<JoinBodyRow, { kind: 'pair' }>>()
+  for (const row of rows) {
+    const m = row.port ? null : PAIR_ROW.exec(row.key)
+    if (!m) {
+      out.push({ kind: 'row', row })
+      continue
+    }
+    const index = Number(m[1])
+    let pair = pairs.get(index)
+    if (!pair) {
+      pair = { kind: 'pair', index }
+      pairs.set(index, pair)
+      out.push(pair)
+    }
+    if (m[2] === 'left_field') pair.left = row
+    else pair.right = row
+  }
+  return out
+}
+
+// joinedSummary is the collapsed joined-fields line: how many fields the
+// join adds and the `as` prefix they carry ("12 joined fields (src_…)").
+export function joinedSummary(join: JoinInfo): string {
+  const n = join.fields.length
+  return `${n} joined field${n === 1 ? '' : 's'}${join.as !== '' ? ` (${join.as}…)` : ''}`
+}
+
+// joinBodyLines is how many row lines a join node's body draws: one per
+// pair or other row, then the joined-fields head and, when expanded,
+// one per joined field (at least one line: "No fields").
+export function joinBodyLines(rows: readonly ParamRow[], join: JoinInfo, expanded: boolean): number {
+  return joinBodyRows(rows).length + 1 + (expanded ? Math.max(1, join.fields.length) : 0)
 }

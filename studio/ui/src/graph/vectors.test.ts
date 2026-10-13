@@ -184,3 +184,55 @@ describe('placed vector JSON', () => {
     expect((toPlain(emitModel(r.model)) as { vectors: unknown[] }).vectors).toEqual([{ name: 'vector', fields: [] }])
   })
 })
+
+describe('matrix members: vector or fields', () => {
+  const doc = (matrix: string) =>
+    parseModel(`{"cohort":{"filename":"x.pulse"},"vectors":[{"name":"drivers","fields":["revenue"]}],"matrices":[${matrix}]}`, 'request')
+  const ports = (m: GraphModel) =>
+    op(m, 'matrices[0]')
+      .data.rows.filter((r) => r.port)
+      .map((r) => [r.key, r.port])
+  const problems = (m: GraphModel) => clientIssues(m, catalog, cohortFields).filter((i) => i.path === 'matrices[0]').map((i) => i.message)
+
+  it('a vector-backed matrix asks for no fields', () => {
+    const m = doc('{"type":"MAT_CORRELATION","name":"driver_corr","vector":"drivers","encoding":"upper"}')
+    expect(ports(m)).toEqual([])
+    expect(op(m, 'matrices[0]').data.rows.find((r) => r.key === 'vector')).toMatchObject({ ref: 'drivers', resolved: true })
+    expect(problems(m)).toEqual([])
+  })
+
+  it('an inline-fields matrix asks for no vector', () => {
+    const m = doc('{"type":"MAT_CORRELATION","fields":["revenue","pages_viewed"]}')
+    expect(ports(m)).toEqual([['fields[2]', 'append']])
+    expect(problems(m)).toEqual([])
+  })
+
+  it('a matrix with neither offers both inputs and says exactly one', () => {
+    const m = doc('{"type":"MAT_CORRELATION"}')
+    expect(ports(m)).toEqual([
+      ['vector', 'empty'],
+      ['fields[0]', 'append'],
+    ])
+    const g = graphOf(m)
+    const vec = checkConnection(g, { source: 'vectors[0]', sourceHandle: 'out', target: 'matrices[0]', targetHandle: 'in:vector' }, ctx)
+    expect(vec).toMatchObject({ ok: true, ref: 'drivers', rowKey: 'vector' })
+    if (!vec.ok) throw new Error(vec.reason)
+    expect(emitModelText(connectWire(m, 'matrices[0]', vec.rowKey, vec.ref))).toContain('{"type":"MAT_CORRELATION","vector":"drivers"}')
+    expect(checkConnection(g, { source: 'cohort', sourceHandle: 'field:revenue', target: 'matrices[0]', targetHandle: 'in:vector' }, ctx).ok).toBe(false)
+    expect(problems(m)).toEqual(['exactly one of vector, fields'])
+  })
+
+  it('flags a matrix naming both', () => {
+    const m = doc('{"type":"MAT_CORRELATION","vector":"drivers","fields":["revenue"]}')
+    expect(problems(m)).toEqual(['exactly one of vector, fields'])
+  })
+
+  it('edits vector and fields in the inspector', () => {
+    const m = doc('{"type":"MAT_CORRELATION","vector":"drivers"}')
+    const form = buildForm(m.nodes.get('matrices[0]')!, catalog)
+    expect(form.sections.find((s) => s.title === 'Members')?.fields.map((f) => [f.key, f.oneOf])).toEqual([
+      ['vector', 'members'],
+      ['fields', 'members'],
+    ])
+  })
+})

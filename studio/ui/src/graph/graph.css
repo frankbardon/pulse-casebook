@@ -418,6 +418,52 @@
   color: var(--muted);
 }
 
+/* A join key pair on one line: left_field = right_field, the wrong side red. */
+.gnode-pair .v {
+  text-align: left;
+  color: var(--text);
+}
+
+.gnode-row.gnode-pair.unresolved .v {
+  color: var(--text);
+}
+
+.gnode-pair .eq,
+.gnode-pair .side.none {
+  color: var(--muted);
+}
+
+.gnode-pair .side.bad {
+  color: var(--danger);
+}
+
+/* The joined-fields summary line and its expand toggle. */
+.gnode-toggle {
+  all: unset;
+  cursor: pointer;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.gnode-toggle:hover .k,
+.gnode-toggle:focus-visible .k {
+  color: var(--text);
+}
+
+.gnode-toggle:focus-visible {
+  outline: 1px solid var(--accent);
+}
+
+/* Collapsed joined fields keep their handles, stacked on the summary
+   line; only those carrying a wire show. */
+.gnode .react-flow__handle.stacked {
+  pointer-events: none;
+}
+
+.gnode .react-flow__handle.stacked:not(.used) {
+  opacity: 0;
+}
+
 .gnode .react-flow__handle {
   width: 6px;
   height: 6px;
