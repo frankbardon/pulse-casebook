@@ -53,12 +53,5 @@
       "label": "consider_unweighted",
       "weight": null
     }
-  ],
-  "labels": [
-    {
-      "field": "wave",
-      "table": "wave_names",
-      "mode": "replace"
-    }
   ]
 }

@@ -7,8 +7,14 @@ cd "$(dirname "$0")"
 export PULSE_LABEL_TABLES_DIR=./labels
 mkdir -p out deliver
 
-echo "== 00 synthesize cohort (seed 2025)"
-"$PULSE" synth from-schema -s spec/brand_tracker.synth.json -o brand_tracker.pulse --seed 2025 --json > out/00_synth.json
+echo "== 00 synthesize the unweighted sample (seed 2025)"
+"$PULSE" synth from-schema -s spec/brand_tracker.synth.json -o brand_tracker_sample.pulse --seed 2025 --json > out/00_synth.json
+
+echo "== 00 rake each wave to the census targets -> brand_tracker.pulse (weight column \"weight\")"
+rm -f brand_tracker.pulse
+"$PULSE" rake brand_tracker_sample.pulse -o brand_tracker.pulse --margins spec/census_targets.json \
+  --by wave --weight-field weight --json > out/00_rake.json
+echo "== 00_rake: errors=$(jq -c '.errors|length' out/00_rake.json) warnings=$(jq -c '.warnings|length' out/00_rake.json) converged=$(jq -c '.data.converged' out/00_rake.json)"
 "$PULSE" cohort inspect brand_tracker.pulse --json > out/00_inspect.json
 
 run() {  # run <request file>: predict first, then execute
@@ -27,7 +33,9 @@ for f in req/0*.json req/10_*.json; do run "$f"; done
 
 echo "== 11 client hand-off: SPSS .sav (+ labelled Excel)"
 "$PULSE" export predict -i brand_tracker.pulse --format spss --sanitize-names --json > out/11_export_predict.json
-"$PULSE" export spss -i brand_tracker.pulse -o deliver/brand_tracker_2025.sav --sanitize-names --json > out/11_export_spss.json
+"$PULSE" export spss -i brand_tracker.pulse -o deliver/brand_tracker_2025.sav --sanitize-names \
+  --labels wave=wave_names --labels age_band=age_names --labels gender=gender_names --labels region=region_names \
+  --json > out/11_export_spss.json
 "$PULSE" export excel -i brand_tracker.pulse -o deliver/brand_tracker_2025.xlsx \
   --labels wave=wave_names:augment --labels region=region_names:augment --json > out/11_export_excel.json
 rm -f deliver/roundtrip.pulse deliver/roundtrip.pulse.spss.json

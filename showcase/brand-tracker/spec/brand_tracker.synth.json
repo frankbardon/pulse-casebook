@@ -11,15 +11,6 @@
       "description": "Respondent identifier, unique across all four waves."
     },
     {
-      "name": "market",
-      "type": "categorical_u8",
-      "distribution": "constant",
-      "params": {
-        "value": "US"
-      },
-      "description": "Survey market; a single market (US) in this tracker, used as the Total banner column."
-    },
-    {
       "name": "wave",
       "type": "categorical_u8",
       "distribution": "weighted_categorical",
@@ -86,15 +77,6 @@
         ]
       },
       "description": "US census region code NE, MW, SO or WE (label table region_names)."
-    },
-    {
-      "name": "weight",
-      "type": "f64",
-      "distribution": "constant",
-      "params": {
-        "value": 1.0
-      },
-      "description": "Post-stratification weight to census age x gender x region targets; mean is close to 1."
     },
     {
       "name": "aware_unaided",
@@ -603,11 +585,6 @@
     }
   ],
   "rules": [
-    {
-      "set_expr": {
-        "weight": "(wave == \"W4\" ? (age_band == \"18-34\" ? 0.5 : (age_band == \"35-54\" ? 1.178571 : 2.714286)) : (age_band == \"18-34\" ? 0.725 : (age_band == \"35-54\" ? 0.916667 : 1.583333))) * (gender == \"Female\" ? 0.927273 : 1.088889) * (region == \"NE\" ? 0.85 : (region == \"MW\" ? 0.954545 : (region == \"SO\" ? 1.055556 : 1.090909)))"
-      }
-    },
     {
       "when": "aware_unaided == 1",
       "set": {

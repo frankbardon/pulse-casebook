@@ -36,12 +36,6 @@
             "field": "wave"
           }
         ],
-        "columns": [
-          {
-            "type": "GROUP_CATEGORY",
-            "field": "market"
-          }
-        ],
         "cell": {
           "type": "AGG_AVERAGE",
           "field": "has_eco",
