@@ -28,5 +28,5 @@ out/08_image_banner_bh.json	(.data.responses[] | select(.label == "image:Region"
 out/09_image_by_wave.json	.data.crosstab.matrix.cells[0][3].value	0.242	Eco-friendly association, Q4 (weighted)
 out/10_eco_driver.json	.data.responses[0].overlays[0].payload.p_adjusted.cells[5][0].value	0.021	Eco-friendly Q3 vs Q4, Holm p
 out/11_export_spss.json	.data.rows_exported	6000	cases written to the .sav
-out/12_roundtrip_check.json	(.data.data[] | select(.wave == "2")).unaided_weighted	0.284	Q4 (.sav wave code 2) unaided awareness, weighted, read back from the .sav
+out/12_roundtrip_check.json	(.data.data[] | select(.wave == "4")).unaided_weighted	0.284	Q4 (.sav wave code 4) unaided awareness, weighted, read back from the .sav
 deliver/roundtrip.pulse.spss.json	[.payload.variables[] | select(.long_name == "wave" or .long_name == "age_band" or .long_name == "gender" or .long_name == "region") | .categories[] | select(.labelled)] | length	13	value labels on wave, age_band, gender and region, read back from the .sav

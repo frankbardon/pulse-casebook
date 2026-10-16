@@ -252,7 +252,7 @@ Within each age band the weighted and unweighted NPS agree to within 1 point. Th
 The whole tracker is one grouped Process by wave. Each KPI is an aggregation, and each has two overlays:
 
 - `OVERLAY_DELTA_VS_PRIOR` gives the change against the previous wave in the KPI's own units.
-- An inferential `*_VS_PRIOR` overlay tests that change. Proportions use `OVERLAY_PROP_Z_VS_PRIOR` on the mean of a 0/1 indicator. NPS uses `OVERLAY_Z_VS_PRIOR`, which reads the mean, variance and n of an `AGG_VARIANCE` slot on the same score.
+- An inferential `*_VS_PRIOR` overlay tests that change. Proportions use `OVERLAY_PROP_Z_VS_PRIOR` on the mean of a 0/1 indicator. NPS uses `OVERLAY_Z_VS_PRIOR`, which reads the mean, variance and n of an `AGG_WELFORD` slot on the same score. The Welford slot is the test's input only: the change overlay folds one number per wave, so it reads the plain `AGG_AVERAGE` slot.
 
 `params.field` points each overlay at its KPI. A request-level `"multiplicity": {"method": "holm", "family": "request"}` pools every test in the request (5 KPIs × 3 wave steps). Each test then carries `p_adjusted` beside the untouched raw `p_value`.
 
@@ -270,13 +270,13 @@ The bases come from the data rather than from filters. Consideration is null for
  "aggregations": [
    {"type": "AGG_AVERAGE", "field": "consider", "label": "consider"},
    {"type": "AGG_AVERAGE", "field": "nps_score", "label": "nps"},
-   {"type": "AGG_VARIANCE", "field": "nps_score", "label": "nps_variance"},
+   {"type": "AGG_WELFORD", "field": "nps_score", "label": "nps_moments"},
    "... aided, unaided, intent_t2b ..."],
  "overlays": [
    {"name": "consider_change", "kind": "OVERLAY_DELTA_VS_PRIOR", "scope": "group", "params": {"field": "consider"}},
    {"name": "consider_test", "kind": "OVERLAY_PROP_Z_VS_PRIOR", "scope": "group", "params": {"field": "consider"}},
    {"name": "nps_change", "kind": "OVERLAY_DELTA_VS_PRIOR", "scope": "group", "params": {"field": "nps"}},
-   {"name": "nps_test", "kind": "OVERLAY_Z_VS_PRIOR", "scope": "group", "params": {"field": "nps_variance"}},
+   {"name": "nps_test", "kind": "OVERLAY_Z_VS_PRIOR", "scope": "group", "params": {"field": "nps_moments"}},
    "... the same pair for aided, unaided and intent_t2b ..."],
  "multiplicity": {"method": "holm", "family": "request"}}
 ```
@@ -307,12 +307,12 @@ The tests assume each wave is a fresh sample, which is true of this tracker. A p
 
 The whole banner is one Compose request with a `banner` block. It uses Q4 interviews only and is weighted throughout.
 
-- `request` is the base every slot starts from: cohort, weight, the Q4 filter, the two derived scores, and a crosstab whose single row is the wave.
-- `sections` are the stub rows. Each has its own base and lists its KPIs as `cells` (several measures stacked as stub rows). The aware section adds the aided-aware filter.
+- `request` is the base every slot starts from: cohort, weight, the Q4 filter, the two derived scores, the label bindings for the banner columns, and a crosstab whose single row is the wave.
+- `sections` are the stub rows. Each has its own base and lists its KPIs as `cells` (several measures stacked as stub rows). The two aware sections add the aided-aware filter.
 - `groups` are the banner columns: gender, age band and region. `total: true` adds the Total column.
-- `overlays` go on every group slot. `params.letters` asks Pulse for the significance letters.
+- `overlays` go on every group slot. `params.letters` asks Pulse for the significance letters. A section that sets its own `overlays` uses those instead.
 
-Pulse expands this into eight ordinary crosstab slots (two sections × Total and three groups) and stitches them back into one table in `banner.sections`, with the letters on the stitched coordinates. Letters run on across the banner (Gender A–B, Age C–E, Region F–I), but a column is only ever compared with columns of its own group. The Total column is compared with nothing.
+Pulse expands this into twelve ordinary crosstab slots (three sections × Total and three groups) and stitches them back into one table in `banner.sections`, with the letters on the stitched coordinates. Letters run on across the banner (Gender A–B, Age C–E, Region F–I), but a column is only ever compared with columns of its own group. The Total column is compared with nothing.
 
 ```json
 {"requests": [],
@@ -322,27 +322,33 @@ Pulse expands this into eight ordinary crosstab slots (two sections × Total and
                "weight": {"field": "weight", "kind": "probability"},
                "filterers": [{"type": "FILTER_INCLUDE", "field": "wave", "values": ["W4"]}],
                "attributes": ["... intent_t2b (ATTR_CODE_IN codes 4, 5) and nps_score (ATTR_FORMULA) ..."],
+               "labels": [{"field": "age_band", "table": "age_names", "mode": "replace"},
+                          {"field": "region", "table": "region_names", "mode": "replace"}],
                "crosstab": {"rows": [{"type": "GROUP_CATEGORY", "field": "wave"}],
                             "cell": {"type": "AGG_AVERAGE", "field": "aware_aided", "label": "aided"}}},
    "sections": [
      {"label": "all_adults", "cells": [{"type": "AGG_AVERAGE", "field": "aware_aided", "label": "aided"},
                                        {"type": "AGG_AVERAGE", "field": "aware_unaided", "label": "unaided"}]},
      {"label": "aware", "filterers": [{"type": "FILTER_NULL", "field": "consider", "values": ["is_not_null"]}],
-      "cells": ["... consider, intent_t2b, nps ..."]}],
+      "cells": ["... consider, intent_t2b ..."]},
+     {"label": "aware_nps", "filterers": ["... the same aided-aware filter ..."],
+      "cells": [{"type": "AGG_AVERAGE", "field": "nps_score", "label": "nps"}],
+      "overlays": [{"name": "letters", "kind": "OVERLAY_PAIRWISE_WEIGHTED_TWO_MEANS_Z", "scope": "column",
+                    "params": {"n_basis": "kish", "letters": {}}}]}],
    "groups": [{"label": "Gender", "columns": [{"type": "GROUP_CATEGORY", "field": "gender"}]},
               {"label": "Age", "columns": [{"type": "GROUP_CATEGORY", "field": "age_band"}]},
               {"label": "Region", "columns": [{"type": "GROUP_CATEGORY", "field": "region"}]}],
    "total": true,
-   "overlays": [{"name": "letters", "kind": "OVERLAY_PAIRWISE_WEIGHTED_TWO_MEANS_Z", "scope": "column",
-                 "params": {"n_basis": "kish", "letters": {}}}]}}
+   "overlays": [{"name": "letters", "kind": "OVERLAY_PAIRWISE_PROP_Z", "scope": "column",
+                 "params": {"p_source": "cell_value", "letters": {}}}]}}
 ```
 
-One overlay serves every stub, because a banner applies the same overlays to every section. The KPI stubs mix proportions with the NPS mean, so the test is the weighted two-means z with Kish n, which suits both: the mean of a 0/1 indicator is a proportion. (The image banner in Step 7 is all proportions and uses the two-proportion z.)
+Each stub gets the test that fits its measure. The banner-level overlay is the two-proportion z, which the proportion stubs inherit: each cell is the mean of a 0/1 indicator, so `p_source: "cell_value"` reads it as a proportion, and the test reads each cell's Kish `n_eff`. NPS is a mean of a −100/0/+100 score, not a proportion, so it sits in a section of its own whose `overlays` replace the banner's: the weighted two-means z with Kish n. Pulse marks that section's letters `section: true`. The two aware sections share one base, so the table below shows it once. The `labels` bindings ride only the slots that group by their field, so the Age and Region columns carry display labels and no other slot warns.
 
 **Q4 2025 banner, weighted.** A letter means the column is significantly higher than the lettered column of the same group, after Holm across every test in the table. ~~Struck~~ letters are significant at raw p < 0.05 but do not survive Holm. `tables.sh` reads the letters from `banner.sections[].letters` and the raw p-values from each slot's overlay.
 
 <!-- BEGIN generated:kpi_banner (tables.sh) -->
-| | Total | A Female | B Male | C 18-34 | D 35-54 | E 55+ | F Midwest | G Northeast | H South | I West |
+| | Total | A Female | B Male | C 18 to 34 | D 35 to 54 | E 55 and over | F Midwest | G Northeast | H South | I West |
 |---|---|---|---|---|---|---|---|---|---|---|
 | *Base: all adults (unweighted n)* | *1,481* | *796* | *685* | *878* | *408* | *195* | *373* | *272* | *513* | *323* |
 | Aided awareness | 74.4% | 75.2% | 73.6% | 86.3% DE | 77.5% E | 62.7% | 73.3% | 77.6% | 71.1% | 78.4% |
@@ -371,7 +377,8 @@ The image question is a `set_u8` multi-select. The banner's rows are its options
                              {"type": "FILTER_NULL", "field": "attributes", "values": ["is_not_null"]}],
                "crosstab": {"rows": [{"type": "GROUP_SET_PER_ELEMENT", "field": "attributes"}],
                             "cell": {"type": "AGG_COUNT", "field": "resp_id", "label": "share"},
-                            "normalize": "column", "margins": {"columns": true}}},
+                            "normalize": "column", "margins": {"columns": true}},
+               "labels": ["... age_band and region, as in Step 6 ..."]},
    "sections": [{"label": "image"}],
    "groups": [{"label": "Age", "columns": [{"type": "GROUP_CATEGORY", "field": "age_band"}]},
               {"label": "Region", "columns": [{"type": "GROUP_CATEGORY", "field": "region"}]}],
@@ -385,7 +392,7 @@ The two files differ only in `"method": "holm"` vs `"method": "bh"`.
 **Q4 2025 brand image, % of aware adults, weighted.** Letters follow the same convention as Step 6 (Holm; ~~struck~~ = raw only). "(BH: …)" lists the letters that survive Benjamini–Hochberg where they differ from Holm.
 
 <!-- BEGIN generated:image_banner (tables.sh) -->
-| | Total | A 18-34 | B 35-54 | C 55+ | D Midwest | E Northeast | F South | G West |
+| | Total | A 18 to 34 | B 35 to 54 | C 55 and over | D Midwest | E Northeast | F South | G West |
 |---|---|---|---|---|---|---|---|---|
 | *Base: aided-aware (unweighted n)* | *1,199* | *761* | *316* | *122* | *310* | *222* | *398* | *269* |
 | Eco-friendly | 24.2% | 21.4% | 24.8% | 26.4% | 19.3% | 20.8% | 28.1% ~~D~~ | 24.9% |
@@ -474,22 +481,21 @@ The Q2→Q3 and Q3→Q4 rises both survive correction; Q1→Q2 does not. In ever
 
 ```sh
 export PULSE_LABEL_TABLES_DIR=./labels
-pulse export predict -i brand_tracker.pulse --format spss --sanitize-names --json
-pulse export spss    -i brand_tracker.pulse -o deliver/brand_tracker_2025.sav --sanitize-names \
-      --labels wave=wave_names --labels age_band=age_names --labels gender=gender_names \
-      --labels region=region_names --json
+LABELS="--labels wave=wave_names --labels age_band=age_names --labels gender=gender_names --labels region=region_names"
+pulse export predict -i brand_tracker.pulse --format spss --sanitize-names $LABELS --json
+pulse export spss    -i brand_tracker.pulse -o deliver/brand_tracker_2025.sav --sanitize-names $LABELS --json
 pulse export excel   -i brand_tracker.pulse -o deliver/brand_tracker_2025.xlsx \
       --labels wave=wave_names:augment --labels region=region_names:augment --json
 pulse import spss    -i deliver/brand_tracker_2025.sav -o deliver/roundtrip.pulse --json
 pulse api process    -r req/12_roundtrip_check.json --json
 ```
 
-- **Export predict and the export.** Without `--sanitize-names`, export predict refuses with `PULSE_SPSS_NAME_INVALID`: multi-select options become SPSS indicator variables named after the option, and "Good value" is not a legal SPSS name. With the flag, the export writes 6,000 cases. It reports two warnings:
+- **Export predict and the export.** Export predict takes the same flags as the export, so it checks the `--labels` bindings (an unregistered table is `PULSE_LABEL_TABLE_UNKNOWN`) before any file is written. Without `--sanitize-names`, it refuses with `PULSE_SPSS_NAME_INVALID`: multi-select options become SPSS indicator variables named after the option, and "Good value" is not a legal SPSS name. With the flag, the export writes 6,000 cases. It reports two warnings:
   - `PULSE_SPSS_NAME_SANITIZED` lists the five renames, such as `Good value` → `Good_value`.
   - `PULSE_SPSS_SIDECAR_ABSENT` is expected, because this cohort never came from SPSS.
-- **What the `.sav` contains.** Each field description becomes the SPSS variable label. The four `--labels` bindings turn wave, age band, gender and region into numeric variables with value labels, so the client sees "2025 Q4", "55 and over" and "Northeast" in SPSS, not bare codes. The codes number the categories in the order they first appear in the cohort, so wave code 1 is "2025 Q3" (the first respondent's wave); the value label is what to read. `attributes` becomes eight 0/1 dichotomies plus a multiple-dichotomy set definition, so it re-imports as a multi-select. `weight` is carried as a variable, and the client applies it with `WEIGHT BY weight`.
+- **What the `.sav` contains.** Each field description becomes the SPSS variable label. The four `--labels` bindings turn wave, age band, gender and region into numeric variables with value labels, so the client sees "2025 Q4", "55 and over" and "Northeast" in SPSS, not bare codes. The codes follow the order of each label table, so wave codes 1–4 are 2025 Q1–Q4 and region codes 1–4 are Northeast, Midwest, South and West. `attributes` becomes eight 0/1 dichotomies plus a multiple-dichotomy set definition, so it re-imports as a multi-select. Each dichotomy's variable label is the question's label followed by its option ("…: Good value"). `weight` is carried as a variable, and the client applies it with `WEIGHT BY weight`.
 - **The Excel copy.** It keeps the codes and adds `wave_label` ("2025 Q1"…) and `region_label` ("Northeast"…) columns from the label tables.
-- **Read-back check.** Importing the `.sav` gives back the codes, and the metadata sidecar (`deliver/roundtrip.pulse.spss.json`) carries all 13 value labels. `req/12_roundtrip_check.json` is the Step 2 request pointed at the re-imported cohort, grouped by the SPSS wave code. It returns exactly the Step 2 figures: for code 2 ("2025 Q4"), weighted unaided awareness 28.4% and weighted consideration 51.9%. So the client's file reproduces the deck.
+- **Read-back check.** Importing the `.sav` gives back the codes, and the metadata sidecar (`deliver/roundtrip.pulse.spss.json`) carries all 13 value labels. Every re-imported variable, the eight dichotomies included, comes back with its variable label, so the read-back request predicts with no warnings. `req/12_roundtrip_check.json` is the Step 2 request pointed at the re-imported cohort, grouped by the SPSS wave code. It returns exactly the Step 2 figures: for code 4 ("2025 Q4"), weighted unaided awareness 28.4% and weighted consideration 51.9%. So the client's file reproduces the deck.
 
 ## Implications for the brand team
 
@@ -507,15 +513,15 @@ pulse api process    -r req/12_roundtrip_check.json --json
 | `pulse rake`: rim weighting to inline census targets, `--by wave`, the efficiency report (Kish `n_eff`, design effect, weight range) | Step 0 |
 | Request `weight` (probability), per-slot `"weight": null`, Kish `n_eff` in components, predict's per-slot weight resolution | Steps 1–10 |
 | Crosstab with `normalize`, `margins`, the implicit Total column, several `cells` as stub rows; Compose batches | Steps 1, 3, 6–9 |
-| Compose `banner` (sections × groups + Total, stitched into `banner.sections`) with significance letters (`params.letters`) | Steps 6–7 |
+| Compose `banner` (sections × groups + Total, stitched into `banner.sections`) with significance letters (`params.letters`), per-section `overlays`, and `labels` on the banner columns | Steps 6–7 |
 | `OVERLAY_PAIRWISE_PROP_Z`, `OVERLAY_PAIRWISE_WEIGHTED_TWO_MEANS_Z` (row and column scope) | Steps 3, 6, 7, 9 |
 | `OVERLAY_DELTA_VS_PRIOR`, `OVERLAY_PROP_Z_VS_PRIOR`, `OVERLAY_Z_VS_PRIOR` | Step 5 |
 | `multiplicity` (`holm`, `bh`; `family: request`, `compose`, `layer`), `p_adjusted` beside raw p | Steps 5–7, 9 |
 | `ATTR_CODE_IN` (top-2-box), `ATTR_FORMULA` (NPS score, null-aware top-2-box), `ATTR_SET_HAS` | Steps 4–6, 9 |
 | `GROUP_SET_PER_ELEMENT`, `FILTER_SET_CONTAINS_ANY` / `_NONE`, `AGG_SET_FREQUENCY` | Steps 7–9 |
-| `AGG_AVERAGE`, `AGG_COUNT`, `AGG_VARIANCE`, `AGG_MIN` / `AGG_MAX`, `AGG_CI_LOWER` / `AGG_CI_UPPER`; `FILTER_INCLUDE`, `FILTER_NULL` | throughout |
-| Label tables (`PULSE_LABEL_TABLES_DIR`, `labels` binding, `--labels ...:augment` on Excel, `--labels` as SPSS value labels) | Steps 2, 10 |
-| `pulse export predict`, `pulse export spss --sanitize-names --labels`, `pulse export excel`, `pulse import spss` | Step 10 |
+| `AGG_AVERAGE`, `AGG_COUNT`, `AGG_WELFORD`, `AGG_MIN` / `AGG_MAX`, `AGG_CI_LOWER` / `AGG_CI_UPPER`; `FILTER_INCLUDE`, `FILTER_NULL` | throughout |
+| Label tables (`PULSE_LABEL_TABLES_DIR`, `labels` binding, `--labels ...:augment` on Excel, `--labels` as SPSS value labels) | Steps 2, 6–8, 10 |
+| `pulse export predict --labels`, `pulse export spss --sanitize-names --labels`, `pulse export excel`, `pulse import spss` | Step 10 |
 
 ## Files
 

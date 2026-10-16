@@ -46,7 +46,19 @@
         "margins": {
           "columns": true
         }
-      }
+      },
+      "labels": [
+        {
+          "field": "age_band",
+          "table": "age_names",
+          "mode": "replace"
+        },
+        {
+          "field": "region",
+          "table": "region_names",
+          "mode": "replace"
+        }
+      ]
     },
     "sections": [
       {

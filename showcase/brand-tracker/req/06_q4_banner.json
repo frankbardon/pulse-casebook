@@ -54,7 +54,19 @@
           "field": "aware_aided",
           "label": "aided"
         }
-      }
+      },
+      "labels": [
+        {
+          "field": "age_band",
+          "table": "age_names",
+          "mode": "replace"
+        },
+        {
+          "field": "region",
+          "table": "region_names",
+          "mode": "replace"
+        }
+      ]
     },
     "sections": [
       {
@@ -93,11 +105,36 @@
             "type": "AGG_AVERAGE",
             "field": "intent_t2b",
             "label": "intent_t2b"
-          },
+          }
+        ]
+      },
+      {
+        "label": "aware_nps",
+        "filterers": [
+          {
+            "type": "FILTER_NULL",
+            "field": "consider",
+            "values": [
+              "is_not_null"
+            ]
+          }
+        ],
+        "cells": [
           {
             "type": "AGG_AVERAGE",
             "field": "nps_score",
             "label": "nps"
+          }
+        ],
+        "overlays": [
+          {
+            "name": "letters",
+            "kind": "OVERLAY_PAIRWISE_WEIGHTED_TWO_MEANS_Z",
+            "scope": "column",
+            "params": {
+              "n_basis": "kish",
+              "letters": {}
+            }
           }
         ]
       }
@@ -135,10 +172,10 @@
     "overlays": [
       {
         "name": "letters",
-        "kind": "OVERLAY_PAIRWISE_WEIGHTED_TWO_MEANS_Z",
+        "kind": "OVERLAY_PAIRWISE_PROP_Z",
         "scope": "column",
         "params": {
-          "n_basis": "kish",
+          "p_source": "cell_value",
           "letters": {}
         }
       }

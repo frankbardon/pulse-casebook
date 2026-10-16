@@ -32,9 +32,9 @@ run() {  # run <request file>: predict first, then execute
 for f in req/0*.json req/10_*.json; do run "$f"; done
 
 echo "== 11 client hand-off: SPSS .sav (+ labelled Excel)"
-"$PULSE" export predict -i brand_tracker.pulse --format spss --sanitize-names --json > out/11_export_predict.json
-"$PULSE" export spss -i brand_tracker.pulse -o deliver/brand_tracker_2025.sav --sanitize-names \
-  --labels wave=wave_names --labels age_band=age_names --labels gender=gender_names --labels region=region_names \
+SPSS_LABELS=(--labels wave=wave_names --labels age_band=age_names --labels gender=gender_names --labels region=region_names)
+"$PULSE" export predict -i brand_tracker.pulse --format spss --sanitize-names "${SPSS_LABELS[@]}" --json > out/11_export_predict.json
+"$PULSE" export spss -i brand_tracker.pulse -o deliver/brand_tracker_2025.sav --sanitize-names "${SPSS_LABELS[@]}" \
   --json > out/11_export_spss.json
 "$PULSE" export excel -i brand_tracker.pulse -o deliver/brand_tracker_2025.xlsx \
   --labels wave=wave_names:augment --labels region=region_names:augment --json > out/11_export_excel.json

@@ -29,10 +29,10 @@ PULSE=/tmp/pulse ./run.sh
 | 0 | `pulse synth from-schema -s spec/brand_tracker.synth.json -o brand_tracker_sample.pulse --seed 2025 --json` | `out/00_synth.json`, `brand_tracker_sample.pulse` |
 | 0 | `pulse rake brand_tracker_sample.pulse -o brand_tracker.pulse --margins spec/census_targets.json --by wave --weight-field weight --json`, then `pulse cohort inspect brand_tracker.pulse --json` | `out/00_rake.json`, `out/00_inspect.json`, `brand_tracker.pulse` |
 | 1–9 | For each `req/01…10_*.json`: `pulse api predict` (single request) or `pulse api predict-compose` (a file with `"requests"`, including the banners), then `pulse api process` or `pulse api compose` with `--json` | `out/<name>.predict.json`, `out/<name>.json` |
-| 10 | `pulse export predict --format spss --sanitize-names`, `pulse export spss --sanitize-names --labels wave=wave_names --labels age_band=age_names --labels gender=gender_names --labels region=region_names`, `pulse export excel --labels wave=wave_names:augment --labels region=region_names:augment`, `pulse import spss`, `pulse cohort inspect` | `out/11_*.json`, `deliver/brand_tracker_2025.sav`, `deliver/brand_tracker_2025.xlsx`, `deliver/roundtrip.pulse` (+ `.spss.json` sidecar) |
+| 10 | `pulse export predict --format spss --sanitize-names` and `pulse export spss --sanitize-names`, both with `--labels wave=wave_names --labels age_band=age_names --labels gender=gender_names --labels region=region_names`; `pulse export excel --labels wave=wave_names:augment --labels region=region_names:augment`, `pulse import spss`, `pulse cohort inspect` | `out/11_*.json`, `deliver/brand_tracker_2025.sav`, `deliver/brand_tracker_2025.xlsx`, `deliver/roundtrip.pulse` (+ `.spss.json` sidecar) |
 | 10 (check) | `pulse api process -r req/12_roundtrip_check.json --json` (the Step 2 request pointed at the re-imported `.sav`) | `out/12_roundtrip_check.json` |
 
-`run.sh` exports `PULSE_LABEL_TABLES_DIR=./labels`. Steps 2, 8 and 10 need it, because they bind the label tables.
+`run.sh` exports `PULSE_LABEL_TABLES_DIR=./labels`. Steps 2, 6, 7, 8 and 10 need it, because they bind the label tables.
 
 To run one step by hand from the example directory:
 
@@ -46,9 +46,8 @@ The expected end state:
 
 - The rake converges in every wave with no warnings.
 - Every response has `"errors": []` and `"warnings": []`.
-- Every predict says `"valid": true` with no errors or warnings, except the round-trip predict (below).
-- The SPSS export reports two expected warnings: `PULSE_SPSS_SIDECAR_ABSENT` and `PULSE_SPSS_NAME_SANITIZED`.
-- The round-trip predict lists `PULSE_FIELD_DESCRIPTION_LOW_QUALITY` warnings for the eight re-imported indicator variables, which come back without a variable label.
+- Every predict says `"valid": true` with no errors or warnings, the round-trip predict on the re-imported `.sav` included.
+- The SPSS export and its export predict report the same two expected warnings: `PULSE_SPSS_SIDECAR_ABSENT` and `PULSE_SPSS_NAME_SANITIZED`.
 
 ## Expected key figures
 
@@ -86,7 +85,7 @@ The expected end state:
 | `out/09_image_by_wave.json` | Eco-friendly association, Q4 (weighted) | 0.242 |
 | `out/10_eco_driver.json` | Eco-friendly Q3 vs Q4, Holm p | 0.021 |
 | `out/11_export_spss.json` | cases written to the .sav | 6000 |
-| `out/12_roundtrip_check.json` | Q4 (.sav wave code 2) unaided awareness, weighted, read back from the .sav | 0.284 |
+| `out/12_roundtrip_check.json` | Q4 (.sav wave code 4) unaided awareness, weighted, read back from the .sav | 0.284 |
 | `deliver/roundtrip.pulse.spss.json` | value labels on wave, age_band, gender and region, read back from the .sav | 13 |
 <!-- END generated:key_figures -->
 

@@ -159,7 +159,7 @@ def lettered($s; $L; $r; $j): ($L.cells[$r][$j].value) as $cell |
   end;
 def header($s; $L):
   "| | " + ([range($s.column_keys | length) as $j |
-      ($L.cells[0][$j].value.letter) as $l | ($s.column_keys[$j][0] | col) as $c |
+      ($L.cells[0][$j].value.letter) as $l | ($s.column_keys[$j][0]) as $c |
       if $l then "\($l) \($c)" else $c end] | join(" | ")) + " |";
 '
 
@@ -169,9 +169,12 @@ gen_kpi_banner() {  # Step 6
   {aided: "Aided awareness", unaided: "Unaided awareness", consider: "Consideration", intent_t2b: "Intent top-2-box", nps: "NPS"} as $names |
   ($secs[0]) as $s0 |
   header($s0; $s0.letters[0]), "|---|" + ([$s0.column_keys[] | "---|"] | join("")),
-  ($secs[] as $s | $s.letters[0] as $L |
-    ([range($s.column_keys | length) as $j | blockof($s; $j) as $b | slot($b.slot).components.crosstab.cell_components[0][$j - $b.start].n | int]) as $base |
-    "| *Base: \(if $s.label == "aware" then "aided-aware" else "all adults" end) (unweighted n)* | " + ($base | map("*\(.)*") | join(" | ")) + " |",
+  ($secs | to_entries[] | .key as $k | .value as $s | $s.letters[0] as $L |
+    def base($x): [range($x.column_keys | length) as $j | blockof($x; $j) as $b | slot($b.slot).components.crosstab.cell_components[0][$j - $b.start].n | int];
+    base($s) as $base |
+    # a section on the same base as the one above it (the NPS stub) gets no second base row
+    (if $k > 0 and base($secs[$k - 1]) == $base then empty else
+      "| *Base: \(if ($s.label | startswith("aware")) then "aided-aware" else "all adults" end) (unweighted n)* | " + ($base | map("*\(.)*") | join(" | ")) + " |" end),
     ($s.row_keys | to_entries[] | .key as $r | (.value[-1]) as $m |
       "| \($names[$m] // $m) | " + ([range($s.column_keys | length) as $j | $s.cells[$r][$j].value as $v |
         (if $m == "nps" then ($v | signed(1)) else ($v | pct) end) + lettered($s; $L; $r; $j)] | join(" | ")) + " |")),
