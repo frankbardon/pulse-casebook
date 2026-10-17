@@ -1,12 +1,27 @@
 {
-  "cohort": {"filename": "ab_test.pulse", "data_dir": "."},
-  "aggregations": [{"type": "AGG_COUNT", "field": "user_id", "label": "users"}],
-  "attributes": [
-    {"type": "ATTR_FORMULA", "field": "pages_viewed", "label": "pages_cuped",
-     "expression": "pages_viewed - 0.7601 * (prior_sessions - 10.0076)"}
-  ],
+  "cohort": {
+    "filename": "ab_test.pulse",
+    "data_dir": "."
+  },
   "tests": [
-    {"type": "TEST_WELCH", "field": "pages_viewed", "split_by": "arm", "label": "pages_raw"},
-    {"type": "TEST_WELCH", "field": "pages_cuped", "split_by": "arm", "label": "pages_cuped"}
+    {
+      "type": "TEST_WELCH",
+      "field": "pages_viewed",
+      "split_by": "arm",
+      "label": "pages_raw",
+      "params": {
+        "reference": "old_page"
+      }
+    },
+    {
+      "type": "TEST_WELCH",
+      "field": "pages_viewed",
+      "split_by": "arm",
+      "label": "pages_cuped",
+      "params": {
+        "reference": "old_page",
+        "covariate": "prior_sessions"
+      }
+    }
   ]
 }

@@ -9,7 +9,6 @@ mkdir -p out
 
 # Step 0 — data
 "$PULSE" synth from-schema -s data/ab_test.synth.json -o ab_test.pulse --seed 64 --json > out/00_synth.json
-"$PULSE" synth from-schema -s data/design.synth.json  -o design.pulse  --seed 1  --json > out/00_design.json
 "$PULSE" cohort inspect ab_test.pulse --json > out/00_inspect.json
 
 # Step 1 — predict (no data read beyond header + schema)
@@ -17,7 +16,7 @@ mkdir -p out
 "$PULSE" api predict -r req/04_metric_battery.json --json             > out/01_predict_corrected.json
 
 # Steps 2-10
-"$PULSE" api facet   -r req/02_srm_gof.facet.json --json             > out/02_srm_gof.json
+"$PULSE" api process -r req/02_srm_gof.json --json                    > out/02_srm_gof.json
 "$PULSE" api process -r req/03_srm_by_week_and_balance.json --json   > out/03_srm_by_week_and_balance.json
 "$PULSE" api process -r req/04_metric_battery.json --json            > out/04_metric_battery.json
 "$PULSE" api compose -r req/05_revenue_shape.compose.json --json     > out/05_revenue_shape.json

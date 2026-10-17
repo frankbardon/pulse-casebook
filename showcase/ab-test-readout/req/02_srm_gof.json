@@ -1,0 +1,19 @@
+{
+  "cohort": {
+    "filename": "ab_test.pulse",
+    "data_dir": "."
+  },
+  "tests": [
+    {
+      "type": "TEST_CHISQ",
+      "rows": "arm",
+      "label": "srm_vs_50_50",
+      "params": {
+        "expected": {
+          "new_page": 0.5,
+          "old_page": 0.5
+        }
+      }
+    }
+  ]
+}

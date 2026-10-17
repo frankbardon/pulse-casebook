@@ -52,7 +52,7 @@
      "description": "Active on day 30 after assignment (set by rule)."}
   ],
   "correlations": [
-    {"a": "prior_sessions", "b": "pages_viewed", "correlation": 0.78}
+    {"a": "prior_sessions", "b": "pages_viewed", "rho": 0.78}
   ],
   "rules": [
     {"set_expr": {"is_variant": "arm == \"new_page\" ? 1 : 0"}},
