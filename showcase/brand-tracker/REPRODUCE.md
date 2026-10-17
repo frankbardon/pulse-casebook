@@ -2,7 +2,7 @@
 
 Everything runs through the `pulse` CLI. `jq` is used only to read figures out of the JSON responses (`run.sh` prints error counts, `verify.sh` compares figures and `tables.sh` writes the tables in `README.md`).
 
-The example needs a Pulse build with `pulse rake`, Compose banners with significance letters, the `*_VS_PRIOR` overlays and SPSS value labels. Until those reach a tagged release, build Pulse from the `survey-tables` branch of the local checkout: `make pulse PULSE_REF=survey-tables`.
+The example needs a Pulse build with `pulse rake`, Compose banners with significance letters, the `*_VS_PRIOR` overlays and SPSS value labels. They ship in `v1.0.0-alpha.16`; build that tag (or any later `main`) from the local checkout: `make pulse PULSE_REF=v1.0.0-alpha.16`.
 
 ## From a fresh checkout
 
