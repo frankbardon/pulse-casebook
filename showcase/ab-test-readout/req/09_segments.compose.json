@@ -30,7 +30,8 @@
           "split_by": "arm",
           "label": "trial_start_lift",
           "params": {
-            "success": "yes"
+            "success": "yes",
+            "reference": "old_page"
           }
         }
       ]
@@ -61,7 +62,8 @@
           "split_by": "arm",
           "label": "trial_start_lift",
           "params": {
-            "success": "yes"
+            "success": "yes",
+            "reference": "old_page"
           }
         }
       ]
@@ -92,7 +94,8 @@
           "split_by": "arm",
           "label": "trial_start_lift",
           "params": {
-            "success": "yes"
+            "success": "yes",
+            "reference": "old_page"
           }
         }
       ]
@@ -123,7 +126,8 @@
           "split_by": "arm",
           "label": "trial_start_lift",
           "params": {
-            "success": "yes"
+            "success": "yes",
+            "reference": "old_page"
           }
         }
       ]
