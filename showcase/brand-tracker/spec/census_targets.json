@@ -1,0 +1,26 @@
+[
+  {
+    "field": "age_band",
+    "targets": {
+      "18-34": 29,
+      "35-54": 33,
+      "55+": 38
+    }
+  },
+  {
+    "field": "gender",
+    "targets": {
+      "Female": 51,
+      "Male": 49
+    }
+  },
+  {
+    "field": "region",
+    "targets": {
+      "NE": 17,
+      "MW": 21,
+      "SO": 38,
+      "WE": 24
+    }
+  }
+]

@@ -13,12 +13,6 @@
             "field": "wave"
           }
         ],
-        "columns": [
-          {
-            "type": "GROUP_CATEGORY",
-            "field": "market"
-          }
-        ],
         "cell": {
           "type": "AGG_AVERAGE",
           "field": "aware_unaided",
@@ -51,12 +45,6 @@
           {
             "type": "GROUP_CATEGORY",
             "field": "wave"
-          }
-        ],
-        "columns": [
-          {
-            "type": "GROUP_CATEGORY",
-            "field": "market"
           }
         ],
         "cell": {

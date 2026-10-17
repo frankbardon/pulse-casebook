@@ -40,12 +40,6 @@
             "field": "age_band"
           }
         ],
-        "columns": [
-          {
-            "type": "GROUP_CATEGORY",
-            "field": "market"
-          }
-        ],
         "cell": {
           "type": "AGG_COUNT",
           "field": "resp_id",
@@ -67,12 +61,6 @@
             "field": "gender"
           }
         ],
-        "columns": [
-          {
-            "type": "GROUP_CATEGORY",
-            "field": "market"
-          }
-        ],
         "cell": {
           "type": "AGG_COUNT",
           "field": "resp_id",
@@ -92,12 +80,6 @@
           {
             "type": "GROUP_CATEGORY",
             "field": "region"
-          }
-        ],
-        "columns": [
-          {
-            "type": "GROUP_CATEGORY",
-            "field": "market"
           }
         ],
         "cell": {
@@ -156,12 +138,6 @@
             "field": "age_band"
           }
         ],
-        "columns": [
-          {
-            "type": "GROUP_CATEGORY",
-            "field": "market"
-          }
-        ],
         "cell": {
           "type": "AGG_COUNT",
           "field": "resp_id",
@@ -187,12 +163,6 @@
             "field": "gender"
           }
         ],
-        "columns": [
-          {
-            "type": "GROUP_CATEGORY",
-            "field": "market"
-          }
-        ],
         "cell": {
           "type": "AGG_COUNT",
           "field": "resp_id",
@@ -216,12 +186,6 @@
           {
             "type": "GROUP_CATEGORY",
             "field": "region"
-          }
-        ],
-        "columns": [
-          {
-            "type": "GROUP_CATEGORY",
-            "field": "market"
           }
         ],
         "cell": {
