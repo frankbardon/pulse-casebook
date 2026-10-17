@@ -82,7 +82,6 @@ Every request names its cohort as `{"filename": "ab_test.pulse", "data_dir": "."
 
 ```bash
 pulse synth from-schema -s data/ab_test.synth.json -o ab_test.pulse --seed 64
-pulse synth from-schema -s data/design.synth.json  -o design.pulse  --seed 1
 pulse cohort inspect ab_test.pulse
 ```
 
@@ -102,15 +101,15 @@ Excerpt of the spec, showing how the treatment effects are encoded as structural
 ```
 
 Result: `rows_generated: 40000`, `rows_rejected: 0`, no warnings. The cohort file is 2,121,853 bytes.
-`design.pulse` is a two-row cohort holding one `old_page` row and one `new_page` row, which encodes the
-planned 50/50 split for Step 2.
+The planned 50/50 split needs no second cohort: Step 2 states it as a parameter of the test.
 
 ### Step 1 — Predict before running
 
 `pulse api predict` reads only the header and schema, never the records. It validates the request,
 reports whether the request can stream in one pass, and counts the p-values the request will produce.
 [`req/01_predict_battery.json`](req/01_predict_battery.json) is the six-metric battery plus the
-Mann-Whitney revenue test, with no correction:
+Mann-Whitney revenue test, with no correction. It has tests and no aggregation at all, and predict
+accepts that:
 
 ```bash
 pulse api predict -r req/01_predict_battery.json --json
@@ -129,32 +128,33 @@ advisory; this battery stays under that threshold, so no advisory fires.
 
 ### Step 2 — Sample-ratio mismatch (SRM): does the split match the design?
 
-A two-row population cohort encodes the planned 50/50 split. Against it, a χ² goodness-of-fit overlay
-on a FacetSchema request tests the observed assignment counts
-([`req/02_srm_gof.facet.json`](req/02_srm_gof.facet.json)):
+The planned 50/50 split is a parameter of a `TEST_CHISQ` goodness-of-fit test: `params.expected` maps
+each `arm` value to its planned share. With no `cols`, the test compares the observed assignment counts
+with those shares. It is one test in a plain process request, with no aggregation and no second cohort
+([`req/02_srm_gof.json`](req/02_srm_gof.json)):
 
 ```json
 {
   "cohort": {"filename": "ab_test.pulse", "data_dir": "."},
-  "fields": ["arm"],
-  "overlays": [
-    {"name": "srm_vs_50_50_design", "kind": "OVERLAY_CHISQ_VS_POP", "scope": "group",
-     "ref": {"population": {"cohort": "design.pulse"}}}
+  "tests": [
+    {"type": "TEST_CHISQ", "rows": "arm", "label": "srm_vs_50_50",
+     "params": {"expected": {"new_page": 0.5, "old_page": 0.5}}}
   ]
 }
 ```
 
 ```bash
-pulse api facet -r req/02_srm_gof.facet.json --json
+pulse api process -r req/02_srm_gof.json --json
 ```
 
-| Arm | Users |
-|---|---|
-| new_page | 20,087 |
-| old_page | 19,913 |
+| Arm | Users | Expected under 50/50 |
+|---|---|---|
+| new_page | 20,087 | 20,000 |
+| old_page | 19,913 | 20,000 |
 
 **χ² = 0.757, df = 1, p = 0.384. No sample-ratio mismatch.** A 174-user gap on 40,000 users is
-ordinary randomization noise.
+ordinary randomization noise. A one-sample `TEST_PROP_Z` on `arm` with `params.success = "new_page"` and
+`params.p0 = 0.5` asks the same question for a two-arm split (z = 0.87, the same p = 0.384).
 
 ### Step 3 — SRM over time and covariate balance
 
@@ -167,14 +167,14 @@ corrects across the six:
 {
   "cohort": {"filename": "ab_test.pulse", "data_dir": "."},
   "multiplicity": {"method": "holm", "family": "request"},
-  "aggregations": [{"type": "AGG_COUNT", "field": "user_id", "label": "users"}],
   "tests": [
     {"type": "TEST_CHISQ", "rows": "arm", "cols": "assign_week", "label": "srm_by_week"},
     {"type": "TEST_CHISQ", "rows": "arm", "cols": "device", "label": "balance_device"},
     {"type": "TEST_CHISQ", "rows": "arm", "cols": "plan_tier", "label": "balance_plan_tier"},
     {"type": "TEST_CHISQ", "rows": "arm", "cols": "region", "label": "balance_region"},
     {"type": "TEST_CHISQ", "rows": "arm", "cols": "user_type", "label": "balance_user_type"},
-    {"type": "TEST_WELCH", "field": "prior_sessions", "split_by": "arm", "label": "balance_prior_sessions"}
+    {"type": "TEST_WELCH", "field": "prior_sessions", "split_by": "arm", "label": "balance_prior_sessions",
+     "params": {"reference": "old_page"}}
   ]
 }
 ```
@@ -201,27 +201,33 @@ region, user type and prior activity.
 ### Step 4 — The six-metric scorecard, raw and Holm-corrected
 
 [`req/04_metric_battery.json`](req/04_metric_battery.json) runs all six pre-registered tests in one
-streaming pass. The `multiplicity` block adds `p_adjusted` and `significant_adjusted` next to each raw
+streaming pass, with no aggregation. The `multiplicity` block adds `p_adjusted` and `significant_adjusted` next to each raw
 p-value, which stays unchanged:
 
 ```json
 {
   "cohort": {"filename": "ab_test.pulse", "data_dir": "."},
   "multiplicity": {"method": "holm", "family": "request"},
-  "aggregations": [{"type": "AGG_COUNT", "field": "user_id", "label": "users"}],
   "tests": [
-    {"type": "TEST_PROP_Z", "field": "trial_started", "split_by": "arm", "label": "trial_start", "params": {"success": "yes"}},
-    {"type": "TEST_PROP_Z", "field": "paid_converted", "split_by": "arm", "label": "paid_conversion", "params": {"success": "yes"}},
-    {"type": "TEST_WELCH", "field": "revenue", "split_by": "arm", "label": "revenue_per_user"},
-    {"type": "TEST_WELCH", "field": "pages_viewed", "split_by": "arm", "label": "pages_viewed"},
-    {"type": "TEST_WELCH", "field": "days_to_convert", "split_by": "arm", "label": "days_to_convert"},
-    {"type": "TEST_PROP_Z", "field": "retained_30d", "split_by": "arm", "label": "retention_30d", "params": {"success": "yes"}}
+    {"type": "TEST_PROP_Z", "field": "trial_started", "split_by": "arm", "label": "trial_start",
+     "params": {"success": "yes", "reference": "old_page"}},
+    {"type": "TEST_PROP_Z", "field": "paid_converted", "split_by": "arm", "label": "paid_conversion",
+     "params": {"success": "yes", "reference": "old_page"}},
+    {"type": "TEST_WELCH", "field": "revenue", "split_by": "arm", "label": "revenue_per_user",
+     "params": {"reference": "old_page"}},
+    {"type": "TEST_WELCH", "field": "pages_viewed", "split_by": "arm", "label": "pages_viewed",
+     "params": {"reference": "old_page"}},
+    {"type": "TEST_WELCH", "field": "days_to_convert", "split_by": "arm", "label": "days_to_convert",
+     "params": {"reference": "old_page"}},
+    {"type": "TEST_PROP_Z", "field": "retained_30d", "split_by": "arm", "label": "retention_30d",
+     "params": {"success": "yes", "reference": "old_page"}}
   ]
 }
 ```
 
-Pulse orders the groups alphabetically, so `diff` is always `new_page − old_page`. A positive number
-means the redesign is higher.
+Every two-group test sets `params.reference` to `old_page`, so each lift reads `new_page − old_page`
+by declaration, not by the alphabetical order of the group names. A positive number means the redesign
+is higher; no figure below is sign-flipped.
 
 | Metric | new_page | old_page | Diff (new − old) | 95% CI | Raw p | Holm p (m = 6) | Verdict |
 |---|---|---|---|---|---|---|---|
@@ -291,44 +297,41 @@ rank test's p = 0.029 as "revenue went up".
 
 `pages_viewed` is strongly predicted by `prior_sessions`, which was measured before assignment.
 Regressing the metric on the treatment indicator and the covariate removes that predictable variance
-from the treatment estimate without biasing it. [`req/07_regression_adjustment.json`](req/07_regression_adjustment.json):
+from the treatment estimate without biasing it. [`req/07_regression_adjustment.json`](req/07_regression_adjustment.json)
+is a regression-only request:
 
 ```json
 {
   "cohort": {"filename": "ab_test.pulse", "data_dir": "."},
-  "aggregations": [{"type": "AGG_AVERAGE", "field": "prior_sessions", "label": "mean_prior_sessions"}],
   "regressions": [
     {"type": "REG_OLS", "name": "pages_unadjusted", "target": "pages_viewed", "predictors": ["is_variant"]},
-    {"type": "REG_OLS", "name": "pages_adjusted",   "target": "pages_viewed", "predictors": ["is_variant", "prior_sessions"]},
-    {"type": "REG_OLS", "name": "cuped_theta",      "target": "pages_viewed", "predictors": ["prior_sessions"]}
+    {"type": "REG_OLS", "name": "pages_adjusted",   "target": "pages_viewed", "predictors": ["is_variant", "prior_sessions"]}
   ]
 }
 ```
 
-| Model | Treatment effect (pages) | Std. error | p | R² |
-|---|---|---|---|---|
-| `pages ~ is_variant` | +0.0938 | 0.0394 | 0.0172 | 0.0001 |
-| `pages ~ is_variant + prior_sessions` | +0.0862 | **0.0249** | **0.00054** | 0.600 |
+| Model | Treatment effect (pages) | Std. error | 95% CI | p | R² |
+|---|---|---|---|---|---|
+| `pages ~ is_variant` | +0.0938 | 0.0394 | +0.017 to +0.171 | 0.0172 | 0.0001 |
+| `pages ~ is_variant + prior_sessions` | +0.0862 | **0.0249** | **+0.037 to +0.135** | **0.00054** | 0.600 |
 
 Adding the covariate cuts the standard error of the treatment effect from 0.0394 to 0.0249 pages, about
-37% smaller. The same request returns the two numbers needed for a CUPED-style adjusted metric: the
-pooled slope θ = **0.7601** (`cuped_theta`, coefficient on `prior_sessions`) and the covariate mean
-**10.0076** (`AGG_AVERAGE`).
+37% smaller. The regression's `ci_lower` / `ci_upper` are Student-t intervals on the residual degrees
+of freedom (39,997 here), the same inference the p-values use.
 
-### Step 8 — The same adjustment as a CUPED metric, with a confidence interval
+### Step 8 — The same adjustment as a CUPED test, in one call
 
-`REG_OLS` reports a standard error but no confidence interval. To get one, build the CUPED-adjusted
-metric `pages − θ·(prior_sessions − mean)` as a per-row `ATTR_FORMULA` attribute and run a Welch test
-on it ([`req/08_cuped_welch.json`](req/08_cuped_welch.json)):
+CUPED subtracts the part of the metric that the pre-period covariate predicts. A mean test does it
+itself when it is given `params.covariate`: Pulse estimates the slope θ from the data, adjusts each value
+by `θ·(covariate − mean)`, and tests the adjusted metric. No separate regression to fetch θ, and no
+hand-built formula attribute ([`req/08_cuped_welch.json`](req/08_cuped_welch.json)):
 
 ```json
-"attributes": [
-  {"type": "ATTR_FORMULA", "field": "pages_viewed", "label": "pages_cuped",
-   "expression": "pages_viewed - 0.7601 * (prior_sessions - 10.0076)"}
-],
 "tests": [
-  {"type": "TEST_WELCH", "field": "pages_viewed", "split_by": "arm", "label": "pages_raw"},
-  {"type": "TEST_WELCH", "field": "pages_cuped", "split_by": "arm", "label": "pages_cuped"}
+  {"type": "TEST_WELCH", "field": "pages_viewed", "split_by": "arm", "label": "pages_raw",
+   "params": {"reference": "old_page"}},
+  {"type": "TEST_WELCH", "field": "pages_viewed", "split_by": "arm", "label": "pages_cuped",
+   "params": {"reference": "old_page", "covariate": "prior_sessions"}}
 ]
 ```
 
@@ -336,6 +339,10 @@ on it ([`req/08_cuped_welch.json`](req/08_cuped_welch.json)):
 |---|---|---|---|---|
 | Raw | +0.094 | +0.017 to +0.171 | 15.56 / 15.42 | 0.0171 |
 | CUPED-adjusted | +0.086 | **+0.037 to +0.135** | 6.25 / 6.13 | **0.00054** |
+
+The adjusted result carries its own working in `details`: `theta` = **0.7601**, `covariate_mean` =
+10.0076, `variance_reduction` = **0.600**, and `diff_unadjusted` = 0.0938 beside the adjusted `diff`.
+They match the Step 7 regression: the same +0.0862 estimate, the same interval, the same p.
 
 **The covariate cuts the per-arm variance by 60% and narrows the 95% CI from 0.154 to 0.098 pages
 wide.** The estimate barely moves (+0.094 → +0.086 pages; the planted truth is +0.07). Only the
@@ -362,7 +369,7 @@ correction is computed over the same 12 p-values as before.
       "groups": [{"type": "GROUP_CATEGORY", "field": "device"}],
       "aggregations": [{"type": "AGG_COUNT", "field": "user_id", "label": "users"}],
       "tests": [{"type": "TEST_PROP_Z", "field": "trial_started", "split_by": "arm",
-                 "label": "trial_start_lift", "params": {"success": "yes"}}]
+                 "label": "trial_start_lift", "params": {"success": "yes", "reference": "old_page"}}]
     }
   ]
 }
@@ -417,30 +424,37 @@ segment interaction. The 0/1 columns are built in-request with `ATTR_FORMULA`
   {"type": "ATTR_FORMULA", "field": "region", "label": "emea", "expression": "region == \"EMEA\" ? 1 : 0"},
   {"type": "ATTR_FORMULA", "field": "region", "label": "new_page_x_emea", "expression": "(region == \"EMEA\" && arm == \"new_page\") ? 1 : 0"}
 ],
+"multiplicity": {"method": "holm", "family": "request"},
 "regressions": [
-  {"type": "REG_OLS", "name": "trial_by_mobile", "target": "trial", "predictors": ["is_variant", "mobile", "new_page_x_mobile"]},
-  {"type": "REG_OLS", "name": "trial_by_emea",   "target": "trial", "predictors": ["is_variant", "emea", "new_page_x_emea"]}
+  {"type": "REG_OLS", "name": "trial_by_mobile", "target": "trial", "predictors": ["is_variant", "mobile", "new_page_x_mobile"],
+   "multiplicity": {"method": "holm", "coefficients": ["new_page_x_mobile"]}},
+  {"type": "REG_OLS", "name": "trial_by_emea",   "target": "trial", "predictors": ["is_variant", "emea", "new_page_x_emea"],
+   "multiplicity": {"method": "holm", "coefficients": ["new_page_x_emea"]}}
 ]
 ```
 
-| Model | Lift outside the segment (`is_variant`) | Extra lift inside the segment (interaction) | SE | Interaction p |
-|---|---|---|---|---|
-| mobile vs. not mobile | −0.30 pp (p = 0.449) | **+3.28 pp** | 0.63 pp | **2.2 × 10⁻⁷** |
-| EMEA vs. not EMEA | +0.75 pp (p = 0.042) | +0.89 pp | 0.68 pp | 0.188 |
+The request-level `multiplicity` block sets the family, and each regression's own `multiplicity` block
+makes its named coefficient a member of it. The two interaction hypotheses form one Holm family
+(`m = 2`); the other coefficients stay uncorrected and are not in the family.
+
+| Model | Lift outside the segment (`is_variant`) | Extra lift inside the segment (interaction) | SE | 95% CI | Interaction p | Holm p (m = 2) |
+|---|---|---|---|---|---|---|
+| mobile vs. not mobile | −0.30 pp (p = 0.449) | **+3.28 pp** | 0.63 pp | +2.04 to +4.52 pp | **2.2 × 10⁻⁷** | **4.4 × 10⁻⁷** |
+| EMEA vs. not EMEA | +0.75 pp (p = 0.042) | +0.89 pp | 0.68 pp | −0.44 to +2.23 pp | 0.188 | 0.188 |
 
 **The redesign works on mobile and does nothing measurable elsewhere.** Outside mobile the lift is
 −0.30 pp and indistinguishable from zero; on mobile it is about 3.3 pp higher. EMEA's lift is not
 distinguishable from other regions' (p = 0.19). It survived Step 9 only because EMEA is large and
 carries its share of mobile users. Plan tier, region and user type show no real heterogeneity, which
-matches the planted truth. Regression coefficient p-values are outside Pulse's `multiplicity` block,
-so treat the mobile hypothesis as the single pre-specified one. Its p-value is small enough that any
-reasonable correction leaves it standing.
+matches the planted truth. The mobile interaction survives the two-hypothesis Holm correction with
+room to spare (4.4 × 10⁻⁷).
 
 ### Step 11 — The whole readout in one Compose call
 
-[`req/11_readout.compose.json`](req/11_readout.compose.json) bundles the guardrails, the final scorecard
-(with the pre-registered CUPED version of pages viewed in place of the raw metric), the revenue rank
-sensitivity check and the regression adjustment into four labelled slots. Each slot keeps its own Holm
+[`req/11_readout.compose.json`](req/11_readout.compose.json) bundles the guardrails (the SRM goodness-of-fit
+test, kept out of the correction, plus the balance checks), the final scorecard (with the pre-registered
+CUPED version of pages viewed in place of the raw metric), the revenue rank sensitivity check and the
+regression adjustment into four labelled slots. No slot has an aggregation. Each slot keeps its own Holm
 family:
 
 ```bash
@@ -460,7 +474,7 @@ Final scorecard (slot `scorecard`, Holm across 6):
 | Days to convert | −0.68 days | −1.71 to +0.36 | 0.201 | 0.604 | no |
 | 30-day retention | −0.13 pp | −1.10 to +0.84 pp | 0.792 | 1.000 | no |
 
-The `guardrails` slot repeats Step 3: all six Holm p-values are 1.000. `revenue_sensitivity` repeats the
+The `guardrails` slot repeats Steps 2 and 3: the SRM p of 0.384 stays out of the family, and the six balance Holm p-values are all 1.000. `revenue_sensitivity` repeats the
 Mann-Whitney p = 0.029. `regression_adjustment` repeats the SE drop from 0.0394 to 0.0249. Serial and
 `--parallel 0` runs return identical `data`.
 
@@ -499,13 +513,13 @@ activity as a covariate.
 | `pulse synth from-schema` (distributions, `correlations`, `rules` with `when` / `set_expr` / `set_null`, fixed `--seed`) | Step 0 | Deterministic 40,000-user cohort with planted effects |
 | `pulse cohort inspect` | Step 0 | Self-describing schema with field descriptions |
 | `pulse api predict` / `predict-facet` / `predict-compose` | Steps 1, 11 | Validation, streamability and reasons, p-value accounting without reading records |
-| FacetSchema + `OVERLAY_CHISQ_VS_POP` | Step 2 | χ² goodness-of-fit SRM check against a design cohort |
+| `TEST_CHISQ` with `params.expected` | Step 2 | χ² goodness-of-fit SRM check against the planned split |
 | `TEST_CHISQ` | Step 3 | SRM by week and covariate balance |
-| `TEST_PROP_Z` | Steps 4, 9 | Binary metrics: rates, diff, Wald CI, Cohen's h |
-| `TEST_WELCH` | Steps 3, 4, 6, 8 | Continuous metrics, with CI |
+| `TEST_PROP_Z` | Steps 4, 9 | Binary metrics: rates, diff (treatment − `reference`), Wald CI, Cohen's h |
+| `TEST_WELCH` (`params.reference`, `params.covariate`) | Steps 3, 4, 6, 8 | Continuous metrics, with CI; the CUPED adjustment in one call |
 | `TEST_MANN_WHITNEY_U` | Step 6 | Rank-based sensitivity check on revenue (plus its ties warning) |
-| `multiplicity` (`holm`, families `request` and `compose`) | Steps 3, 4, 9, 11 | Adjusted p-values next to the raw ones |
-| `REG_OLS` | Steps 7, 10 | Regression adjustment; treatment × segment interaction |
-| `ATTR_FORMULA` | Steps 8, 10 | CUPED-adjusted metric; 0/1 indicator and interaction columns |
+| `multiplicity` (`holm`, families `request` and `compose`; per-test `none`; per-regression `coefficients`) | Steps 2, 3, 4, 9, 10, 11 | Adjusted p-values next to the raw ones; interaction coefficients in the same family |
+| `REG_OLS` | Steps 7, 10 | Regression adjustment with Student-t CI; treatment × segment interaction |
+| `ATTR_FORMULA` | Step 10 | 0/1 indicator and interaction columns |
 | `GROUP_CATEGORY`, `FILTER_INCLUDE`, `AGG_COUNT` / `AVERAGE` / `STDDEV` / `MEDIAN` / `PERCENTILE` / `SKEWNESS` / `MAX` | Steps 5, 9 | Revenue shape; per-variable grouped segment tests (`groups` + `tests`) |
 | `pulse api compose` (labelled slots, `--parallel`) | Steps 5, 9, 11 | Whole readout in one call; serial and parallel give identical results |
