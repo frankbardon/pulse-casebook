@@ -1,0 +1,2283 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "responses": [
+      {
+        "label": "deciles",
+        "data": [
+          {
+            "cum_capture": 1,
+            "cum_defaults": 2149,
+            "cum_lift": 1,
+            "defaults": 22,
+            "lift": 0.10237319683573755,
+            "loans": 1800,
+            "mean_pd": 0.02138775668024799,
+            "mean_true_pd": 0.019498986316922637,
+            "observed_rate": 0.012222222222222223,
+            "pd_score": "D1",
+            "principal_usd": "18099743.26",
+            "share_of_defaults": 0.010237319683573755
+          },
+          {
+            "cum_capture": 0.9897626803164262,
+            "cum_defaults": 2127,
+            "cum_lift": 1.0997363114626957,
+            "defaults": 45,
+            "lift": 0.20939972080037228,
+            "loans": 1800,
+            "mean_pd": 0.034664866119440405,
+            "mean_true_pd": 0.03277345508179348,
+            "observed_rate": 0.025,
+            "pd_score": "D2",
+            "principal_usd": "20259860.49",
+            "share_of_defaults": 0.020939972080037228
+          },
+          {
+            "cum_capture": 0.968822708236389,
+            "cum_defaults": 2082,
+            "cum_lift": 1.2110283852954862,
+            "defaults": 97,
+            "lift": 0.4513727315030246,
+            "loans": 1800,
+            "mean_pd": 0.04747582564522327,
+            "mean_true_pd": 0.04686953379378954,
+            "observed_rate": 0.05388888888888889,
+            "pd_score": "D3",
+            "principal_usd": "20697410.03",
+            "share_of_defaults": 0.045137273150302464
+          },
+          {
+            "cum_capture": 0.9236854350860866,
+            "cum_defaults": 1985,
+            "cum_lift": 1.3195506215515524,
+            "defaults": 123,
+            "lift": 0.5723592368543509,
+            "loans": 1800,
+            "mean_pd": 0.0625269568104365,
+            "mean_true_pd": 0.06312496549806171,
+            "observed_rate": 0.06833333333333333,
+            "pd_score": "D4",
+            "principal_usd": "21003111.06",
+            "share_of_defaults": 0.057235923685435085
+          },
+          {
+            "cum_capture": 0.8664495114006515,
+            "cum_defaults": 1862,
+            "cum_lift": 1.444082519001086,
+            "defaults": 136,
+            "lift": 0.6328524895300139,
+            "loans": 1800,
+            "mean_pd": 0.08012679370833338,
+            "mean_true_pd": 0.08203650666286666,
+            "observed_rate": 0.07555555555555556,
+            "pd_score": "D5",
+            "principal_usd": "21555439.48",
+            "share_of_defaults": 0.0632852489530014
+          },
+          {
+            "cum_capture": 0.80316426244765,
+            "cum_defaults": 1726,
+            "cum_lift": 1.6063285248953,
+            "defaults": 184,
+            "lift": 0.8562121917170776,
+            "loans": 1800,
+            "mean_pd": 0.10082885740444535,
+            "mean_true_pd": 0.10402218505837318,
+            "observed_rate": 0.10222222222222223,
+            "pd_score": "D6",
+            "principal_usd": "21877918.39",
+            "share_of_defaults": 0.08562121917170777
+          },
+          {
+            "cum_capture": 0.7175430432759423,
+            "cum_defaults": 1542,
+            "cum_lift": 1.7938576081898556,
+            "defaults": 262,
+            "lift": 1.2191717077710562,
+            "loans": 1800,
+            "mean_pd": 0.12688899242511775,
+            "mean_true_pd": 0.13048450404624073,
+            "observed_rate": 0.14555555555555555,
+            "pd_score": "D7",
+            "principal_usd": "21947745.12",
+            "share_of_defaults": 0.12191717077710564
+          },
+          {
+            "cum_capture": 0.5956258724988367,
+            "cum_defaults": 1280,
+            "cum_lift": 1.9854195749961223,
+            "defaults": 290,
+            "lift": 1.3494648673801768,
+            "loans": 1800,
+            "mean_pd": 0.1615601041630831,
+            "mean_true_pd": 0.1651323047867499,
+            "observed_rate": 0.16111111111111112,
+            "pd_score": "D8",
+            "principal_usd": "22569149.07",
+            "share_of_defaults": 0.13494648673801768
+          },
+          {
+            "cum_capture": 0.46067938576081896,
+            "cum_defaults": 990,
+            "cum_lift": 2.3033969288040947,
+            "defaults": 384,
+            "lift": 1.78687761749651,
+            "loans": 1800,
+            "mean_pd": 0.21404992622907495,
+            "mean_true_pd": 0.21581177966912485,
+            "observed_rate": 0.21333333333333335,
+            "pd_score": "D9",
+            "principal_usd": "23308313.31",
+            "share_of_defaults": 0.178687761749651
+          },
+          {
+            "cum_capture": 0.281991624011168,
+            "cum_defaults": 606,
+            "cum_lift": 2.81991624011168,
+            "defaults": 606,
+            "lift": 2.81991624011168,
+            "loans": 1800,
+            "mean_pd": 0.33820564064521685,
+            "mean_true_pd": 0.33457925949530415,
+            "observed_rate": 0.33666666666666667,
+            "pd_score": "D10",
+            "principal_usd": "25300934.41",
+            "share_of_defaults": 0.281991624011168
+          }
+        ],
+        "metadata": {
+          "total_rows": 60000,
+          "filtered_rows": 18000,
+          "cohort_file": "./loans.pulse"
+        },
+        "components": {
+          "aggregations": [
+            {
+              "label": "loans",
+              "n": 18000,
+              "n_null": 0,
+              "groups": [
+                {
+                  "group_key": [
+                    "D1"
+                  ],
+                  "n": 1800,
+                  "n_null": 0
+                },
+                {
+                  "group_key": [
+                    "D2"
+                  ],
+                  "n": 1800,
+                  "n_null": 0
+                },
+                {
+                  "group_key": [
+                    "D3"
+                  ],
+                  "n": 1800,
+                  "n_null": 0
+                },
+                {
+                  "group_key": [
+                    "D4"
+                  ],
+                  "n": 1800,
+                  "n_null": 0
+                },
+                {
+                  "group_key": [
+                    "D5"
+                  ],
+                  "n": 1800,
+                  "n_null": 0
+                },
+                {
+                  "group_key": [
+                    "D6"
+                  ],
+                  "n": 1800,
+                  "n_null": 0
+                },
+                {
+                  "group_key": [
+                    "D7"
+                  ],
+                  "n": 1800,
+                  "n_null": 0
+                },
+                {
+                  "group_key": [
+                    "D8"
+                  ],
+                  "n": 1800,
+                  "n_null": 0
+                },
+                {
+                  "group_key": [
+                    "D9"
+                  ],
+                  "n": 1800,
+                  "n_null": 0
+                },
+                {
+                  "group_key": [
+                    "D10"
+                  ],
+                  "n": 1800,
+                  "n_null": 0
+                }
+              ]
+            },
+            {
+              "label": "defaults",
+              "n": 18000,
+              "n_null": 0,
+              "groups": [
+                {
+                  "group_key": [
+                    "D1"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 22
+                  }
+                },
+                {
+                  "group_key": [
+                    "D2"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 45
+                  }
+                },
+                {
+                  "group_key": [
+                    "D3"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 97
+                  }
+                },
+                {
+                  "group_key": [
+                    "D4"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 123
+                  }
+                },
+                {
+                  "group_key": [
+                    "D5"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 136
+                  }
+                },
+                {
+                  "group_key": [
+                    "D6"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 184
+                  }
+                },
+                {
+                  "group_key": [
+                    "D7"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 262
+                  }
+                },
+                {
+                  "group_key": [
+                    "D8"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 290
+                  }
+                },
+                {
+                  "group_key": [
+                    "D9"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 384
+                  }
+                },
+                {
+                  "group_key": [
+                    "D10"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 606
+                  }
+                }
+              ]
+            },
+            {
+              "label": "observed_rate",
+              "n": 18000,
+              "n_null": 0,
+              "groups": [
+                {
+                  "group_key": [
+                    "D1"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 22
+                  }
+                },
+                {
+                  "group_key": [
+                    "D2"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 45
+                  }
+                },
+                {
+                  "group_key": [
+                    "D3"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 97
+                  }
+                },
+                {
+                  "group_key": [
+                    "D4"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 123
+                  }
+                },
+                {
+                  "group_key": [
+                    "D5"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 136
+                  }
+                },
+                {
+                  "group_key": [
+                    "D6"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 184
+                  }
+                },
+                {
+                  "group_key": [
+                    "D7"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 262
+                  }
+                },
+                {
+                  "group_key": [
+                    "D8"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 290
+                  }
+                },
+                {
+                  "group_key": [
+                    "D9"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 384
+                  }
+                },
+                {
+                  "group_key": [
+                    "D10"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 606
+                  }
+                }
+              ]
+            },
+            {
+              "label": "mean_pd",
+              "n": 18000,
+              "n_null": 0,
+              "groups": [
+                {
+                  "group_key": [
+                    "D1"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 38.49796202444638
+                  }
+                },
+                {
+                  "group_key": [
+                    "D2"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 62.396759014992725
+                  }
+                },
+                {
+                  "group_key": [
+                    "D3"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 85.45648616140188
+                  }
+                },
+                {
+                  "group_key": [
+                    "D4"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 112.5485222587857
+                  }
+                },
+                {
+                  "group_key": [
+                    "D5"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 144.22822867500008
+                  }
+                },
+                {
+                  "group_key": [
+                    "D6"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 181.4919433280016
+                  }
+                },
+                {
+                  "group_key": [
+                    "D7"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 228.40018636521197
+                  }
+                },
+                {
+                  "group_key": [
+                    "D8"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 290.8081874935496
+                  }
+                },
+                {
+                  "group_key": [
+                    "D9"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 385.2898672123349
+                  }
+                },
+                {
+                  "group_key": [
+                    "D10"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 608.7701531613903
+                  }
+                }
+              ]
+            },
+            {
+              "label": "mean_true_pd",
+              "n": 18000,
+              "n_null": 0,
+              "groups": [
+                {
+                  "group_key": [
+                    "D1"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 35.098175370460744
+                  }
+                },
+                {
+                  "group_key": [
+                    "D2"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 58.99221914722827
+                  }
+                },
+                {
+                  "group_key": [
+                    "D3"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 84.36516082882117
+                  }
+                },
+                {
+                  "group_key": [
+                    "D4"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 113.62493789651109
+                  }
+                },
+                {
+                  "group_key": [
+                    "D5"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 147.66571199316
+                  }
+                },
+                {
+                  "group_key": [
+                    "D6"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 187.23993310507174
+                  }
+                },
+                {
+                  "group_key": [
+                    "D7"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 234.87210728323333
+                  }
+                },
+                {
+                  "group_key": [
+                    "D8"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 297.23814861614983
+                  }
+                },
+                {
+                  "group_key": [
+                    "D9"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 388.46120340442474
+                  }
+                },
+                {
+                  "group_key": [
+                    "D10"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 602.2426670915474
+                  }
+                }
+              ]
+            },
+            {
+              "label": "principal_usd",
+              "n": 18000,
+              "n_null": 0,
+              "groups": [
+                {
+                  "group_key": [
+                    "D1"
+                  ],
+                  "n": 1800,
+                  "n_null": 0
+                },
+                {
+                  "group_key": [
+                    "D2"
+                  ],
+                  "n": 1800,
+                  "n_null": 0
+                },
+                {
+                  "group_key": [
+                    "D3"
+                  ],
+                  "n": 1800,
+                  "n_null": 0
+                },
+                {
+                  "group_key": [
+                    "D4"
+                  ],
+                  "n": 1800,
+                  "n_null": 0
+                },
+                {
+                  "group_key": [
+                    "D5"
+                  ],
+                  "n": 1800,
+                  "n_null": 0
+                },
+                {
+                  "group_key": [
+                    "D6"
+                  ],
+                  "n": 1800,
+                  "n_null": 0
+                },
+                {
+                  "group_key": [
+                    "D7"
+                  ],
+                  "n": 1800,
+                  "n_null": 0
+                },
+                {
+                  "group_key": [
+                    "D8"
+                  ],
+                  "n": 1800,
+                  "n_null": 0
+                },
+                {
+                  "group_key": [
+                    "D9"
+                  ],
+                  "n": 1800,
+                  "n_null": 0
+                },
+                {
+                  "group_key": [
+                    "D10"
+                  ],
+                  "n": 1800,
+                  "n_null": 0
+                }
+              ]
+            }
+          ],
+          "groupers": [
+            {
+              "field": "pd_score",
+              "total_n": 18000,
+              "operator": {
+                "buckets": [
+                  {
+                    "count": 1800,
+                    "high": 0.028699831332879944,
+                    "key": "D1",
+                    "low": 0.006642185574657666
+                  },
+                  {
+                    "count": 1800,
+                    "high": 0.04072165927253808,
+                    "key": "D2",
+                    "low": 0.028707480141889646
+                  },
+                  {
+                    "count": 1800,
+                    "high": 0.05449498019502875,
+                    "key": "D3",
+                    "low": 0.040726642008554255
+                  },
+                  {
+                    "count": 1800,
+                    "high": 0.07126005002426032,
+                    "key": "D4",
+                    "low": 0.0545056564190304
+                  },
+                  {
+                    "count": 1800,
+                    "high": 0.08949777988064661,
+                    "key": "D5",
+                    "low": 0.07126704632965612
+                  },
+                  {
+                    "count": 1800,
+                    "high": 0.11299614542619558,
+                    "key": "D6",
+                    "low": 0.08950631192137262
+                  },
+                  {
+                    "count": 1800,
+                    "high": 0.1420244757453585,
+                    "key": "D7",
+                    "low": 0.11300632481819922
+                  },
+                  {
+                    "count": 1800,
+                    "high": 0.1839708199654523,
+                    "key": "D8",
+                    "low": 0.1420853481213914
+                  },
+                  {
+                    "count": 1800,
+                    "high": 0.2502423980480752,
+                    "key": "D9",
+                    "low": 0.18398446474960076
+                  },
+                  {
+                    "count": 1800,
+                    "high": 0.7094969741060748,
+                    "key": "D10",
+                    "low": 0.2502781896310223
+                  }
+                ],
+                "edges": [
+                  0.006642185574657666,
+                  0.028707480141889646,
+                  0.040726642008554255,
+                  0.0545056564190304,
+                  0.07126704632965612,
+                  0.08950631192137262,
+                  0.11300632481819922,
+                  0.1420853481213914,
+                  0.18398446474960076,
+                  0.2502781896310223,
+                  0.7094969741060748
+                ],
+                "method": "linear",
+                "n_quantiles": 10
+              }
+            }
+          ],
+          "filterers": [
+            {
+              "n_in": 60000,
+              "n_out": 18000,
+              "n_null_input": 0
+            }
+          ],
+          "run": {
+            "total_records": 60000,
+            "filtered_records": 18000,
+            "null_records": 0
+          }
+        }
+      },
+      {
+        "label": "deciles_leaky",
+        "data": [
+          {
+            "cum_capture": 1,
+            "cum_defaults": 2149,
+            "cum_lift": 1,
+            "defaults": 1,
+            "lift": 0.004653327128897162,
+            "loans": 1800,
+            "mean_pd": 0.0000694787035950225,
+            "mean_true_pd": 0.057027028284584405,
+            "observed_rate": 0.0005555555555555556,
+            "pd_leaky": "D1",
+            "principal_usd": "19891709.32",
+            "share_of_defaults": 0.00046533271288971617
+          },
+          {
+            "cum_capture": 0.9995346672871103,
+            "cum_defaults": 2148,
+            "cum_lift": 1.1105940747634557,
+            "defaults": 1,
+            "lift": 0.004653327128897162,
+            "loans": 1800,
+            "mean_pd": 0.00024969664476270204,
+            "mean_true_pd": 0.07349406092178074,
+            "observed_rate": 0.0005555555555555556,
+            "pd_leaky": "D2",
+            "principal_usd": "21016131.80",
+            "share_of_defaults": 0.00046533271288971617
+          },
+          {
+            "cum_capture": 0.9990693345742205,
+            "cum_defaults": 2147,
+            "cum_lift": 1.2488366682177756,
+            "defaults": 3,
+            "lift": 0.013959981386691484,
+            "loans": 1800,
+            "mean_pd": 0.0005430034048804838,
+            "mean_true_pd": 0.08601580644780296,
+            "observed_rate": 0.0016666666666666668,
+            "pd_leaky": "D3",
+            "principal_usd": "21571110.77",
+            "share_of_defaults": 0.0013959981386691485
+          },
+          {
+            "cum_capture": 0.9976733364355514,
+            "cum_defaults": 2144,
+            "cum_lift": 1.4252476234793594,
+            "defaults": 3,
+            "lift": 0.013959981386691484,
+            "loans": 1800,
+            "mean_pd": 0.0010243872501749325,
+            "mean_true_pd": 0.09715518222618964,
+            "observed_rate": 0.0016666666666666668,
+            "pd_leaky": "D4",
+            "principal_usd": "21453645.11",
+            "share_of_defaults": 0.0013959981386691485
+          },
+          {
+            "cum_capture": 0.9962773382968823,
+            "cum_defaults": 2141,
+            "cum_lift": 1.6604622304948038,
+            "defaults": 7,
+            "lift": 0.03257328990228013,
+            "loans": 1800,
+            "mean_pd": 0.0018743888667779871,
+            "mean_true_pd": 0.1081399238817489,
+            "observed_rate": 0.0038888888888888888,
+            "pd_leaky": "D5",
+            "principal_usd": "21146368.03",
+            "share_of_defaults": 0.003257328990228013
+          },
+          {
+            "cum_capture": 0.9930200093066542,
+            "cum_defaults": 2134,
+            "cum_lift": 1.9860400186133085,
+            "defaults": 4,
+            "lift": 0.018613308515588647,
+            "loans": 1800,
+            "mean_pd": 0.003418279407159028,
+            "mean_true_pd": 0.11587320704258078,
+            "observed_rate": 0.0022222222222222222,
+            "pd_leaky": "D6",
+            "principal_usd": "21669160.77",
+            "share_of_defaults": 0.0018613308515588647
+          },
+          {
+            "cum_capture": 0.9911586784550954,
+            "cum_defaults": 2130,
+            "cum_lift": 2.4778966961377384,
+            "defaults": 7,
+            "lift": 0.03257328990228013,
+            "loans": 1800,
+            "mean_pd": 0.006914878476509959,
+            "mean_true_pd": 0.13145103008731945,
+            "observed_rate": 0.0038888888888888888,
+            "pd_leaky": "D7",
+            "principal_usd": "21705064.90",
+            "share_of_defaults": 0.003257328990228013
+          },
+          {
+            "cum_capture": 0.9879013494648674,
+            "cum_defaults": 2123,
+            "cum_lift": 3.293004498216225,
+            "defaults": 19,
+            "lift": 0.08841321544904607,
+            "loans": 1800,
+            "mean_pd": 0.016655804415698566,
+            "mean_true_pd": 0.15030922720456363,
+            "observed_rate": 0.010555555555555556,
+            "pd_leaky": "D8",
+            "principal_usd": "22324862.49",
+            "share_of_defaults": 0.008841321544904607
+          },
+          {
+            "cum_capture": 0.9790600279199628,
+            "cum_defaults": 2104,
+            "cum_lift": 4.895300139599814,
+            "defaults": 339,
+            "lift": 1.5774778966961378,
+            "loans": 1800,
+            "mean_pd": 0.1816409698973093,
+            "mean_true_pd": 0.1705548703963327,
+            "observed_rate": 0.18833333333333332,
+            "pd_leaky": "D9",
+            "principal_usd": "22418765.63",
+            "share_of_defaults": 0.15774778966961378
+          },
+          {
+            "cum_capture": 0.821312238250349,
+            "cum_defaults": 1765,
+            "cum_lift": 8.21312238250349,
+            "defaults": 1765,
+            "lift": 8.21312238250349,
+            "loans": 1800,
+            "mean_pd": 0.985692441461779,
+            "mean_true_pd": 0.2043131439163244,
+            "observed_rate": 0.9805555555555555,
+            "pd_leaky": "D10",
+            "principal_usd": "23422805.80",
+            "share_of_defaults": 0.821312238250349
+          }
+        ],
+        "metadata": {
+          "total_rows": 60000,
+          "filtered_rows": 18000,
+          "cohort_file": "./loans.pulse"
+        },
+        "components": {
+          "aggregations": [
+            {
+              "label": "loans",
+              "n": 18000,
+              "n_null": 0,
+              "groups": [
+                {
+                  "group_key": [
+                    "D1"
+                  ],
+                  "n": 1800,
+                  "n_null": 0
+                },
+                {
+                  "group_key": [
+                    "D2"
+                  ],
+                  "n": 1800,
+                  "n_null": 0
+                },
+                {
+                  "group_key": [
+                    "D3"
+                  ],
+                  "n": 1800,
+                  "n_null": 0
+                },
+                {
+                  "group_key": [
+                    "D4"
+                  ],
+                  "n": 1800,
+                  "n_null": 0
+                },
+                {
+                  "group_key": [
+                    "D5"
+                  ],
+                  "n": 1800,
+                  "n_null": 0
+                },
+                {
+                  "group_key": [
+                    "D6"
+                  ],
+                  "n": 1800,
+                  "n_null": 0
+                },
+                {
+                  "group_key": [
+                    "D7"
+                  ],
+                  "n": 1800,
+                  "n_null": 0
+                },
+                {
+                  "group_key": [
+                    "D8"
+                  ],
+                  "n": 1800,
+                  "n_null": 0
+                },
+                {
+                  "group_key": [
+                    "D9"
+                  ],
+                  "n": 1800,
+                  "n_null": 0
+                },
+                {
+                  "group_key": [
+                    "D10"
+                  ],
+                  "n": 1800,
+                  "n_null": 0
+                }
+              ]
+            },
+            {
+              "label": "defaults",
+              "n": 18000,
+              "n_null": 0,
+              "groups": [
+                {
+                  "group_key": [
+                    "D1"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 1
+                  }
+                },
+                {
+                  "group_key": [
+                    "D2"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 1
+                  }
+                },
+                {
+                  "group_key": [
+                    "D3"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 3
+                  }
+                },
+                {
+                  "group_key": [
+                    "D4"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 3
+                  }
+                },
+                {
+                  "group_key": [
+                    "D5"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 7
+                  }
+                },
+                {
+                  "group_key": [
+                    "D6"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 4
+                  }
+                },
+                {
+                  "group_key": [
+                    "D7"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 7
+                  }
+                },
+                {
+                  "group_key": [
+                    "D8"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 19
+                  }
+                },
+                {
+                  "group_key": [
+                    "D9"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 339
+                  }
+                },
+                {
+                  "group_key": [
+                    "D10"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 1765
+                  }
+                }
+              ]
+            },
+            {
+              "label": "observed_rate",
+              "n": 18000,
+              "n_null": 0,
+              "groups": [
+                {
+                  "group_key": [
+                    "D1"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 1
+                  }
+                },
+                {
+                  "group_key": [
+                    "D2"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 1
+                  }
+                },
+                {
+                  "group_key": [
+                    "D3"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 3
+                  }
+                },
+                {
+                  "group_key": [
+                    "D4"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 3
+                  }
+                },
+                {
+                  "group_key": [
+                    "D5"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 7
+                  }
+                },
+                {
+                  "group_key": [
+                    "D6"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 4
+                  }
+                },
+                {
+                  "group_key": [
+                    "D7"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 7
+                  }
+                },
+                {
+                  "group_key": [
+                    "D8"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 19
+                  }
+                },
+                {
+                  "group_key": [
+                    "D9"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 339
+                  }
+                },
+                {
+                  "group_key": [
+                    "D10"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 1765
+                  }
+                }
+              ]
+            },
+            {
+              "label": "mean_pd",
+              "n": 18000,
+              "n_null": 0,
+              "groups": [
+                {
+                  "group_key": [
+                    "D1"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 0.1250616664710405
+                  }
+                },
+                {
+                  "group_key": [
+                    "D2"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 0.44945396057286363
+                  }
+                },
+                {
+                  "group_key": [
+                    "D3"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 0.9774061287848708
+                  }
+                },
+                {
+                  "group_key": [
+                    "D4"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 1.8438970503148784
+                  }
+                },
+                {
+                  "group_key": [
+                    "D5"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 3.3738999602003767
+                  }
+                },
+                {
+                  "group_key": [
+                    "D6"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 6.15290293288625
+                  }
+                },
+                {
+                  "group_key": [
+                    "D7"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 12.446781257717927
+                  }
+                },
+                {
+                  "group_key": [
+                    "D8"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 29.98044794825742
+                  }
+                },
+                {
+                  "group_key": [
+                    "D9"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 326.9537458151567
+                  }
+                },
+                {
+                  "group_key": [
+                    "D10"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 1774.2463946312023
+                  }
+                }
+              ]
+            },
+            {
+              "label": "mean_true_pd",
+              "n": 18000,
+              "n_null": 0,
+              "groups": [
+                {
+                  "group_key": [
+                    "D1"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 102.64865091225192
+                  }
+                },
+                {
+                  "group_key": [
+                    "D2"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 132.28930965920532
+                  }
+                },
+                {
+                  "group_key": [
+                    "D3"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 154.82845160604532
+                  }
+                },
+                {
+                  "group_key": [
+                    "D4"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 174.87932800714137
+                  }
+                },
+                {
+                  "group_key": [
+                    "D5"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 194.651862987148
+                  }
+                },
+                {
+                  "group_key": [
+                    "D6"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 208.5717726766454
+                  }
+                },
+                {
+                  "group_key": [
+                    "D7"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 236.611854157175
+                  }
+                },
+                {
+                  "group_key": [
+                    "D8"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 270.55660896821456
+                  }
+                },
+                {
+                  "group_key": [
+                    "D9"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 306.9987667133988
+                  }
+                },
+                {
+                  "group_key": [
+                    "D10"
+                  ],
+                  "n": 1800,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 367.76365904938393
+                  }
+                }
+              ]
+            },
+            {
+              "label": "principal_usd",
+              "n": 18000,
+              "n_null": 0,
+              "groups": [
+                {
+                  "group_key": [
+                    "D1"
+                  ],
+                  "n": 1800,
+                  "n_null": 0
+                },
+                {
+                  "group_key": [
+                    "D2"
+                  ],
+                  "n": 1800,
+                  "n_null": 0
+                },
+                {
+                  "group_key": [
+                    "D3"
+                  ],
+                  "n": 1800,
+                  "n_null": 0
+                },
+                {
+                  "group_key": [
+                    "D4"
+                  ],
+                  "n": 1800,
+                  "n_null": 0
+                },
+                {
+                  "group_key": [
+                    "D5"
+                  ],
+                  "n": 1800,
+                  "n_null": 0
+                },
+                {
+                  "group_key": [
+                    "D6"
+                  ],
+                  "n": 1800,
+                  "n_null": 0
+                },
+                {
+                  "group_key": [
+                    "D7"
+                  ],
+                  "n": 1800,
+                  "n_null": 0
+                },
+                {
+                  "group_key": [
+                    "D8"
+                  ],
+                  "n": 1800,
+                  "n_null": 0
+                },
+                {
+                  "group_key": [
+                    "D9"
+                  ],
+                  "n": 1800,
+                  "n_null": 0
+                },
+                {
+                  "group_key": [
+                    "D10"
+                  ],
+                  "n": 1800,
+                  "n_null": 0
+                }
+              ]
+            }
+          ],
+          "groupers": [
+            {
+              "field": "pd_leaky",
+              "total_n": 18000,
+              "operator": {
+                "buckets": [
+                  {
+                    "count": 1800,
+                    "high": 0.00014523150881194755,
+                    "key": "D1",
+                    "low": 6.503887952910246e-7
+                  },
+                  {
+                    "count": 1800,
+                    "high": 0.00037381880301400077,
+                    "key": "D2",
+                    "low": 0.0001453305095428311
+                  },
+                  {
+                    "count": 1800,
+                    "high": 0.0007407183827065046,
+                    "key": "D3",
+                    "low": 0.0003741382060442181
+                  },
+                  {
+                    "count": 1800,
+                    "high": 0.0013678246701529732,
+                    "key": "D4",
+                    "low": 0.0007407598090061037
+                  },
+                  {
+                    "count": 1800,
+                    "high": 0.0025186743074659176,
+                    "key": "D5",
+                    "low": 0.0013680672649929563
+                  },
+                  {
+                    "count": 1800,
+                    "high": 0.004668290960208641,
+                    "key": "D6",
+                    "low": 0.0025192862793798104
+                  },
+                  {
+                    "count": 1800,
+                    "high": 0.00988341746522545,
+                    "key": "D7",
+                    "low": 0.004668751256566144
+                  },
+                  {
+                    "count": 1800,
+                    "high": 0.028070351555074948,
+                    "key": "D8",
+                    "low": 0.009888703832985167
+                  },
+                  {
+                    "count": 1800,
+                    "high": 0.8652073499507188,
+                    "key": "D9",
+                    "low": 0.028104656607817427
+                  },
+                  {
+                    "count": 1800,
+                    "high": 0.999999995553265,
+                    "key": "D10",
+                    "low": 0.8657378481453323
+                  }
+                ],
+                "edges": [
+                  6.503887952910246e-7,
+                  0.0001453305095428311,
+                  0.0003741382060442181,
+                  0.0007407598090061037,
+                  0.0013680672649929563,
+                  0.0025192862793798104,
+                  0.004668751256566144,
+                  0.009888703832985167,
+                  0.028104656607817427,
+                  0.8657378481453323,
+                  0.999999995553265
+                ],
+                "method": "linear",
+                "n_quantiles": 10
+              }
+            }
+          ],
+          "filterers": [
+            {
+              "n_in": 60000,
+              "n_out": 18000,
+              "n_null_input": 0
+            }
+          ],
+          "run": {
+            "total_records": 60000,
+            "filtered_records": 18000,
+            "null_records": 0
+          }
+        }
+      },
+      {
+        "label": "separation_and_calibration",
+        "data": [
+          {
+            "auc_all_22_candidates": 0.741017700345167,
+            "auc_final_model": 0.7435136932319264,
+            "auc_leaky_model": 0.9907737243282818,
+            "auc_true_pd_ceiling": 0.7460867180433985,
+            "holdout_loans": 18000,
+            "holdout_principal_usd": "216619624.62",
+            "mean_predicted_pd": 0.11877157198306156,
+            "mean_true_pd": 0.11943334804092251,
+            "observed_default_rate": 0.11938888888888889
+          }
+        ],
+        "metadata": {
+          "total_rows": 60000,
+          "filtered_rows": 18000,
+          "cohort_file": "./loans.pulse"
+        },
+        "tests": [
+          {
+            "label": "ks_final_model",
+            "type": "TEST_KS",
+            "variant": "two_sample",
+            "statistic": 0.36496663217159075,
+            "p_value": 1.3115876489802994e-220,
+            "alpha": 0.05,
+            "reject_null": true,
+            "details": {
+              "groups": [
+                "defaulted",
+                "performing"
+              ],
+              "n": [
+                2149,
+                15851
+              ]
+            }
+          },
+          {
+            "label": "ks_all_22_candidates",
+            "type": "TEST_KS",
+            "variant": "two_sample",
+            "statistic": 0.3562847761049787,
+            "p_value": 2.9422194908080934e-210,
+            "alpha": 0.05,
+            "reject_null": true,
+            "details": {
+              "groups": [
+                "defaulted",
+                "performing"
+              ],
+              "n": [
+                2149,
+                15851
+              ]
+            }
+          },
+          {
+            "label": "ks_true_pd_ceiling",
+            "type": "TEST_KS",
+            "variant": "two_sample",
+            "statistic": 0.36846524370344014,
+            "p_value": 7.519016018271921e-225,
+            "alpha": 0.05,
+            "reject_null": true,
+            "details": {
+              "groups": [
+                "defaulted",
+                "performing"
+              ],
+              "n": [
+                2149,
+                15851
+              ]
+            }
+          },
+          {
+            "label": "ks_leaky_model",
+            "type": "TEST_KS",
+            "variant": "two_sample",
+            "statistic": 0.9354317761210369,
+            "p_value": 0,
+            "alpha": 0.05,
+            "reject_null": true,
+            "details": {
+              "groups": [
+                "defaulted",
+                "performing"
+              ],
+              "n": [
+                2149,
+                15851
+              ]
+            }
+          }
+        ],
+        "components": {
+          "aggregations": [
+            {
+              "label": "holdout_loans",
+              "n": 18000,
+              "n_null": 0
+            },
+            {
+              "label": "observed_default_rate",
+              "n": 18000,
+              "n_null": 0,
+              "operator": {
+                "sum": 2149
+              }
+            },
+            {
+              "label": "mean_predicted_pd",
+              "n": 18000,
+              "n_null": 0,
+              "operator": {
+                "sum": 2137.888295695108
+              }
+            },
+            {
+              "label": "mean_true_pd",
+              "n": 18000,
+              "n_null": 0,
+              "operator": {
+                "sum": 2149.800264736605
+              }
+            },
+            {
+              "label": "holdout_principal_usd",
+              "n": 18000,
+              "n_null": 0
+            },
+            {
+              "label": "auc_final_model",
+              "n": 18000,
+              "n_null": 0,
+              "operator": {
+                "auc": 0.7435136932319264,
+                "ci_lower": 0.7329379415184946,
+                "ci_upper": 0.7540894449453582,
+                "conf_level": 0.95,
+                "gini": 0.4870273864638528,
+                "n_neg": 15851,
+                "n_null_outcome": 0,
+                "n_pos": 2149,
+                "se": 0.0053958908412869155
+              }
+            },
+            {
+              "label": "auc_all_22_candidates",
+              "n": 18000,
+              "n_null": 0,
+              "operator": {
+                "auc": 0.741017700345167,
+                "ci_lower": 0.7304133498003339,
+                "ci_upper": 0.7516220508900001,
+                "conf_level": 0.95,
+                "gini": 0.482035400690334,
+                "n_neg": 15851,
+                "n_null_outcome": 0,
+                "n_pos": 2149,
+                "se": 0.00541048234992012
+              }
+            },
+            {
+              "label": "auc_true_pd_ceiling",
+              "n": 18000,
+              "n_null": 0,
+              "operator": {
+                "auc": 0.7460867180433985,
+                "ci_lower": 0.7355578214538774,
+                "ci_upper": 0.7566156146329197,
+                "conf_level": 0.95,
+                "gini": 0.4921734360867971,
+                "n_neg": 15851,
+                "n_null_outcome": 0,
+                "n_pos": 2149,
+                "se": 0.0053719847265417805
+              }
+            },
+            {
+              "label": "auc_leaky_model",
+              "n": 18000,
+              "n_null": 0,
+              "operator": {
+                "auc": 0.9907737243282818,
+                "ci_lower": 0.9883223118330007,
+                "ci_upper": 0.993225136823563,
+                "conf_level": 0.95,
+                "gini": 0.9815474486565636,
+                "n_neg": 15851,
+                "n_null_outcome": 0,
+                "n_pos": 2149,
+                "se": 0.0012507436435656794
+              }
+            }
+          ],
+          "filterers": [
+            {
+              "n_in": 60000,
+              "n_out": 18000,
+              "n_null_input": 0
+            }
+          ],
+          "run": {
+            "total_records": 60000,
+            "filtered_records": 18000,
+            "null_records": 0
+          }
+        }
+      }
+    ],
+    "fits": {
+      "pd_all22": {
+        "name": "pd_all22",
+        "type": "REG_GLM",
+        "family": "binomial",
+        "link": "logit",
+        "coefficients": {
+          "(intercept)": -7.236727595091894,
+          "band_B": 0.632342775794814,
+          "band_C": 1.3587254655051129,
+          "band_D": 1.8793221714412462,
+          "band_E": 2.287547259950302,
+          "band_F": 2.7440204931410506,
+          "band_G": 2.997972086863004,
+          "delinq_2yrs": 0.3136049764696638,
+          "dti": 0.03255596749072656,
+          "emp_missing": 0.3124787062956606,
+          "emp_years": -0.02880700936290094,
+          "fico_score": 0.0013988526095521443,
+          "home_OTHER": -0.09355345544569442,
+          "home_OWN": -0.014026846454304777,
+          "home_RENT": 0.2246573038810386,
+          "interest_rate": 0.0015032149169266458,
+          "log_income": 0.1262197422241678,
+          "log_loan": -0.060985937930616886,
+          "lti": 2.530372801614254,
+          "purpose_freq": -0.023966213437586877,
+          "revol_missing": -0.007261592662648625,
+          "revol_util_filled": 0.008299170158901734,
+          "term60": 0.364131479906269
+        },
+        "std_errors": {
+          "(intercept)": 1.3381115260882288,
+          "band_B": 0.13673719046481414,
+          "band_C": 0.19650510313799854,
+          "band_D": 0.2641064281253467,
+          "band_E": 0.3369190618338211,
+          "band_F": 0.4111067179828648,
+          "band_G": 0.4924281696781467,
+          "delinq_2yrs": 0.02593263822426495,
+          "dti": 0.0019980408398278535,
+          "emp_missing": 0.06400059363979593,
+          "emp_years": 0.004377419340143518,
+          "fico_score": 0.0015494962627821177,
+          "home_OTHER": 0.12200518330804791,
+          "home_OWN": 0.0512502902236112,
+          "home_RENT": 0.033903509062612094,
+          "interest_rate": 0.017449166517695354,
+          "log_income": 0.08313756159920334,
+          "log_loan": 0.0803329745513923,
+          "lti": 0.42215956795079257,
+          "purpose_freq": 0.08630304561634936,
+          "revol_missing": 0.09352721949353039,
+          "revol_util_filled": 0.000734471845476177,
+          "term60": 0.045919374830058465
+        },
+        "p_values": {
+          "(intercept)": 6.367383798400434e-8,
+          "band_B": 0.0000037548137977572877,
+          "band_C": 4.696692979302442e-12,
+          "band_D": 1.1128494266833527e-12,
+          "band_E": 1.1244117249952508e-11,
+          "band_F": 2.4771178046782224e-11,
+          "band_G": 1.1422931362910368e-9,
+          "delinq_2yrs": 1.1492362969317804e-33,
+          "dti": 1.0896782619636542e-59,
+          "emp_missing": 0.0000010478405154328877,
+          "emp_years": 4.6786027131699246e-11,
+          "fico_score": 0.36664322507623326,
+          "home_OTHER": 0.4432010169469609,
+          "home_OWN": 0.7843205460448492,
+          "home_RENT": 3.4403472568315855e-11,
+          "interest_rate": 0.9313485792570482,
+          "log_income": 0.128963089632887,
+          "log_loan": 0.4477541929152332,
+          "lti": 2.0489554459503265e-9,
+          "purpose_freq": 0.7812439266863667,
+          "revol_missing": 0.9381132378508094,
+          "revol_util_filled": 1.3195587774076743e-29,
+          "term60": 2.1949827239877277e-15
+        },
+        "ci_lower": {
+          "(intercept)": -9.859377993522752,
+          "band_B": 0.3643428071365846,
+          "band_C": 0.973582540576307,
+          "band_D": 1.3616830842300505,
+          "band_E": 1.6271980330509894,
+          "band_F": 1.9382661320921706,
+          "band_G": 2.032830609320858,
+          "delinq_2yrs": 0.26277793952599776,
+          "dti": 0.028639879405023806,
+          "emp_missing": 0.1870398477724773,
+          "emp_years": -0.03738659361481132,
+          "fico_score": -0.0016381042596802177,
+          "home_OTHER": -0.3326792206566757,
+          "home_OWN": -0.11447556948980797,
+          "home_RENT": 0.15820764716879157,
+          "interest_rate": -0.03269652301799844,
+          "log_income": -0.03672688427275097,
+          "log_loan": -0.2184356748223185,
+          "lti": 1.7029552527017109,
+          "purpose_freq": -0.193117074601749,
+          "revol_missing": -0.19057157444414066,
+          "revol_util_filled": 0.006859631794109759,
+          "term60": 0.27413115904675933
+        },
+        "ci_upper": {
+          "(intercept)": -4.614077196661037,
+          "band_B": 0.9003427444530434,
+          "band_C": 1.7438683904339187,
+          "band_D": 2.3969612586524423,
+          "band_E": 2.947896486849615,
+          "band_F": 3.5497748541899306,
+          "band_G": 3.9631135644051505,
+          "delinq_2yrs": 0.3644320134133298,
+          "dti": 0.03647205557642932,
+          "emp_missing": 0.43791756481884386,
+          "emp_years": -0.020227425110990557,
+          "fico_score": 0.004435809478784507,
+          "home_OTHER": 0.14557230976528684,
+          "home_OWN": 0.08642187658119842,
+          "home_RENT": 0.2911069605932856,
+          "interest_rate": 0.03570295285185173,
+          "log_income": 0.28916636872108653,
+          "log_loan": 0.09646379896108472,
+          "lti": 3.357790350526797,
+          "purpose_freq": 0.14518464772657524,
+          "revol_missing": 0.1760483891188434,
+          "revol_util_filled": 0.009738708523693709,
+          "term60": 0.45413180076577864
+        },
+        "conf_level": 0.95,
+        "deviance": 27474.656995610323,
+        "null_deviance": 30713.94341691641,
+        "pseudo_r2": 0.10546631467459089,
+        "n_obs": 42000,
+        "converged_iters": 7
+      },
+      "pd_final": {
+        "name": "pd_final",
+        "type": "REG_GLM",
+        "family": "binomial",
+        "link": "logit",
+        "selection": "stepwise",
+        "criterion": "bic",
+        "coefficients": {
+          "(intercept)": -1.6799962611186798,
+          "band_B": -0.20690773464232565,
+          "band_G": -0.29165745866267184,
+          "delinq_2yrs": 0.3168593657812164,
+          "dti": 0.03257970979766617,
+          "emp_missing": 0.31042687447293144,
+          "emp_years": -0.029219407824369374,
+          "fico_score": -0.005985640448735265,
+          "home_RENT": 0.23254687143425853,
+          "interest_rate": 0.07588257474845711,
+          "lti": 2.078588837205173,
+          "purpose_te": 7.387207971709118,
+          "revol_util_filled": 0.008335219720864916,
+          "term60": 0.2314372607014885
+        },
+        "std_errors": {
+          "(intercept)": 0.9554070126159674,
+          "band_B": 0.06166387467661104,
+          "band_G": 0.06799249710533972,
+          "delinq_2yrs": 0.02596570413943889,
+          "dti": 0.0020013384241396146,
+          "emp_missing": 0.06405909985549524,
+          "emp_years": 0.0043832009815681534,
+          "fico_score": 0.0011466345849169967,
+          "home_RENT": 0.03178920164485642,
+          "interest_rate": 0.010702674714213212,
+          "lti": 0.13838003373799979,
+          "purpose_te": 0.7405210268520076,
+          "revol_util_filled": 0.0007346097426024796,
+          "term60": 0.03858529884288853
+        },
+        "p_values": {
+          "(intercept)": 0.07867794795570542,
+          "band_B": 0.0007924672734351252,
+          "band_G": 0.00001790326276451453,
+          "delinq_2yrs": 2.9959667713358758e-34,
+          "dti": 1.392129128118003e-59,
+          "emp_missing": 0.000001260104262179399,
+          "emp_years": 2.6246520869251304e-11,
+          "fico_score": 1.7874803262966967e-7,
+          "home_RENT": 2.5684763960003205e-13,
+          "interest_rate": 1.3405668579337746e-12,
+          "lti": 5.35975871989043e-51,
+          "purpose_te": 1.9474372167736405e-23,
+          "revol_util_filled": 7.7226806606245e-30,
+          "term60": 1.996784486788445e-9
+        },
+        "ci_lower": {
+          "(intercept)": -3.552559596422981,
+          "band_B": -0.32776670815567477,
+          "band_G": -0.4249203042080816,
+          "delinq_2yrs": 0.26596752083469355,
+          "dti": 0.028657158565476376,
+          "emp_missing": 0.18487334587410578,
+          "emp_years": -0.037810323885243566,
+          "fico_score": -0.008233002938600612,
+          "home_RENT": 0.1702411811130585,
+          "interest_rate": 0.0549057177703517,
+          "lti": 1.807368954899256,
+          "purpose_te": 5.935813429284565,
+          "revol_util_filled": 0.006895411082671816,
+          "term60": 0.15581146463671197
+        },
+        "ci_upper": {
+          "(intercept)": 0.1925670741856213,
+          "band_B": -0.08604876112897654,
+          "band_G": -0.1583946131172621,
+          "delinq_2yrs": 0.3677512107277392,
+          "dti": 0.03650226102985596,
+          "emp_missing": 0.43598040307175706,
+          "emp_years": -0.02062849176349518,
+          "fico_score": -0.003738277958869917,
+          "home_RENT": 0.29485256175545854,
+          "interest_rate": 0.09685943172656251,
+          "lti": 2.34980871951109,
+          "purpose_te": 8.83860251413367,
+          "revol_util_filled": 0.009775028359058016,
+          "term60": 0.30706305676626505
+        },
+        "conf_level": 0.95,
+        "deviance": 27437.54289938157,
+        "null_deviance": 30713.94341691641,
+        "pseudo_r2": 0.10667469406518104,
+        "n_obs": 42000,
+        "converged_iters": 7,
+        "selected_features": [
+          "interest_rate",
+          "dti",
+          "lti",
+          "delinq_2yrs",
+          "revol_util_filled",
+          "purpose_te",
+          "emp_years",
+          "home_RENT",
+          "band_G",
+          "emp_missing",
+          "term60",
+          "fico_score",
+          "band_B"
+        ]
+      },
+      "pd_leaky": {
+        "name": "pd_leaky",
+        "type": "REG_GLM",
+        "family": "binomial",
+        "link": "logit",
+        "coefficients": {
+          "(intercept)": -12.19293620790763,
+          "band_B": 1.3192145136653823,
+          "band_C": 2.2375265206669823,
+          "band_D": 2.940030541758991,
+          "band_E": 3.4670517345573546,
+          "band_F": 4.017060825177297,
+          "band_G": 4.714093163820168,
+          "collections_flag": 6.5200718637013075,
+          "delinq_2yrs": 0.22926380210580707,
+          "dti": 0.036629612980420424,
+          "emp_missing": 0.2942346629963175,
+          "emp_years": -0.03400446611089425,
+          "fico_at_month_12": -0.09110553249884865,
+          "fico_score": 0.09505145697974297,
+          "home_OTHER": -0.0423949261512267,
+          "home_OWN": -0.39457275509241624,
+          "home_RENT": 0.2448995320934341,
+          "interest_rate": -0.04151568822837202,
+          "log_income": 0.07788987862816961,
+          "log_loan": -0.04405983985366984,
+          "lti": 2.3141144819070263,
+          "purpose_freq": -0.11018042459749997,
+          "revol_missing": -0.018451732888664325,
+          "revol_util_filled": 0.0070611485418329,
+          "term60": 0.3354934275490697
+        },
+        "std_errors": {
+          "(intercept)": 3.477007570415179,
+          "band_B": 0.3423028375759287,
+          "band_C": 0.5074210772108413,
+          "band_D": 0.6846042944685965,
+          "band_E": 0.8793270721891878,
+          "band_F": 1.0761017843195737,
+          "band_G": 1.2878096599168505,
+          "collections_flag": 0.11371052505318328,
+          "delinq_2yrs": 0.07026880820698782,
+          "dti": 0.005292903196935004,
+          "emp_missing": 0.16832444569746915,
+          "emp_years": 0.011537267787903099,
+          "fico_at_month_12": 0.002016668567481088,
+          "fico_score": 0.00454424684776203,
+          "home_OTHER": 0.30916955068294066,
+          "home_OWN": 0.14151437170887685,
+          "home_RENT": 0.08824763727468976,
+          "interest_rate": 0.04601309191111392,
+          "log_income": 0.22342910438129435,
+          "log_loan": 0.21405094988749973,
+          "lti": 1.1211768765858634,
+          "purpose_freq": 0.2252997178506499,
+          "revol_missing": 0.24867931271281846,
+          "revol_util_filled": 0.001962190886325481,
+          "term60": 0.12174490822373377
+        },
+        "p_values": {
+          "(intercept)": 0.00045364456508036635,
+          "band_B": 0.00011623220760492467,
+          "band_C": 0.000010355933611946617,
+          "band_D": 0.000017509047944392862,
+          "band_E": 0.0000805201695275451,
+          "band_F": 0.00018923154596574564,
+          "band_G": 0.0002516732798170877,
+          "collections_flag": 0,
+          "delinq_2yrs": 0.0011036867764133464,
+          "dti": 4.5000645732596055e-12,
+          "emp_missing": 0.0804603941196439,
+          "emp_years": 0.0032050123212977134,
+          "fico_at_month_12": 0,
+          "fico_score": 3.759329561362422e-97,
+          "home_OTHER": 0.890931860278539,
+          "home_OWN": 0.005299905543536388,
+          "home_RENT": 0.005517798037268182,
+          "interest_rate": 0.36691973916192855,
+          "log_income": 0.7273812503990182,
+          "log_loan": 0.836917382464945,
+          "lti": 0.039017259002317665,
+          "purpose_freq": 0.6248138478046424,
+          "revol_missing": 0.9408521165291144,
+          "revol_util_filled": 0.00031992955308485856,
+          "term60": 0.0058565239703516556
+        },
+        "ci_lower": {
+          "(intercept)": -19.0077458198945,
+          "band_B": 0.6483132802106981,
+          "band_C": 1.2429994843372154,
+          "band_D": 1.5982307809390883,
+          "band_E": 1.7436023424354943,
+          "band_F": 1.9079400842116434,
+          "band_G": 2.190032611440366,
+          "collections_flag": 6.297203329933929,
+          "delinq_2yrs": 0.09153946878355838,
+          "dti": 0.026255713340770905,
+          "emp_missing": -0.03567518828839009,
+          "emp_years": -0.05661709545517842,
+          "fico_at_month_12": -0.09505813025986556,
+          "fico_score": 0.08614489682126973,
+          "home_OTHER": -0.6483561106062212,
+          "home_OWN": -0.6719358269366288,
+          "home_RENT": 0.07193734131428775,
+          "interest_rate": -0.13169969119148658,
+          "log_income": -0.3600231190572077,
+          "log_loan": -0.46359199248975724,
+          "lti": 0.11664818349962502,
+          "purpose_freq": -0.5517597573118097,
+          "revol_missing": -0.5058542295059621,
+          "revol_util_filled": 0.0032153250738422307,
+          "term60": 0.09687779212941726
+        },
+        "ci_upper": {
+          "(intercept)": -5.378126595920763,
+          "band_B": 1.9901157471200666,
+          "band_C": 3.2320535569967492,
+          "band_D": 4.281830302578894,
+          "band_E": 5.190501126679215,
+          "band_F": 6.12618156614295,
+          "band_G": 7.23815371619997,
+          "collections_flag": 6.742940397468686,
+          "delinq_2yrs": 0.36698813542805575,
+          "dti": 0.047003512620069944,
+          "emp_missing": 0.6241445142810251,
+          "emp_years": -0.011391836766610076,
+          "fico_at_month_12": -0.08715293473783173,
+          "fico_score": 0.10395801713821622,
+          "home_OTHER": 0.5635662583037678,
+          "home_OWN": -0.11720968324820367,
+          "home_RENT": 0.41786172287258044,
+          "interest_rate": 0.04866831473474255,
+          "log_income": 0.5158028763135469,
+          "log_loan": 0.37547231278241755,
+          "lti": 4.511580780314428,
+          "purpose_freq": 0.3313989081168097,
+          "revol_missing": 0.4689507637286335,
+          "revol_util_filled": 0.01090697200982357,
+          "term60": 0.5741090629687221
+        },
+        "conf_level": 0.95,
+        "deviance": 4682.485485485559,
+        "null_deviance": 30713.94341691641,
+        "pseudo_r2": 0.8475452851519362,
+        "n_obs": 42000,
+        "converged_iters": 10
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

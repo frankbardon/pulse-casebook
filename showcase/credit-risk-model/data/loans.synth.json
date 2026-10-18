@@ -220,8 +220,7 @@
       "distribution": "lognormal",
       "params": {
         "mu": 11.05,
-        "sigma": 0.45,
-        "scale": 2
+        "sigma": 0.45
       }
     },
     {
@@ -233,8 +232,7 @@
       "distribution": "lognormal",
       "params": {
         "mu": 9.35,
-        "sigma": 0.55,
-        "scale": 2
+        "sigma": 0.55
       }
     },
     {
@@ -398,8 +396,7 @@
       "distribution": "uniform",
       "params": {
         "min": 0,
-        "max": 1,
-        "scale": 2
+        "max": 1
       }
     }
   ],

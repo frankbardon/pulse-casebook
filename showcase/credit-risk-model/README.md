@@ -1,6 +1,6 @@
 # Credit risk model: a 12-month probability of default, built and validated in Pulse
 
-**Audience:** risk-analytics lead. **Everything below was computed by Pulse** (`pulse api predict`, `pulse api process`, `pulse explain`, `pulse synth`). Every figure is copied from a response in [`results/`](results/); the request that produced it is in [`req/`](req/).
+**Audience:** risk-analytics lead. **Everything below was computed by Pulse** (`pulse api predict`, `pulse api process`, `pulse api compose`, `pulse explain`, `pulse synth`). Every figure is copied from a response in [`results/`](results/); the request that produced it is in [`req/`](req/).
 
 ## The business question
 
@@ -14,12 +14,13 @@ A consumer lender has 60,000 historical loan applications and knows which loans 
 
 | # | Finding | Evidence |
 |---|---|---|
-| 1 | The clean model rank-orders held-out loans monotonically: the default rate climbs from **1.28%** in the lowest-risk decile to **33.89%** in the highest. | Step 13 |
-| 2 | It is calibrated: mean predicted PD on the 18,000-loan holdout is **11.86%** against an observed default rate of **11.94%**. | Step 14 |
-| 3 | Its holdout KS is **0.365**, against **0.368** for the true default probabilities used to simulate the data, so it captures nearly all the separation the application data allows. | Step 14 |
-| 4 | Adding one post-outcome field (the bureau score re-pulled at month 12) moves pseudo-R² from **0.105** to **0.601** and holdout KS to **0.767**. The model then looks excellent and is unusable at origination. | Steps 8, 8b, 13b, 14 |
-| 5 | Pulse flags target encoding as a leakage risk (`PULSE_FEAT_TARGET_LEAKAGE_RISK`) at predict time, before any data is read. Stepwise selection then keeps a train-only purpose encoding. | Steps 7, 10, 11 |
-| 6 | Money stays exact. Principal sums are `decimal128` to the cent ($724,730,103.82 across the book, and the two splits reconcile to that cent). A float column of 2-decimal values sums to `1082182.2600000112`. | Steps 1, 6 |
+| 1 | The clean model rank-orders held-out loans monotonically: the default rate climbs from **1.22%** in the lowest-risk decile to **33.67%** in the highest, a lift of **2.82**. | Step 13 |
+| 2 | It is calibrated: mean predicted PD on the 18,000-loan holdout is **11.88%** against an observed default rate of **11.94%**. | Step 14 |
+| 3 | Its holdout AUC is **0.7435** (Gini 0.487, DeLong 95% CI 0.7329–0.7541) and its KS **0.365**, against **0.7461** and **0.368** for the true default probabilities used to simulate the data. It captures nearly all the separation the application data allows. | Step 14 |
+| 4 | Adding two post-outcome fields (the bureau score re-pulled at month 12 and the collections flag) moves pseudo-R² from **0.105** to **0.848** and holdout AUC to **0.991**. The model then looks excellent and is unusable at origination. Ridge shrinkage does not hide the leak. | Steps 8, 8b, 8c, 13b, 14 |
+| 5 | Pulse flags a naive target encoding as a leakage risk (`PULSE_FEAT_TARGET_LEAKAGE_RISK`) at predict time, before any data is read. One parameter, `fit_on: "split == 0"`, makes the encoding train-only (with `folds: 5` out-of-fold on the training rows), and stepwise selection keeps it. | Steps 7, 10, 11 |
+| 6 | No number is copied between steps. The holdout is scored by Compose `fits` + `ATTR_REG_PREDICT`, the purpose encoding by `FEAT_TARGET_ENCODE`, and the scorecard's predictor list by `selection: "stepwise"` inside the fit itself. | Steps 10–14 |
+| 7 | Money stays exact. Principal sums are `decimal128` to the cent ($724,730,103.82 across the book, and the two splits reconcile to that cent). A float column of 2-decimal values sums to `1082182.2600000112`. | Steps 1, 6 |
 
 ## Dataset
 
@@ -66,12 +67,11 @@ logit(PD) = -2.55 + band effect (A -1.3, B -0.7, C 0, D +0.45, E +0.85, F +1.2, 
 ## Methodology
 
 1. Profile the book and check data quality: nulls, exact money totals, segment default rates (steps 1–6).
-2. Engineer features in Pulse's `features` slot: a seeded stratified 70/30 split, log transforms, explicit DTI buckets, one-hot band and housing, and frequency-encoded purpose. Row-level formulas in `attributes` add loan-to-income, missing-value indicators with imputations, and a 60-month flag.
-3. Fit logistic regressions (`REG_GLM`, binomial/logit) on the **training split only**. Compare the clean candidate set with one that adds a post-outcome field, then let stepwise selection with BIC pick the scorecard.
-4. Encode `purpose` from training-split default rates only (the leak-free alternative to `FEAT_TARGET_ENCODE`), re-select, and get bootstrap standard errors.
-5. Score the **holdout split** with the fitted coefficients, then check rank-ordering (decile table), calibration (mean predicted vs observed), and separation (two-sample KS between defaulters and non-defaulters).
+2. Engineer features in Pulse's `features` slot: a seeded stratified 70/30 split, log transforms, one-hot band and housing, frequency-encoded purpose, and a train-only, out-of-fold target encoding of purpose. Row-level formulas in `attributes` add loan-to-income, missing-value indicators with imputations, and a 60-month flag.
+3. Fit logistic regressions (`REG_GLM`, binomial/logit) on the **training split only**. Compare the clean candidate set with one that adds post-outcome fields, then let stepwise selection with BIC pick the scorecard, with Wald, bootstrap and grouped-jackknife standard errors.
+4. Score the **holdout split** in one Compose batch: its `fits` train each model once on the training rows, and every holdout slot scores them per row with `ATTR_REG_PREDICT`. Check rank-ordering (decile table with share and lift), calibration (mean predicted vs observed), and separation (AUC with a DeLong interval, and two-sample KS between defaulters and non-defaulters).
 
-All requests use `"cohort": {"filename": "loans.pulse", "data_dir": "."}` and run from this directory. `./run.sh` executes them in order.
+All requests use `"cohort": {"filename": "loans.pulse", "data_dir": "."}` and run from this directory. `./run.sh` executes them in order. No request carries a number taken from another step's response.
 
 ## Walkthrough
 
@@ -221,14 +221,22 @@ Defaulters' average score falls from 662.2 at application to 607.3 by month 12, 
 
 Stratifying on `outcome` gives both partitions the same default rate to three decimals. The two exact principal totals add to the book total from step 1, $724,730,103.82, to the cent. The split is deterministic: the same seed on the same rows gives the same assignment.
 
-`FEAT_BUCKETIZE` with explicit DTI cut points (`06b`, grouped by `dti_bucket`) shows the DTI gradient a scorecard would bin:
+`GROUP_NUMERIC_RANGES` with labelled, half-open DTI ranges (`06b`) shows the gradient a scorecard would bin. The rows come out in the order the ranges are listed, with no `sort`:
 
-| DTI bucket | Range | Loans | Default rate | Mean DTI |
-|---|---|---|---|---|
-| 0 | ≤ 10% | 9,496 | 8.21% | 6.02% |
-| 1 | 10–20% | 26,398 | 11.10% | 15.39% |
-| 2 | 20–30% | 20,140 | 13.63% | 24.12% |
-| 3 | > 30% | 3,966 | 17.80% | 33.54% |
+```json
+"groups": [{"type": "GROUP_NUMERIC_RANGES", "field": "dti", "params": {"ranges": [
+  {"label": "under 10%", "end": 10}, {"label": "10-20%", "start": 10, "end": 20},
+  {"label": "20-30%", "start": 20, "end": 30}, {"label": "30% and over", "start": 30}]}}]
+```
+
+| DTI range | Loans | Default rate | Mean DTI |
+|---|---|---|---|
+| under 10% | 9,476 | 8.23% | 6.01% |
+| 10–20% | 26,388 | 11.09% | 15.38% |
+| 20–30% | 20,162 | 13.64% | 24.11% |
+| 30% and over | 3,974 | 17.77% | 33.53% |
+
+Each range includes its lower edge and excludes its upper edge (`[10, 20)`), so a DTI of exactly 10.00 falls in `10-20%`.
 
 ### Step 7 — Pulse flags the target-encoding leak before anything runs ([`req/07_target_encode_predict.json`](req/07_target_encode_predict.json))
 
@@ -249,17 +257,15 @@ The obvious way to use a 40-level `purpose` in a logistic model is to replace ea
 ```json
 "warnings": [{
   "code": "PULSE_FEAT_TARGET_LEAKAGE_RISK",
-  "message": "FEAT_TARGET_ENCODE averages every record's outcome, the record's own and validation/test records' included, because it reads no split column; a preceding FEAT_TRAIN_TEST_SPLIT does not change that",
+  "message": "FEAT_TARGET_ENCODE without params.fit_on averages every record's outcome, the record's own and validation/test records' included; a preceding FEAT_TRAIN_TEST_SPLIT does not change that — set params.fit_on to the training rows (e.g. \"split == 0\"), optionally with folds for out-of-fold training values",
   "details": {"feature": "FEAT_TARGET_ENCODE", "feature_index": 1}}]
 ```
 
-With `--strict` the same request is refused (`valid: false`). The point is that filtering to `split == 0` does **not** make the encoding safe. Features run before filters, so every holdout loan's outcome is already inside the purpose means the model trains on. Any holdout evaluation of such a model is contaminated. (The request does run; the fitted `purpose_te` coefficient is 9.14 with pseudo-R² 0.081, but it is not used further.)
+With `--strict` the same request is refused (`valid: false`). Filtering to `split == 0` does **not** make the encoding safe. Features run before filters, so every holdout loan's outcome is already inside the purpose means the model trains on. Any holdout evaluation of such a model is contaminated. (The request does run; the fitted `purpose_te` coefficient is 9.14 with pseudo-R² 0.081, but it is not used further.) The warning names the fix, which step 10 applies.
 
-The documented safe alternative is to compute the per-purpose means on the training rows only and map them back. That is done in steps 10–11.
+### Step 8 — Post-outcome fields make the model look far better than it is ([`req/08_leaky_vs_clean_fit.json`](req/08_leaky_vs_clean_fit.json))
 
-### Step 8 — A post-outcome field makes the model look far better than it is ([`req/08_leaky_vs_clean_fit.json`](req/08_leaky_vs_clean_fit.json))
-
-Both models are fit on the training split with the same 22 application-time candidates. The second also receives `fico_at_month_12`. Row-level helper columns come from `attributes`:
+Both models are fit on the training split with the same 22 application-time candidates. The second also receives the two post-outcome fields `fico_at_month_12` and `collections_flag`. Row-level helper columns come from `attributes`:
 
 ```json
 "attributes": [
@@ -276,17 +282,17 @@ Both models are fit on the training split with the same 22 application-time cand
    "predictors": ["fico_score","band_B","band_C","band_D","band_E","band_F","band_G","interest_rate","term60","dti",
                   "lti","log_income","log_loan","delinq_2yrs","emp_missing","emp_years","revol_missing","revol_util_filled",
                   "home_RENT","home_OWN","home_OTHER","purpose_freq"]},
-  {"type": "REG_GLM", "name": "with_fico_at_month_12", "...": "same 22 predictors + fico_at_month_12"}]
+  {"type": "REG_GLM", "name": "with_post_outcome_fields", "...": "same 22 predictors + fico_at_month_12 + collections_flag"}]
 ```
 
 (`lti` is (1 + loan)/(1 + income), rebuilt from the two `FEAT_LOG` columns.)
 
-| Model (train, n = 42,000) | Deviance | Null deviance | McFadden pseudo-R² |
-|---|---|---|---|
-| 22 application-time candidates | 27,474.7 | 30,713.9 | **0.105** |
-| … + `fico_at_month_12` | 12,253.9 | 30,713.9 | **0.601** |
+| Model (train, n = 42,000) | Deviance | Null deviance | McFadden pseudo-R² | IRLS iterations |
+|---|---|---|---|---|
+| 22 application-time candidates | 27,474.7 | 30,713.9 | **0.105** | 7 |
+| … + `fico_at_month_12` + `collections_flag` | 4,682.5 | 30,713.9 | **0.848** | 10 |
 
-In the leaky model `fico_at_month_12` takes a coefficient of −0.0914 (p reported as 0). The application-time `fico_score` flips sign to +0.0915: the model is now reading the *change* in score, which is the outcome itself.
+Both fits converge. In the leaky model `collections_flag` takes a coefficient of +6.52 (SE 0.114) and `fico_at_month_12` −0.0911 (both p reported as 0). The application-time `fico_score` flips sign to +0.0951: the model is now reading the *change* in score, which is the outcome itself.
 
 The same contrast on in-sample scores, using `ATTR_REG_FITTED` (a linear-probability fit per row) and `TEST_KS` between defaulters and non-defaulters ([`req/08b_in_sample_fitted_ks.json`](req/08b_in_sample_fitted_ks.json)):
 
@@ -295,7 +301,7 @@ The same contrast on in-sample scores, using `ATTR_REG_FITTED` (a linear-probabi
   {"type": "ATTR_REG_FITTED", "label": "lpm_clean", "target": "default_12m",
    "predictors": ["fico_score","dti","lti","delinq_2yrs","revol_util_filled","emp_years","emp_missing","term60","home_RENT"]},
   {"type": "ATTR_REG_FITTED", "label": "lpm_leaky", "target": "default_12m",
-   "predictors": ["...same 9...", "fico_at_month_12"]}],
+   "predictors": ["...same 9...", "fico_at_month_12", "collections_flag"]}],
 "tests": [{"type": "TEST_KS", "field": "lpm_clean", "split_by": "outcome", "label": "ks_clean_in_sample"},
           {"type": "TEST_KS", "field": "lpm_leaky", "split_by": "outcome", "label": "ks_leaky_in_sample"}]
 ```
@@ -303,9 +309,23 @@ The same contrast on in-sample scores, using `ATTR_REG_FITTED` (a linear-probabi
 | In-sample score (train) | KS statistic D | Defaulters / non-defaulters |
 |---|---|---|
 | Application-time predictors | 0.331 | 5,013 / 36,987 |
-| … + `fico_at_month_12` | **0.769** | 5,013 / 36,987 |
+| … + `fico_at_month_12` + `collections_flag` | **0.935** | 5,013 / 36,987 |
 
-A KS of 0.77 on consumer credit should trigger a leakage review. Step 13b shows the leaky model holds up on the holdout too, because the holdout carries the same leaked column. A holdout cannot catch this kind of leak. Only checking *when* each field becomes known does.
+A KS of 0.93 on consumer credit should trigger a leakage review. Step 13b shows the leaky model holds up on the holdout too, because the holdout carries the same leaked columns. A holdout cannot catch this kind of leak. Only checking *when* each field becomes known does.
+
+### Step 8c — Side notes: the collections flag alone, and a ridge refit ([`req/08c_side_notes.json`](req/08c_side_notes.json))
+
+```json
+"regressions": [
+  {"type": "REG_GLM", "name": "collections_flag_only", "target": "default_12m", "predictors": ["collections_flag"],
+   "family": "binomial", "link": "logit"},
+  {"type": "REG_GLM", "name": "with_post_outcome_fields_ridge", "...": "the step-8 leaky predictors",
+   "penalty": "l2", "alpha": 0.01}]
+```
+
+**`default ~ collections_flag` alone** is a 2×2 table: on the training split 4,249 of 4,610 flagged loans and 764 of 37,390 unflagged loans defaulted. The logistic fit converges in 7 iterations to intercept −3.8699 and slope **+6.3355** (SE 0.0659, 95% CI 6.2064–6.4647), which are the closed-form logits: ln(764 / 36,626) = −3.8699 and ln(4,249 / 361) + 3.8699 = 6.3355. One post-outcome flag by itself reaches pseudo-R² **0.675**, more than six times the 22 honest candidates together.
+
+**Ridge does not cure leakage.** The same leaky model refit with `penalty: "l2"`, `alpha: 0.01` (glmnet's objective, raw predictor units, intercept unpenalised) shrinks the `collections_flag` coefficient from 6.52 to 2.03, yet pseudo-R² is still **0.747**. A penalty limits how far a coefficient can grow; it cannot tell a field recorded after the outcome from one known at application.
 
 ### Step 9 — Stepwise selection with BIC ([`req/09_stepwise_bic.json`](req/09_stepwise_bic.json))
 
@@ -318,124 +338,159 @@ Same features, attributes, training filter and 22 candidates, with:
 
 BIC keeps 12 predictors (pseudo-R² 0.1036): `interest_rate, dti, lti, delinq_2yrs, revol_util_filled, emp_years, home_RENT, band_G, emp_missing, term60, fico_score, band_B`. It drops `log_income`, `log_loan` (`lti` carries them), `home_OWN`, `home_OTHER`, `revol_missing`, bands C–F (the rate carries them) and **`purpose_freq`**. How *common* a purpose is says nothing about how *risky* it is. Purpose needs an outcome-based encoding.
 
-### Step 10 — Leak-free purpose encoding: training-split rates only ([`req/10_purpose_rates_train_only.json`](req/10_purpose_rates_train_only.json), [`req/10b_train_default_rate.json`](req/10b_train_default_rate.json))
+### Step 10 — Leak-free purpose encoding: `fit_on` and `folds` ([`req/10_purpose_te_train_only.json`](req/10_purpose_te_train_only.json))
+
+One feature does what the naive encoder in step 7 cannot:
 
 ```json
-{"cohort": {"filename": "loans.pulse", "data_dir": "."},
- "features": [{"type": "FEAT_TRAIN_TEST_SPLIT", "label": "split", "params": {"ratios": [0.7, 0.3], "seed": 42, "stratify": "outcome"}}],
- "filterers": [{"type": "FILTER_INCLUDE", "field": "split", "values": ["0"]}],
- "groups": [{"type": "GROUP_CATEGORY", "field": "purpose"}],
- "aggregations": [{"type": "AGG_COUNT", "field": "loan_id", "label": "train_n"},
-                  {"type": "AGG_SUM", "field": "default_12m", "label": "train_defaults"},
-                  {"type": "AGG_AVERAGE", "field": "default_12m", "label": "train_default_rate"}],
- "sort": [{"field": "purpose"}]}
+{"type": "FEAT_TARGET_ENCODE", "field": "purpose", "label": "purpose_te",
+ "params": {"target": "default_12m", "smoothing": 20, "fit_on": "split == 0", "folds": 5, "rng_seed": 11}}
 ```
 
-Training split overall: 42,000 loans, 5,013 defaults (11.936%). Examples: small_business 175 of 899; debt_consolidation 2,273 of 18,663; home_security 1 of 40; timeshare 12 of 49.
+- `fit_on: "split == 0"` takes the per-purpose means from the **training rows only** (it reads the split column the earlier feature made). Every row is encoded, holdout included, but no holdout outcome enters any encoding.
+- `smoothing: 20` pulls each purpose toward the training default rate: `(defaults + 20 × 0.11936) / (n + 20)`. A 40-loan purpose is pulled most of the way back to 11.9%.
+- `folds: 5` encodes each **training** row from the other four folds of training rows, so a loan's own outcome never feeds its own encoding. Holdout rows get the full-training value.
 
-These counts go into a row formula that Pulse evaluates for every loan, train and holdout alike. It uses smoothing 20 toward the training mean: `(defaults[purpose] + 20 × 0.11936) / (n[purpose] + 20)`. A 40-loan purpose is therefore pulled most of the way back to 11.9%, and no holdout outcome enters any loan's encoding:
+`pulse api predict` on this request returns `warnings: []` ([`results/10_purpose_te_train_only.predict.json`](results/10_purpose_te_train_only.predict.json)). Grouping by purpose and split shows the two behaviours (selected rows):
 
-```json
-{"type": "ATTR_FORMULA", "label": "purpose_te_train",
- "expression": "(({\"adoption\": 8, ..., \"wedding\": 31}[purpose] ?? 0) + 20 * 0.11935714285714286) / (({\"adoption\": 52, ..., \"wedding\": 364}[purpose] ?? 0) + 20)"}
-```
+| Purpose | Split | Loans | Defaults | `purpose_te` min | max |
+|---|---|---|---|---|---|
+| small_business | train | 899 | 175 | 0.18687 | 0.20000 |
+| small_business | holdout | 361 | 71 | 0.19302 | 0.19302 |
+| debt_consolidation | train | 18,663 | 2,273 | 0.12010 | 0.12335 |
+| debt_consolidation | holdout | 8,047 | 993 | 0.12179 | 0.12179 |
+| home_security | train | 40 | 1 | 0.04581 | 0.07226 |
+| home_security | holdout | 21 | 1 | 0.05645 | 0.05645 |
+| timeshare | train | 49 | 12 | 0.15611 | 0.23994 |
+| timeshare | holdout | 15 | 2 | 0.20851 | 0.20851 |
+
+Training rows of a purpose take up to five out-of-fold values, one per fold; every holdout loan of a purpose gets one value, built from training counts alone. For small_business that is (175 + 20 × 0.11936) / (899 + 20) = 0.19302, and the 71 holdout defaults do not move it.
 
 ### Step 11 — Re-select with the safe purpose encoding ([`req/11_stepwise_bic_with_safe_te.json`](req/11_stepwise_bic_with_safe_te.json))
 
-The step-9 request plus `purpose_te_train` as a 23rd candidate. BIC now keeps **13 predictors**. `purpose_te_train` is listed fourth in the selection order, after rate, DTI and loan-to-income. Pseudo-R² rises to **0.1090** and deviance falls from 27,533.0 to 27,365.0.
+The step-9 request plus the step-10 feature, with `purpose_te` as a 23rd candidate. BIC now keeps **13 predictors**: the step-9 twelve plus `purpose_te`, which is listed sixth in the selection order. Pseudo-R² rises from 0.1036 to **0.1067** and deviance falls from 27,533.0 to 27,437.5. Because the training rows carry out-of-fold encodings, this gain is not flattered by each loan seeing its own outcome.
 
-### Step 12 — Final scorecard with bootstrap standard errors ([`req/12_final_model_bootstrap.json`](req/12_final_model_bootstrap.json))
+### Step 12 — Final scorecard with bootstrap and jackknife standard errors ([`req/12_final_model_bootstrap.json`](req/12_final_model_bootstrap.json))
 
-The 13 selected predictors are refit twice on the training split: once with Wald (asymptotic) SEs, and once with `"resample": "bootstrap", "bootstrap_iters": 1000, "rng_seed": 7`.
+The scorecard is the step-11 fit itself. No predictor list is copied from step 11: each regression repeats `selection: "stepwise"` over the 23 candidates, and the resample wraps the selected fit. Three versions run on the training split:
 
-| Predictor | Coefficient (log-odds) | Wald SE | Bootstrap SE | Simulation truth |
-|---|---|---|---|---|
-| (intercept) | −2.0142 | 0.9564 | 0.9477 | — |
-| `lti` (loan / income) | +2.0807 | 0.1386 | 0.1455 | +2.0 |
-| `purpose_te_train` | +9.8092 | 0.7377 | 0.7375 | (purpose effects) |
-| `delinq_2yrs` | +0.3182 | 0.0260 | 0.0256 | +0.3 |
-| `emp_missing` | +0.3110 | 0.0641 | 0.0654 | +0.35 |
-| `home_RENT` | +0.2334 | 0.0318 | 0.0306 | +0.2 |
-| `term60` | +0.2313 | 0.0386 | 0.0390 | +0.4 (partly via rate) |
-| `interest_rate` (per pt) | +0.0765 | 0.0107 | 0.0106 | 0 (proxy for band and term) |
-| `dti` (per pt) | +0.0325 | 0.0020 | 0.0020 | +0.035 |
-| `emp_years` | −0.0295 | 0.0044 | 0.0044 | −0.03 |
-| `revol_util_filled` (per pt) | +0.0084 | 0.0007 | 0.0007 | +0.008 |
-| `fico_score` (per pt) | −0.0059 | 0.0011 | 0.0011 | (via band) |
-| `band_B` | −0.2048 | 0.0617 | 0.0629 | (via band) |
-| `band_G` | −0.2926 | 0.0681 | 0.0671 | (via band) |
+```json
+{"type": "REG_GLM", "name": "pd_final", "...": "23 candidates", "selection": "stepwise", "criterion": "bic"},
+{"...": "same", "name": "pd_final_bootstrap", "resample": "bootstrap", "bootstrap_iters": 1000, "rng_seed": 7},
+{"...": "same", "name": "pd_final_jackknife", "resample": "jackknife", "jackknife_groups": 50, "rng_seed": 7}
+```
+
+All three select the same 13 predictors and share the point estimates.
+
+| Predictor | Coefficient (log-odds) | Wald SE | Bootstrap SE | Jackknife SE (50 groups) | Simulation truth |
+|---|---|---|---|---|---|
+| (intercept) | −1.6800 | 0.9554 | 0.9472 | 0.7022 | — |
+| `lti` (loan / income) | +2.0786 | 0.1384 | 0.1451 | 0.1600 | +2.0 |
+| `purpose_te` | +7.3872 | 0.7405 | 0.7477 | 0.5962 | (purpose effects) |
+| `delinq_2yrs` | +0.3169 | 0.0260 | 0.0256 | 0.0322 | +0.3 |
+| `emp_missing` | +0.3104 | 0.0641 | 0.0653 | 0.0696 | +0.35 |
+| `home_RENT` | +0.2325 | 0.0318 | 0.0305 | 0.0341 | +0.2 |
+| `term60` | +0.2314 | 0.0386 | 0.0389 | 0.0382 | +0.4 (partly via rate) |
+| `interest_rate` (per pt) | +0.0759 | 0.0107 | 0.0106 | 0.0083 | 0 (proxy for band and term) |
+| `dti` (per pt) | +0.0326 | 0.0020 | 0.0020 | 0.0020 | +0.035 |
+| `emp_years` | −0.0292 | 0.0044 | 0.0044 | 0.0049 | −0.03 |
+| `revol_util_filled` (per pt) | +0.0083 | 0.0007 | 0.0007 | 0.0007 | +0.008 |
+| `fico_score` (per pt) | −0.0060 | 0.0011 | 0.0011 | 0.0008 | (via band) |
+| `band_B` | −0.2069 | 0.0617 | 0.0629 | 0.0620 | (via band) |
+| `band_G` | −0.2917 | 0.0680 | 0.0670 | 0.0605 | (via band) |
 
 Reading it:
 
 - **The behavioural drivers recover the simulated truth closely.** Loan-to-income, delinquencies, DTI, utilisation, employment length and its missingness, and renting all sit within about two standard errors of the values the data was generated from.
 - **The credit-quality block (rate, FICO, band dummies) acts as a whole.** The interest rate is priced off the band, so the model spreads the band effect across rate, FICO and two band corrections. The negative `band_B` / `band_G` terms are not "band G is safer". They trim the step in the rate schedule. Do not read these coefficients one at a time.
-- **The bootstrap agrees with the Wald SEs** on every term (largest gap: `lti` 0.1455 vs 0.1386), so the asymptotic SEs can be trusted at this sample size. The bootstrap's percentile p-values are 0.002 or below for every slope.
+- **The bootstrap agrees with the Wald SEs** to within about 5% on every term, so the asymptotic SEs can be trusted at this sample size. The bootstrap's percentile p-values are 0.001 for every slope (the floor for 1,000 replicates).
+- **The 50-group jackknife is the fast check.** It needs 50 refits instead of 1,000 and adds about two seconds to the selection. With 49 degrees of freedom its SEs are themselves noisy, roughly ±20%: this draw is low on the intercept and FICO (two terms that move together) and high on `lti`. It agrees with the Wald SEs on the order of magnitude of every term, which is what a quick check needs.
 
-### Step 13 — Held-out decile table: monotonic default gradient ([`req/13_holdout_deciles.json`](req/13_holdout_deciles.json))
+### Step 13 — Held-out decile table: monotonic default gradient ([`req/13_holdout_validation.compose.json`](req/13_holdout_validation.compose.json), slot `deciles`)
 
-The step-12 coefficients become a score formula, and the request runs on the **holdout split only**:
+Steps 13, 13b and 14 are one Compose batch. Its `fits` train three models once, on the training split, with the same features and attributes as step 12: `pd_final` (the stepwise scorecard), `pd_all22` (the 22 candidates, no selection) and `pd_leaky` (the step-8 leaky set). Each holdout slot then scores them per row with `ATTR_REG_PREDICT`. No coefficient appears in any request:
 
 ```json
-"attributes": [ "...helpers...", "...purpose_te_train...",
-  {"type": "ATTR_FORMULA", "label": "pd_score",
-   "expression": "1 / (1 + 2.718281828459045 ** (-(-2.014235306835319 + -0.20475349054207204 * band_B + ... + 0.23126671622685363 * term60)))"}],
-"filterers": [{"type": "FILTER_INCLUDE", "field": "split", "values": ["1"]}],
-"groups": [{"type": "GROUP_QUANTILE", "field": "pd_score", "interval": 10}],
-"aggregations": [
-  {"type": "AGG_COUNT",   "field": "loan_id",     "label": "loans"},
-  {"type": "AGG_SUM",     "field": "default_12m", "label": "defaults"},
-  {"type": "AGG_AVERAGE", "field": "default_12m", "label": "observed_rate"},
-  {"type": "AGG_AVERAGE", "field": "pd_score",    "label": "mean_pd"},
-  {"type": "AGG_AVERAGE", "field": "gt_true_pd",  "label": "mean_true_pd"},
-  {"type": "AGG_SUM",     "field": "loan_amount", "label": "principal_usd"}],
-"windows": [
-  {"type": "WIN_RUNNING_SUM", "field": "defaults", "label": "cum_defaults", "order_by": [{"field": "mean_pd", "desc": true}],
-   "frame": {"mode": "rows", "preceding": null, "following": 0}},
-  {"type": "WIN_RUNNING_SUM", "field": "loans", "label": "cum_loans", "order_by": [{"field": "mean_pd", "desc": true}],
-   "frame": {"mode": "rows", "preceding": null, "following": 0}}],
-"sort": [{"field": "mean_pd", "desc": true}]
+{"fits": [
+   {"name": "pd_final", "request": {"cohort": {"...": "..."}, "features": ["...as step 12..."], "attributes": ["...helpers..."],
+     "filterers": [{"type": "FILTER_INCLUDE", "field": "split", "values": ["0"]}],
+     "regressions": [{"type": "REG_GLM", "name": "pd_final", "...": "23 candidates", "selection": "stepwise", "criterion": "bic"}]}},
+   {"name": "pd_all22", "...": "..."}, {"name": "pd_leaky", "...": "..."}],
+ "requests": [
+   {"label": "deciles", "features": ["...as step 12..."],
+    "attributes": ["...helpers...", {"type": "ATTR_REG_PREDICT", "label": "pd_score", "params": {"fit": "pd_final"}}],
+    "filterers": [{"type": "FILTER_INCLUDE", "field": "split", "values": ["1"]}],
+    "groups": [{"type": "GROUP_QUANTILE", "field": "pd_score", "interval": 10}],
+    "aggregations": [
+      {"type": "AGG_COUNT",   "field": "loan_id",     "label": "loans"},
+      {"type": "AGG_SUM",     "field": "default_12m", "label": "defaults"},
+      {"type": "AGG_AVERAGE", "field": "default_12m", "label": "observed_rate"},
+      {"type": "AGG_AVERAGE", "field": "pd_score",    "label": "mean_pd"},
+      {"type": "AGG_AVERAGE", "field": "gt_true_pd",  "label": "mean_true_pd"},
+      {"type": "AGG_SUM",     "field": "loan_amount", "label": "principal_usd"}],
+    "windows": [
+      {"type": "WIN_SHARE", "field": "defaults", "label": "share_of_defaults"},
+      {"type": "WIN_LIFT",  "field": "defaults", "label": "lift", "params": {"base": "loans"}},
+      {"type": "WIN_RUNNING_SUM", "field": "defaults", "label": "cum_defaults", "order_by": [{"field": "mean_pd", "desc": true}],
+       "frame": {"mode": "rows", "preceding": null, "following": 0}},
+      {"type": "WIN_SHARE", "field": "defaults", "label": "cum_capture", "order_by": [{"field": "mean_pd", "desc": true}],
+       "params": {"cumulative": true}},
+      {"type": "WIN_LIFT",  "field": "defaults", "label": "cum_lift",    "order_by": [{"field": "mean_pd", "desc": true}],
+       "params": {"base": "loans", "cumulative": true}}]},
+   {"label": "deciles_leaky", "...": "the same table for pd_leaky"},
+   {"label": "separation_and_calibration", "...": "step 14"}]}
 ```
 
-| Decile (D10 = riskiest) | Loans | Defaults | Observed rate | Mean predicted PD | Mean true PD | Cumulative defaults | Cumulative loans | Principal (exact) |
-|---|---|---|---|---|---|---|---|---|
-| D10 | 1,800 | 610 | **33.89%** | 34.09% | 33.45% | 610 | 1,800 | $25,209,494.71 |
-| D9 | 1,800 | 368 | 20.44% | 21.43% | 21.55% | 978 | 3,600 | $23,330,630.87 |
-| D8 | 1,800 | 308 | 17.11% | 16.12% | 16.52% | 1,286 | 5,400 | $22,756,135.49 |
-| D7 | 1,800 | 261 | 14.50% | 12.62% | 13.03% | 1,547 | 7,200 | $21,878,553.08 |
-| D6 | 1,800 | 176 | 9.78% | 10.02% | 10.42% | 1,723 | 9,000 | $21,812,565.24 |
-| D5 | 1,800 | 142 | 7.89% | 7.95% | 8.21% | 1,865 | 10,800 | $21,497,814.15 |
-| D4 | 1,800 | 123 | 6.83% | 6.20% | 6.30% | 1,988 | 12,600 | $20,993,821.71 |
-| D3 | 1,800 | 92 | 5.11% | 4.70% | 4.70% | 2,080 | 14,400 | $20,651,646.94 |
-| D2 | 1,800 | 46 | 2.56% | 3.42% | 3.28% | 2,126 | 16,200 | $20,314,114.26 |
-| D1 | 1,800 | 23 | **1.28%** | 2.09% | 1.96% | 2,149 | 18,000 | $18,174,848.17 |
+The fit request's target encoding and the slot's are the same feature, so a holdout loan gets the same `purpose_te` in both. The deciles come out in decile order (D1 … D10) with no `sort`. The cumulative windows run from the riskiest decile down, because their `order_by` is `mean_pd` descending; windows never reorder the rows.
 
-- **Monotonic.** The observed default rate falls in every decile, from 33.89% to 1.28%, on loans the model never saw.
-- **Lift and capture.** The riskiest decile defaults at 33.89% against 11.94% for the holdout overall (step 14). The two riskiest deciles (3,600 of 18,000 loans) contain 978 of the 2,149 holdout defaults. Declining the bottom decile alone removes 610 defaults and $25,209,494.71 of principal.
-- **Calibrated by decile.** Predicted and observed rates track each other, and both track the true PD. The largest gap is D7 (12.62% predicted vs 14.50% observed), within sampling noise for 1,800 loans.
+| Decile (D10 = riskiest) | Loans | Defaults | Observed rate | Mean predicted PD | Mean true PD | Share of defaults | Lift | Cumulative defaults | Cumulative capture | Cumulative lift | Principal (exact) |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| D1 | 1,800 | 22 | **1.22%** | 2.14% | 1.95% | 1.0% | 0.10 | 2,149 | 100.0% | 1.00 | $18,099,743.26 |
+| D2 | 1,800 | 45 | 2.50% | 3.47% | 3.28% | 2.1% | 0.21 | 2,127 | 99.0% | 1.10 | $20,259,860.49 |
+| D3 | 1,800 | 97 | 5.39% | 4.75% | 4.69% | 4.5% | 0.45 | 2,082 | 96.9% | 1.21 | $20,697,410.03 |
+| D4 | 1,800 | 123 | 6.83% | 6.25% | 6.31% | 5.7% | 0.57 | 1,985 | 92.4% | 1.32 | $21,003,111.06 |
+| D5 | 1,800 | 136 | 7.56% | 8.01% | 8.20% | 6.3% | 0.63 | 1,862 | 86.6% | 1.44 | $21,555,439.48 |
+| D6 | 1,800 | 184 | 10.22% | 10.08% | 10.40% | 8.6% | 0.86 | 1,726 | 80.3% | 1.61 | $21,877,918.39 |
+| D7 | 1,800 | 262 | 14.56% | 12.69% | 13.05% | 12.2% | 1.22 | 1,542 | 71.8% | 1.79 | $21,947,745.12 |
+| D8 | 1,800 | 290 | 16.11% | 16.16% | 16.51% | 13.5% | 1.35 | 1,280 | 59.6% | 1.99 | $22,569,149.07 |
+| D9 | 1,800 | 384 | 21.33% | 21.40% | 21.58% | 17.9% | 1.79 | 990 | 46.1% | 2.30 | $23,308,313.31 |
+| D10 | 1,800 | 606 | **33.67%** | 33.82% | 33.46% | 28.2% | **2.82** | 606 | 28.2% | 2.82 | $25,300,934.41 |
 
-### Step 13b — The leaky model's decile table ([`req/13b_holdout_deciles_leaky.json`](req/13b_holdout_deciles_leaky.json))
+- **Monotonic.** The observed default rate rises in every decile, from 1.22% to 33.67%, on loans the model never saw.
+- **Lift and capture.** The riskiest decile holds 28.2% of the holdout's defaults on 10% of its loans, a lift of 2.82. The two riskiest deciles (3,600 of 18,000 loans) capture 990 of the 2,149 holdout defaults (46.1%, cumulative lift 2.30). Declining the riskiest decile alone removes 606 defaults and $25,300,934.41 of principal.
+- **Calibrated by decile.** Predicted and observed rates track each other, and both track the true PD. The largest gap is D7 (12.69% predicted vs 14.56% observed), within sampling noise for 1,800 loans.
 
-The same table for the step-8 model that includes `fico_at_month_12`, also on the holdout:
+### Step 13b — The leaky model's decile table (slot `deciles_leaky`)
 
-| Decile | Observed rate | Mean predicted PD | Mean **true** PD | Cumulative defaults |
-|---|---|---|---|---|
-| D10 | **86.11%** | 82.83% | 21.03% | 1,550 of 2,149 |
-| D9 | 17.67% | 22.07% | 17.20% | 1,868 |
-| D5 | 1.61% | 1.03% | 10.65% | 2,095 |
-| D1 | 0.50% | 0.04% | 5.95% | 2,149 |
+The same table for `pd_leaky`, the step-8 model with `fico_at_month_12` and `collections_flag`, also on the holdout:
 
-The top leaky decile catches 1,550 of 2,149 defaults. But the *true* default probability of those loans at application was only 21.03%: the score does not know they were risky, it knows they defaulted. At origination `fico_at_month_12` does not exist, and this model would collapse.
+| Decile | Observed rate | Mean predicted PD | Mean **true** PD | Lift | Cumulative capture |
+|---|---|---|---|---|---|
+| D1 | 0.06% | 0.01% | 5.70% | 0.005 | 100.0% |
+| D5 | 0.39% | 0.19% | 10.81% | 0.03 | 99.6% |
+| D9 | 18.83% | 18.16% | 17.06% | 1.58 | 97.9% |
+| D10 | **98.06%** | 98.57% | 20.43% | **8.21** | 82.1% (1,765 of 2,149) |
 
-### Step 14 — Separation (KS) and calibration on the holdout ([`req/14_holdout_ks_and_calibration.json`](req/14_holdout_ks_and_calibration.json))
+The top leaky decile catches 1,765 of 2,149 defaults. But the *true* default probability of those loans at application was only 20.43%: the score does not know they were risky, it knows they defaulted. At origination neither post-outcome field exists, and this model would collapse.
+
+### Step 14 — Separation (AUC, KS) and calibration on the holdout (slot `separation_and_calibration`)
 
 ```json
+"attributes": ["...helpers...",
+  {"type": "ATTR_REG_PREDICT", "label": "pd_score", "params": {"fit": "pd_final"}},
+  {"type": "ATTR_REG_PREDICT", "label": "pd_all22", "params": {"fit": "pd_all22"}},
+  {"type": "ATTR_REG_PREDICT", "label": "pd_leaky", "params": {"fit": "pd_leaky"}}],
 "filterers": [{"type": "FILTER_INCLUDE", "field": "split", "values": ["1"]}],
 "aggregations": [
   {"type": "AGG_COUNT",   "field": "loan_id",     "label": "holdout_loans"},
   {"type": "AGG_AVERAGE", "field": "default_12m", "label": "observed_default_rate"},
   {"type": "AGG_AVERAGE", "field": "pd_score",    "label": "mean_predicted_pd"},
   {"type": "AGG_AVERAGE", "field": "gt_true_pd",  "label": "mean_true_pd"},
-  {"type": "AGG_SUM",     "field": "loan_amount", "label": "holdout_principal_usd"}],
+  {"type": "AGG_SUM",     "field": "loan_amount", "label": "holdout_principal_usd"},
+  {"type": "AGG_AUC", "field": "pd_score",   "label": "auc_final_model",       "params": {"outcome": "default_12m"}},
+  {"type": "AGG_AUC", "field": "pd_all22",   "label": "auc_all_22_candidates", "params": {"outcome": "default_12m"}},
+  {"type": "AGG_AUC", "field": "gt_true_pd", "label": "auc_true_pd_ceiling",   "params": {"outcome": "default_12m"}},
+  {"type": "AGG_AUC", "field": "pd_leaky",   "label": "auc_leaky_model",       "params": {"outcome": "default_12m"}}],
 "tests": [
   {"type": "TEST_KS", "field": "pd_score",   "split_by": "outcome", "label": "ks_final_model"},
   {"type": "TEST_KS", "field": "pd_all22",   "split_by": "outcome", "label": "ks_all_22_candidates"},
@@ -443,34 +498,36 @@ The top leaky decile catches 1,550 of 2,149 defaults. But the *true* default pro
   {"type": "TEST_KS", "field": "pd_leaky",   "split_by": "outcome", "label": "ks_leaky_model"}]
 ```
 
-**Calibration (18,000 holdout loans, $216,619,624.62 principal):** mean predicted PD **11.86%**, observed default rate **11.94%**, mean true PD 11.94%.
+**Calibration (18,000 holdout loans, $216,619,624.62 principal):** mean predicted PD **11.88%**, observed default rate **11.94%**, mean true PD 11.94%.
 
-| Holdout score | KS statistic D | p-value | Defaulters / non-defaulters |
-|---|---|---|---|
-| Final 13-predictor scorecard | **0.365** | 3.5 × 10⁻²²¹ | 2,149 / 15,851 |
-| All 22 candidates, no selection | 0.356 | 2.9 × 10⁻²¹⁰ | 2,149 / 15,851 |
-| True simulated PD (ceiling) | 0.368 | 7.5 × 10⁻²²⁵ | 2,149 / 15,851 |
-| Leaky model (+ `fico_at_month_12`) | 0.767 | 0 | 2,149 / 15,851 |
+`AGG_AUC` returns the AUC as the row value; its `components` carry the Gini (2·AUC − 1) and a DeLong standard error and 95% interval.
 
-The selected scorecard separates *better* on new loans than the unselected 22-predictor fit. It reaches 0.365 of a possible 0.368. The remaining gap is the purpose detail that smoothing gives up on thin categories. Anything well above the ceiling, like the leaky 0.767, is evidence of leakage, not of a better model.
+| Holdout score | AUC | DeLong 95% CI | Gini | KS statistic D | KS p-value |
+|---|---|---|---|---|---|
+| Final 13-predictor scorecard | **0.7435** | 0.7329–0.7541 | 0.487 | **0.365** | 1.3 × 10⁻²²⁰ |
+| All 22 candidates, no selection | 0.7410 | 0.7304–0.7516 | 0.482 | 0.356 | 2.9 × 10⁻²¹⁰ |
+| True simulated PD (ceiling) | 0.7461 | 0.7356–0.7566 | 0.492 | 0.368 | 7.5 × 10⁻²²⁵ |
+| Leaky model (+ two post-outcome fields) | 0.9908 | 0.9883–0.9932 | 0.982 | 0.935 | 0 |
 
-### Step 15 — Describe a request in plain language (`pulse explain`)
+Every row has 2,149 defaulters and 15,851 non-defaulters. The selected scorecard separates slightly *better* on new loans than the unselected 22-predictor fit and comes close to the ceiling on both measures: AUC 0.7435 of a possible 0.7461 (inside the ceiling's DeLong interval), KS 0.365 of 0.368. Anything well above the ceiling, like the leaky AUC of 0.991, is evidence of leakage, not of a better model.
+
+### Step 15 — Describe the holdout batch and its findings in plain language (`pulse explain`)
 
 ```
-pulse explain -r req/14_holdout_ks_and_calibration.json
+pulse explain --root composed -r req/13_holdout_validation.compose.json
 ```
-> This request reads `loans.pulse` and runs 1 filter, 6 feature columns, 10 attribute columns, 5 aggregations and 4 tests. valid: true
-> - features[0]: Feature 1 runs FEAT_TRAIN_TEST_SPLIT. Labels every record train (0), validation (1) or test (2) by a seeded shuffle, so a model can be checked on records it never learned from.
-> - tests[0]: Test 1 runs TEST_KS on `pd_score` split by `outcome`. Checks whether a numeric field's values follow the same distribution in two groups, comparing their whole shape. …
+> This request batch runs 3 requests side by side and in all runs 3 filters, 21 feature columns, 23 attribute columns, 10 window columns, 2 groupings, 21 aggregations and 4 tests. valid: true
+> - requests[0].attributes[6]: Attribute 7 runs ATTR_REG_PREDICT. Adds to every row the value a model fitted once, elsewhere in the request, predicts for it from the row's own predictor values.
+> - requests[2].aggregations[5]: Aggregation 6 runs AGG_AUC on `pd_score`. How well a score separates a yes/no outcome: the chance that a randomly picked yes row scores higher than a randomly picked no row. …
 
-Given the response, `pulse explain --response results/14_holdout_ks_and_calibration.json` summarises the findings. It reports "4 of 4 inferential findings show evidence at their alpha" and adds a multiple-comparisons caveat: the four KS p-values are unadjusted. That does not matter here, since the smallest effect has p = 3 × 10⁻²¹⁰. Full output: [`results/15_explain_request.txt`](results/15_explain_request.txt), [`results/15_explain_response.txt`](results/15_explain_response.txt).
+Given the response as well (`--response results/13_holdout_validation.json`), explain summarises the findings: "This batch reports 3 responses side by side and 3 regression fits; 48 of 63 inferential findings show evidence at their alpha." The fits are described by the predictors they kept, so `fits.pd_final` reads "predicting `default_12m` from `interest_rate`, `dti`, `lti`, `delinq_2yrs`, `revol_util_filled`, `purpose_te`, …": the 13 that stepwise selection kept, not the 23 candidates. It adds two multiple-comparisons caveats. The four KS p-values are unadjusted, which does not matter here because the largest is 3 × 10⁻²¹⁰. The regression p-values are raw and are read against 0.05. Full output: [`results/15_explain_request.txt`](results/15_explain_request.txt), [`results/15_explain_response.txt`](results/15_explain_response.txt).
 
 ## Findings and implications
 
-1. **Use the 13-predictor scorecard for application decisions.** Affordability (loan-to-income, DTI), credit behaviour (delinquencies, utilisation), stability (employment length, and whether it was stated), housing, term and the priced credit grade all carry independent signal. Its holdout KS (0.365) almost matches the best achievable on this data (0.368, the KS of the true PD), and its PDs are calibrated overall (11.86% vs 11.94%) and by decile.
+1. **Use the 13-predictor scorecard for application decisions.** Affordability (loan-to-income, DTI), credit behaviour (delinquencies, utilisation), stability (employment length, and whether it was stated), housing, term, purpose and the priced credit grade all carry independent signal. Its holdout AUC (0.7435) and KS (0.365) almost match the best achievable on this data (0.7461 and 0.368, from the true PD), and its PDs are calibrated overall (11.88% vs 11.94%) and by decile.
 2. **Missing data is information.** Applicants who leave employment length blank default at 16.99% vs 11.61%. Keep a missing-value indicator; do not drop the rows.
-3. **Ban post-outcome fields from the modelling mart.** `fico_at_month_12`, `collections_flag` and `recovery_amount` lift KS from 0.365 to 0.767 and pseudo-R² from 0.105 to 0.601. A random holdout does **not** expose this, because the leaked column is in the holdout too. Each field needs an "available at decision time?" attribute in the data dictionary.
-4. **Encode high-cardinality categoricals from training data only.** Pulse warns at predict time that `FEAT_TARGET_ENCODE` uses every row's outcome. Stepwise selection keeps the training-only, smoothed purpose rate. Frequency encoding of the same field is dropped as uninformative.
+3. **Ban post-outcome fields from the modelling mart.** `fico_at_month_12` and `collections_flag` lift holdout AUC from 0.744 to 0.991 and pseudo-R² from 0.105 to 0.848; `collections_flag` alone reaches pseudo-R² 0.675. A random holdout does **not** expose this, because the leaked columns are in the holdout too, and a ridge penalty does not either. Each field needs an "available at decision time?" attribute in the data dictionary.
+4. **Encode high-cardinality categoricals from training data only.** Pulse warns at predict time when `FEAT_TARGET_ENCODE` would use every row's outcome. With `fit_on: "split == 0"` and `folds: 5` the warning goes away, stepwise selection keeps the encoding, and frequency encoding of the same field is dropped as uninformative.
 5. **Pricing variables are collinear with grade.** Rate, FICO and band split one effect between them. Report and monitor them as a block, not coefficient by coefficient.
 6. **Keep money in `decimal128`.** Segment and split principal totals reconcile to the cent with the book total; the float DTI column already shows drift in its 8th decimal place.
 
@@ -482,18 +539,23 @@ Given the response, `pulse explain --response results/14_holdout_ks_and_calibrat
 | `decimal128` + `AGG_SUM` / `AGG_AVERAGE` / `AGG_MIN` / `AGG_MAX` | 1, 3, 5, 6, 13, 14 | Exact money totals and means |
 | `AGG_NULL_COUNT`, `FILTER_NULL`, `AGG_COUNT`, `AGG_DISTINCT_COUNT`, `AGG_MEDIAN` | 1, 2 | Data-quality profile and missingness-as-signal |
 | `GROUP_CATEGORY`, `sort` | 3, 4, 5, 6, 10 | Segment default rates |
+| `GROUP_NUMERIC_RANGES` | 6b | Labelled DTI ranges, in listed order |
 | `FEAT_TRAIN_TEST_SPLIT` (stratified, seeded) | 6–14 | Reproducible 70/30 split with matched default rates |
 | `FEAT_LOG`, `FEAT_BUCKETIZE`, `FEAT_ONE_HOT`, `FEAT_FREQUENCY_ENCODE` | 6–14 | Model features |
 | `FEAT_TARGET_ENCODE` + predict's `PULSE_FEAT_TARGET_LEAKAGE_RISK` | 7 | Leakage flagged before execution (refused under `--strict`) |
-| `ATTR_FORMULA` | 8–14 | Loan-to-income, missing indicators, train-only purpose encoding, holdout PD score |
-| `REG_GLM` binomial/logit | 7–12 | Logistic PD models |
-| `selection: "stepwise"` + `criterion: "bic"` | 9, 11 | Predictor selection |
-| `resample: "bootstrap"` | 12 | Bootstrap standard errors |
+| `FEAT_TARGET_ENCODE` with `fit_on` + `folds` | 10–14 | Train-only, out-of-fold purpose encoding |
+| `ATTR_FORMULA` | 8–14 | Loan-to-income, missing indicators |
+| `REG_GLM` binomial/logit | 7–14 | Logistic PD models |
+| `REG_GLM` `penalty: "l2"` | 8c | Ridge refit of the leaky model |
+| `selection: "stepwise"` + `criterion: "bic"` | 9, 11, 12, 13 | Predictor selection, inside the fit that is scored |
+| `resample: "bootstrap"`, `resample: "jackknife"` + `jackknife_groups` | 12 | Bootstrap and delete-a-group jackknife standard errors |
 | `ATTR_REG_FITTED` | 8b | Per-row in-sample fitted scores |
-| `GROUP_QUANTILE` (deciles) + `WIN_RUNNING_SUM` | 13, 13b | Lift / capture table |
+| Compose `fits` + `ATTR_REG_PREDICT` | 13, 13b, 14 | Train once, score the holdout per row, no coefficient copied |
+| `GROUP_QUANTILE` (deciles, in decile order) + `WIN_SHARE` / `WIN_LIFT` / `WIN_RUNNING_SUM` | 13, 13b | Lift / capture table |
+| `AGG_AUC` | 14 | AUC, Gini and DeLong interval |
 | `TEST_KS` | 8b, 14 | Defaulter vs non-defaulter separation |
-| `pulse api predict` | 7 and before every run | Validation and warnings without reading records |
-| `pulse explain` | 15 | Plain-language description of a request and its findings |
-| `Response.Components` | 1 | Exposes the raw float running sum behind `AGG_AVERAGE` |
+| `pulse api predict` / `predict-compose` | 7, 10, 13 and before every run | Validation and warnings without reading records |
+| `pulse explain --root composed` | 15 | Plain-language description of the holdout batch and of its findings, fits included |
+| `Response.Components` | 1, 14 | The raw float running sum behind `AGG_AVERAGE`; the AUC's Gini and DeLong interval |
 
 Reproduction steps and expected numbers: [`REPRODUCE.md`](REPRODUCE.md).

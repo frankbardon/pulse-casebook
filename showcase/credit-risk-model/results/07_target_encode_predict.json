@@ -13,28 +13,51 @@
         "family": "binomial",
         "link": "logit",
         "coefficients": {
-          "(intercept)": 5.4070636220487795,
-          "dti": 0.031360431818204346,
-          "fico_score": -0.013367626079233672,
-          "purpose_te": 9.136330664572457
+          "(intercept)": 5.407063622043448,
+          "dti": 0.03136043181821266,
+          "fico_score": -0.013367626079225925,
+          "purpose_te": 9.136330664572016
         },
         "std_errors": {
-          "(intercept)": 0.2234211618807505,
-          "dti": 0.001976435387680099,
-          "fico_score": 0.0003074658861062174,
-          "purpose_te": 0.7205656141868944
+          "(intercept)": 0.22342116188076833,
+          "dti": 0.001976435387680042,
+          "fico_score": 0.0003074658861061914,
+          "purpose_te": 0.7205656141867509
         },
         "p_values": {
-          "(intercept)": 2.1601415302032802e-129,
-          "dti": 1.069597665378799e-56,
+          "(intercept)": 2.1601415315538105e-129,
+          "dti": 1.069597665299357e-56,
           "fico_score": 0,
-          "purpose_te": 7.69306323520865e-37
+          "purpose_te": 7.693063235020778e-37
         },
-        "deviance": 28234.748569445776,
+        "ci_lower": {
+          "(intercept)": 4.9691661913730485,
+          "dti": 0.027486689640589316,
+          "fico_score": -0.013970248142468755,
+          "purpose_te": 7.724048012268001
+        },
+        "ci_upper": {
+          "(intercept)": 5.844961052713847,
+          "dti": 0.035234173995836,
+          "fico_score": -0.012765004015983095,
+          "purpose_te": 10.548613316876033
+        },
+        "conf_level": 0.95,
+        "deviance": 28234.74856944566,
         "null_deviance": 30713.94341691641,
-        "pseudo_r2": 0.08071887135486355,
+        "pseudo_r2": 0.08071887135486733,
         "n_obs": 42000,
         "converged_iters": 6
+      }
+    ],
+    "warnings": [
+      {
+        "code": "PULSE_FEAT_TARGET_LEAKAGE_RISK",
+        "message": "FEAT_TARGET_ENCODE without params.fit_on averages every record's outcome, the record's own and validation/test records' included; a preceding FEAT_TRAIN_TEST_SPLIT does not change that — set params.fit_on to the training rows (e.g. \"split == 0\"), optionally with folds for out-of-fold training values",
+        "details": {
+          "feature": "FEAT_TARGET_ENCODE",
+          "feature_index": 1
+        }
       }
     ],
     "components": {
@@ -53,5 +76,14 @@
     }
   },
   "errors": [],
-  "warnings": []
+  "warnings": [
+    {
+      "code": "PULSE_FEAT_TARGET_LEAKAGE_RISK",
+      "message": "FEAT_TARGET_ENCODE without params.fit_on averages every record's outcome, the record's own and validation/test records' included; a preceding FEAT_TRAIN_TEST_SPLIT does not change that — set params.fit_on to the training rows (e.g. \"split == 0\"), optionally with folds for out-of-fold training values",
+      "details": {
+        "feature": "FEAT_TARGET_ENCODE",
+        "feature_index": 1
+      }
+    }
+  ]
 }

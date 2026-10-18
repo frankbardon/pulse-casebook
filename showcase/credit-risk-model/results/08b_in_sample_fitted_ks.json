@@ -30,7 +30,7 @@
         "label": "ks_leaky_in_sample",
         "type": "TEST_KS",
         "variant": "two_sample",
-        "statistic": 0.768786328714294,
+        "statistic": 0.9346880040680022,
         "p_value": 0,
         "alpha": 0.05,
         "reject_null": true,

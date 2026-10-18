@@ -15,38 +15,55 @@
         "seed": 42,
         "stratify": "outcome"
       }
-    }
-  ],
-  "filterers": [
+    },
     {
-      "type": "FILTER_INCLUDE",
-      "field": "split",
-      "values": [
-        "0"
-      ]
+      "type": "FEAT_TARGET_ENCODE",
+      "field": "purpose",
+      "label": "purpose_te",
+      "params": {
+        "target": "default_12m",
+        "smoothing": 20,
+        "fit_on": "split == 0",
+        "folds": 5,
+        "rng_seed": 11
+      }
     }
   ],
   "groups": [
     {
       "type": "GROUP_CATEGORY",
       "field": "purpose"
+    },
+    {
+      "type": "GROUP_CATEGORY",
+      "field": "split"
     }
   ],
   "aggregations": [
     {
       "type": "AGG_COUNT",
       "field": "loan_id",
-      "label": "train_n"
+      "label": "loans"
     },
     {
       "type": "AGG_SUM",
       "field": "default_12m",
-      "label": "train_defaults"
+      "label": "defaults"
+    },
+    {
+      "type": "AGG_MIN",
+      "field": "purpose_te",
+      "label": "min_purpose_te"
+    },
+    {
+      "type": "AGG_MAX",
+      "field": "purpose_te",
+      "label": "max_purpose_te"
     },
     {
       "type": "AGG_AVERAGE",
-      "field": "default_12m",
-      "label": "train_default_rate"
+      "field": "purpose_te",
+      "label": "mean_purpose_te"
     }
   ],
   "sort": [

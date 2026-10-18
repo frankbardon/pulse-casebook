@@ -12,10 +12,14 @@ Fields: 22
   term_months                    u8                   Loan term in months (36 or 60).
   interest_rate                  f64                  Annual interest rate in percent, priced off band and term.
   annual_income                  decimal128           Self-reported gross annual income, USD.
+    decimal: precision 18, scale 2
   loan_amount                    decimal128           Funded principal, USD.
+    decimal: precision 18, scale 2
   dti                            f64                  Debt-to-income ratio in percent, excluding this loan.
   revol_util                     f64                  Revolving credit utilisation in percent; null when the bureau file has no revolving lines.
+    nullable: yes
   emp_length_years               u8                   Years with current employer (10 = 10 or more); null when not stated.
+    nullable: yes
   home_ownership                 categorical_u8       Housing status.
     dictionary: 4 entries
   delinq_2yrs                    u8                   30+ day delinquencies on the bureau file in the prior 24 months.
@@ -27,3 +31,5 @@ Fields: 22
   fico_at_month_12               u16                  POST-OUTCOME: bureau score re-pulled 12 months after booking (account monitoring). Reflects any delinquency on this loan; not known at application.
   collections_flag               packed_bool          POST-OUTCOME: account was referred to collections. Set after the outcome window; not known at application.
   recovery_amount                decimal128           POST-OUTCOME: USD recovered after charge-off; null for loans that did not default.
+    nullable: yes
+    decimal: precision 18, scale 2

@@ -3,31 +3,39 @@
     "filename": "loans.pulse",
     "data_dir": "."
   },
-  "features": [
-    {
-      "type": "FEAT_BUCKETIZE",
-      "field": "dti",
-      "label": "dti_bucket",
-      "params": {
-        "boundaries": [
-          10,
-          20,
-          30
-        ]
-      }
-    }
-  ],
   "groups": [
     {
-      "type": "GROUP_CATEGORY",
-      "field": "dti_bucket"
+      "type": "GROUP_NUMERIC_RANGES",
+      "field": "dti",
+      "params": {
+        "ranges": [
+          {
+            "label": "under 10%",
+            "end": 10
+          },
+          {
+            "label": "10-20%",
+            "start": 10,
+            "end": 20
+          },
+          {
+            "label": "20-30%",
+            "start": 20,
+            "end": 30
+          },
+          {
+            "label": "30% and over",
+            "start": 30
+          }
+        ]
+      }
     }
   ],
   "aggregations": [
     {
       "type": "AGG_COUNT",
       "field": "loan_id",
-      "label": "applications"
+      "label": "loans"
     },
     {
       "type": "AGG_AVERAGE",
@@ -37,12 +45,7 @@
     {
       "type": "AGG_AVERAGE",
       "field": "dti",
-      "label": "mean_dti_pct"
-    }
-  ],
-  "sort": [
-    {
-      "field": "dti_bucket"
+      "label": "mean_dti"
     }
   ]
 }

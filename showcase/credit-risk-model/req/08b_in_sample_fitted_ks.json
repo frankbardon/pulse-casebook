@@ -103,7 +103,8 @@
         "emp_missing",
         "term60",
         "home_RENT",
-        "fico_at_month_12"
+        "fico_at_month_12",
+        "collections_flag"
       ]
     }
   ],
