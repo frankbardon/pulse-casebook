@@ -1,0 +1,1224 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "valid": true,
+    "request": {
+      "requests": [
+        {
+          "label": "deciles",
+          "cohort": {
+            "filename": "loans.pulse",
+            "data_dir": "."
+          },
+          "filterers": [
+            {
+              "type": "FILTER_INCLUDE",
+              "field": "split",
+              "values": [
+                "1"
+              ]
+            }
+          ],
+          "aggregations": [
+            {
+              "type": "AGG_COUNT",
+              "field": "loan_id",
+              "label": "loans"
+            },
+            {
+              "type": "AGG_SUM",
+              "field": "default_12m",
+              "label": "defaults"
+            },
+            {
+              "type": "AGG_AVERAGE",
+              "field": "default_12m",
+              "label": "observed_rate"
+            },
+            {
+              "type": "AGG_AVERAGE",
+              "field": "pd_score",
+              "label": "mean_pd"
+            },
+            {
+              "type": "AGG_AVERAGE",
+              "field": "gt_true_pd",
+              "label": "mean_true_pd"
+            },
+            {
+              "type": "AGG_SUM",
+              "field": "loan_amount",
+              "label": "principal_usd"
+            }
+          ],
+          "attributes": [
+            {
+              "type": "ATTR_FORMULA",
+              "field": "",
+              "label": "lti",
+              "expression": "2.718281828459045 ** (log_loan - log_income)"
+            },
+            {
+              "type": "ATTR_FORMULA",
+              "field": "",
+              "label": "term60",
+              "expression": "term_months == 60 ? 1 : 0"
+            },
+            {
+              "type": "ATTR_FORMULA",
+              "field": "",
+              "label": "emp_missing",
+              "expression": "emp_length_years == nil ? 1 : 0"
+            },
+            {
+              "type": "ATTR_FORMULA",
+              "field": "",
+              "label": "emp_years",
+              "expression": "emp_length_years ?? 0"
+            },
+            {
+              "type": "ATTR_FORMULA",
+              "field": "",
+              "label": "revol_missing",
+              "expression": "revol_util == nil ? 1 : 0"
+            },
+            {
+              "type": "ATTR_FORMULA",
+              "field": "",
+              "label": "revol_util_filled",
+              "expression": "revol_util ?? 50"
+            },
+            {
+              "type": "ATTR_REG_PREDICT",
+              "field": "",
+              "label": "pd_score",
+              "params": {
+                "fit": "pd_final"
+              }
+            }
+          ],
+          "groups": [
+            {
+              "type": "GROUP_QUANTILE",
+              "field": "pd_score",
+              "interval": 10
+            }
+          ],
+          "windows": [
+            {
+              "type": "WIN_SHARE",
+              "field": "defaults",
+              "label": "share_of_defaults",
+              "order_by": null
+            },
+            {
+              "type": "WIN_LIFT",
+              "field": "defaults",
+              "label": "lift",
+              "order_by": null,
+              "params": {
+                "base": "loans"
+              }
+            },
+            {
+              "type": "WIN_RUNNING_SUM",
+              "field": "defaults",
+              "label": "cum_defaults",
+              "order_by": [
+                {
+                  "field": "mean_pd",
+                  "desc": true
+                }
+              ],
+              "frame": {
+                "mode": "rows",
+                "following": 0
+              }
+            },
+            {
+              "type": "WIN_SHARE",
+              "field": "defaults",
+              "label": "cum_capture",
+              "order_by": [
+                {
+                  "field": "mean_pd",
+                  "desc": true
+                }
+              ],
+              "params": {
+                "cumulative": true
+              }
+            },
+            {
+              "type": "WIN_LIFT",
+              "field": "defaults",
+              "label": "cum_lift",
+              "order_by": [
+                {
+                  "field": "mean_pd",
+                  "desc": true
+                }
+              ],
+              "params": {
+                "base": "loans",
+                "cumulative": true
+              }
+            }
+          ],
+          "features": [
+            {
+              "type": "FEAT_TRAIN_TEST_SPLIT",
+              "label": "split",
+              "params": {
+                "ratios": [
+                  0.7,
+                  0.3
+                ],
+                "seed": 42,
+                "stratify": "outcome"
+              }
+            },
+            {
+              "type": "FEAT_LOG",
+              "field": "annual_income",
+              "label": "log_income"
+            },
+            {
+              "type": "FEAT_LOG",
+              "field": "loan_amount",
+              "label": "log_loan"
+            },
+            {
+              "type": "FEAT_ONE_HOT",
+              "field": "credit_band",
+              "label": "band"
+            },
+            {
+              "type": "FEAT_ONE_HOT",
+              "field": "home_ownership",
+              "label": "home"
+            },
+            {
+              "type": "FEAT_FREQUENCY_ENCODE",
+              "field": "purpose",
+              "label": "purpose_freq"
+            },
+            {
+              "type": "FEAT_TARGET_ENCODE",
+              "field": "purpose",
+              "label": "purpose_te",
+              "params": {
+                "target": "default_12m",
+                "smoothing": 20,
+                "fit_on": "split == 0",
+                "folds": 5,
+                "rng_seed": 11
+              }
+            }
+          ]
+        },
+        {
+          "label": "deciles_leaky",
+          "cohort": {
+            "filename": "loans.pulse",
+            "data_dir": "."
+          },
+          "filterers": [
+            {
+              "type": "FILTER_INCLUDE",
+              "field": "split",
+              "values": [
+                "1"
+              ]
+            }
+          ],
+          "aggregations": [
+            {
+              "type": "AGG_COUNT",
+              "field": "loan_id",
+              "label": "loans"
+            },
+            {
+              "type": "AGG_SUM",
+              "field": "default_12m",
+              "label": "defaults"
+            },
+            {
+              "type": "AGG_AVERAGE",
+              "field": "default_12m",
+              "label": "observed_rate"
+            },
+            {
+              "type": "AGG_AVERAGE",
+              "field": "pd_leaky",
+              "label": "mean_pd"
+            },
+            {
+              "type": "AGG_AVERAGE",
+              "field": "gt_true_pd",
+              "label": "mean_true_pd"
+            },
+            {
+              "type": "AGG_SUM",
+              "field": "loan_amount",
+              "label": "principal_usd"
+            }
+          ],
+          "attributes": [
+            {
+              "type": "ATTR_FORMULA",
+              "field": "",
+              "label": "lti",
+              "expression": "2.718281828459045 ** (log_loan - log_income)"
+            },
+            {
+              "type": "ATTR_FORMULA",
+              "field": "",
+              "label": "term60",
+              "expression": "term_months == 60 ? 1 : 0"
+            },
+            {
+              "type": "ATTR_FORMULA",
+              "field": "",
+              "label": "emp_missing",
+              "expression": "emp_length_years == nil ? 1 : 0"
+            },
+            {
+              "type": "ATTR_FORMULA",
+              "field": "",
+              "label": "emp_years",
+              "expression": "emp_length_years ?? 0"
+            },
+            {
+              "type": "ATTR_FORMULA",
+              "field": "",
+              "label": "revol_missing",
+              "expression": "revol_util == nil ? 1 : 0"
+            },
+            {
+              "type": "ATTR_FORMULA",
+              "field": "",
+              "label": "revol_util_filled",
+              "expression": "revol_util ?? 50"
+            },
+            {
+              "type": "ATTR_REG_PREDICT",
+              "field": "",
+              "label": "pd_leaky",
+              "params": {
+                "fit": "pd_leaky"
+              }
+            }
+          ],
+          "groups": [
+            {
+              "type": "GROUP_QUANTILE",
+              "field": "pd_leaky",
+              "interval": 10
+            }
+          ],
+          "windows": [
+            {
+              "type": "WIN_SHARE",
+              "field": "defaults",
+              "label": "share_of_defaults",
+              "order_by": null
+            },
+            {
+              "type": "WIN_LIFT",
+              "field": "defaults",
+              "label": "lift",
+              "order_by": null,
+              "params": {
+                "base": "loans"
+              }
+            },
+            {
+              "type": "WIN_RUNNING_SUM",
+              "field": "defaults",
+              "label": "cum_defaults",
+              "order_by": [
+                {
+                  "field": "mean_pd",
+                  "desc": true
+                }
+              ],
+              "frame": {
+                "mode": "rows",
+                "following": 0
+              }
+            },
+            {
+              "type": "WIN_SHARE",
+              "field": "defaults",
+              "label": "cum_capture",
+              "order_by": [
+                {
+                  "field": "mean_pd",
+                  "desc": true
+                }
+              ],
+              "params": {
+                "cumulative": true
+              }
+            },
+            {
+              "type": "WIN_LIFT",
+              "field": "defaults",
+              "label": "cum_lift",
+              "order_by": [
+                {
+                  "field": "mean_pd",
+                  "desc": true
+                }
+              ],
+              "params": {
+                "base": "loans",
+                "cumulative": true
+              }
+            }
+          ],
+          "features": [
+            {
+              "type": "FEAT_TRAIN_TEST_SPLIT",
+              "label": "split",
+              "params": {
+                "ratios": [
+                  0.7,
+                  0.3
+                ],
+                "seed": 42,
+                "stratify": "outcome"
+              }
+            },
+            {
+              "type": "FEAT_LOG",
+              "field": "annual_income",
+              "label": "log_income"
+            },
+            {
+              "type": "FEAT_LOG",
+              "field": "loan_amount",
+              "label": "log_loan"
+            },
+            {
+              "type": "FEAT_ONE_HOT",
+              "field": "credit_band",
+              "label": "band"
+            },
+            {
+              "type": "FEAT_ONE_HOT",
+              "field": "home_ownership",
+              "label": "home"
+            },
+            {
+              "type": "FEAT_FREQUENCY_ENCODE",
+              "field": "purpose",
+              "label": "purpose_freq"
+            },
+            {
+              "type": "FEAT_TARGET_ENCODE",
+              "field": "purpose",
+              "label": "purpose_te",
+              "params": {
+                "target": "default_12m",
+                "smoothing": 20,
+                "fit_on": "split == 0",
+                "folds": 5,
+                "rng_seed": 11
+              }
+            }
+          ]
+        },
+        {
+          "label": "separation_and_calibration",
+          "cohort": {
+            "filename": "loans.pulse",
+            "data_dir": "."
+          },
+          "filterers": [
+            {
+              "type": "FILTER_INCLUDE",
+              "field": "split",
+              "values": [
+                "1"
+              ]
+            }
+          ],
+          "aggregations": [
+            {
+              "type": "AGG_COUNT",
+              "field": "loan_id",
+              "label": "holdout_loans"
+            },
+            {
+              "type": "AGG_AVERAGE",
+              "field": "default_12m",
+              "label": "observed_default_rate"
+            },
+            {
+              "type": "AGG_AVERAGE",
+              "field": "pd_score",
+              "label": "mean_predicted_pd"
+            },
+            {
+              "type": "AGG_AVERAGE",
+              "field": "gt_true_pd",
+              "label": "mean_true_pd"
+            },
+            {
+              "type": "AGG_SUM",
+              "field": "loan_amount",
+              "label": "holdout_principal_usd"
+            },
+            {
+              "type": "AGG_AUC",
+              "field": "pd_score",
+              "label": "auc_final_model",
+              "params": {
+                "outcome": "default_12m"
+              }
+            },
+            {
+              "type": "AGG_AUC",
+              "field": "pd_all22",
+              "label": "auc_all_22_candidates",
+              "params": {
+                "outcome": "default_12m"
+              }
+            },
+            {
+              "type": "AGG_AUC",
+              "field": "gt_true_pd",
+              "label": "auc_true_pd_ceiling",
+              "params": {
+                "outcome": "default_12m"
+              }
+            },
+            {
+              "type": "AGG_AUC",
+              "field": "pd_leaky",
+              "label": "auc_leaky_model",
+              "params": {
+                "outcome": "default_12m"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "type": "ATTR_FORMULA",
+              "field": "",
+              "label": "lti",
+              "expression": "2.718281828459045 ** (log_loan - log_income)"
+            },
+            {
+              "type": "ATTR_FORMULA",
+              "field": "",
+              "label": "term60",
+              "expression": "term_months == 60 ? 1 : 0"
+            },
+            {
+              "type": "ATTR_FORMULA",
+              "field": "",
+              "label": "emp_missing",
+              "expression": "emp_length_years == nil ? 1 : 0"
+            },
+            {
+              "type": "ATTR_FORMULA",
+              "field": "",
+              "label": "emp_years",
+              "expression": "emp_length_years ?? 0"
+            },
+            {
+              "type": "ATTR_FORMULA",
+              "field": "",
+              "label": "revol_missing",
+              "expression": "revol_util == nil ? 1 : 0"
+            },
+            {
+              "type": "ATTR_FORMULA",
+              "field": "",
+              "label": "revol_util_filled",
+              "expression": "revol_util ?? 50"
+            },
+            {
+              "type": "ATTR_REG_PREDICT",
+              "field": "",
+              "label": "pd_score",
+              "params": {
+                "fit": "pd_final"
+              }
+            },
+            {
+              "type": "ATTR_REG_PREDICT",
+              "field": "",
+              "label": "pd_all22",
+              "params": {
+                "fit": "pd_all22"
+              }
+            },
+            {
+              "type": "ATTR_REG_PREDICT",
+              "field": "",
+              "label": "pd_leaky",
+              "params": {
+                "fit": "pd_leaky"
+              }
+            }
+          ],
+          "features": [
+            {
+              "type": "FEAT_TRAIN_TEST_SPLIT",
+              "label": "split",
+              "params": {
+                "ratios": [
+                  0.7,
+                  0.3
+                ],
+                "seed": 42,
+                "stratify": "outcome"
+              }
+            },
+            {
+              "type": "FEAT_LOG",
+              "field": "annual_income",
+              "label": "log_income"
+            },
+            {
+              "type": "FEAT_LOG",
+              "field": "loan_amount",
+              "label": "log_loan"
+            },
+            {
+              "type": "FEAT_ONE_HOT",
+              "field": "credit_band",
+              "label": "band"
+            },
+            {
+              "type": "FEAT_ONE_HOT",
+              "field": "home_ownership",
+              "label": "home"
+            },
+            {
+              "type": "FEAT_FREQUENCY_ENCODE",
+              "field": "purpose",
+              "label": "purpose_freq"
+            },
+            {
+              "type": "FEAT_TARGET_ENCODE",
+              "field": "purpose",
+              "label": "purpose_te",
+              "params": {
+                "target": "default_12m",
+                "smoothing": 20,
+                "fit_on": "split == 0",
+                "folds": 5,
+                "rng_seed": 11
+              }
+            }
+          ],
+          "tests": [
+            {
+              "type": "TEST_KS",
+              "field": "pd_score",
+              "split_by": "outcome",
+              "label": "ks_final_model"
+            },
+            {
+              "type": "TEST_KS",
+              "field": "pd_all22",
+              "split_by": "outcome",
+              "label": "ks_all_22_candidates"
+            },
+            {
+              "type": "TEST_KS",
+              "field": "gt_true_pd",
+              "split_by": "outcome",
+              "label": "ks_true_pd_ceiling"
+            },
+            {
+              "type": "TEST_KS",
+              "field": "pd_leaky",
+              "split_by": "outcome",
+              "label": "ks_leaky_model"
+            }
+          ]
+        }
+      ],
+      "fits": [
+        {
+          "name": "pd_final",
+          "request": {
+            "cohort": {
+              "filename": "loans.pulse",
+              "data_dir": "."
+            },
+            "filterers": [
+              {
+                "type": "FILTER_INCLUDE",
+                "field": "split",
+                "values": [
+                  "0"
+                ]
+              }
+            ],
+            "attributes": [
+              {
+                "type": "ATTR_FORMULA",
+                "field": "",
+                "label": "lti",
+                "expression": "2.718281828459045 ** (log_loan - log_income)"
+              },
+              {
+                "type": "ATTR_FORMULA",
+                "field": "",
+                "label": "term60",
+                "expression": "term_months == 60 ? 1 : 0"
+              },
+              {
+                "type": "ATTR_FORMULA",
+                "field": "",
+                "label": "emp_missing",
+                "expression": "emp_length_years == nil ? 1 : 0"
+              },
+              {
+                "type": "ATTR_FORMULA",
+                "field": "",
+                "label": "emp_years",
+                "expression": "emp_length_years ?? 0"
+              },
+              {
+                "type": "ATTR_FORMULA",
+                "field": "",
+                "label": "revol_missing",
+                "expression": "revol_util == nil ? 1 : 0"
+              },
+              {
+                "type": "ATTR_FORMULA",
+                "field": "",
+                "label": "revol_util_filled",
+                "expression": "revol_util ?? 50"
+              }
+            ],
+            "features": [
+              {
+                "type": "FEAT_TRAIN_TEST_SPLIT",
+                "label": "split",
+                "params": {
+                  "ratios": [
+                    0.7,
+                    0.3
+                  ],
+                  "seed": 42,
+                  "stratify": "outcome"
+                }
+              },
+              {
+                "type": "FEAT_LOG",
+                "field": "annual_income",
+                "label": "log_income"
+              },
+              {
+                "type": "FEAT_LOG",
+                "field": "loan_amount",
+                "label": "log_loan"
+              },
+              {
+                "type": "FEAT_ONE_HOT",
+                "field": "credit_band",
+                "label": "band"
+              },
+              {
+                "type": "FEAT_ONE_HOT",
+                "field": "home_ownership",
+                "label": "home"
+              },
+              {
+                "type": "FEAT_FREQUENCY_ENCODE",
+                "field": "purpose",
+                "label": "purpose_freq"
+              },
+              {
+                "type": "FEAT_TARGET_ENCODE",
+                "field": "purpose",
+                "label": "purpose_te",
+                "params": {
+                  "target": "default_12m",
+                  "smoothing": 20,
+                  "fit_on": "split == 0",
+                  "folds": 5,
+                  "rng_seed": 11
+                }
+              }
+            ],
+            "regressions": [
+              {
+                "type": "REG_GLM",
+                "name": "pd_final",
+                "target": "default_12m",
+                "predictors": [
+                  "fico_score",
+                  "band_B",
+                  "band_C",
+                  "band_D",
+                  "band_E",
+                  "band_F",
+                  "band_G",
+                  "interest_rate",
+                  "term60",
+                  "dti",
+                  "lti",
+                  "log_income",
+                  "log_loan",
+                  "delinq_2yrs",
+                  "emp_missing",
+                  "emp_years",
+                  "revol_missing",
+                  "revol_util_filled",
+                  "home_RENT",
+                  "home_OWN",
+                  "home_OTHER",
+                  "purpose_freq",
+                  "purpose_te"
+                ],
+                "family": "binomial",
+                "link": "logit",
+                "selection": "stepwise",
+                "criterion": "bic"
+              }
+            ]
+          }
+        },
+        {
+          "name": "pd_all22",
+          "request": {
+            "cohort": {
+              "filename": "loans.pulse",
+              "data_dir": "."
+            },
+            "filterers": [
+              {
+                "type": "FILTER_INCLUDE",
+                "field": "split",
+                "values": [
+                  "0"
+                ]
+              }
+            ],
+            "attributes": [
+              {
+                "type": "ATTR_FORMULA",
+                "field": "",
+                "label": "lti",
+                "expression": "2.718281828459045 ** (log_loan - log_income)"
+              },
+              {
+                "type": "ATTR_FORMULA",
+                "field": "",
+                "label": "term60",
+                "expression": "term_months == 60 ? 1 : 0"
+              },
+              {
+                "type": "ATTR_FORMULA",
+                "field": "",
+                "label": "emp_missing",
+                "expression": "emp_length_years == nil ? 1 : 0"
+              },
+              {
+                "type": "ATTR_FORMULA",
+                "field": "",
+                "label": "emp_years",
+                "expression": "emp_length_years ?? 0"
+              },
+              {
+                "type": "ATTR_FORMULA",
+                "field": "",
+                "label": "revol_missing",
+                "expression": "revol_util == nil ? 1 : 0"
+              },
+              {
+                "type": "ATTR_FORMULA",
+                "field": "",
+                "label": "revol_util_filled",
+                "expression": "revol_util ?? 50"
+              }
+            ],
+            "features": [
+              {
+                "type": "FEAT_TRAIN_TEST_SPLIT",
+                "label": "split",
+                "params": {
+                  "ratios": [
+                    0.7,
+                    0.3
+                  ],
+                  "seed": 42,
+                  "stratify": "outcome"
+                }
+              },
+              {
+                "type": "FEAT_LOG",
+                "field": "annual_income",
+                "label": "log_income"
+              },
+              {
+                "type": "FEAT_LOG",
+                "field": "loan_amount",
+                "label": "log_loan"
+              },
+              {
+                "type": "FEAT_ONE_HOT",
+                "field": "credit_band",
+                "label": "band"
+              },
+              {
+                "type": "FEAT_ONE_HOT",
+                "field": "home_ownership",
+                "label": "home"
+              },
+              {
+                "type": "FEAT_FREQUENCY_ENCODE",
+                "field": "purpose",
+                "label": "purpose_freq"
+              },
+              {
+                "type": "FEAT_TARGET_ENCODE",
+                "field": "purpose",
+                "label": "purpose_te",
+                "params": {
+                  "target": "default_12m",
+                  "smoothing": 20,
+                  "fit_on": "split == 0",
+                  "folds": 5,
+                  "rng_seed": 11
+                }
+              }
+            ],
+            "regressions": [
+              {
+                "type": "REG_GLM",
+                "name": "pd_all22",
+                "target": "default_12m",
+                "predictors": [
+                  "fico_score",
+                  "band_B",
+                  "band_C",
+                  "band_D",
+                  "band_E",
+                  "band_F",
+                  "band_G",
+                  "interest_rate",
+                  "term60",
+                  "dti",
+                  "lti",
+                  "log_income",
+                  "log_loan",
+                  "delinq_2yrs",
+                  "emp_missing",
+                  "emp_years",
+                  "revol_missing",
+                  "revol_util_filled",
+                  "home_RENT",
+                  "home_OWN",
+                  "home_OTHER",
+                  "purpose_freq"
+                ],
+                "family": "binomial",
+                "link": "logit"
+              }
+            ]
+          }
+        },
+        {
+          "name": "pd_leaky",
+          "request": {
+            "cohort": {
+              "filename": "loans.pulse",
+              "data_dir": "."
+            },
+            "filterers": [
+              {
+                "type": "FILTER_INCLUDE",
+                "field": "split",
+                "values": [
+                  "0"
+                ]
+              }
+            ],
+            "attributes": [
+              {
+                "type": "ATTR_FORMULA",
+                "field": "",
+                "label": "lti",
+                "expression": "2.718281828459045 ** (log_loan - log_income)"
+              },
+              {
+                "type": "ATTR_FORMULA",
+                "field": "",
+                "label": "term60",
+                "expression": "term_months == 60 ? 1 : 0"
+              },
+              {
+                "type": "ATTR_FORMULA",
+                "field": "",
+                "label": "emp_missing",
+                "expression": "emp_length_years == nil ? 1 : 0"
+              },
+              {
+                "type": "ATTR_FORMULA",
+                "field": "",
+                "label": "emp_years",
+                "expression": "emp_length_years ?? 0"
+              },
+              {
+                "type": "ATTR_FORMULA",
+                "field": "",
+                "label": "revol_missing",
+                "expression": "revol_util == nil ? 1 : 0"
+              },
+              {
+                "type": "ATTR_FORMULA",
+                "field": "",
+                "label": "revol_util_filled",
+                "expression": "revol_util ?? 50"
+              }
+            ],
+            "features": [
+              {
+                "type": "FEAT_TRAIN_TEST_SPLIT",
+                "label": "split",
+                "params": {
+                  "ratios": [
+                    0.7,
+                    0.3
+                  ],
+                  "seed": 42,
+                  "stratify": "outcome"
+                }
+              },
+              {
+                "type": "FEAT_LOG",
+                "field": "annual_income",
+                "label": "log_income"
+              },
+              {
+                "type": "FEAT_LOG",
+                "field": "loan_amount",
+                "label": "log_loan"
+              },
+              {
+                "type": "FEAT_ONE_HOT",
+                "field": "credit_band",
+                "label": "band"
+              },
+              {
+                "type": "FEAT_ONE_HOT",
+                "field": "home_ownership",
+                "label": "home"
+              },
+              {
+                "type": "FEAT_FREQUENCY_ENCODE",
+                "field": "purpose",
+                "label": "purpose_freq"
+              },
+              {
+                "type": "FEAT_TARGET_ENCODE",
+                "field": "purpose",
+                "label": "purpose_te",
+                "params": {
+                  "target": "default_12m",
+                  "smoothing": 20,
+                  "fit_on": "split == 0",
+                  "folds": 5,
+                  "rng_seed": 11
+                }
+              }
+            ],
+            "regressions": [
+              {
+                "type": "REG_GLM",
+                "name": "pd_leaky",
+                "target": "default_12m",
+                "predictors": [
+                  "fico_score",
+                  "band_B",
+                  "band_C",
+                  "band_D",
+                  "band_E",
+                  "band_F",
+                  "band_G",
+                  "interest_rate",
+                  "term60",
+                  "dti",
+                  "lti",
+                  "log_income",
+                  "log_loan",
+                  "delinq_2yrs",
+                  "emp_missing",
+                  "emp_years",
+                  "revol_missing",
+                  "revol_util_filled",
+                  "home_RENT",
+                  "home_OWN",
+                  "home_OTHER",
+                  "purpose_freq",
+                  "fico_at_month_12",
+                  "collections_flag"
+                ],
+                "family": "binomial",
+                "link": "logit"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "overlays_schema_divergence": [],
+    "overlay_cost": {},
+    "slots": [
+      {
+        "request": 0,
+        "label": "deciles",
+        "streamable": false,
+        "streamable_reasons": [
+          "group GROUP_QUANTILE requires the buffered path",
+          "windows run over the post-aggregate row set",
+          "aggregation on decimal field loan_amount forces buffered path",
+          "feature FEAT_TARGET_ENCODE reads a column an earlier feature derives (field, target or fit_on), which the streaming pre-pass does not see"
+        ]
+      },
+      {
+        "request": 1,
+        "label": "deciles_leaky",
+        "streamable": false,
+        "streamable_reasons": [
+          "group GROUP_QUANTILE requires the buffered path",
+          "windows run over the post-aggregate row set",
+          "aggregation on decimal field loan_amount forces buffered path",
+          "feature FEAT_TARGET_ENCODE reads a column an earlier feature derives (field, target or fit_on), which the streaming pre-pass does not see"
+        ]
+      },
+      {
+        "request": 2,
+        "label": "separation_and_calibration",
+        "streamable": false,
+        "streamable_reasons": [
+          "aggregation on decimal field loan_amount forces buffered path",
+          "aggregation AGG_AUC is not streamable",
+          "aggregation AGG_AUC is not streamable",
+          "aggregation AGG_AUC is not streamable",
+          "aggregation AGG_AUC is not streamable",
+          "feature FEAT_TARGET_ENCODE reads a column an earlier feature derives (field, target or fit_on), which the streaming pre-pass does not see",
+          "test TEST_KS is not streamable",
+          "test TEST_KS is not streamable",
+          "test TEST_KS is not streamable",
+          "test TEST_KS is not streamable",
+          "tier-1 tests do not yet compose with features in the streaming path"
+        ],
+        "p_values": {
+          "total": 4,
+          "uncorrected": 4,
+          "basis": "exact",
+          "threshold": 10
+        }
+      }
+    ],
+    "fits": [
+      {
+        "name": "pd_final",
+        "type": "REG_GLM",
+        "target": "default_12m",
+        "predictors": [
+          "fico_score",
+          "band_B",
+          "band_C",
+          "band_D",
+          "band_E",
+          "band_F",
+          "band_G",
+          "interest_rate",
+          "term60",
+          "dti",
+          "lti",
+          "log_income",
+          "log_loan",
+          "delinq_2yrs",
+          "emp_missing",
+          "emp_years",
+          "revol_missing",
+          "revol_util_filled",
+          "home_RENT",
+          "home_OWN",
+          "home_OTHER",
+          "purpose_freq",
+          "purpose_te"
+        ],
+        "cohort": "./loans.pulse"
+      },
+      {
+        "name": "pd_all22",
+        "type": "REG_GLM",
+        "target": "default_12m",
+        "predictors": [
+          "fico_score",
+          "band_B",
+          "band_C",
+          "band_D",
+          "band_E",
+          "band_F",
+          "band_G",
+          "interest_rate",
+          "term60",
+          "dti",
+          "lti",
+          "log_income",
+          "log_loan",
+          "delinq_2yrs",
+          "emp_missing",
+          "emp_years",
+          "revol_missing",
+          "revol_util_filled",
+          "home_RENT",
+          "home_OWN",
+          "home_OTHER",
+          "purpose_freq"
+        ],
+        "cohort": "./loans.pulse"
+      },
+      {
+        "name": "pd_leaky",
+        "type": "REG_GLM",
+        "target": "default_12m",
+        "predictors": [
+          "fico_score",
+          "band_B",
+          "band_C",
+          "band_D",
+          "band_E",
+          "band_F",
+          "band_G",
+          "interest_rate",
+          "term60",
+          "dti",
+          "lti",
+          "log_income",
+          "log_loan",
+          "delinq_2yrs",
+          "emp_missing",
+          "emp_years",
+          "revol_missing",
+          "revol_util_filled",
+          "home_RENT",
+          "home_OWN",
+          "home_OTHER",
+          "purpose_freq",
+          "fico_at_month_12",
+          "collections_flag"
+        ],
+        "cohort": "./loans.pulse"
+      }
+    ]
+  },
+  "errors": [],
+  "warnings": []
+}

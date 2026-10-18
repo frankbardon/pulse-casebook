@@ -117,7 +117,7 @@
     },
     {
       "type": "REG_GLM",
-      "name": "with_fico_at_month_12",
+      "name": "with_post_outcome_fields",
       "target": "default_12m",
       "predictors": [
         "fico_score",
@@ -142,7 +142,8 @@
         "home_OWN",
         "home_OTHER",
         "purpose_freq",
-        "fico_at_month_12"
+        "fico_at_month_12",
+        "collections_flag"
       ],
       "family": "binomial",
       "link": "logit"

@@ -15,7 +15,7 @@
         "mean_rate_pct": 15.616547833333266,
         "median_fico": 694,
         "min_principal_usd": "1292.14",
-        "nonnull_recovery_amount": "7162",
+        "nonnull_recovery_amount": 7162,
         "null_emp_length": 3603,
         "null_revol_util": 1798,
         "total_principal_usd": "724730103.82"

@@ -3,28 +3,28 @@
   "data": {
     "data": [
       {
-        "applications": 9496,
-        "default_rate": 0.08213984835720303,
-        "dti_bucket": "0",
-        "mean_dti_pct": 6.0196335299073285
+        "default_rate": 0.08231321232587589,
+        "dti": "under 10%",
+        "loans": 9476,
+        "mean_dti": 6.011232587589699
       },
       {
-        "applications": 26398,
-        "default_rate": 0.11099325706492916,
-        "dti_bucket": "1",
-        "mean_dti_pct": 15.386730434123823
+        "default_rate": 0.11088373503107474,
+        "dti": "10-20%",
+        "loans": 26388,
+        "mean_dti": 15.377402986205881
       },
       {
-        "applications": 20140,
-        "default_rate": 0.13634558093346574,
-        "dti_bucket": "2",
-        "mean_dti_pct": 24.123075471698172
+        "default_rate": 0.13639519888899912,
+        "dti": "20-30%",
+        "loans": 20162,
+        "mean_dti": 24.11460866977488
       },
       {
-        "applications": 3966,
-        "default_rate": 0.17801311144730206,
-        "dti_bucket": "3",
-        "mean_dti_pct": 33.535595057992936
+        "default_rate": 0.17765475591343735,
+        "dti": "30% and over",
+        "loans": 3974,
+        "mean_dti": 33.52847760442877
       }
     ],
     "metadata": {
@@ -35,36 +35,36 @@
     "components": {
       "aggregations": [
         {
-          "label": "applications",
+          "label": "loans",
           "n": 60000,
           "n_null": 0,
           "groups": [
             {
               "group_key": [
-                "0"
+                "under 10%"
               ],
-              "n": 9496,
+              "n": 9476,
               "n_null": 0
             },
             {
               "group_key": [
-                "1"
+                "10-20%"
               ],
-              "n": 26398,
+              "n": 26388,
               "n_null": 0
             },
             {
               "group_key": [
-                "2"
+                "20-30%"
               ],
-              "n": 20140,
+              "n": 20162,
               "n_null": 0
             },
             {
               "group_key": [
-                "3"
+                "30% and over"
               ],
-              "n": 3966,
+              "n": 3974,
               "n_null": 0
             }
           ]
@@ -76,9 +76,9 @@
           "groups": [
             {
               "group_key": [
-                "0"
+                "under 10%"
               ],
-              "n": 9496,
+              "n": 9476,
               "n_null": 0,
               "operator": {
                 "sum": 780
@@ -86,29 +86,29 @@
             },
             {
               "group_key": [
-                "1"
+                "10-20%"
               ],
-              "n": 26398,
+              "n": 26388,
               "n_null": 0,
               "operator": {
-                "sum": 2930
+                "sum": 2926
               }
             },
             {
               "group_key": [
-                "2"
+                "20-30%"
               ],
-              "n": 20140,
+              "n": 20162,
               "n_null": 0,
               "operator": {
-                "sum": 2746
+                "sum": 2750
               }
             },
             {
               "group_key": [
-                "3"
+                "30% and over"
               ],
-              "n": 3966,
+              "n": 3974,
               "n_null": 0,
               "operator": {
                 "sum": 706
@@ -117,48 +117,48 @@
           ]
         },
         {
-          "label": "mean_dti_pct",
+          "label": "mean_dti",
           "n": 60000,
           "n_null": 0,
           "groups": [
             {
               "group_key": [
-                "0"
+                "under 10%"
               ],
-              "n": 9496,
+              "n": 9476,
               "n_null": 0,
               "operator": {
-                "sum": 57162.439999999995
+                "sum": 56962.43999999999
               }
             },
             {
               "group_key": [
-                "1"
+                "10-20%"
               ],
-              "n": 26398,
+              "n": 26388,
               "n_null": 0,
               "operator": {
-                "sum": 406178.9100000007
+                "sum": 405778.9100000008
               }
             },
             {
               "group_key": [
-                "2"
+                "20-30%"
               ],
-              "n": 20140,
+              "n": 20162,
               "n_null": 0,
               "operator": {
-                "sum": 485838.74000000115
+                "sum": 486198.74000000115
               }
             },
             {
               "group_key": [
-                "3"
+                "30% and over"
               ],
-              "n": 3966,
+              "n": 3974,
               "n_null": 0,
               "operator": {
-                "sum": 133002.16999999998
+                "sum": 133242.16999999995
               }
             }
           ]
@@ -166,32 +166,33 @@
       ],
       "groupers": [
         {
-          "field": "dti_bucket",
+          "field": "dti",
           "total_n": 60000,
           "operator": {
             "buckets": [
               {
-                "count": 9496,
-                "key": "0",
-                "label": "0"
+                "count": 9476,
+                "key": "under 10%",
+                "label": "under 10%"
               },
               {
-                "count": 26398,
-                "key": "1",
-                "label": "1"
+                "count": 26388,
+                "key": "10-20%",
+                "label": "10-20%"
               },
               {
-                "count": 20140,
-                "key": "2",
-                "label": "2"
+                "count": 20162,
+                "key": "20-30%",
+                "label": "20-30%"
               },
               {
-                "count": 3966,
-                "key": "3",
-                "label": "3"
+                "count": 3974,
+                "key": "30% and over",
+                "label": "30% and over"
               }
             ],
-            "dict_size": 0
+            "n_ranges": 4,
+            "unmatched_label": "unmatched"
           }
         }
       ],

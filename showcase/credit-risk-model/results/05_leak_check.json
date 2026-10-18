@@ -5,7 +5,7 @@
       {
         "applications": 7162,
         "collections_rate": 0.8485060039095225,
-        "loans_with_recovery": "7162",
+        "loans_with_recovery": 7162,
         "mean_fico_at_application": 662.2189332588663,
         "mean_fico_at_month_12": 607.3321697849763,
         "outcome": "defaulted",
@@ -14,7 +14,7 @@
       {
         "applications": 52838,
         "collections_rate": 0.009671070063212082,
-        "loans_with_recovery": "0",
+        "loans_with_recovery": 0,
         "mean_fico_at_application": 699.1295658427647,
         "mean_fico_at_month_12": 704.0479389833075,
         "outcome": "performing",
