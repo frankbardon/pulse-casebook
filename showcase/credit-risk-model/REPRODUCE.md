@@ -40,7 +40,7 @@ pulse api process --request req/<NN>.json --json                       # -> resu
     10_purpose_te_train_only 11_stepwise_bic_with_safe_te 12_final_model_bootstrap
 pulse api predict-compose --request req/13_holdout_validation.compose.json --json  # -> results/13_holdout_validation.predict.json
 pulse api compose         --request req/13_holdout_validation.compose.json --json  # -> results/13_holdout_validation.json
-pulse explain --request req/12_final_model_bootstrap.json                           # -> results/15_explain_request.txt
+pulse explain --root composed --request req/13_holdout_validation.compose.json     # -> results/15_explain_request.txt
 pulse explain --root composed --request req/13_holdout_validation.compose.json \
   --response results/13_holdout_validation.json                                    # -> results/15_explain_response.txt
 ```
@@ -83,11 +83,11 @@ The committed `results/` directory holds the responses from the reference run. A
 | 14 | `responses[2].data[0]` | `mean_predicted_pd` 0.11877157…, `observed_default_rate` 0.11938888…; AUC: final 0.74351369…, all-22 0.74101770…, true-PD 0.74608671…, leaky 0.99077372… |
 | 14 | `responses[2].components.aggregations` → `auc_final_model.operator` | `gini` 0.48702738…, `ci_lower` 0.73293794…, `ci_upper` 0.75408944… |
 | 14 | `responses[2].tests[].statistic` | KS: final 0.36496663…, all-22 0.35628477…, true-PD 0.36846524…, leaky 0.93543177… |
+| 15 | `15_explain_request.txt` line 2 / `15_explain_response.txt` line 1 | `valid: true`; "3 responses side by side and 3 regression fits; 48 of 63 inferential findings show evidence at their alpha" |
 
-Reference run (pulse `v1.0.0-alpha.16-47-gc2b64f5f`, the U49 effort branch), from a fresh copy of the directory: every value above matched.
+Reference run (pulse `v1.0.0-alpha.16-48-g40554cf9`, the U49 effort branch), from a fresh copy of the directory: every value above matched.
 
 ## Notes
 
 - `loans.pulse` (≈ 6.6 MB) is not committed (`*.pulse` is gitignored); `run.sh` regenerates it.
 - `gt_true_pd` and `gt_uniform_draw` are simulation ground-truth columns. They are used only for evaluation in steps 13–14, never as model inputs.
-- The request-side `pulse explain` in step 15 describes step 12, a single request. On this build, explaining the step-13 batch's request reports its `ATTR_REG_PREDICT` attributes as unbound (`PULSE_MODEL_UNKNOWN`), although `pulse api predict-compose` accepts the batch. The response-side explanation of the batch is unaffected.

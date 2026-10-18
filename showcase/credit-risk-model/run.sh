@@ -29,7 +29,7 @@ echo "== 13_holdout_validation" >&2
 "$PULSE" api predict-compose --request req/13_holdout_validation.compose.json --json > results/13_holdout_validation.predict.json
 "$PULSE" api compose --request req/13_holdout_validation.compose.json --json > results/13_holdout_validation.json
 
-"$PULSE" explain --request req/12_final_model_bootstrap.json > results/15_explain_request.txt
+"$PULSE" explain --root composed --request req/13_holdout_validation.compose.json > results/15_explain_request.txt
 "$PULSE" explain --root composed --request req/13_holdout_validation.compose.json \
   --response results/13_holdout_validation.json > results/15_explain_response.txt
 echo "done: responses in results/" >&2

@@ -1,6 +1,6 @@
 # Credit risk model: a 12-month probability of default, built and validated in Pulse
 
-**Audience:** risk-analytics lead. **Everything below was computed by Pulse** (`pulse api predict`, `pulse api process`, `pulse explain`, `pulse synth`). Every figure is copied from a response in [`results/`](results/); the request that produced it is in [`req/`](req/).
+**Audience:** risk-analytics lead. **Everything below was computed by Pulse** (`pulse api predict`, `pulse api process`, `pulse api compose`, `pulse explain`, `pulse synth`). Every figure is copied from a response in [`results/`](results/); the request that produced it is in [`req/`](req/).
 
 ## The business question
 
@@ -511,16 +511,16 @@ The top leaky decile catches 1,765 of 2,149 defaults. But the *true* default pro
 
 Every row has 2,149 defaulters and 15,851 non-defaulters. The selected scorecard separates slightly *better* on new loans than the unselected 22-predictor fit and comes close to the ceiling on both measures: AUC 0.7435 of a possible 0.7461 (inside the ceiling's DeLong interval), KS 0.365 of 0.368. Anything well above the ceiling, like the leaky AUC of 0.991, is evidence of leakage, not of a better model.
 
-### Step 15 — Describe a request and a result in plain language (`pulse explain`)
+### Step 15 — Describe the holdout batch and its findings in plain language (`pulse explain`)
 
 ```
-pulse explain -r req/12_final_model_bootstrap.json
+pulse explain --root composed -r req/13_holdout_validation.compose.json
 ```
-> This request reads `loans.pulse` and runs 1 filter, 7 feature columns, 6 attribute columns and 3 regressions. valid: true
-> - features[0]: Feature 1 runs FEAT_TRAIN_TEST_SPLIT. Labels every record train (0), validation (1) or test (2) by a seeded shuffle, so a model can be checked on records it never learned from.
-> - features[6]: Feature 7 runs FEAT_TARGET_ENCODE on `purpose`. Replaces each category with the average outcome of the records in that category, optionally pulled toward the overall average. …
+> This request batch runs 3 requests side by side and in all runs 3 filters, 21 feature columns, 23 attribute columns, 10 window columns, 2 groupings, 21 aggregations and 4 tests. valid: true
+> - requests[0].attributes[6]: Attribute 7 runs ATTR_REG_PREDICT. Adds to every row the value a model fitted once, elsewhere in the request, predicts for it from the row's own predictor values.
+> - requests[2].aggregations[5]: Aggregation 6 runs AGG_AUC on `pd_score`. How well a score separates a yes/no outcome: the chance that a randomly picked yes row scores higher than a randomly picked no row. …
 
-Given the step-13 batch and its response, `pulse explain --root composed -r req/13_holdout_validation.compose.json --response results/13_holdout_validation.json` summarises the findings. It reports "3 responses side by side; 4 of 4 inferential findings show evidence at their alpha" and adds a multiple-comparisons caveat: the four KS p-values are unadjusted. That does not matter here, since the largest is 3 × 10⁻²¹⁰. Full output: [`results/15_explain_request.txt`](results/15_explain_request.txt), [`results/15_explain_response.txt`](results/15_explain_response.txt).
+Given the response as well (`--response results/13_holdout_validation.json`), explain summarises the findings: "This batch reports 3 responses side by side and 3 regression fits; 48 of 63 inferential findings show evidence at their alpha." The fits are described by the predictors they kept, so `fits.pd_final` reads "predicting `default_12m` from `interest_rate`, `dti`, `lti`, `delinq_2yrs`, `revol_util_filled`, `purpose_te`, …": the 13 that stepwise selection kept, not the 23 candidates. It adds two multiple-comparisons caveats. The four KS p-values are unadjusted, which does not matter here because the largest is 3 × 10⁻²¹⁰. The regression p-values are raw and are read against 0.05. Full output: [`results/15_explain_request.txt`](results/15_explain_request.txt), [`results/15_explain_response.txt`](results/15_explain_response.txt).
 
 ## Findings and implications
 
@@ -555,7 +555,7 @@ Given the step-13 batch and its response, `pulse explain --root composed -r req/
 | `AGG_AUC` | 14 | AUC, Gini and DeLong interval |
 | `TEST_KS` | 8b, 14 | Defaulter vs non-defaulter separation |
 | `pulse api predict` / `predict-compose` | 7, 10, 13 and before every run | Validation and warnings without reading records |
-| `pulse explain` | 15 | Plain-language description of a request and of a batch's findings |
+| `pulse explain --root composed` | 15 | Plain-language description of the holdout batch and of its findings, fits included |
 | `Response.Components` | 1, 14 | The raw float running sum behind `AGG_AVERAGE`; the AUC's Gini and DeLong interval |
 
 Reproduction steps and expected numbers: [`REPRODUCE.md`](REPRODUCE.md).
