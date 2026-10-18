@@ -11,6 +11,8 @@ cd <casebook repo root>
 make pulse && cp bin/pulse /tmp/pulse     # builds Pulse from the local checkout (root Makefile)
 ```
 
+The requests use per-row zones (`time_zone_field`), Monday-first `day_of_week` keys and the `hour_of_day` component, which arrive with Pulse's local-time work. Until that work is on `main`, build from its branch: `make pulse PULSE_REF=local-time`.
+
 ## 2. Copy the showcase to a scratch location
 
 The run writes `.pulse` cohorts and an `out/` directory next to the requests, so work on a copy:
@@ -59,8 +61,8 @@ To run a single step by hand, from the copy:
 
 ```bash
 /tmp/pulse api process -r req/01_weekday_volume_utc.json --json
-/tmp/pulse api compose -r req/05_daily_anomaly_screen.json --json
-/tmp/pulse api process -r req/05b_network_screen_utc.json --json
+/tmp/pulse api process -r req/05_daily_anomaly_screen.json --json
+/tmp/pulse api compose -r req/07_syd_screen_utc_vs_local.json --json
 ```
 
 ## 5. Check the key figures
@@ -69,29 +71,30 @@ To run a single step by hand, from the copy:
 ./key_figures.sh
 ```
 
-[`key_figures.sh`](key_figures.sh) only quotes values from `out/`. Expected output, verified on 2026-10-10 against this branch:
+[`key_figures.sh`](key_figures.sh) only quotes values from `out/`. Expected output, verified on 2026-10-18 with Pulse built from the `local-time` branch (16b74dcb):
 
 | Figure | Source | Expected |
 |---|---|---|
 | Deliveries imported | `00_import_deliveries.json` | 17193 |
 | Deliveries on UTC Sundays, all sites | `01` column margin "Sunday" | 286 |
 | … of which SYD | `01` cell SYD × Sunday | 221 |
-| Sunday columns in the local-zone view | `02` | 0 |
+| Sunday columns in the local-zone view | `02` (one crosstab, `time_zone_field`) | 0 |
 | SYD on-time, Mon 2026-05-11, UTC / Sydney day | `03` | 0.6667 / 1 |
 | SYD incident-period on-time, UTC / Sydney days | `04` row `2_incident` | 0.4909 / 0.4167 |
-| SYD 2026-05-12 rolling z (on-time, W=28, Sydney days) | `05` slot 6 | −7.6522 |
-| SYD 2026-05-12 rolling index (on-time) | `05` slot 6 | 44.2765 |
+| SYD 2026-05-12 rolling z (on-time, W=28, local weekdays) | `05` row SYD 2026-05-12 | −7.4551 |
+| SYD 2026-05-12 rolling index (on-time) | `05` row SYD 2026-05-12 | 44.7319 |
+| Screen rows / warehouse-days with z ≤ −3 or index < 70 | `05` | 780 / 7 |
 | SYD 2026-05-12 rolling z / index on UTC days, one partitioned request | `05b` row SYD 2026-05-12 | −4.1943 / 57.1089 |
 | SYD 2026-05-12 rolling z (duration) | `06` | 9.3417 |
 | SYD 2026-05-14 rolling z on UTC days (missed) | `07` slot 1 | −1.2264 |
-| BLR weekly Mann-Kendall Z / Holm-adjusted p | `08` slot 1 | 4.9814 / 3.79e−6 |
-| LON weekly Mann-Kendall Z / p | `08` slot 3 | −0.9039 / 0.3660 |
+| BLR weekly Mann-Kendall Z / Holm-adjusted p | `08` post-test `group_key` BLR | 4.9814 / 3.79e−6 (m=6) |
+| LON weekly Mann-Kendall Z / p | `08` post-test `group_key` LON | −0.9039 / 0.3660 |
 | BLR daily trend Z, raw / 6-day moving average | `09` | 5.3413 / 11.7569 |
 | SYD 2026-04-05 night batches (Sydney day) | `13` slot 4 | 28 |
 | SYD import with `--dst-policy earlier` | `13b_import_syd_earlier.json` warning details | `ambiguous_n: 8, nonexistent_n: 0` |
 | NYC import with the default policy | `14a_import_nyc_default.json` | `PULSE_IMPORT_DST_NONEXISTENT` |
 
-The full tables in the README come from the same `out/*.json` files: crosstab cells under `data.crosstab.matrix` (or `data.responses[i].crosstab.matrix` for Compose), grouped rows under `data.data` / `data.responses[i].data`, overlay values under `…overlays[k].payload.series.entries[j].summary.statistic` (aligned with the data rows), and test results under `…post_tests[0]`.
+The full tables in the README come from the same `out/*.json` files: crosstab cells under `data.crosstab.matrix` (or `data.responses[i].crosstab.matrix` for Compose), grouped rows under `data.data` / `data.responses[i].data`, overlay values under `…overlays[k].payload.series.entries[j].summary.statistic` (aligned with the data rows; `null` until a full 28-day window), and test results under `…post_tests[]` (one per warehouse in `08`, keyed by `group_key`).
 
 ## 6. Clean up
 

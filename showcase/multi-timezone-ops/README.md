@@ -60,8 +60,8 @@ Three operational decisions depend on the answer:
 
 ## Methodology
 
-- **Store UTC, read local.** Every request names the zone it reads time in. `time_zone` sets it for the whole request; a slot-level `tz` overrides it for one filter or grouper. Pulse then applies that zone to the local calendar day, ISO week, hour of day and date-range boundaries, including across DST changes.
-- **One zone per request, so one request per warehouse.** Each warehouse needs its own zone. The site-by-site views therefore use a **Compose** batch of six requests, each filtered to one warehouse and carrying that warehouse's zone. Each request is also shown with `"time_zone": "UTC"` for contrast.
+- **Store UTC, read local.** Every request names the zone it reads time in. `time_zone` sets one zone for the whole request; a slot-level `tz` overrides it for one filter or grouper. Pulse then applies that zone to the local calendar day, ISO week, hour of day and date-range boundaries, including across DST changes.
+- **One request for the whole network.** Each delivery row carries its warehouse's IANA zone in the categorical `zone` field. With `"time_zone_field": "zone"`, every date grouper, date-range filter, date part and date feature reads each row in that row's own zone. A single request can therefore group by `warehouse` and still read every site on its own calendar. The UTC contrasts set `"time_zone": "UTC"`, and the single-site drill-downs set `time_zone` to that site's zone.
 - **Daily series.** Each daily series is `GROUP_DATE` (`component: day`) plus `AGG_AVERAGE` over the boolean `on_time`, which gives the on-time rate. Window functions add smoothing and day-over-day change. Rolling overlays score each day against the 28 operating days before it.
 - **Trend testing.** Trends are tested with Mann-Kendall (`TEST_TREND`) on **weekly** on-time rates, with a Holm correction across the six warehouses.
 - **Feed validation.** Naive-time feeds are imported with `--source-tz`. Pulse refuses DST-ambiguous or nonexistent times unless a `--dst-policy` is chosen.
@@ -85,7 +85,7 @@ Three operational decisions depend on the answer:
 }
 ```
 
-**Result in UTC days.** Columns are reordered Monday→Sunday for reading.
+**Result in UTC days.** Pulse returns `day_of_week` columns Monday first.
 
 | warehouse | Mon | Tue | Wed | Thu | Fri | Sat | **Sun** | total |
 |---|---|---|---|---|---|---|---|---|
@@ -97,28 +97,34 @@ Three operational decisions depend on the answer:
 | SYD | 533 | 551 | 515 | 509 | 401 | 124 | **221** | 2,854 |
 | total | 3,027 | 3,154 | 3,118 | 3,090 | 3,023 | 1,495 | **286** | 17,193 |
 
-**Request in local days.** [`req/02_weekday_volume_local.json`](req/02_weekday_volume_local.json) is a Compose of six identical slots. Each slot filters to one warehouse and reads its own zone:
+**Request in local days.** [`req/02_weekday_volume_local.json`](req/02_weekday_volume_local.json) is the same crosstab with one line changed. `"time_zone": "UTC"` becomes `"time_zone_field": "zone"`, so each delivery's day of week is read in its own warehouse's zone:
 
 ```json
-{"label": "SYD_local", "cohort": {"filename": "deliveries.pulse", "data_dir": "."},
- "time_zone": "Australia/Sydney",
- "filterers": [{"type": "FILTER_INCLUDE", "field": "warehouse", "values": ["SYD"]}],
- "crosstab": {"rows": [{"type": "GROUP_CATEGORY", "field": "warehouse"}],
-              "columns": [{"type": "GROUP_DATE", "field": "delivered_at", "params": {"component": "day_of_week"}}],
-              "cell": {"type": "AGG_COUNT", "field": "delivery_id", "label": "deliveries"},
-              "margins": {"rows": true}}}
+{
+  "cohort": {"filename": "deliveries.pulse", "data_dir": "."},
+  "time_zone_field": "zone",
+  "crosstab": {
+    "rows":    [{"type": "GROUP_CATEGORY", "field": "warehouse"}],
+    "columns": [{"type": "GROUP_DATE", "field": "delivered_at", "params": {"component": "day_of_week"}}],
+    "cell":    {"type": "AGG_COUNT", "field": "delivery_id", "label": "deliveries"},
+    "margins": {"rows": true, "columns": true, "grand": true}
+  }
+}
 ```
 
-**Result in each warehouse's local days.** No slot returns a Sunday column.
+Before per-row zones, this view needed a Compose batch of six slots. Each slot filtered to one warehouse and set that warehouse's `time_zone`, and the six one-row matrices had to be stitched together by hand, without network margins. The single request returns the same 36 cells, cell for cell, in one matrix with margins. Steps 3, 4 and 5 replace their six-slot batches the same way (requests 05, 08 and 11), and each one was checked against the batch it replaces.
 
-| warehouse | Mon | Tue | Wed | Thu | Fri | Sat | Sun | total |
-|---|---|---|---|---|---|---|---|---|
-| BLR | 512 | 511 | 527 | 521 | 526 | 250 | 0 | 2,847 |
-| LAX | 523 | 538 | 507 | 512 | 502 | 263 | 0 | 2,845 |
-| LON | 526 | 515 | 523 | 507 | 514 | 280 | 0 | 2,865 |
-| NYC | 529 | 517 | 517 | 506 | 516 | 264 | 0 | 2,849 |
-| ORD | 523 | 546 | 527 | 544 | 537 | 256 | 0 | 2,933 |
-| SYD | 527 | 533 | 519 | 535 | 499 | 241 | 0 | 2,854 |
+**Result in each warehouse's local days.** There is no Sunday column, because no warehouse delivered on a local Sunday.
+
+| warehouse | Mon | Tue | Wed | Thu | Fri | Sat | total |
+|---|---|---|---|---|---|---|---|
+| BLR | 512 | 511 | 527 | 521 | 526 | 250 | 2,847 |
+| LAX | 523 | 538 | 507 | 512 | 502 | 263 | 2,845 |
+| LON | 526 | 515 | 523 | 507 | 514 | 280 | 2,865 |
+| NYC | 529 | 517 | 517 | 506 | 516 | 264 | 2,849 |
+| ORD | 523 | 546 | 527 | 544 | 537 | 256 | 2,933 |
+| SYD | 527 | 533 | 519 | 535 | 499 | 241 | 2,854 |
+| total | 3,140 | 3,160 | 3,120 | 3,125 | 3,094 | 1,554 | 17,193 |
 
 **Reading.**
 
@@ -183,48 +189,56 @@ Three operational decisions depend on the answer:
 
 ### Step 3: Flag the incident automatically
 
-**Request: daily screen.** [`req/05_daily_anomaly_screen.json`](req/05_daily_anomaly_screen.json) has one slot per warehouse in its own zone. Each slot groups by local day and decorates the series with two rolling overlays. Both overlays score each day against the **28 preceding operating days**, and both score the on-time rate (with several aggregations, an overlay's `params.field` names the one it scores by output label; absent means the first, and the slots below leave it off because the on-time rate is listed first):
+**Request: daily screen.** [`req/05_daily_anomaly_screen.json`](req/05_daily_anomaly_screen.json) screens the whole network in one request. It groups by `[warehouse, day]` with every day read in the warehouse's own zone, drops local Saturdays, and decorates the series with two rolling overlays. Both overlays score the on-time rate (`params.field`) against the **28 preceding operating days**:
 
 ```json
-{"label": "SYD_daily_screen", "cohort": {"filename": "deliveries.pulse", "data_dir": "."},
- "time_zone": "Australia/Sydney",
- "filterers": [{"type": "FILTER_INCLUDE", "field": "warehouse", "values": ["SYD"]}],
- "groups": [{"type": "GROUP_DATE", "field": "delivered_at", "params": {"component": "day"}}],
- "aggregations": [{"type": "AGG_AVERAGE", "field": "on_time", "label": "on_time_rate"},
-                  {"type": "AGG_COUNT", "field": "delivery_id", "label": "deliveries"}],
- "overlays": [
-   {"name": "on_time_rolling_z", "kind": "OVERLAY_ZSCORE_VS_ROLLING", "scope": "group",
-    "ref": {"rolling_mean": {}}, "params": {"window": 28}},
-   {"name": "on_time_rolling_index", "kind": "OVERLAY_INDEX_VS_ROLLING_MEAN", "scope": "group",
-    "ref": {"rolling_mean": {}}, "params": {"window": 28}}],
- "sort": [{"field": "delivered_at"}]}
+{
+  "cohort": {"filename": "deliveries.pulse", "data_dir": "."},
+  "time_zone_field": "zone",
+  "features": [{"type": "FEAT_DATE_FEATURES", "field": "delivered_at", "label": "local"}],
+  "filterers": [{"type": "FILTER_EXCLUDE", "field": "local_dow", "values": ["6"]}],
+  "groups": [
+    {"type": "GROUP_CATEGORY", "field": "warehouse"},
+    {"type": "GROUP_DATE", "field": "delivered_at", "params": {"component": "day"}}
+  ],
+  "aggregations": [
+    {"type": "AGG_AVERAGE", "field": "on_time", "label": "on_time_rate"},
+    {"type": "AGG_COUNT", "field": "delivery_id", "label": "deliveries"}
+  ],
+  "overlays": [
+    {"name": "on_time_rolling_z", "kind": "OVERLAY_ZSCORE_VS_ROLLING", "scope": "group",
+     "ref": {"rolling_mean": {}}, "params": {"window": 28, "min_periods": 28, "field": "on_time_rate"}},
+    {"name": "on_time_rolling_index", "kind": "OVERLAY_INDEX_VS_ROLLING_MEAN", "scope": "group",
+     "ref": {"rolling_mean": {}}, "params": {"window": 28, "min_periods": 28, "field": "on_time_rate"}}
+  ],
+  "sort": [{"field": "warehouse"}, {"field": "delivered_at"}]
+}
 ```
 
-Each slot returns 156 operating days. **Result.** After the 28-day warm-up, these are all warehouse-days with rolling z ≤ −3 or rolling index < 70:
+How the pieces fit:
+
+- **Local Saturdays out, in Pulse.** `FEAT_DATE_FEATURES` adds `local_dow`, the ISO day of week (Monday = 1, Saturday = 6) of each row's *local* day, read through `time_zone_field` like the grouper. `FILTER_EXCLUDE` on `local_dow = 6` then drops Sydney's Saturdays on Sydney days and Los Angeles's on Los Angeles days. A UTC weekday would drop the wrong rows at the four sites whose working hours cross UTC midnight (LAX, ORD, NYC and SYD). Filters can see features but not attributes, so the day of week has to be a feature here.
+- **One series per warehouse.** With two groupers, the series overlays partition by every key except the last (here `warehouse`) and run down the last key (the day), so the date grouper goes last. Each warehouse's rolling window starts fresh. Predict raises `PULSE_ADVISORY_SERIES_AXIS_NOT_DATE` when the order is wrong.
+- **`min_periods: 28`.** This is the default, written out because it is a decision. A day gets a score only when all 28 prior operating days exist. Each site's first 28 weekdays (to Wed 2026-03-11) therefore carry `null`, and scoring starts on Thu 2026-03-12. The z-score divides by the window's standard deviation, which is unreliable when it is estimated from a handful of days. With `min_periods: 5`, the same request adds two February false alarms at NYC, Fri 02-13 (z −4.51) and Thu 02-26 (z −3.21), both scored against less than a month of history. `min_periods: 10` still adds 02-26. A full window costs about six weeks of coverage at the start of a series and changes nothing after that.
+
+**Result.** The request returns 780 rows, which is 130 local weekdays for each of the six warehouses. These are all the warehouse-days with rolling z ≤ −3 or rolling index < 70:
 
 | warehouse | local day | deliveries | on-time | rolling z | rolling index (100 = normal) |
 |---|---|---|---|---|---|
-| **SYD** | **Tue 2026-05-12** | 22 | 40.9% | **−7.65** | **44.3** |
-| **SYD** | **Wed 2026-05-13** | 19 | 47.4% | **−3.69** | **52.1** |
-| **SYD** | **Thu 2026-05-14** | 19 | 36.8% | **−3.67** | **41.4** |
-| NYC | Sat 2026-03-21 | 10 | 50.0% | −5.82 | 54.9 |
-| ORD | Thu 2026-05-14 | 23 | 78.3% | −4.48 | 81.8 |
-| ORD | Sat 2026-03-14 | 8 | 62.5% | −4.38 | 67.1 |
-| ORD | Sat 2026-05-30 | 9 | 66.7% | −4.14 | 71.7 |
-| SYD | Sat 2026-08-01 | 8 | 75.0% | −4.07 | 79.1 |
-| LAX | Sat 2026-06-20 | 8 | 62.5% | −3.99 | 69.3 |
-| LAX | Tue 2026-06-16 | 23 | 69.6% | −3.83 | 77.2 |
-| NYC | Fri 2026-05-29 | 20 | 75.0% | −3.76 | 80.8 |
-| NYC | Sat 2026-07-04 | 12 | 66.7% | −3.61 | 74.2 |
-| LON | Sat 2026-06-20 | 9 | 66.7% | −3.52 | 72.9 |
-| SYD | Tue 2026-04-21 | 19 | 73.7% | −3.28 | 79.7 |
+| **SYD** | **Tue 2026-05-12** | 22 | 40.9% | **−7.46** | **44.7** |
+| **SYD** | **Wed 2026-05-13** | 19 | 47.4% | **−3.61** | **52.9** |
+| **SYD** | **Thu 2026-05-14** | 19 | 36.8% | **−3.62** | **41.9** |
+| NYC | Fri 2026-05-29 | 20 | 75.0% | −3.86 | 80.5 |
+| LAX | Tue 2026-06-16 | 23 | 69.6% | −3.83 | 77.3 |
+| ORD | Thu 2026-05-14 | 23 | 78.3% | −3.31 | 83.2 |
+| ORD | Fri 2026-06-12 | 18 | 72.2% | −3.29 | 78.7 |
 
-**Reading.** Over 6 × 156 warehouse-days, the planted outage gives the strongest signal in the network: z = −7.65 and an index of 44, meaning the day ran at 44% of its own recent norm. All three outage days have the three lowest rolling indexes. Two traits separate the false alarms:
+**Reading.**
 
-- Seven of the other eleven flags fall on **Saturdays**, with 8–12 deliveries. One or two late parcels move a small day's rate by 10–20 points.
-- The weekday false alarms sit at an index of 77–82. They run below normal but are far from broken.
-
-A screen that pages someone on **z ≤ −3 *and* index ≤ 60 *and* at least 15 deliveries** returns exactly the three SYD outage days on this data.
+- Over 6 × 130 warehouse-days, the planted outage gives the strongest signal in the network: z = −7.46 and an index of 45, meaning the day ran at 45% of its own recent norm. The three outage days have the three lowest rolling indexes (42–53). The next lowest is 77.
+- Only **four false alarms** remain, all on weekdays, at an index of 77–83. Those days ran below normal but were far from broken.
+- Excluding Saturdays is what removed most of the noise. The same request without the `FILTER_EXCLUDE` (which is what the earlier six-slot batch ran) flags **14** warehouse-days: the three outage days, **seven Saturdays** and four weekdays. With 8–12 deliveries, one or two late parcels move a Saturday's rate by 10–20 points. Removing Saturdays also shifts each 28-day baseline from Mon–Sat days to weekdays only, about 5½ weeks of history. As a result, one weekday flag changes: SYD Tue 2026-04-21 (z −3.28) drops out and ORD Fri 2026-06-12 (z −3.29) comes in.
+- On z alone, SYD's Wednesday and Thursday (−3.61, −3.62) rank below two false alarms. The rolling index separates them cleanly. A screen that pages someone on **z ≤ −3 *and* index ≤ 60** returns exactly the three SYD outage days on this data. A minimum of 15 deliveries a day no longer changes the result once Saturdays are out, but it is still a cheap guard against short holiday days.
 
 **Request: SYD daily trend panel.** [`req/06_syd_daily_windows.json`](req/06_syd_daily_windows.json) adds window functions to the SYD daily series. It puts average duration first, so the overlays score duration this time:
 
@@ -265,7 +279,7 @@ The moving average spans 6 rows, which is one operating week (Mon–Sat).
 - The day-over-day change catches only the onset (+128%). Days 2 and 3 compare against an already-broken day.
 - The 6-day moving average stays depressed for a week after the outage ends. It suits trend charts, not alerting.
 
-**Request: the same screen on UTC days.** [`req/07_syd_screen_utc_vs_local.json`](req/07_syd_screen_utc_vs_local.json) runs the SYD slot of step 3 twice, once with `"time_zone": "UTC"`.
+**Request: the same screen on UTC days.** [`req/07_syd_screen_utc_vs_local.json`](req/07_syd_screen_utc_vs_local.json) runs the on-time screen on SYD alone twice: once on Sydney days (`"time_zone": "Australia/Sydney"`) and once with `"time_zone": "UTC"`. Both runs keep Saturdays, so the two columns score the same deliveries. That is why the Sydney column shows z −7.65 for 05-12, not the −7.46 of step 3's weekday-only screen.
 
 **Result.**
 
@@ -278,7 +292,7 @@ The moving average spans 6 rows, which is one operating week (Mon–Sat).
 
 Over the full period, the UTC screen also flags two "days" holding **2 deliveries each**: 2026-03-07 (z −7.24) and 2026-08-01 (z −8.09). Each is the slice of a Sydney Monday morning or Saturday that falls on a different UTC date. Read on UTC days, the alert fires on the wrong weekday, misses the worst day and adds two false alarms.
 
-**One request for the whole network.** The six slots exist because each warehouse reads its own local day, and a request has one `time_zone`. Per-row zones are roadmap unit [U50](https://github.com/frankbardon/pulse/blob/main/docs/roadmap/units/U50-local-time.md), so the local-day screen stays slot-per-zone until then. When one shared calendar is acceptable, the partition is a single request: [`req/05b_network_screen_utc.json`](req/05b_network_screen_utc.json) groups by `[warehouse, day]` on UTC days and names the scored aggregation with `params.field`:
+**The network screen on one shared calendar.** Per-row zones (`time_zone_field`) let step 3 read every warehouse on its own local days in a single request. When one shared calendar is acceptable, the same partition runs with a single `time_zone`. [`req/05b_network_screen_utc.json`](req/05b_network_screen_utc.json) is step 3's request on UTC days, without the Saturday filter:
 
 ```json
 {"cohort": {"filename": "deliveries.pulse", "data_dir": "."}, "time_zone": "UTC",
@@ -294,26 +308,34 @@ Over the full period, the UTC screen also flags two "days" holding **2 deliverie
  "sort": [{"field": "warehouse"}, {"field": "delivered_at"}]}
 ```
 
-With two groupers the series overlays partition by every key except the last (here `warehouse`), and the series runs down the last key (the day), so list the date grouper last. Predict raises `PULSE_ADVISORY_SERIES_AXIS_NOT_DATE` when it is not. The result has 999 rows (the six warehouses' UTC days) and each warehouse's rolling window starts fresh. Checked against the old slot-per-warehouse request with `time_zone` set to `UTC` on every slot: all 1,998 overlay values (999 rows x 2 overlays) are identical. SYD on UTC days gives z = −4.19, −4.70 and −1.23 for 05-12 to 05-14, the same figures as the UTC column in step 3's UTC-days comparison below.
+The result has 999 rows (the six warehouses' UTC days), and each warehouse's rolling window starts fresh. It was checked against a six-slot Compose with `time_zone` set to `UTC` on every slot: all 1,998 overlay values (999 rows × 2 overlays) are identical. SYD on UTC days gives z = −4.19, −4.70 and −1.23 for 05-12 to 05-14, the same figures as the UTC column of the comparison above.
 
 ### Step 4: Real trend or noise?
 
-**Request.** [`req/08_weekly_on_time_trend.json`](req/08_weekly_on_time_trend.json) has one slot per warehouse. Each groups by local ISO week (`GROUP_DATE` `component: week`) and runs a Mann-Kendall test on the 26 weekly on-time rates. The batch-level `multiplicity` block applies a Holm correction across all six tests:
+**Request.** [`req/08_weekly_on_time_trend.json`](req/08_weekly_on_time_trend.json) groups by warehouse and local ISO week (`GROUP_DATE` `component: week`, read through `time_zone_field`) and runs a Mann-Kendall test on each warehouse's 26 weekly on-time rates:
 
 ```json
-{"multiplicity": {"method": "holm", "family": "compose"},
- "requests": [
-  {"label": "BLR_weekly_trend", "cohort": {"filename": "deliveries.pulse", "data_dir": "."},
-   "time_zone": "Asia/Kolkata",
-   "filterers": [{"type": "FILTER_INCLUDE", "field": "warehouse", "values": ["BLR"]}],
-   "groups": [{"type": "GROUP_DATE", "field": "delivered_at", "params": {"component": "week"}}],
-   "aggregations": [{"type": "AGG_AVERAGE", "field": "on_time", "label": "on_time_rate"},
-                    {"type": "AGG_COUNT", "field": "delivery_id", "label": "deliveries"}],
-   "post_tests": [{"type": "TEST_TREND", "field": "on_time_rate", "label": "on_time_trend", "alpha": 0.05,
-                   "order_by": [{"field": "delivered_at"}], "params": {"variant": "mann_kendall"}}],
-   "sort": [{"field": "delivered_at"}]},
-  "... same for LAX, LON, NYC, ORD, SYD with their zones ..."]}
+{
+  "cohort": {"filename": "deliveries.pulse", "data_dir": "."},
+  "time_zone_field": "zone",
+  "multiplicity": {"method": "holm", "family": "request"},
+  "groups": [
+    {"type": "GROUP_CATEGORY", "field": "warehouse"},
+    {"type": "GROUP_DATE", "field": "delivered_at", "params": {"component": "week"}}
+  ],
+  "aggregations": [
+    {"type": "AGG_AVERAGE", "field": "on_time", "label": "on_time_rate"},
+    {"type": "AGG_COUNT", "field": "delivery_id", "label": "deliveries"}
+  ],
+  "post_tests": [
+    {"type": "TEST_TREND", "field": "on_time_rate", "label": "on_time_trend", "alpha": 0.05,
+     "order_by": [{"field": "delivered_at"}], "params": {"variant": "mann_kendall"}}
+  ],
+  "sort": [{"field": "warehouse"}, {"field": "delivered_at"}]
+}
 ```
+
+With two groupers, a post-test runs once per partition: once for each value of every key but the last, so once per warehouse. Each result carries its `group_key` (`["BLR"]`). The `multiplicity` block's `request` family pools the six trend p-values into one Holm correction (`m = 6`). That is the same family the earlier six-slot batch formed with `family: compose`, and the Z, p and Holm-adjusted p of every site are identical to it.
 
 **Result.**
 
@@ -367,7 +389,14 @@ With two groupers the series overlays partition by every key except the last (he
 | ORD | 52 | 48 | 13 | | | | | | | | | | 121 | 268 | 360 | **387** | 275 | 215 | 209 | 251 | 230 | 214 | 164 | 126 |
 | SYD | 274 | 191 | 163 | 167 | 214 | 184 | 151 | 95 | 51 | 57 | 41 | | | | | | | | | | 94 | 328 | **444** | 400 |
 
-**Request: local hours.** [`req/11_peak_hours_local.json`](req/11_peak_hours_local.json) is the same crosstab as a six-slot Compose, each slot filtered to one warehouse and read in its own zone.
+**Request: local hours.** [`req/11_peak_hours_local.json`](req/11_peak_hours_local.json) is the same crosstab read with `"time_zone_field": "zone"`. Its columns come from `GROUP_DATE` with `component: hour_of_day` rather than an `ATTR_DATE_PART` column. The keys come back zero-padded (`"07"` … `"20"`) in clock order, so no `include` list is needed:
+
+```json
+"crosstab": {"rows":    [{"type": "GROUP_CATEGORY", "field": "warehouse"}],
+             "columns": [{"type": "GROUP_DATE", "field": "delivered_at", "params": {"component": "hour_of_day"}}],
+             "cell":    {"type": "AGG_COUNT", "field": "delivery_id", "label": "deliveries"},
+             "margins": {"rows": true, "columns": true, "grand": true}}
+```
 
 **Result: deliveries by local hour.** Peak in bold.
 
@@ -496,9 +525,9 @@ Nightly totals (New York days, Mar 5–11) are 24 batches every night, including
 1. **Report every warehouse on its own local calendar.** On UTC days the network shows 286 Sunday deliveries at sites that are closed on Sundays. Sydney's Saturday shows 124 deliveries instead of 241, and Los Angeles's Monday 434 instead of 523.
 2. **Incidents land on the wrong day in UTC.** Sydney's Tue–Thu outage reads in UTC as Mon–Wed with a "partial recovery" on Thursday. The UTC view shows on-time falling from 90.6% to 49.1%, when on Sydney days it fell from 94.1% to 41.7%.
 3. **Rolling overlays catch the outage, but only on local days.**
-   - On Sydney days the outage is the strongest signal across 6 warehouses × 156 days: on-time z = −7.65 and index 44; duration z = 9.34 and index 204.
+   - On Sydney days the outage is the strongest signal across 6 warehouses × 130 local weekdays: on-time z = −7.46 and index 45. In SYD's own daily series, duration reaches z = 9.34 and index 204.
    - On UTC days the same screen fires on the wrong weekday, misses the worst day (z −1.23) and raises two false alarms on 2-delivery fragments.
-   - Saturday volumes (8–12 parcels) generate most of the false alarms. Pair the z-score with the rolling index and a minimum daily volume before paging anyone.
+   - Saturday volumes (8–12 parcels) caused seven of the eleven false alarms. Excluding local Saturdays inside the request (`FEAT_DATE_FEATURES` `dow` + `FILTER_EXCLUDE`, each row on its own calendar) leaves four weekday false alarms, all at index 77 or above. Pair the z-score with the rolling index before paging anyone.
 4. **Only Bengaluru's improvement is a real trend** (Mann-Kendall Z = 4.98, Holm-adjusted p = 3.8 × 10⁻⁶; 77.0% → 94.7%). London and the other four sites also move between their first and last weeks, but none of those moves is significant (adjusted p ≥ 0.76). Test weekly or raw daily values, not a moving average, which inflates Z from 5.34 to 11.76.
 5. **Build staffing rosters in local hours.** Each site's peak is a fixed local hour: SYD 08:00, ORD 09:00, NYC/LON/BLR 10:00, LAX 15:00. In UTC that peak moves by an hour at each DST change, at a different date per hemisphere.
 6. **Naive-time feeds need a DST policy and should be fixed at source.** Pulse refuses 8 ambiguous Sydney stamps and 4 impossible New York stamps by default. It resolves them only when told how, and counts what it changed. Local nightly totals stay exact (28 batches on Sydney's 25-hour night), but the order inside the repeated hour cannot be recovered without offsets.
@@ -508,15 +537,17 @@ Nightly totals (New York days, Mar 5–11) are 24 batches every night, including
 | Feature | Where |
 |---|---|
 | Request `time_zone` and slot-level `tz` (slot wins) | every step; `tz` on `FILTER_DATE_RANGES` / `GROUP_DATE_RANGES` in 12–14 |
-| `GROUP_DATE` with `day_of_week`, `day`, `week`, `hour` in a zone | 01–03, 05–09, 13–14 |
+| Request `time_zone_field`: each row read in the zone named by its `zone` field | 02, 05, 08, 11 |
+| `GROUP_DATE` with `day_of_week` (Monday first), `day`, `week`, `hour`, `hour_of_day` in a zone | 01–03, 05–09, 11, 13–14 |
 | `GROUP_DATE_RANGES` / `FILTER_DATE_RANGES` with local-day bounds | 03, 04, 12–14 |
 | `ATTR_DATE_PART` `hour` on the local clock | 10–12 |
 | Crosstab with margins, `include` ordering and `normalize: row` | 01, 02, 10–12 |
-| Compose: one slot per warehouse and zone (until per-row zones, U50) | 02–05, 07–09, 11–14 |
-| One partitioned request: `groups: [warehouse, day]`, overlay `params.field` | 05b |
+| Compose: UTC-vs-local and variant comparisons side by side | 03, 04, 07, 09, 12–14 |
+| One partitioned request: `groups: [warehouse, day]` / `[warehouse, week]`, overlay `params.field` | 05, 05b, 08 |
+| `FEAT_DATE_FEATURES` ISO `dow` + `FILTER_EXCLUDE` to drop local Saturdays | 05 |
 | `WIN_MOVING_AVG`, `WIN_LAG`, `WIN_PCT_CHANGE` | 06, 09 |
-| `OVERLAY_ZSCORE_VS_ROLLING`, `OVERLAY_INDEX_VS_ROLLING_MEAN` | 05, 05b, 06, 07 |
-| `TEST_TREND` (Mann-Kendall) as a post-test, with Holm `multiplicity` across Compose slots | 08, 09 |
+| `OVERLAY_ZSCORE_VS_ROLLING`, `OVERLAY_INDEX_VS_ROLLING_MEAN` (`min_periods`) | 05, 05b, 06, 07 |
+| `TEST_TREND` (Mann-Kendall) as a post-test, once per warehouse with a Holm `multiplicity` family across them | 08, 09 |
 | `AGG_COUNT`, `AGG_AVERAGE` (rate of a boolean), `AGG_SUM`, `AGG_PERCENTILE` | throughout |
 | `import csv --source-tz` / `--dst-policy` with `PULSE_IMPORT_DST_*` codes | step 6 |
 | `export csv --tz` (local-offset rendering) | step 6 |
