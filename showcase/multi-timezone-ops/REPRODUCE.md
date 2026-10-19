@@ -11,7 +11,7 @@ cd <casebook repo root>
 make pulse && cp bin/pulse /tmp/pulse     # builds Pulse from the local checkout (root Makefile)
 ```
 
-The requests use per-row zones (`time_zone_field`), Monday-first `day_of_week` keys and the `hour_of_day` component, which arrive with Pulse's local-time work. Until that work is on `main`, build from its branch: `make pulse PULSE_REF=local-time`.
+The requests use per-row zones (`time_zone_field`), Monday-first `day_of_week` keys and the `hour_of_day` component, which need Pulse v1.0.0-alpha.18 or later.
 
 ## 2. Copy the showcase to a scratch location
 
@@ -71,7 +71,7 @@ To run a single step by hand, from the copy:
 ./key_figures.sh
 ```
 
-[`key_figures.sh`](key_figures.sh) only quotes values from `out/`. Expected output, verified on 2026-10-18 with Pulse built from the `local-time` branch (16b74dcb):
+[`key_figures.sh`](key_figures.sh) only quotes values from `out/`. Expected output, verified on 2026-10-18 with Pulse v1.0.0-alpha.18:
 
 | Figure | Source | Expected |
 |---|---|---|
