@@ -1,15 +1,20 @@
-# Retail at scale: 25.5 million order lines on one machine
+# Retail at scale: 51 million order lines on one machine
 
 A fictional national retailer keeps every order line in Pulse: one
-single-file cohort per month, plus an annual **shard archive** that bundles the
-months for whole-year questions. This walkthrough runs that setup at 25.55 million
-rows and records what each Pulse surface returned and how long it took.
+single-file cohort per month, bundled into one **shard archive** that answers
+whole-year questions, customer lookups included. This walkthrough runs that
+setup at 51.1 million rows and records what each Pulse surface returned and how
+long it took.
 
 Every figure below was returned by Pulse. Timings are wall-clock seconds from
-`run-all.sh` on a shared 4-vCPU Intel Xeon @ 2.10 GHz with 16 GB RAM, Linux.
-Peak memory is the process's resident high-water mark (VmHWM). Other jobs were
-running on the same host, so treat timings as ±20 %. Counts and sums are
-deterministic.
+`run-all.sh` with Pulse `v1.0.0-alpha.22`, on an Apple M1 Max (10 cores, 32 GB
+RAM, macOS). Every scan is pinned to 4 workers (`--shard-workers 4
+--decode-workers 4`) to stand in for a 4-vCPU machine. Peak memory is the
+process's maximum resident set size from `/usr/bin/time -l`. `run-all.sh` sets
+no `GOMEMLIMIT`; step 6 shows what the retention chain needs without one and
+with one. Other jobs were running on the same host, with about 12 GB of swap
+already in use, so treat timings as ±20 % (more for the chains). Counts and sums
+are deterministic.
 
 ## The business questions
 
@@ -30,12 +35,12 @@ month, fixed seed = `YYYYMM`). Each month is a single-file `.pulse` cohort at
 
 | Month | Rows | File size |
 |---|---:|---:|
-| 2025-01 … 2025-10 | 1,600,000 – 2,050,000 each | 85–109 MB each |
-| 2025-11 | 2,400,000 | 127 MB |
-| 2025-12 | 2,800,000 | 148 MB |
-| **2025 total (archive `orders.pulse`)** | **23,750,000** | **1.26 GB** |
-| 2026-01 (appended in step 8) | 1,800,000 | 95 MB |
-| **Archive after append** | **25,550,000** | **1.35 GB** |
+| 2025-01 … 2025-10 | 3,200,000 – 4,100,000 each | 170–217 MB each |
+| 2025-11 | 4,800,000 | 254 MB |
+| 2025-12 | 5,600,000 | 297 MB |
+| **2025 total (archive `orders.pulse`)** | **47,500,000** | **2.52 GB** |
+| 2026-01 (appended in step 8) | 3,600,000 | 191 MB |
+| **Archive after append** | **51,100,000** | **2.71 GB** |
 
 Schema, as `pulse cohort inspect orders-2025-12.pulse --json` reports it:
 
@@ -67,14 +72,15 @@ How the generator encodes the business (all in synth `rules[]`, no other tooling
 - **Consistent customer attributes.** `store_id`, `region` and `order_id` are
   derived from `customer_id` with `set_expr`, so one customer always has the same
   home store and region in every month.
-- **Seasonality and channel shift.** Rows per month rise to 2.8 M in December;
+- **Seasonality and channel shift.** Rows per month rise to 5.6 M in December;
   Toys, Electronics and Seasonal gain weight in Nov–Dec, Apparel in Aug–Sep,
   Home & Garden in Apr–Jun; the online channel share rises 1 point a month.
 
 ## Walkthrough
 
 Run everything with `./run-all.sh` (see `REPRODUCE.md`). Each step lists the exact
-request and what came back.
+request and what came back. `P` below stands for
+`pulse --shard-workers 4 --decode-workers 4`.
 
 ### Step 0 — Generate the months
 
@@ -82,7 +88,7 @@ request and what came back.
 pulse synth from-schema -s synth/orders-2025-12.synth.json -o orders-2025-12.pulse --seed 202512
 ```
 
-Each month takes 9.5–16.5 s on one core and peaks at 440–820 MB.
+Each month takes 7.8–13.4 s on one core and peaks at 0.84–1.64 GB.
 
 ### Step 1 — Header-only inspect of a month
 
@@ -90,35 +96,36 @@ Each month takes 9.5–16.5 s on one core and peaks at 440–820 MB.
 pulse cohort inspect orders-2025-12.pulse --json
 ```
 
-The result has `record_count: 2800000` and `field_count: 15`, plus the schema
-and the dictionaries shown above. It takes **0.28 s** for the whole CLI call at
-147 MB. In-process (`bench/main.go`), `Pulse.CountRecords` returns 2,800,000 in
-**0.089 ms** and `Pulse.Inspect` takes 48.6 ms. Neither decodes a record, so the
-cost does not grow with the row count.
+The result has `record_count: 5600000` and `field_count: 15`, plus the schema
+and the dictionaries shown above. It takes **0.11 s** for the whole CLI call at
+50 MB, most of which is process start-up. It decodes no record, so the cost
+does not grow with the row count.
 
 ### Step 2 — Bundle 2025 into a shard archive
 
 ```sh
-GOMEMLIMIT=3500MiB pulse shard create orders.pulse -i orders-2025-01.pulse … -i orders-2025-12.pulse --json
-GOMEMLIMIT=3500MiB pulse shard list orders.pulse
-GOMEMLIMIT=3500MiB pulse shard verify orders.pulse --json
+pulse shard create orders.pulse -i orders-2025-01.pulse … -i orders-2025-12.pulse --json
+pulse shard list orders.pulse
+pulse shard verify orders.pulse --json
+pulse cohort inspect orders.pulse --json
 ```
 
 | Command | Result | Time | Peak RSS |
 |---|---|---:|---:|
-| `shard create` | 12 shards, 23,750,000 records, 1.26 GB | 25.9 s | 4.6 GB |
-| `shard list` | per-shard counts (1.6 M … 2.8 M), total 23,750,000 | 16.7 s | 3.6 GB |
-| `shard verify` | `verified: true`, 0 errors, 0 warnings | 21.5 s | 3.6 GB |
-| `cohort inspect orders.pulse` | `record_count: 23750000`, 12 shards | 23.3 s | 4.9 GB |
+| `shard create` | 12 shards, 47,500,000 records, 2.52 GB | 3.66 s | 1.79 GB |
+| `shard list` | per-shard counts (3.2 M … 5.6 M), total 47,500,000 | 0.12 s | 52 MB |
+| `shard verify` | `verified: true`, 0 errors, 0 warnings | 0.73 s | 51 MB |
+| `cohort inspect orders.pulse` | `record_count: 47500000`, 12 shards | 0.12 s | 50 MB |
 
-**How to read the cost.** Every command that opens the archive reads the whole
-1.26 GB into memory first. That includes inspect, list, verify, predict and
-process. Without a heap cap, one full-year `process` peaked at 7.3 GB RSS in a
-separate measurement. `GOMEMLIMIT=3500MiB` (a Go runtime setting) holds it at
-about 3.7 GB with no loss of speed. A cap below the live heap (2 GiB) made the
-same query take 3 min 15 s. So budget RAM at roughly 3× archive size and set
-`GOMEMLIMIT` just above 2.5× archive size. Answer metadata questions from the
-monthly files, which take 0.28 s each.
+**How to read the cost.** Pulse opens a shard archive by section: it reads the
+zip directory and each shard's header, never the whole file. Metadata calls on
+the 2.52 GB archive cost the same as on one month, and no command in this
+walkthrough needs a heap cap. Through the library, `Pulse.CountRecords` on the
+archive returns 47,500,000 (51,100,000 after step 8) in **0.26–0.30 ms**.
+
+Once the archive exists, January to November are no longer needed as separate
+files, and `run-all.sh` deletes them. December stays for the single-file
+comparisons below.
 
 ### Step 3 — Predict, then run, the full-year KPIs
 
@@ -138,44 +145,40 @@ monthly files, which take 0.28 s each.
 ```
 
 `pulse api predict -r req/01_year_kpis.json --json` returns `valid: true`,
-`streamable: true`, `record_count: 23750000`, the per-shard counts and no
-defaults applied, without running anything (8.7 s, 4.0 GB, spent opening the
-archive).
+`streamable: true`, `record_count: 47500000`, the per-shard counts and no
+defaults applied, without running anything: **0.12 s, 52 MB**.
 
-`pulse api process -r req/01_year_kpis.json --json`:
+`P api process -r req/01_year_kpis.json --json`:
 
 | lines | revenue (USD) | units | avg line value | return rate |
 |---:|---:|---:|---:|---:|
-| 23,750,000 | 1,004,299,670.39 | 44,660,178 | 42.29 | 4.50 % |
+| 47,500,000 | 2,009,100,128.80 | 89,324,817 | 42.30 | 4.50 % |
 
-**56.3 s, 3.7 GB** over 23.75 M rows (41.9 s on a quieter run of the same
-build). The debug log shows the shard-parallel plan: `arm=shard_parallel workers=4 shards=12`.
-
-For comparison, the same request on the December single file (2.8 M rows) takes
-**0.81 s** for the whole CLI call at 192 MB. The single-file path uses
-`arm=parallel_decode`.
+**8.52 s, 63 MB** over 47.5 M rows. Memory follows the request, not the
+archive: five running totals need almost nothing.
 
 | Run (KPI request) | Rows | Time | Peak RSS |
 |---|---:|---:|---:|
-| Archive, CLI | 23,750,000 | 56.3 s | 3.7 GB |
-| December file, CLI | 2,800,000 | 0.81 s | 192 MB |
-| December file, CLI `--no-project` | 2,800,000 | 0.79 s | 192 MB |
-| December file, in-process, `DecodeWorkers=1` | 2,800,000 | 1.37 s | — |
-| December file, in-process, `DecodeWorkers=2` | 2,800,000 | 1.13 s | — |
-| December file, in-process, `DecodeWorkers=4` | 2,800,000 | 0.90 s | — |
-| December file, in-process, `DecodeWorkers=4`, projection off | 2,800,000 | 0.82 s | — |
-| 13-month archive, in-process, `ShardWorkers=1` | 25,550,000 | 46.8 s | 3.6 GB |
-| 13-month archive, in-process, `ShardWorkers=4` | 25,550,000 | 51.3 s | 4.1 GB |
+| Archive, `--shard-workers 4` | 47,500,000 | 8.52 s | 63 MB |
+| Archive, `--shard-workers 1` | 47,500,000 | 19.10 s | 54 MB |
+| December file, `--decode-workers 4` | 5,600,000 | 0.95 s | 343 MB |
+| December file, `--decode-workers 1` | 5,600,000 | 2.28 s | 335 MB |
+| December file, `--decode-workers 4 --no-project` | 5,600,000 | 0.91 s | 344 MB |
+| 13-month archive (step 8), `--shard-workers 4` | 51,100,000 | 11.31 s | 79 MB |
+| 13-month archive (step 8), `--shard-workers 1` | 51,100,000 | 20.50 s | 56 MB |
 
 What the knobs did on this data:
 
-- **Decode workers** cut the time from 1.37 s with 1 worker to 0.90 s with 4.
+- **Shard workers** run the archive's shards in parallel: 4 workers took the
+  year from 19.1 s to 8.5 s.
+- **Decode workers** split one single-file cohort's records: 4 workers took
+  December from 2.28 s to 0.95 s.
+- **The answer does not depend on the worker count.** `run-all.sh` compares the
+  data of every 4-worker run with its 1-worker twin byte for byte (year KPIs,
+  monthly trend, 13-month KPIs, December KPIs, and the Compose dashboard below,
+  serial against `--parallel 4`): all identical.
 - **Projection**, which is on by default, made no measurable difference here.
-  This request reads 4 of 15 fields from a 53-byte row. The shard-parallel plan
-  logs `projected_fields=0`.
-- **Shard workers** did not speed up the archive scan. 1 worker was as fast as 4
-  (46.8 s vs 51.3 s). The serial and parallel revenue totals also differ in the
-  last digits: 1,077,716,051.98990 vs 1,077,716,051.98999.
+  This request reads 4 of 15 fields from a 53-byte row.
 
 ### Step 4 — Monthly trend, buffered and streamed
 
@@ -185,24 +188,24 @@ month and runs `AGG_COUNT` / `AGG_SUM` / `AGG_AVERAGE`:
 
 | month | lines | revenue (USD) | avg line value | online share |
 |---|---:|---:|---:|---:|
-| 202501 | 1,700,000 | 69,551,170.40 | 40.91 | 25.0 % |
-| 202502 | 1,600,000 | 65,351,958.18 | 40.84 | 26.0 % |
-| 202503 | 1,800,000 | 73,467,273.21 | 40.82 | 27.1 % |
-| 202504 | 1,850,000 | 76,777,568.58 | 41.50 | 28.0 % |
-| 202505 | 1,900,000 | 79,064,349.04 | 41.61 | 28.9 % |
-| 202506 | 1,900,000 | 78,871,026.25 | 41.51 | 29.9 % |
-| 202507 | 1,950,000 | 79,613,249.73 | 40.83 | 31.0 % |
-| 202508 | 2,050,000 | 84,644,266.06 | 41.29 | 32.0 % |
-| 202509 | 1,850,000 | 76,413,753.27 | 41.30 | 33.0 % |
-| 202510 | 1,950,000 | 79,702,677.14 | 40.87 | 34.1 % |
-| 202511 | 2,400,000 | 108,973,796.56 | 45.41 | 34.9 % |
-| 202512 | 2,800,000 | 131,868,581.97 | 47.10 | 36.0 % |
+| 202501 | 3,400,000 | 139,089,049.52 | 40.91 | 25.0 % |
+| 202502 | 3,200,000 | 130,766,062.36 | 40.86 | 26.0 % |
+| 202503 | 3,600,000 | 146,910,094.11 | 40.81 | 27.0 % |
+| 202504 | 3,700,000 | 153,794,455.55 | 41.57 | 28.0 % |
+| 202505 | 3,800,000 | 158,087,596.87 | 41.60 | 29.0 % |
+| 202506 | 3,800,000 | 158,105,698.57 | 41.61 | 30.0 % |
+| 202507 | 3,900,000 | 159,414,605.67 | 40.88 | 31.0 % |
+| 202508 | 4,100,000 | 169,307,650.71 | 41.29 | 32.0 % |
+| 202509 | 3,700,000 | 152,784,537.77 | 41.29 | 33.0 % |
+| 202510 | 3,900,000 | 159,342,791.85 | 40.86 | 34.0 % |
+| 202511 | 4,800,000 | 217,856,374.90 | 45.39 | 35.0 % |
+| 202512 | 5,600,000 | 263,641,210.92 | 47.08 | 36.0 % |
 
-Buffered: 63.6 s. With `--stream` (NDJSON, one row per line): 53.2 s, with
-identical rows. Through the library, `ProcessStreamResult` delivered 13 chunks,
-the first after 66.6 s. A grouped request only knows its groups once the last
-shard is read, so streaming here saves the envelope, not latency. Streaming
-helps latency on row-level outputs, not on grouped totals.
+Buffered: **13.95 s, 64 MB** at 4 shard workers (37.94 s at 1). With `--stream`
+(NDJSON, one row per line): 14.02 s, 63 MB, with identical rows. A grouped
+request only knows its groups once the last shard is read, so streaming here
+saves the envelope, not latency. Streaming helps latency on row-level outputs,
+not on grouped totals.
 
 ### Step 5 — December dashboard: five questions, one Compose call
 
@@ -210,59 +213,55 @@ helps latency on row-level outputs, not on grouped totals.
 region, category, channel, loyalty and discount. Each slot carries an
 `OVERLAY_SHARE_OF_TOTAL` overlay so the revenue share comes back with the
 numbers. The overlay's `params.field` names the `revenue` aggregation, so its
-position in the slot's `aggregations` list does not matter. `pulse api predict-compose` validates it in 0.17 s. `pulse api compose`
-runs it in **4.84 s** serial or **4.23 s** with `--parallel 4` (769 MB), and the
-two return identical data.
+position in the slot's `aggregations` list does not matter. `pulse api predict-compose`
+validates it in 0.12 s. `pulse api compose` runs it in **4.71 s** serial (527 MB)
+or **2.76 s** with `--parallel 4` (1.40 GB), and the two return identical data.
 
 | Region | revenue (USD) | share | customers |
 |---|---:|---:|---:|
-| Southeast | 32,877,788.23 | 24.9 % | 324,364 |
-| West | 26,480,264.20 | 20.1 % | 259,332 |
-| Northeast | 26,413,147.53 | 20.0 % | 259,690 |
-| Midwest | 26,311,088.85 | 20.0 % | 259,618 |
-| Southwest | 19,786,293.16 | 15.0 % | 194,698 |
+| Southeast | 65,756,980.11 | 24.9 % | 413,854 |
+| Northeast | 52,801,989.21 | 20.0 % | 331,146 |
+| West | 52,799,268.42 | 20.0 % | 331,026 |
+| Midwest | 52,635,138.57 | 20.0 % | 331,363 |
+| Southwest | 39,647,834.61 | 15.0 % | 248,547 |
 
 | Category | revenue (USD) | share | avg unit price | return rate |
 |---|---:|---:|---:|---:|
-| Electronics | 44,115,363.50 | 33.5 % | 81.31 | 4.47 % |
-| Apparel | 17,922,798.65 | 13.6 % | 30.17 | 4.45 % |
-| Toys | 16,352,490.08 | 12.4 % | 25.46 | 4.49 % |
-| Sporting Goods | 11,436,715.27 | 8.7 % | 46.43 | 4.54 % |
-| Seasonal | 10,360,965.31 | 7.9 % | 23.23 | 4.48 % |
-| Home & Garden | 10,002,178.51 | 7.6 % | 40.48 | 4.49 % |
-| Health & Beauty | 6,185,135.34 | 4.7 % | 13.94 | 4.46 % |
-| Grocery | 5,681,444.27 | 4.3 % | 5.22 | 4.53 % |
-| Pet | 5,179,440.89 | 3.9 % | 20.91 | 4.53 % |
-| Household | 4,632,050.15 | 3.5 % | 10.45 | 4.50 % |
+| Electronics | 88,153,458.57 | 33.4 % | 81.20 | 4.44 % |
+| Apparel | 35,804,802.31 | 13.6 % | 30.19 | 4.48 % |
+| Toys | 32,737,372.98 | 12.4 % | 25.51 | 4.48 % |
+| Sporting Goods | 22,825,800.36 | 8.7 % | 46.36 | 4.49 % |
+| Seasonal | 20,736,760.11 | 7.9 % | 23.22 | 4.50 % |
+| Home & Garden | 20,042,818.79 | 7.6 % | 40.54 | 4.47 % |
+| Health & Beauty | 12,354,333.68 | 4.7 % | 13.93 | 4.49 % |
+| Grocery | 11,367,432.17 | 4.3 % | 5.22 | 4.51 % |
+| Pet | 10,340,006.18 | 3.9 % | 20.93 | 4.51 % |
+| Household | 9,278,425.77 | 3.5 % | 10.44 | 4.50 % |
 
 | Channel | revenue (USD) | share | avg line value |
 |---|---:|---:|---:|
-| store | 70,771,698.47 | 53.7 % | 46.99 |
-| online | 47,627,964.94 | 36.1 % | 47.26 |
-| curbside | 13,468,918.56 | 10.2 % | 47.09 |
+| store | 141,568,969.71 | 53.7 % | 47.01 |
+| online | 95,191,779.99 | 36.1 % | 47.19 |
+| curbside | 26,880,461.22 | 10.2 % | 47.04 |
 
 | Loyalty member | lines | customers | revenue (USD) | share |
 |---|---:|---:|---:|---:|
-| no | 2,184,091 | 1,247,702 | 102,884,133.64 | 78.0 % |
-| yes | 615,909 | 50,000 | 28,984,448.33 | 22.0 % |
+| no | 4,368,412 | 1,605,936 | 205,609,074.44 | 78.0 % |
+| yes | 1,231,588 | 50,000 | 58,032,136.48 | 22.0 % |
 
 | Discount | lines | revenue (USD) | share |
 |---:|---:|---:|---:|
-| 0 % | 1,958,140 | 98,332,724.60 | 74.6 % |
-| 10 % | 336,612 | 15,263,474.12 | 11.6 % |
-| 20 % | 280,452 | 11,252,506.19 | 8.5 % |
-| 30 % | 140,199 | 4,887,189.61 | 3.7 % |
-| 50 % | 84,597 | 2,132,687.45 | 1.6 % |
+| 0 % | 3,918,911 | 196,569,309.52 | 74.6 % |
+| 10 % | 672,441 | 30,526,496.92 | 11.6 % |
+| 20 % | 559,815 | 22,498,518.52 | 8.5 % |
+| 30 % | 280,242 | 9,809,958.91 | 3.7 % |
+| 50 % | 168,591 | 4,236,927.05 | 1.6 % |
 
-### Step 6 — Customer-level rollups with `process-chain`
+### Step 6 — Customer-level rollups with `process-chain`, every customer
 
 These are "aggregate, then aggregate the aggregates" questions. Stage 0 rolls
-order lines up to one row per customer. Stage 1 reads those rows as a new cohort.
-Stage 0 runs on a **1-in-10 customer panel** (`FILTER_EXPRESSION`
-`customer_id % 10 == 0`). The chain still reads all 23.75 M lines, keeps
-2,373,549 of them and groups 252,938 customers. A panel keeps the per-customer
-group table small: grouping all ~2.5 M customers with 16 aggregators each does not
-fit next to the in-memory archive on this machine.
+47.5 M order lines up to one row per customer, all **2,603,647 customers**.
+Stage 1 reads those rows as a new cohort.
 
 **Retention cohorts** (`req/05_retention_chain.json`). Stage 0 groups by
 `customer_id`. It computes `spend` (`AGG_SUM`), `orders`
@@ -270,22 +269,22 @@ fit next to the in-memory archive on this machine.
 year_month) and twelve `active_mMM` flags (`AGG_MAX` of an `ATTR_FORMULA` such as
 `order_date >= 20120 && order_date < 20148 ? 1 : 0`; the bounds are epoch days).
 Stage 1 groups by `first_month` and averages each flag, which gives the share of
-the cohort active in each month. Run time: **123.5 s, 3.9 GB**.
+the cohort active in each month. Run time: **181–187 s** (see the note below the tables).
 
 | First month | customers | avg 2025 spend (USD) | avg orders | M+1 | M+3 | M+6 | Dec-25 |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| 2025-01 | 85,032 | 600.96 | 13.43 | 61.3 % | 56.3 % | 43.3 % | 27.1 % |
-| 2025-02 | 31,493 | 384.85 | 9.01 | 62.9 % | 55.5 % | 45.2 % | 35.9 % |
-| 2025-03 | 19,832 | 400.15 | 9.38 | 64.0 % | 57.8 % | 48.3 % | 51.1 % |
-| 2025-04 | 14,774 | 396.48 | 9.22 | 64.5 % | 60.9 % | 55.1 % | 63.6 % |
-| 2025-05 | 12,999 | 366.74 | 8.54 | 63.7 % | 62.9 % | 64.5 % | 68.6 % |
-| 2025-06 | 12,329 | 331.33 | 7.65 | 63.8 % | 59.4 % | 70.3 % | 70.3 % |
-| 2025-07 | 12,599 | 291.47 | 6.69 | 64.7 % | 60.3 % | — | 71.0 % |
-| 2025-08 | 12,558 | 250.79 | 5.70 | 60.0 % | 66.6 % | — | 71.7 % |
-| 2025-09 | 11,527 | 212.25 | 4.72 | 60.2 % | 71.8 % | — | 71.8 % |
-| 2025-10 | 12,308 | 171.26 | 3.80 | 66.5 % | — | — | 71.7 % |
-| 2025-11 | 13,695 | 133.48 | 2.85 | 71.6 % | — | — | 71.6 % |
-| 2025-12 | 13,792 | 82.44 | 1.72 | — | — | — | 100 % |
+| 2025-01 | 1,117,593 | 1,060.20 | 22.52 | 81.8 % | 72.9 % | 56.3 % | 31.9 % |
+| 2025-02 | 215,229 | 813.68 | 18.71 | 85.6 % | 79.2 % | 70.0 % | 61.2 % |
+| 2025-03 | 139,456 | 868.85 | 19.81 | 87.5 % | 85.1 % | 80.0 % | 85.9 % |
+| 2025-04 | 126,371 | 806.09 | 18.30 | 87.8 % | 86.5 % | 83.8 % | 91.2 % |
+| 2025-05 | 124,680 | 721.07 | 16.32 | 87.0 % | 87.2 % | 88.9 % | 91.7 % |
+| 2025-06 | 123,537 | 633.45 | 14.29 | 87.1 % | 83.4 % | 91.7 % | 91.7 % |
+| 2025-07 | 124,690 | 549.16 | 12.32 | 87.3 % | 84.4 % | — | 91.8 % |
+| 2025-08 | 125,538 | 464.80 | 10.36 | 83.5 % | 89.0 % | — | 91.8 % |
+| 2025-09 | 119,626 | 381.93 | 8.41 | 84.2 % | 91.8 % | — | 91.8 % |
+| 2025-10 | 125,036 | 307.27 | 6.65 | 89.1 % | — | — | 91.8 % |
+| 2025-11 | 132,228 | 229.28 | 4.78 | 91.7 % | — | — | 91.7 % |
+| 2025-12 | 129,663 | 128.51 | 2.61 | — | — | — | 100 % |
 
 M+k is the cohort's `m{first+k}` column. The full 12-column triangle is in the
 chain response. The January "cohort" contains every customer already active
@@ -296,142 +295,171 @@ than as January acquisitions.
 per-customer `spend`, `orders` and `is_member` (`AGG_MAX loyalty_member`). Stage 1
 buckets spend with an `ATTR_FORMULA` band, groups by band, and adds
 `OVERLAY_SHARE_OF_TOTAL` (`params.field: "spend"`) for each band's share of
-panel spend. Run time:
-**71.8 s, 3.7 GB**.
+total spend. Run time: **40.7–42.4 s, 10.6 GiB peak footprint**.
 
-| 2025 spend band | customers | spend (USD) | share of panel spend | avg orders | loyalty members |
+| 2025 spend band | customers | spend (USD) | share of spend | avg orders | loyalty members |
 |---|---:|---:|---:|---:|---:|
-| < $50 | 28,514 | 714,785.27 | 0.7 % | 1.89 | 0 % |
-| $50–100 | 26,754 | 1,996,473.90 | 2.0 % | 3.54 | 0 % |
-| $100–250 | 70,641 | 12,174,112.85 | 12.1 % | 6.04 | 0 % |
-| $250–500 | 74,513 | 26,688,565.50 | 26.6 % | 9.22 | 0 % |
-| $500–1,000 | 40,326 | 26,987,960.55 | 26.9 % | 11.60 | 0 % |
-| $1,000–2,500 | 7,068 | 9,234,965.72 | 9.2 % | 12.74 | 0.3 % |
-| ≥ $2,500 | 5,122 | 22,410,911.48 | 22.4 % | 88.38 | 97.3 % |
+| < $50 | 113,373 | 2,991,228.08 | 0.1 % | 2.00 | 0 % |
+| $50–100 | 123,982 | 9,305,189.29 | 0.5 % | 3.60 | 0 % |
+| $100–250 | 372,049 | 65,052,352.67 | 3.2 % | 6.32 | 0 % |
+| $250–500 | 600,235 | 224,362,953.29 | 11.2 % | 11.23 | 0 % |
+| $500–1,000 | 895,505 | 646,595,573.39 | 32.2 % | 17.69 | 0 % |
+| $1,000–2,500 | 438,859 | 590,117,100.46 | 29.4 % | 22.69 | 0 % |
+| ≥ $2,500 | 59,644 | 470,675,731.62 | 23.4 % | 136.65 | 83.8 % |
+
+**How to read the cost.** Both chains hold one group per customer, so their
+memory follows the 2.6 M-row customer table, not the archive. The retention
+chain carries 15 aggregators and 13 derived columns per customer against the
+spend chain's 3 aggregators. Resident memory understates what it needs on a
+busy machine, so the peak memory footprint (which counts compressed and
+swapped pages) is the figure to budget by:
+
+| Chain | Time | Peak RSS | Peak footprint | Go heap, peak / live |
+|---|---:|---:|---:|---:|
+| Spend | 40.7–42.4 s | 11.2–11.6 GiB | 10.6 GiB | 9.5–10.0 / 5.6–5.9 GiB |
+| Retention | 181–187 s | 13.0–14.6 GiB | 17.3–23.1 GiB | 15.1–15.6 / 8.3 GiB |
+| Retention, `GOMEMLIMIT=14GiB` | 117 s | 14.7 GiB | 14.8 GiB | 11.9 / 7.9 GiB |
+
+**The retention chain needs more than 16 GB without a memory limit.** Its peak
+footprint is 17.3–23.1 GiB across runs. Most of that is heap the Go runtime lets
+grow to about twice the live set (8.3 GiB live, 15.6 GiB peak) before it
+collects. On a 16 GB machine, run this step with `GOMEMLIMIT=14GiB`:
+
+```sh
+GOMEMLIMIT=14GiB pulse --shard-workers 4 --decode-workers 4 api process-chain \
+  -r req/05_retention_chain.json --json --no-components
+```
+
+With the limit the chain peaks at a 14.8 GiB footprint, finishes in 117 s
+instead of 181–187 s (less paging) and returns byte-identical data. The spend
+chain (10.6 GiB) and every other step fit without a limit.
 
 ### Step 7 — Customer 360: point lookup vs. scan
 
-Build one sidecar index per month (single-file cohorts only):
+Build one sidecar index over the whole archive (one sidecar per shard plus an
+`indexes.json` manifest):
 
 ```sh
-pulse index build orders-2025-12.pulse --key customer_id --json
+pulse index build orders.pulse --key customer_id --json
 ```
 
-December: 1,297,702 distinct keys over 2,800,000 records in **13.2 s**, with a
-51 MB sidecar plus an `indexes.json` manifest. Builds take 7.7–13.2 s per month.
+It indexes 47,500,000 records in 12 per-shard sidecars in **496 s** at 819 MB.
+The build is a one-off, and step 8 shows a new month extending it without a
+rebuild.
 
-Look up customer 4242 (`req/07_lookup_customer.json`, with `-i` naming the month):
+Look up customer 4242 (`req/07_lookup_customer.json`, pointed at
+`orders.pulse`):
 
 ```sh
-pulse api lookup -r req/07_lookup_customer.json -i orders-2025-12.pulse --json
+pulse api lookup -r req/07_lookup_customer.json --json
 ```
+
+It returns all **212 rows** of 2025 for that customer in **0.15 s** for the
+whole CLI call at 51 MB. The first row:
 
 ```json
-{"category":"Grocery","channel":"online","line_id":1200240260,"net_amount":2.04,"order_date":20428,
- "order_id":424220428,"quantity":1,"returned":1,"store_id":0}
+{"category":"Home & Garden","channel":"store","line_id":100012210,"net_amount":112.98,
+ "order_date":"2025-01-21","order_id":424220109,"quantity":3,"returned":0,"store_id":43}
 ```
 
-That row is one of 8 December rows. Each monthly lookup takes **0.17–0.22 s**
-for the whole CLI call at about 40 MB, and **0.34 ms** in-process. The same
-answer from a scan, `req/03_customer_scan.json` (`FILTER_INCLUDE customer_id = 4242`,
-grouped by month), takes:
+The same answer from a scan, `req/03_customer_scan.json` (`FILTER_INCLUDE customer_id = 4242`,
+grouped by month):
 
 | How | Scope | Time | Peak RSS |
 |---|---|---:|---:|
-| Point lookup, CLI | one month | 0.17–0.22 s | ~40 MB |
-| Point lookup, all 12 months | 2025 | 12 CLI calls of 0.17–0.22 s | ~40 MB |
-| Point lookup, in-process | one month | 0.34 ms | — |
-| Filtered scan, December file | one month | 0.90 s | 194 MB |
-| Filtered scan, archive | 2025 | 55.7 s | 3.7 GB |
+| Point lookup, archive | 2025 (12 shards) | 0.15 s | 51 MB |
+| Point lookup, archive after step 8 | 13 months | 0.19 s | 51 MB |
+| Filtered scan, archive | 2025 | 6.21 s | 67 MB |
+| Filtered scan, December file | one month | 1.08 s | 343 MB |
 
 The scan's answer for customer 4242, a loyalty member with home store 43:
 
 | month | 01 | 02 | 03 | 04 | 05 | 06 | 07 | 08 | 09 | 10 | 11 | 12 |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| lines | 13 | 7 | 8 | 2 | 14 | 8 | 8 | 10 | 3 | 8 | 10 | 8 |
-| orders | 9 | 7 | 8 | 2 | 11 | 8 | 8 | 8 | 2 | 7 | 8 | 6 |
-| spend (USD) | 539.91 | 176.72 | 214.26 | 280.20 | 724.83 | 249.31 | 515.16 | 398.65 | 94.81 | 264.52 | 236.88 | 236.43 |
+| lines | 20 | 17 | 14 | 16 | 24 | 16 | 19 | 19 | 14 | 14 | 18 | 21 |
+| orders | 12 | 10 | 10 | 14 | 20 | 13 | 14 | 14 | 10 | 11 | 14 | 15 |
+| spend (USD) | 837.70 | 378.36 | 290.02 | 701.36 | 1,146.17 | 611.39 | 818.29 | 640.40 | 504.63 | 434.48 | 607.94 | 1,109.91 |
 
-Each month's lookup returned exactly the scan's line count for that month.
+The scan's lines add up to 212, exactly the lookup's row count.
 
 ### Step 8 — January 2026 arrives
 
 ```sh
-pulse cohort inspect orders-2026-01.pulse --json        # 1,800,000 records, 0.28 s
-GOMEMLIMIT=3500MiB pulse shard add orders.pulse orders-2026-01.pulse --json
-GOMEMLIMIT=3500MiB pulse shard verify orders.pulse --json
-GOMEMLIMIT=3500MiB pulse shard compact orders.pulse --json
-GOMEMLIMIT=3500MiB pulse api process -r req/01_year_kpis.json --json
-pulse index build orders-2026-01.pulse --key customer_id --json
-pulse index verify orders-2025-12.pulse --key customer_id --json
+pulse cohort inspect orders-2026-01.pulse --json
+pulse shard add orders.pulse orders-2026-01.pulse --json
+pulse shard list orders.pulse
+pulse cohort inspect orders.pulse --json
+pulse shard verify orders.pulse --json
+pulse index verify orders.pulse --key customer_id --json
+pulse api lookup -r req/07_lookup_customer.json --json
+P api process -r req/01_year_kpis.json --json
 ```
 
 | Step | Result | Time | Peak RSS |
 |---|---|---:|---:|
-| `shard add` | 13 shards, no widen, no warnings | 36.4 s | 3.8 GB |
-| `shard list` | total 25,550,000 | 15.5 s | 3.6 GB |
-| `shard verify` | `verified: true`, 0 errors | 17.6 s | 3.6 GB |
-| `shard compact` | done | 39.5 s | 4.0 GB |
-| KPIs, 13 months | 25,550,000 lines, revenue 1,077,716,051.99, units 48,040,576, return rate 4.50 % | 59.8 s | 3.7 GB |
-| Index build, Jan 2026 | 2026-01 sidecar | 9.4 s | 458 MB |
-| Lookup 4242, Jan 2026 | 11 rows | 0.17 s | 40 MB |
-| `index verify` Dec 2025 | `fresh: true` (`fingerprint_match`) | 0.39 s | 44 MB |
+| `cohort inspect` 2026-01 | 3,600,000 records | 0.13 s | 50 MB |
+| `shard add` | 13 shards, no widen; warning `PULSE_SHARD_INDEXES_UPDATED` (the index gained the new shard's sidecar) | 85.1 s | 812 MB |
+| `shard list` | total 51,100,000 | 0.15 s | 50 MB |
+| `cohort inspect orders.pulse` | `record_count: 51100000`, 13 shards | 0.29 s | 51 MB |
+| `shard verify` | `verified: true`, 0 errors | 1.32 s | 51 MB |
+| `index verify` | `fresh: true` (`fingerprint_match`) | 1.88 s | 51 MB |
+| Lookup 4242 | 231 rows (212 + 19 in January 2026) | 0.19 s | 51 MB |
+| KPIs, 13 months | 51,100,000 lines, revenue 2,155,846,607.88, units 96,086,095, return rate 4.50 % | 11.31 s | 79 MB |
 
-No 2025 month was regenerated or re-imported. Each stored shard's bytes stay as
-they were, and the December sidecar index is still fresh. `shard add` does
-rewrite the archive file (the 36 s above), and that cost grows with archive size.
+`shard add` holds the new shard, not the archive: 812 MB for a 191 MB month
+added to a 2.52 GB archive. Most of its time is building the new shard's
+sidecar index. The 85 s above was measured while the machine was swapping. A
+second, quieter run took 19.6 s at the same 812 MB, and the same append with no
+index on the archive takes 1.1–1.6 s at 745 MB. No 2025 month was regenerated
+or re-imported, and the existing sidecars stay valid.
 
 ## Findings
 
 **About the retailer (synthetic, but every number is a Pulse answer):**
 
-- 2025 closed at **$1.004 B on 23.75 M lines**. November ($109.0 M) and December
-  ($131.9 M) were the peak months (step 4). December's average line value was
-  $47.10, against $40.8–41.6 from January to October.
+- 2025 closed at **$2.009 B on 47.5 M lines**. November ($217.9 M) and December
+  ($263.6 M) were the peak months (step 4). December's average line value was
+  $47.08, against $40.8–41.6 from January to October.
 - Online grew from **25.0 % of lines in January to 36.0 % in December**.
-  December online revenue reached $47.6 M, 36.1 % of the month.
-- Electronics is 33.5 % of December revenue. Return rates are flat at 4.45–4.54 %
+  December online revenue reached $95.2 M, 36.1 % of the month.
+- Electronics is 33.4 % of December revenue. Return rates are flat at 4.44–4.51 %
   across every category, so returns are not category-driven in this data.
-- Retention: of the customers already active in January, 61 % bought again in
-  February and 27 % in December. Cohorts acquired mid-year hold 60–72 % monthly
-  activity.
-- Spend is concentrated. In the 1-in-10 panel, **5,122 customers spending
-  ≥ $2,500 hold 22.4 % of spend, average 88 orders a year and are 97.3 % loyalty
-  members.** In December, 50,000 members (against 1,247,702 non-member
+- Retention: of the customers already active in January, 82 % bought again in
+  February and 32 % in December. Cohorts acquired from March on stay 80–92 %
+  active every month.
+- Spend is concentrated. **59,644 customers spending ≥ $2,500 (2.3 % of
+  2,603,647) hold 23.4 % of spend, average 137 orders a year and are 83.8 %
+  loyalty members.** In December, 50,000 members (against 1,605,936 non-member
   customers) carried 22.0 % of revenue.
 
 **About running Pulse at this scale:**
 
-- **Single-file monthly cohorts are the fast path.** On a 2.8 M-row month,
-  inspect takes 0.28 s, CountRecords 0.09 ms in-process, a full KPI request
-  0.8 s, a five-question Compose dashboard 4–5 s and a point lookup 0.2 s per CLI
-  call.
-- **The annual shard archive answers whole-year questions in one request**, at
-  about 1 minute per full scan of 23.75 M rows. Opening it reads the whole archive
-  into memory, so plan RAM at about 3× archive size and set `GOMEMLIMIT`.
-  Avoid archive-wide metadata calls (inspect, list, verify take 16–23 s).
-  Adding shard workers did not speed up the scan on 4 vCPUs.
-- **Customer 360 belongs on the indexes:** a year of history takes 12 monthly
-  lookups of 0.17–0.22 s each, against 55.7 s and 3.7 GB for one archive scan.
-  The sidecar index only covers single files, so keep the monthly files next to
-  the archive.
-- **Plan the archive for appends:** a new month is a single `shard add`, and
-  history needs no re-import or index rebuild.
-- `process-chain` turns per-customer rollups into one request. Run it on a
-  customer panel when the full customer table would not fit beside the archive
-  in memory.
+- **The shard archive is the one copy of the data.** Header operations (inspect,
+  list, verify, predict, `CountRecords`) on the 2.5–2.7 GB archive take
+  0.12–0.3 s at about 50 MB, the CLI's start-up floor. No `GOMEMLIMIT` is needed.
+- **A full scan of 47.5 M rows takes 8.5 s at 4 shard workers** (19.1 s at 1),
+  and its memory follows the request (63 MB for the KPIs), not the archive.
+  Serial and parallel runs return byte-identical data.
+- **Customer 360 belongs on the archive index:** a year of one customer's
+  history comes back in 0.15 s, against 6.2 s for a filtered scan.
+- **Plan the archive for appends:** a new month is a single `shard add` bounded
+  by the new month's size, and the index follows it.
+- **`process-chain` runs per-customer rollups over every customer** in one
+  request. Its memory follows the per-customer group table: 10.6 GiB (spend) and
+  17.3–23.1 GiB (retention) peak footprint for 2.6 M customers here. On a 16 GB
+  machine, give the retention chain `GOMEMLIMIT=14GiB` (14.8 GiB, same answer).
 
 ## Pulse features used
 
 | Feature | Where |
 |---|---|
 | `synth from-schema` with `rules[]` / `set_expr`, `discrete`, `lognormal`, `uniform_date`, `monotonic_from`, `bernoulli`, `weighted_categorical` | `synth/`, step 0 |
-| `cohort inspect` (header only), `CountRecords`, `Inspect` | steps 1, 2, 8; `bench/` |
-| Shard archives: `shard create / list / verify / add / compact` | steps 2, 8 |
+| `cohort inspect` (header only) | steps 1, 2, 8 |
+| Shard archives: `shard create / list / verify / add` | steps 2, 8 |
 | `api predict`, `api predict-compose` | steps 3, 5 |
-| Shard-parallel execution (`ShardWorkers`), parallel decode (`DecodeWorkers`), default projection (`--no-project`, `DisableProjection`) | step 3, `bench/` |
-| `ATTR_DATE_PART`, `ATTR_FORMULA`, `FILTER_EXPRESSION`, `FILTER_INCLUDE`, `GROUP_CATEGORY`, `AGG_COUNT/SUM/AVERAGE/MIN/MAX/DISTINCT_COUNT` | steps 3–7 |
-| Streaming (`--stream`, `ProcessStreamResult`) | step 4, `bench/` |
+| `--shard-workers` (shard-parallel execution), `--decode-workers` (parallel decode), default projection (`--no-project`) | steps 3, 4, 8 |
+| `ATTR_DATE_PART`, `ATTR_FORMULA`, `FILTER_INCLUDE`, `GROUP_CATEGORY`, `AGG_COUNT/SUM/AVERAGE/MIN/MAX/DISTINCT_COUNT` | steps 3–7 |
+| Streaming (`--stream`) | step 4 |
 | `api compose` (serial and `--parallel`), `OVERLAY_SHARE_OF_TOTAL` | step 5 |
 | `api process-chain` with per-stage overlay | step 6 |
-| Sidecar point-lookup index: `index build / list / verify`, `api lookup`, `Pulse.Lookup` | steps 7, 8 |
+| Sidecar point-lookup index over a shard archive: `index build / list / verify`, `api lookup` | steps 7, 8 |

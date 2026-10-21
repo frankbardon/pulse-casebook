@@ -19,7 +19,7 @@ Set up once with [Running the examples](/paths/running-examples/). Every case st
 
 ## 3. Pick the workload closest to yours
 
-- [Retail at scale](/case-studies/retail-at-scale/): 25.5 million order lines, monthly cohorts plus a shard archive, Compose dashboards, and the Go library through the `retail-bench` helper, with timings.
+- [Retail at scale](/case-studies/retail-at-scale/): 51 million order lines in one shard archive, header-only metadata, archive point lookups, per-customer chains over every customer, and `--shard-workers` / `--decode-workers` timings.
 - [Privacy-safe data sharing](/case-studies/privacy-safe-sharing/): profile a table, generate a synthetic twin with `pulse synth`, and check it for fidelity and disclosure risk.
 - [Multi-time-zone operations](/case-studies/multi-timezone-ops/): time-zone-aware requests over UTC instants, and how daylight saving changes the answer.
 - [Credit risk model](/case-studies/credit-risk-model/): `pulse api predict` to validate a request before it reads records, then `process` and `explain`.
