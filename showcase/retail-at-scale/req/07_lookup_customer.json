@@ -1,5 +1,5 @@
 {
-  "cohort": {"data_dir": "."},
+  "cohort": {"filename": "orders.pulse", "data_dir": "."},
   "field": "customer_id",
   "value": "4242",
   "multiplicity": "all",
