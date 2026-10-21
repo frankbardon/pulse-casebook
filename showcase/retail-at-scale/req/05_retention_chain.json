@@ -7,12 +7,6 @@
     {
       "name": "per_customer",
       "request": {
-        "filterers": [
-          {
-            "type": "FILTER_EXPRESSION",
-            "expression": "customer_id % 10 == 0"
-          }
-        ],
         "attributes": [
           {
             "type": "ATTR_DATE_PART",
