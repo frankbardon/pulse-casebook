@@ -1,0 +1,82 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "count": 14.5,
+        "mean": 14.241379310344827
+      }
+    ],
+    "metadata": {
+      "total_rows": 10,
+      "filtered_rows": 10,
+      "cohort_file": "inv.pulse"
+    },
+    "warnings": [
+      {
+        "code": "PULSE_WEIGHT_INVALID_ROWS",
+        "message": "2 row(s) had an invalid weight in \"w\" and were excluded from the weighted figures (invalid weights are never coerced)",
+        "details": {
+          "by_reason": {
+            "nan_inf": 0,
+            "negative": 1,
+            "non_integer_frequency": 0,
+            "null": 1
+          },
+          "count": 2,
+          "field": "w"
+        }
+      }
+    ],
+    "components": {
+      "aggregations": [
+        {
+          "label": "count",
+          "n": 10,
+          "n_null": 0,
+          "sum_weights": 14.5,
+          "n_eff": 5.644295302013423,
+          "n_weight_invalid": 2
+        },
+        {
+          "label": "mean",
+          "n": 10,
+          "n_null": 0,
+          "sum_weights": 14.5,
+          "n_eff": 5.644295302013423,
+          "n_weight_invalid": 2,
+          "operator": {
+            "m2_weighted": 94.65517241379312,
+            "sum": 206.5,
+            "sum_weighted": 206.5,
+            "sum_weights_sq": 37.25,
+            "weighted_mean": 14.241379310344827,
+            "weighted_variance": 7.011494252873565
+          }
+        }
+      ],
+      "run": {
+        "total_records": 10,
+        "filtered_records": 10,
+        "null_records": 0
+      }
+    }
+  },
+  "errors": [],
+  "warnings": [
+    {
+      "code": "PULSE_WEIGHT_INVALID_ROWS",
+      "message": "2 row(s) had an invalid weight in \"w\" and were excluded from the weighted figures (invalid weights are never coerced)",
+      "details": {
+        "by_reason": {
+          "nan_inf": 0,
+          "negative": 1,
+          "non_integer_frequency": 0,
+          "null": 1
+        },
+        "count": 2,
+        "field": "w"
+      }
+    }
+  ]
+}

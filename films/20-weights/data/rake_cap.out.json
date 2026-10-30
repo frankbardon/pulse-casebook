@@ -1,0 +1,405 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "target": "raked_cap.pulse",
+    "records": 600,
+    "weight_field": "rake_weight",
+    "iterations": 100,
+    "converged": false,
+    "residual": 0.033333333333333326,
+    "margins": [
+      {
+        "fields": [
+          "age"
+        ],
+        "n_missing": 0,
+        "categories": [
+          {
+            "values": [
+              "55+"
+            ],
+            "observed_n": 127,
+            "observed": 0.21166666666666667,
+            "target": 0.38,
+            "achieved": 0.36333299850173784
+          },
+          {
+            "values": [
+              "18-34"
+            ],
+            "observed_n": 294,
+            "observed": 0.49,
+            "target": 0.29,
+            "achieved": 0.2977958710633455
+          },
+          {
+            "values": [
+              "35-54"
+            ],
+            "observed_n": 179,
+            "observed": 0.29833333333333334,
+            "target": 0.33,
+            "achieved": 0.3388711304349166
+          }
+        ]
+      },
+      {
+        "fields": [
+          "gender"
+        ],
+        "n_missing": 0,
+        "categories": [
+          {
+            "values": [
+              "M"
+            ],
+            "observed_n": 357,
+            "observed": 0.595,
+            "target": 0.49,
+            "achieved": 0.4892144723436538
+          },
+          {
+            "values": [
+              "F"
+            ],
+            "observed_n": 243,
+            "observed": 0.405,
+            "target": 0.51,
+            "achieved": 0.5107855276563478
+          }
+        ]
+      }
+    ],
+    "groups": [
+      {
+        "value": "w1",
+        "records": 300,
+        "iterations": 100,
+        "converged": false,
+        "residual": 0.033333333333333326,
+        "margins": [
+          {
+            "fields": [
+              "age"
+            ],
+            "n_missing": 0,
+            "categories": [
+              {
+                "values": [
+                  "55+"
+                ],
+                "observed_n": 52,
+                "observed": 0.17333333333333334,
+                "target": 0.38,
+                "achieved": 0.3466666666666667
+              },
+              {
+                "values": [
+                  "18-34"
+                ],
+                "observed_n": 164,
+                "observed": 0.5466666666666666,
+                "target": 0.29,
+                "achieved": 0.3055913978494629
+              },
+              {
+                "values": [
+                  "35-54"
+                ],
+                "observed_n": 84,
+                "observed": 0.28,
+                "target": 0.33,
+                "achieved": 0.34774193548387083
+              }
+            ]
+          },
+          {
+            "fields": [
+              "gender"
+            ],
+            "n_missing": 0,
+            "categories": [
+              {
+                "values": [
+                  "M"
+                ],
+                "observed_n": 179,
+                "observed": 0.5966666666666667,
+                "target": 0.49,
+                "achieved": 0.4884284532671632
+              },
+              {
+                "values": [
+                  "F"
+                ],
+                "observed_n": 121,
+                "observed": 0.4033333333333333,
+                "target": 0.51,
+                "achieved": 0.5115715467328377
+              }
+            ]
+          }
+        ],
+        "efficiency": {
+          "n": 300,
+          "sum_weights": 299.99999999999994,
+          "n_eff": 222.1146272425934,
+          "deff_kish": 1.3506539561320303,
+          "efficiency_pct": 74.03820908086448,
+          "weight_min": 0.42297674315644473,
+          "weight_max": 1.9999999999999987,
+          "weight_range_ratio": 4.728392358111913,
+          "weight_cv": 0.5921604141886077,
+          "n_capped": 52
+        }
+      },
+      {
+        "value": "w2",
+        "records": 300,
+        "iterations": 6,
+        "converged": true,
+        "residual": 6.696631902891603e-7,
+        "margins": [
+          {
+            "fields": [
+              "age"
+            ],
+            "n_missing": 0,
+            "categories": [
+              {
+                "values": [
+                  "55+"
+                ],
+                "observed_n": 75,
+                "observed": 0.25,
+                "target": 0.38,
+                "achieved": 0.3799993303368097
+              },
+              {
+                "values": [
+                  "18-34"
+                ],
+                "observed_n": 130,
+                "observed": 0.43333333333333335,
+                "target": 0.29,
+                "achieved": 0.2900003442772264
+              },
+              {
+                "values": [
+                  "35-54"
+                ],
+                "observed_n": 95,
+                "observed": 0.31666666666666665,
+                "target": 0.33,
+                "achieved": 0.3300003253859607
+              }
+            ]
+          },
+          {
+            "fields": [
+              "gender"
+            ],
+            "n_missing": 0,
+            "categories": [
+              {
+                "values": [
+                  "M"
+                ],
+                "observed_n": 178,
+                "observed": 0.5933333333333334,
+                "target": 0.49,
+                "achieved": 0.4900004914201402
+              },
+              {
+                "values": [
+                  "F"
+                ],
+                "observed_n": 122,
+                "observed": 0.4066666666666667,
+                "target": 0.51,
+                "achieved": 0.5099995085798568
+              }
+            ]
+          }
+        ],
+        "efficiency": {
+          "n": 300,
+          "sum_weights": 300.00000000000006,
+          "n_eff": 254.65520364927954,
+          "deff_kish": 1.178063498019742,
+          "efficiency_pct": 84.88506788309319,
+          "weight_min": 0.527896321019445,
+          "weight_max": 1.999999999999999,
+          "weight_range_ratio": 3.7886227282995772,
+          "weight_cv": 0.4219757078550233,
+          "n_capped": 27
+        }
+      }
+    ],
+    "efficiency": {
+      "n": 600,
+      "sum_weights": 600.0000000000001,
+      "n_eff": 474.548865880521,
+      "deff_kish": 1.264358727075884,
+      "efficiency_pct": 79.0914776467535,
+      "weight_min": 0.42297674315644473,
+      "weight_max": 1.999999999999999,
+      "weight_range_ratio": 4.728392358111914,
+      "weight_cv": 0.5141582704536473,
+      "n_capped": 79
+    },
+    "warnings": [
+      {
+        "code": "PULSE_RAKE_NOT_CONVERGED",
+        "message": "raking stopped at max_iter before every margin reached its target within tol",
+        "details": {
+          "group": "w1",
+          "iterations": 100,
+          "residual": 0.033333333333333326,
+          "tol": 0.000001
+        }
+      },
+      {
+        "code": "PULSE_FIELD_DESCRIPTION_LOW_QUALITY",
+        "message": "field id has a low-quality description",
+        "details": {
+          "description": "",
+          "field": "id"
+        }
+      },
+      {
+        "code": "PULSE_FIELD_DESCRIPTION_LOW_QUALITY",
+        "message": "field wave has a low-quality description",
+        "details": {
+          "description": "",
+          "field": "wave"
+        }
+      },
+      {
+        "code": "PULSE_FIELD_DESCRIPTION_LOW_QUALITY",
+        "message": "field age has a low-quality description",
+        "details": {
+          "description": "",
+          "field": "age"
+        }
+      },
+      {
+        "code": "PULSE_FIELD_DESCRIPTION_LOW_QUALITY",
+        "message": "field gender has a low-quality description",
+        "details": {
+          "description": "",
+          "field": "gender"
+        }
+      },
+      {
+        "code": "PULSE_FIELD_DESCRIPTION_LOW_QUALITY",
+        "message": "field region has a low-quality description",
+        "details": {
+          "description": "",
+          "field": "region"
+        }
+      },
+      {
+        "code": "PULSE_FIELD_DESCRIPTION_LOW_QUALITY",
+        "message": "field dwt has a low-quality description",
+        "details": {
+          "description": "",
+          "field": "dwt"
+        }
+      },
+      {
+        "code": "PULSE_FIELD_DESCRIPTION_LOW_QUALITY",
+        "message": "field satisfied has a low-quality description",
+        "details": {
+          "description": "",
+          "field": "satisfied"
+        }
+      },
+      {
+        "code": "PULSE_FIELD_DESCRIPTION_LOW_QUALITY",
+        "message": "field spend has a low-quality description",
+        "details": {
+          "description": "",
+          "field": "spend"
+        }
+      }
+    ]
+  },
+  "errors": [],
+  "warnings": [
+    {
+      "code": "PULSE_RAKE_NOT_CONVERGED",
+      "message": "raking stopped at max_iter before every margin reached its target within tol",
+      "details": {
+        "group": "w1",
+        "iterations": 100,
+        "residual": 0.033333333333333326,
+        "tol": 0.000001
+      }
+    },
+    {
+      "code": "PULSE_FIELD_DESCRIPTION_LOW_QUALITY",
+      "message": "field id has a low-quality description",
+      "details": {
+        "description": "",
+        "field": "id"
+      }
+    },
+    {
+      "code": "PULSE_FIELD_DESCRIPTION_LOW_QUALITY",
+      "message": "field wave has a low-quality description",
+      "details": {
+        "description": "",
+        "field": "wave"
+      }
+    },
+    {
+      "code": "PULSE_FIELD_DESCRIPTION_LOW_QUALITY",
+      "message": "field age has a low-quality description",
+      "details": {
+        "description": "",
+        "field": "age"
+      }
+    },
+    {
+      "code": "PULSE_FIELD_DESCRIPTION_LOW_QUALITY",
+      "message": "field gender has a low-quality description",
+      "details": {
+        "description": "",
+        "field": "gender"
+      }
+    },
+    {
+      "code": "PULSE_FIELD_DESCRIPTION_LOW_QUALITY",
+      "message": "field region has a low-quality description",
+      "details": {
+        "description": "",
+        "field": "region"
+      }
+    },
+    {
+      "code": "PULSE_FIELD_DESCRIPTION_LOW_QUALITY",
+      "message": "field dwt has a low-quality description",
+      "details": {
+        "description": "",
+        "field": "dwt"
+      }
+    },
+    {
+      "code": "PULSE_FIELD_DESCRIPTION_LOW_QUALITY",
+      "message": "field satisfied has a low-quality description",
+      "details": {
+        "description": "",
+        "field": "satisfied"
+      }
+    },
+    {
+      "code": "PULSE_FIELD_DESCRIPTION_LOW_QUALITY",
+      "message": "field spend has a low-quality description",
+      "details": {
+        "description": "",
+        "field": "spend"
+      }
+    }
+  ]
+}

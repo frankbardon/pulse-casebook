@@ -1,0 +1,3 @@
+{"cohort":{"filename":"dup.pulse"},
+ "attributes":[{"type":"ATTR_FORMULA","label":"tot","expression":"total(score)"}],
+ "aggregations":[{"type":"AGG_MAX","field":"tot","label":"expanded"}]}

@@ -1,0 +1,6 @@
+{"cohort":"survey.pulse","out":"raked_cell.pulse","overwrite":true,
+ "margins":[{"fields":["age","gender"],"cells":[
+   {"values":["18-34","F"],"target":0.145},{"values":["18-34","M"],"target":0.145},
+   {"values":["35-54","F"],"target":0.165},{"values":["35-54","M"],"target":0.165},
+   {"values":["55+","F"],"target":0.20},{"values":["55+","M"],"target":0.18}]}],
+ "by":"wave"}

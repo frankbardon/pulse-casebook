@@ -1,0 +1,1 @@
+{"cohort":{"filename":"freq.pulse"},"weight":{"field":"n","kind":"frequency"},"aggregations":[{"type":"AGG_COUNT","field":"score","label":"count"},{"type":"AGG_AVERAGE","field":"score","label":"mean"},{"type":"AGG_MEDIAN","field":"score","label":"median"},{"type":"AGG_CI_LOWER","field":"score","label":"ci_lo"},{"type":"AGG_CI_UPPER","field":"score","label":"ci_hi"}]}

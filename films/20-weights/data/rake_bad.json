@@ -1,0 +1,2 @@
+{"cohort":"survey.pulse","out":"raked_bad.pulse",
+ "margins":[{"field":"age","targets":{"18-34":0.45,"35-54":0.55}}]}

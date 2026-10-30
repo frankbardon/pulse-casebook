@@ -1,0 +1,22 @@
+{
+  "format_version": "1.1",
+  "data": null,
+  "errors": [
+    {
+      "code": "PULSE_RAKE_UNTARGETED_CATEGORY",
+      "message": "records hold a margin category that has no target",
+      "details": {
+        "fields": [
+          "age"
+        ],
+        "first_row": 0,
+        "margin": 0,
+        "rows": 127,
+        "values": [
+          "55+"
+        ]
+      }
+    }
+  ],
+  "warnings": []
+}

@@ -1,0 +1,5 @@
+{"cohort":{"filename":"survey.pulse"},
+ "weight":{"field":"dwt"},
+ "aggregations":[{"type":"AGG_AVERAGE","field":"spend","label":"mean"},{"type":"AGG_CI_LOWER","field":"spend","label":"ci_lo"},{"type":"AGG_CI_UPPER","field":"spend","label":"ci_hi"}],
+ "tests":[{"type":"TEST_T","field":"spend","split_by":"gender","label":"weighted"},
+          {"type":"TEST_T","field":"spend","split_by":"gender","label":"unweighted","weight":null}]}

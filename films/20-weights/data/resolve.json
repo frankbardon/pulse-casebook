@@ -1,0 +1,8 @@
+{"cohort":{"filename":"survey.pulse"},
+ "weight":{"field":"dwt"},
+ "filterers":[{"type":"FILTER_INCLUDE","field":"wave","values":["w1"]}],
+ "groups":[{"type":"GROUP_CATEGORY","field":"gender"}],
+ "aggregations":[
+  {"type":"AGG_AVERAGE","field":"satisfied","label":"sat"},
+  {"type":"AGG_COUNT","field":"id","label":"wt_n","weight":{"field":"dwt","kind":"probability"}},
+  {"type":"AGG_COUNT","field":"id","label":"base","weight":null}]}

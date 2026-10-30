@@ -1,0 +1,21 @@
+{
+  "format_version": "1.1",
+  "data": null,
+  "errors": [
+    {
+      "code": "PULSE_WEIGHT_INVALID_ROWS",
+      "message": "3 row(s) had an invalid weight in \"w\" and were excluded from the weighted figures (invalid weights are never coerced)",
+      "details": {
+        "by_reason": {
+          "nan_inf": 0,
+          "negative": 1,
+          "non_integer_frequency": 1,
+          "null": 1
+        },
+        "count": 3,
+        "field": "w"
+      }
+    }
+  ],
+  "warnings": []
+}

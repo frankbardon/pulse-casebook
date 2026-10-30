@@ -1,0 +1,5 @@
+{"cohort":{"filename":"survey.pulse"},
+ "crosstab":{"rows":[{"type":"GROUP_CATEGORY","field":"age"}],"columns":[{"type":"GROUP_CATEGORY","field":"gender"}],
+   "cell":{"type":"AGG_COUNT","field":"id","label":"n"},"margins":{"rows":true,"columns":true,"grand":true}},
+ "overlays":[{"name":"census","kind":"OVERLAY_RAKE","scope":"matrix",
+   "params":{"row_targets":{"18-34":0.29,"35-54":0.33,"55+":0.38},"col_targets":{"F":0.51,"M":0.49}}}]}

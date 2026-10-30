@@ -1,0 +1,4 @@
+{"cohort":{"filename":"freq.pulse"},
+ "attributes":[{"type":"ATTR_FORMULA","label":"tot","expression":"total(score)","weight":{"field":"n","kind":"frequency"}},
+               {"type":"ATTR_FORMULA","label":"raw","expression":"total(score)"}],
+ "aggregations":[{"type":"AGG_MAX","field":"tot","label":"weighted"},{"type":"AGG_MAX","field":"raw","label":"unweighted"}]}

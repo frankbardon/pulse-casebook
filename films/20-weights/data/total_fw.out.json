@@ -1,0 +1,43 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "unweighted": 38,
+        "weighted": 130
+      }
+    ],
+    "metadata": {
+      "total_rows": 6,
+      "filtered_rows": 6,
+      "cohort_file": "freq.pulse"
+    },
+    "components": {
+      "aggregations": [
+        {
+          "label": "weighted",
+          "n": 6,
+          "n_null": 0,
+          "operator": {
+            "max": 130
+          }
+        },
+        {
+          "label": "unweighted",
+          "n": 6,
+          "n_null": 0,
+          "operator": {
+            "max": 38
+          }
+        }
+      ],
+      "run": {
+        "total_records": 6,
+        "filtered_records": 6,
+        "null_records": 0
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

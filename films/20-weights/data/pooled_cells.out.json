@@ -1,0 +1,250 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "age": "18-34",
+        "factor": 0.7451176695227435,
+        "fitted": 91.64947335129744,
+        "gender": "F"
+      },
+      {
+        "age": "18-34",
+        "factor": 0.4815820365662024,
+        "fitted": 82.35052825282061,
+        "gender": "M"
+      },
+      {
+        "age": "35-54",
+        "factor": 1.4169053501228006,
+        "fitted": 96.34956380835044,
+        "gender": "F"
+      },
+      {
+        "age": "35-54",
+        "factor": 0.9157696724206574,
+        "fitted": 101.65043363869297,
+        "gender": "M"
+      },
+      {
+        "age": "55+",
+        "factor": 2.269249285391417,
+        "fitted": 118.00096284035368,
+        "gender": "F"
+      },
+      {
+        "age": "55+",
+        "factor": 1.4666538414465038,
+        "fitted": 109.99903810848778,
+        "gender": "M"
+      }
+    ],
+    "metadata": {
+      "total_rows": 600,
+      "filtered_rows": 600,
+      "cohort_file": "raked_pooled.pulse"
+    },
+    "components": {
+      "aggregations": [
+        {
+          "label": "factor",
+          "n": 600,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "18-34",
+                "F"
+              ],
+              "n": 123,
+              "n_null": 0,
+              "operator": {
+                "sum": 91.64947335129744
+              }
+            },
+            {
+              "group_key": [
+                "18-34",
+                "M"
+              ],
+              "n": 171,
+              "n_null": 0,
+              "operator": {
+                "sum": 82.35052825282061
+              }
+            },
+            {
+              "group_key": [
+                "35-54",
+                "F"
+              ],
+              "n": 68,
+              "n_null": 0,
+              "operator": {
+                "sum": 96.34956380835044
+              }
+            },
+            {
+              "group_key": [
+                "35-54",
+                "M"
+              ],
+              "n": 111,
+              "n_null": 0,
+              "operator": {
+                "sum": 101.65043363869297
+              }
+            },
+            {
+              "group_key": [
+                "55+",
+                "F"
+              ],
+              "n": 52,
+              "n_null": 0,
+              "operator": {
+                "sum": 118.00096284035368
+              }
+            },
+            {
+              "group_key": [
+                "55+",
+                "M"
+              ],
+              "n": 75,
+              "n_null": 0,
+              "operator": {
+                "sum": 109.99903810848778
+              }
+            }
+          ]
+        },
+        {
+          "label": "fitted",
+          "n": 600,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "18-34",
+                "F"
+              ],
+              "n": 123,
+              "n_null": 0,
+              "operator": {
+                "sum": 91.64947335129744
+              }
+            },
+            {
+              "group_key": [
+                "18-34",
+                "M"
+              ],
+              "n": 171,
+              "n_null": 0,
+              "operator": {
+                "sum": 82.35052825282061
+              }
+            },
+            {
+              "group_key": [
+                "35-54",
+                "F"
+              ],
+              "n": 68,
+              "n_null": 0,
+              "operator": {
+                "sum": 96.34956380835044
+              }
+            },
+            {
+              "group_key": [
+                "35-54",
+                "M"
+              ],
+              "n": 111,
+              "n_null": 0,
+              "operator": {
+                "sum": 101.65043363869297
+              }
+            },
+            {
+              "group_key": [
+                "55+",
+                "F"
+              ],
+              "n": 52,
+              "n_null": 0,
+              "operator": {
+                "sum": 118.00096284035368
+              }
+            },
+            {
+              "group_key": [
+                "55+",
+                "M"
+              ],
+              "n": 75,
+              "n_null": 0,
+              "operator": {
+                "sum": 109.99903810848778
+              }
+            }
+          ]
+        }
+      ],
+      "groupers": [
+        {
+          "field": "age",
+          "total_n": 600,
+          "operator": {
+            "buckets": [
+              {
+                "count": 294,
+                "key": "18-34",
+                "label": "18-34"
+              },
+              {
+                "count": 179,
+                "key": "35-54",
+                "label": "35-54"
+              },
+              {
+                "count": 127,
+                "key": "55+",
+                "label": "55+"
+              }
+            ],
+            "dict_size": 3
+          }
+        },
+        {
+          "field": "gender",
+          "total_n": 600,
+          "operator": {
+            "buckets": [
+              {
+                "count": 243,
+                "key": "F",
+                "label": "F"
+              },
+              {
+                "count": 357,
+                "key": "M",
+                "label": "M"
+              }
+            ],
+            "dict_size": 2
+          }
+        }
+      ],
+      "run": {
+        "total_records": 600,
+        "filtered_records": 600,
+        "null_records": 0
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

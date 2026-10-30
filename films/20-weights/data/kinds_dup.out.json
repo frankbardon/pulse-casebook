@@ -1,0 +1,77 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "ci_hi": 7.459128925919058,
+        "ci_lo": 5.540871074080942,
+        "count": 20,
+        "mean": 6.5,
+        "median": 7
+      }
+    ],
+    "metadata": {
+      "total_rows": 20,
+      "filtered_rows": 20,
+      "cohort_file": "dup.pulse"
+    },
+    "components": {
+      "aggregations": [
+        {
+          "label": "count",
+          "n": 20,
+          "n_null": 0
+        },
+        {
+          "label": "mean",
+          "n": 20,
+          "n_null": 0,
+          "operator": {
+            "sum": 130
+          }
+        },
+        {
+          "label": "median",
+          "n": 20,
+          "n_null": 0,
+          "operator": {
+            "median": 7,
+            "position_high": 10,
+            "position_low": 9
+          }
+        },
+        {
+          "label": "ci_lo",
+          "n": 20,
+          "n_null": 0,
+          "operator": {
+            "alpha": 0.050000000000000044,
+            "lower": 5.540871074080942,
+            "mean": 6.5,
+            "stderr": 0.48936048492959294,
+            "t_critical": 1.959963984540054
+          }
+        },
+        {
+          "label": "ci_hi",
+          "n": 20,
+          "n_null": 0,
+          "operator": {
+            "alpha": 0.050000000000000044,
+            "mean": 6.5,
+            "stderr": 0.48936048492959294,
+            "t_critical": 1.959963984540054,
+            "upper": 7.459128925919058
+          }
+        }
+      ],
+      "run": {
+        "total_records": 20,
+        "filtered_records": 20,
+        "null_records": 0
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}
