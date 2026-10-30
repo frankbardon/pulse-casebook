@@ -1,0 +1,79 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "mean_change": 0.75,
+        "region": "North"
+      },
+      {
+        "mean_change": -1,
+        "region": "South"
+      }
+    ],
+    "metadata": {
+      "total_rows": 12,
+      "filtered_rows": 12,
+      "cohort_file": "s.pulse"
+    },
+    "components": {
+      "aggregations": [
+        {
+          "label": "mean_change",
+          "n": 9,
+          "n_null": 3,
+          "groups": [
+            {
+              "group_key": [
+                "North"
+              ],
+              "n": 4,
+              "n_null": 2,
+              "operator": {
+                "sum": 3
+              }
+            },
+            {
+              "group_key": [
+                "South"
+              ],
+              "n": 5,
+              "n_null": 1,
+              "operator": {
+                "sum": -5
+              }
+            }
+          ]
+        }
+      ],
+      "groupers": [
+        {
+          "field": "region",
+          "total_n": 12,
+          "operator": {
+            "buckets": [
+              {
+                "count": 6,
+                "key": "North",
+                "label": "North"
+              },
+              {
+                "count": 6,
+                "key": "South",
+                "label": "South"
+              }
+            ],
+            "dict_size": 2
+          }
+        }
+      ],
+      "run": {
+        "total_records": 12,
+        "filtered_records": 12,
+        "null_records": 3
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

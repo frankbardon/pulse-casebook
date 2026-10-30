@@ -1,0 +1,1 @@
+{"cohort":{"filename":"d.pulse"},"groups":[{"type":"GROUP_DATE","field":"day","params":{"component":"day_of_week"}}],"aggregations":[{"type":"AGG_SUM","field":"sales","label":"total"}],"windows":[{"type":"WIN_ROW_NUMBER","label":"pos","order_by":[{"field":"day"}]}]}

@@ -1,0 +1,191 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "day": "Monday",
+        "pos": 1,
+        "total": 1
+      },
+      {
+        "day": "Tuesday",
+        "pos": 2,
+        "total": 2
+      },
+      {
+        "day": "Wednesday",
+        "pos": 3,
+        "total": 3
+      },
+      {
+        "day": "Thursday",
+        "pos": 4,
+        "total": 4
+      },
+      {
+        "day": "Friday",
+        "pos": 5,
+        "total": 5
+      },
+      {
+        "day": "Saturday",
+        "pos": 6,
+        "total": 6
+      },
+      {
+        "day": "Sunday",
+        "pos": 7,
+        "total": 7
+      }
+    ],
+    "metadata": {
+      "total_rows": 7,
+      "filtered_rows": 7,
+      "cohort_file": "d.pulse"
+    },
+    "components": {
+      "aggregations": [
+        {
+          "label": "total",
+          "n": 7,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "Monday"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "sum": 1
+              }
+            },
+            {
+              "group_key": [
+                "Tuesday"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "sum": 2
+              }
+            },
+            {
+              "group_key": [
+                "Wednesday"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "sum": 3
+              }
+            },
+            {
+              "group_key": [
+                "Thursday"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "sum": 4
+              }
+            },
+            {
+              "group_key": [
+                "Friday"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "sum": 5
+              }
+            },
+            {
+              "group_key": [
+                "Saturday"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "sum": 6
+              }
+            },
+            {
+              "group_key": [
+                "Sunday"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "sum": 7
+              }
+            }
+          ]
+        }
+      ],
+      "groupers": [
+        {
+          "field": "day",
+          "total_n": 7,
+          "operator": {
+            "buckets": [
+              {
+                "count": 1,
+                "key": "Monday",
+                "period_end": "",
+                "period_start": ""
+              },
+              {
+                "count": 1,
+                "key": "Tuesday",
+                "period_end": "",
+                "period_start": ""
+              },
+              {
+                "count": 1,
+                "key": "Wednesday",
+                "period_end": "",
+                "period_start": ""
+              },
+              {
+                "count": 1,
+                "key": "Thursday",
+                "period_end": "",
+                "period_start": ""
+              },
+              {
+                "count": 1,
+                "key": "Friday",
+                "period_end": "",
+                "period_start": ""
+              },
+              {
+                "count": 1,
+                "key": "Saturday",
+                "period_end": "",
+                "period_start": ""
+              },
+              {
+                "count": 1,
+                "key": "Sunday",
+                "period_end": "",
+                "period_start": ""
+              }
+            ],
+            "granularity": "day_of_week",
+            "n_buckets": 7,
+            "range_end": "",
+            "range_start": ""
+          }
+        }
+      ],
+      "run": {
+        "total_records": 7,
+        "filtered_records": 7,
+        "null_records": 0
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

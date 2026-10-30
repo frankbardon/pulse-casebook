@@ -48,9 +48,9 @@ input[type=range] { width: 100%; accent-color: var(--teal); }
 </style>
 
 <main class="wrap">
-  <div class="eyebrow">Pulse Anatomy · film 7 · narrated</div>
+  <div class="eyebrow">film 11 of the 23-film Pulse Anatomy series · narrated</div>
   <h1><span>Windows</span>, in depth</h1>
-  <p class="intro">Windows give every row a value read from its neighbours. This film covers partitions, ordering and frames, then lag and lead, changes, running and moving averages, exponential smoothing and ranks. It also shows windows over aggregated rows and how to keep the top N per group.</p>
+  <p class="intro">Windows give every row a value read from its neighbours. This film covers partitions, ordering and frames, then lag and lead, changes, running and moving averages, exponential smoothing, carry-over, ranks and shares. It shows windows over aggregated rows, windows-first requests where an aggregation reads a window column, and how to keep the top N per group.</p>
 
   <div class="screen"><canvas id="film" width="1280" height="720" aria-label="Animated film explaining Pulse windows"></canvas>
     <button class="bigplay" id="bigplay" hidden><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2 L14 8 L4 14 Z"/></svg>Play with narration</button>
@@ -66,7 +66,7 @@ input[type=range] { width: 100%; accent-color: var(--teal); }
   </div>
 
   <ol class="chapters" id="chapters"></ol>
-  <p class="note">The cohorts, samples and figures are illustrative. Operator names, parameters, formulas, null rules and warnings follow the Pulse source and skill pack. Pulse adds windows over time; your instance's manifest lists the ones it offers.</p>
+  <p class="note">The cohorts are illustrative. Every figure on screen comes from a recorded Pulse v1.0.0-alpha.33 run in this film's data folder. Operator names, parameters, formulas, null rules and error codes follow the Pulse skill pack and code. Pulse adds windows over time; your instance's manifest lists the ones it offers.</p>
 </main>
 
 <script src="../kit/film-kit.js"></script>

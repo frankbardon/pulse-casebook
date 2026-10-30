@@ -1,0 +1,176 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "chg": null,
+        "cum": 32,
+        "date": "2026-01",
+        "total": 32
+      },
+      {
+        "chg": -0.1875,
+        "cum": 58,
+        "date": "2026-02",
+        "total": 26
+      },
+      {
+        "chg": 1.1538461538461537,
+        "cum": 114,
+        "date": "2026-03",
+        "total": 56
+      },
+      {
+        "chg": -0.44642857142857145,
+        "cum": 145,
+        "date": "2026-04",
+        "total": 31
+      },
+      {
+        "chg": 1.4838709677419355,
+        "cum": 222,
+        "date": "2026-05",
+        "total": 77
+      },
+      {
+        "chg": 0.07792207792207792,
+        "cum": 305,
+        "date": "2026-06",
+        "total": 83
+      }
+    ],
+    "metadata": {
+      "total_rows": 12,
+      "filtered_rows": 12,
+      "cohort_file": "s.pulse"
+    },
+    "components": {
+      "aggregations": [
+        {
+          "label": "total",
+          "n": 11,
+          "n_null": 1,
+          "groups": [
+            {
+              "group_key": [
+                "2026-01"
+              ],
+              "n": 2,
+              "n_null": 0,
+              "operator": {
+                "sum": 32
+              }
+            },
+            {
+              "group_key": [
+                "2026-02"
+              ],
+              "n": 2,
+              "n_null": 0,
+              "operator": {
+                "sum": 26
+              }
+            },
+            {
+              "group_key": [
+                "2026-03"
+              ],
+              "n": 2,
+              "n_null": 0,
+              "operator": {
+                "sum": 56
+              }
+            },
+            {
+              "group_key": [
+                "2026-04"
+              ],
+              "n": 1,
+              "n_null": 1,
+              "operator": {
+                "sum": 31
+              }
+            },
+            {
+              "group_key": [
+                "2026-05"
+              ],
+              "n": 2,
+              "n_null": 0,
+              "operator": {
+                "sum": 77
+              }
+            },
+            {
+              "group_key": [
+                "2026-06"
+              ],
+              "n": 2,
+              "n_null": 0,
+              "operator": {
+                "sum": 83
+              }
+            }
+          ]
+        }
+      ],
+      "groupers": [
+        {
+          "field": "date",
+          "total_n": 12,
+          "operator": {
+            "buckets": [
+              {
+                "count": 2,
+                "key": "2026-01",
+                "period_end": "2026-01-31",
+                "period_start": "2026-01-01"
+              },
+              {
+                "count": 2,
+                "key": "2026-02",
+                "period_end": "2026-02-28",
+                "period_start": "2026-02-01"
+              },
+              {
+                "count": 2,
+                "key": "2026-03",
+                "period_end": "2026-03-31",
+                "period_start": "2026-03-01"
+              },
+              {
+                "count": 2,
+                "key": "2026-04",
+                "period_end": "2026-04-30",
+                "period_start": "2026-04-01"
+              },
+              {
+                "count": 2,
+                "key": "2026-05",
+                "period_end": "2026-05-31",
+                "period_start": "2026-05-01"
+              },
+              {
+                "count": 2,
+                "key": "2026-06",
+                "period_end": "2026-06-30",
+                "period_start": "2026-06-01"
+              }
+            ],
+            "granularity": "month",
+            "n_buckets": 6,
+            "range_end": "2026-06-30",
+            "range_start": "2026-01-01"
+          }
+        }
+      ],
+      "run": {
+        "total_records": 12,
+        "filtered_records": 12,
+        "null_records": 1
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

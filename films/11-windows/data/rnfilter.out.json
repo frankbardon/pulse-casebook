@@ -1,0 +1,15 @@
+{
+  "format_version": "1.1",
+  "data": null,
+  "errors": [
+    {
+      "code": "SERVICE_VALIDATION",
+      "message": "filter references unknown field: rn",
+      "details": {
+        "field": "rn",
+        "filter": "FILTER_RANGE"
+      }
+    }
+  ],
+  "warnings": []
+}

@@ -1,0 +1,79 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "target": "ranked.pulse",
+    "records": 12,
+    "derived_columns": [
+      "rn"
+    ],
+    "warnings": [
+      {
+        "code": "PULSE_FIELD_DESCRIPTION_LOW_QUALITY",
+        "message": "field region has a low-quality description",
+        "details": {
+          "description": "",
+          "field": "region"
+        }
+      },
+      {
+        "code": "PULSE_FIELD_DESCRIPTION_LOW_QUALITY",
+        "message": "field month has a low-quality description",
+        "details": {
+          "description": "",
+          "field": "month"
+        }
+      },
+      {
+        "code": "PULSE_FIELD_DESCRIPTION_LOW_QUALITY",
+        "message": "field date has a low-quality description",
+        "details": {
+          "description": "",
+          "field": "date"
+        }
+      },
+      {
+        "code": "PULSE_FIELD_DESCRIPTION_LOW_QUALITY",
+        "message": "field sales has a low-quality description",
+        "details": {
+          "description": "",
+          "field": "sales"
+        }
+      }
+    ]
+  },
+  "errors": [],
+  "warnings": [
+    {
+      "code": "PULSE_FIELD_DESCRIPTION_LOW_QUALITY",
+      "message": "field region has a low-quality description",
+      "details": {
+        "description": "",
+        "field": "region"
+      }
+    },
+    {
+      "code": "PULSE_FIELD_DESCRIPTION_LOW_QUALITY",
+      "message": "field month has a low-quality description",
+      "details": {
+        "description": "",
+        "field": "month"
+      }
+    },
+    {
+      "code": "PULSE_FIELD_DESCRIPTION_LOW_QUALITY",
+      "message": "field date has a low-quality description",
+      "details": {
+        "description": "",
+        "field": "date"
+      }
+    },
+    {
+      "code": "PULSE_FIELD_DESCRIPTION_LOW_QUALITY",
+      "message": "field sales has a low-quality description",
+      "details": {
+        "description": "",
+        "field": "sales"
+      }
+    }
+  ]
+}

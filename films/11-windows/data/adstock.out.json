@@ -1,0 +1,16 @@
+{
+  "format_version": "1.1",
+  "data": null,
+  "errors": [
+    {
+      "code": "PULSE_WINDOW_INVALID",
+      "message": "window[0]: unknown window type WIN_ADSTOCK (renamed to WIN_DISTRIBUTED_LAG)",
+      "details": {
+        "renamed_to": "WIN_DISTRIBUTED_LAG",
+        "type": "WIN_ADSTOCK",
+        "window_index": 0
+      }
+    }
+  ],
+  "warnings": []
+}

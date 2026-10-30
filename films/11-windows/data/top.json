@@ -1,0 +1,1 @@
+{"cohort":{"filename":"ranked.pulse"},"filterers":[{"type":"FILTER_RANGE","field":"rn","values":["1","2"]}],"groups":[{"type":"GROUP_CATEGORY","field":"region"},{"type":"GROUP_CATEGORY","field":"month"}],"aggregations":[{"type":"AGG_SUM","field":"sales","label":"sales"}]}

@@ -1,0 +1,16 @@
+{
+  "format_version": "1.1",
+  "data": null,
+  "errors": [
+    {
+      "code": "PROCESSING_CONFIG",
+      "message": "windows[0]: WIN_DELTA has no weighted form and carries no slot weight; drop the request weight (an instance default is skipped on it)",
+      "details": {
+        "field": "month",
+        "operator": "WIN_DELTA",
+        "slot": "windows[0]"
+      }
+    }
+  ],
+  "warnings": []
+}

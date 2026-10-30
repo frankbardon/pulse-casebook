@@ -1,0 +1,146 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "month": "5",
+        "region": "North",
+        "sales": 48
+      },
+      {
+        "month": "6",
+        "region": "North",
+        "sales": 48
+      },
+      {
+        "month": "4",
+        "region": "South",
+        "sales": 31
+      },
+      {
+        "month": "6",
+        "region": "South",
+        "sales": 35
+      }
+    ],
+    "metadata": {
+      "total_rows": 12,
+      "filtered_rows": 4,
+      "cohort_file": "ranked.pulse"
+    },
+    "components": {
+      "aggregations": [
+        {
+          "label": "sales",
+          "n": 4,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "North",
+                "5"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "sum": 48
+              }
+            },
+            {
+              "group_key": [
+                "North",
+                "6"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "sum": 48
+              }
+            },
+            {
+              "group_key": [
+                "South",
+                "4"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "sum": 31
+              }
+            },
+            {
+              "group_key": [
+                "South",
+                "6"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "sum": 35
+              }
+            }
+          ]
+        }
+      ],
+      "groupers": [
+        {
+          "field": "region",
+          "total_n": 4,
+          "operator": {
+            "buckets": [
+              {
+                "count": 2,
+                "key": "North",
+                "label": "North"
+              },
+              {
+                "count": 2,
+                "key": "South",
+                "label": "South"
+              }
+            ],
+            "dict_size": 2
+          }
+        },
+        {
+          "field": "month",
+          "total_n": 4,
+          "operator": {
+            "buckets": [
+              {
+                "count": 1,
+                "key": "4",
+                "label": "4"
+              },
+              {
+                "count": 1,
+                "key": "5",
+                "label": "5"
+              },
+              {
+                "count": 2,
+                "key": "6",
+                "label": "6"
+              }
+            ],
+            "dict_size": 0
+          }
+        }
+      ],
+      "filterers": [
+        {
+          "n_in": 12,
+          "n_out": 4,
+          "n_null_input": 0
+        }
+      ],
+      "run": {
+        "total_records": 12,
+        "filtered_records": 4,
+        "null_records": 0
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}
