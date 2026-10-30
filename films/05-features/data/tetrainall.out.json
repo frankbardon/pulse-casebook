@@ -1,0 +1,47 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "mean_train": 0.25,
+        "n_train": 168
+      }
+    ],
+    "metadata": {
+      "total_rows": 240,
+      "filtered_rows": 168,
+      "cohort_file": "f.pulse"
+    },
+    "components": {
+      "aggregations": [
+        {
+          "label": "n_train",
+          "n": 168,
+          "n_null": 0
+        },
+        {
+          "label": "mean_train",
+          "n": 168,
+          "n_null": 0,
+          "operator": {
+            "sum": 42
+          }
+        }
+      ],
+      "filterers": [
+        {
+          "n_in": 240,
+          "n_out": 168,
+          "n_null_input": 0
+        }
+      ],
+      "run": {
+        "total_records": 240,
+        "filtered_records": 168,
+        "null_records": 0
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

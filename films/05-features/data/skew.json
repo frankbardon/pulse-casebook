@@ -1,0 +1,3 @@
+{"cohort":{"filename":"f.pulse"},
+"features":[{"type":"FEAT_SQRT","field":"income"},{"type":"FEAT_LOG","field":"income"}],
+"aggregations":[{"type":"AGG_SKEWNESS","field":"income","label":"income"},{"type":"AGG_SKEWNESS","field":"SQRT_income","label":"SQRT_income"},{"type":"AGG_SKEWNESS","field":"LOG_income","label":"LOG_income"}]}

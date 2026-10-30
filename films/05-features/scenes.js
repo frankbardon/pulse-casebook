@@ -1,5 +1,7 @@
-/* Pulse Features: film 3 of the Pulse Anatomy series. No operator count is stated anywhere:
- * Pulse adds feature operators over time, and the instance manifest is the authority. */
+/* Pulse Features: film 5 of the 23-film Pulse Anatomy series. No operator count is stated anywhere:
+ * Pulse adds feature operators over time, and the instance manifest is the authority.
+ * Every figure on a result card comes from a recorded Pulse v1.0.0-alpha.33 run in data/
+ * (see data/README.md); the request named beside each constant below produced it. */
 (() => {
 const { C } = PulseFilm;
 const { clamp, seg, eo, eio, lerp, R, T, M, CAP, Ln, A, dot, arrow, rng, chips, measure } = PulseFilm.h;
@@ -51,6 +53,7 @@ function sWhere(t) {
     [['filterers', 'FILTER_INCLUDE income_band ∈ {3}'], ['groups', 'GROUP_CATEGORY income_band'], ['every later stage', 'reads them like any field']].forEach(([a, b], i) => A(seg(t, 4.0 + i * 0.35, 4.3 + i * 0.35), () => {
       arrow(712, 330 + i * 38, 740, 330 + i * 38, { stroke: C.teal, head: 6 }); M(a, 752, 334 + i * 38, { size: 13, color: C.ink }); M(b, 1196, 334 + i * 38, { size: 12, align: 'right' });
     }));
+    A(seg(t, 4.8, 5.2), () => M('attributes: after the filters, by default · ATTR_PREVIOUS_STATE: before', 702, 438, { size: 11, color: C.muted }));
   });
   A(seg(t, 6.2, 6.6), () => {
     R(64, 478, 1152, 56, { fill: C.panel2, stroke: C.rule });
@@ -93,15 +96,18 @@ function sCost(t) {
   laneBox(Y2, C.amber, t < 4.9 ? 'learn' : 'emit');
   for (let k = 0; k < 5; k++) { const h = Math.min(learned, 14) * [1.6, 2.2, 1.1, 2.6, 1.4][k] * 0.9; R(580 + k * 26, Y2 + 30 - h, 16, h, { fill: C.amber, r: 1 }); }
   A(seg(t, 4.9, 5.3) * (1 - seg(t, 6.2, 6.6)), () => { ctx().beginPath(); ctx().arc(360, Y2 + 44, 24, Math.PI * 0.15, Math.PI * 1.15, true); ctx().strokeStyle = C.amber; ctx().lineWidth = 2; ctx().stroke(); M('rewind', 396, Y2 + 50, { size: 12.5, color: C.amber, align: 'center' }); });
-  A(seg(t, 7.2, 7.6), () => { R(64, 528, 1152, 50, { fill: C.panel2, stroke: C.rule }); T('Both classes can stream: a global pass rewinds the iterator, so a file-backed cohort is read twice.', 86, 559, { size: 15 }); });
+  A(seg(t, 7.2, 7.6), () => { R(64, 512, 1152, 84, { fill: C.panel2, stroke: C.rule }); T('Both classes can stream: a global pass rewinds the iterator, so a file-backed cohort is read twice.', 86, 540, { size: 15 }); });
+  // where.predict.json: streamable false, and the reason predict gives
+  A(seg(t, 9.0, 9.4), () => { M('unless its pre-pass reads an earlier feature\'s column: then it buffers', 86, 566, { size: 12.5, color: C.amber });
+    M('predict · streamable_reasons: "feature FEAT_BUCKETIZE cuts quantiles of a column an earlier feature derives"', 86, 586, { size: 11.5 }); });
 }
 
 /* ---------- 3. taming skew ---------- */
+// The 240 incomes of data/f.csv; skewness from data/skew.out.json (AGG_SKEWNESS).
+const INCOME = [120.27,40.99,157.09,58.16,162.44,133.59,59.77,121.61,26.54,62.96,26.24,24.95,32.19,45.99,40.83,36.08,23.52,39.57,38.58,23.96,32.33,78.22,78.63,53.28,22.52,69.07,44.47,74.43,109.06,53.73,153.39,61.54,40.1,59.42,52.16,47.38,42.78,27.99,186.3,73.12,59.08,79.64,121.49,53.15,12.67,74.66,59.37,60.16,77.43,55.7,114.35,24.71,41.22,187.56,155.27,78.76,31.71,33.76,102.8,80.71,98.39,31.4,143.47,110.48,31.91,66.52,74.12,17.35,56.64,64.74,60.22,24.01,36.27,94.89,30.69,21.23,87.49,69.26,19.38,9.24,74.57,34.28,181.36,18.17,71.1,34.21,50.1,62.66,49.35,104.73,26.09,62.82,26.1,181.25,80.6,74.36,132.09,36.24,28.46,15.66,100.05,48.73,22.76,127.01,22.53,166.52,22.59,36.91,51.52,23.69,106.87,42.13,17.36,108.2,52.78,22.26,55.86,22.21,20.33,18.48,118.24,8.92,28.17,61.93,87.11,76.6,100.35,50.9,50.78,90.98,65.3,60.49,114.51,216.3,12.6,30.59,86.09,68.81,28.43,28.3,85.1,31.96,116.51,107.51,60.59,55.97,28.26,68.76,54.28,85.16,36.58,32.92,43.52,114.53,75.48,69.09,167.48,113.45,45.59,103.32,103.03,244.28,43.91,67.92,325.93,145.92,71.54,45.8,93.19,20.63,23.02,58.93,48.09,140.76,105.87,23.9,111.06,13.36,19.77,122.79,31.72,24.68,54.44,31.43,32.99,50.5,97.27,21.2,50.77,66.64,105.74,48.64,44.67,63.92,64.93,31.94,68.17,35.59,83.64,78.05,67.73,142.9,13.07,28.49,70.5,26.25,35.03,56.31,159.1,43.91,70.05,96.15,123.84,82.91,91.72,90.61,32.11,55.79,92.32,66.24,81.4,71.9,35.42,104.19,71.66,150.54,67.0,42.03,120.19,80.37,11.07,43.75,27.58,60.34,47.09,14.33,26.65,27.73,17.85,48.2];
 const SK = (() => {
-  const r = rng(31), g = gaussOf(r), xs = Array.from({ length: 600 }, () => Math.exp(Math.log(48) + 0.75 * g()));
-  const hist = f => { const v = xs.map(f), lo = Math.min(...v), hi = Math.max(...v), b = new Array(26).fill(0); v.forEach(x => b[Math.min(25, Math.floor((x - lo) / (hi - lo) * 26))]++); const m = Math.max(...b); return { b: b.map(x => x / m), lo, hi }; };
-  const skew = f => { const v = xs.map(f), n = v.length, m = v.reduce((a, b) => a + b, 0) / n, s2 = v.reduce((a, b) => a + (b - m) ** 2, 0) / n; return v.reduce((a, b) => a + (b - m) ** 3, 0) / n / Math.pow(s2, 1.5); };
-  return { raw: hist(x => x), sqrt: hist(Math.sqrt), log: hist(Math.log1p), sRaw: skew(x => x), sSqrt: skew(Math.sqrt), sLog: skew(Math.log1p) };
+  const hist = f => { const v = INCOME.map(f), lo = Math.min(...v), hi = Math.max(...v), b = new Array(26).fill(0); v.forEach(x => b[Math.min(25, Math.floor((x - lo) / (hi - lo) * 26))]++); const m = Math.max(...b); return { b: b.map(x => x / m), lo, hi }; };
+  return { raw: hist(x => x), sqrt: hist(Math.sqrt), log: hist(Math.log1p), sRaw: 1.6920396432939329, sSqrt: 0.6621070019481946, sLog: -0.1409214524749992 };
 })();
 function sSkew(t) {
   const u1 = eio(seg(t, 3.6, 4.6)), u2 = eio(seg(t, 6.1, 7.1));
@@ -115,6 +121,7 @@ function sSkew(t) {
   const name = u2 > 0.5 ? 'LOG_income = log1p(income)' : u1 > 0.5 ? 'SQRT_income = sqrt(income)' : 'income (raw)';
   const sk = u2 > 0.5 ? SK.sLog : u1 > 0.5 ? SK.sSqrt : SK.sRaw;
   M(name, X, 160, { size: 15, color: C.ink }); M('skewness ' + sk.toFixed(2), X + 26 * BW, 160, { size: 15, align: 'right', color: u2 > 0.5 ? C.violet : u1 > 0.5 ? C.amber : C.teal });
+  M('AGG_SKEWNESS over the 240-record cohort', X + 26 * BW, 184, { size: 11.5, align: 'right' });
   A(seg(t, 3.4, 3.8), () => {
     card(720, 150, 496, 150, C.amber);
     M('FEAT_SQRT', 742, 182, { size: 14, color: C.amber, weight: 600 }); M('sqrt(x)', 850, 182, { size: 14, color: C.ink });
@@ -126,7 +133,7 @@ function sSkew(t) {
     M('FEAT_LOG', 742, 352, { size: 14, color: C.violet, weight: 600 }); M('log1p(x) = ln(1 + x)', 850, 352, { size: 14, color: C.ink });
     M('stronger: the standard skew-tamer', 742, 384, { size: 12.5 });
     M('x = 0      →  0, not −∞', 742, 414, { size: 13, color: C.ink }); M('x ≤ −1     →  null, the rest keeps going', 742, 440, { size: 13, color: C.ink });
-    M('decimal128 is read as an f64 approximation', 742, 470, { size: 12 });
+    M('decimal128 reads as its float64 echo · packed_bool as 0/1', 742, 470, { size: 12 });
   });
 }
 
@@ -161,7 +168,8 @@ function sBucket(t) {
 /* ---------- 5. categories ---------- */
 const CATROWS = ['North', 'South', 'East', null, 'West', 'North'];
 const DICT = ['North', 'South', 'East', 'West', 'Central'];
-const FREQ = { North: 30, South: 25, East: 25, West: 20, Central: 0 };
+// data/cat.out.json: region counts and FREQ_region over the 240-record cohort
+const FREQ = { North: [72, 0.3], South: [60, 0.25], East: [60, 0.25], West: [48, 0.2] };
 function sCategories(t) {
   CAP('FEAT_ONE_HOT region', 64, 130, { color: C.violet });
   T('region', 64, 170, { size: 14, weight: 600 }); Ln([[64, 182], [580, 182]]);
@@ -178,73 +186,101 @@ function sCategories(t) {
     M('null → all zeros', 150, 460, { size: 12.5, color: C.coral });
     M('"New York" → region_New_York', 150, 486, { size: 12.5 });
   });
+  A(seg(t, 4.6, 5.0), () => {
+    R(64, 506, 530, 40, { fill: C.panel2, stroke: C.violet });
+    M('member · packed_bool  →  member_0 · member_1', 82, 531, { size: 13, color: C.violet });
+  });
   // frequency
   A(seg(t, 6.0, 6.4), () => {
     CAP('FEAT_FREQUENCY_ENCODE region', 680, 130, { color: C.amber }); M('count ÷ non-null total, over the whole cohort', 680, 152, { size: 12.5 });
-    const tot = 100;
+    const tot = 240;
     ['North', 'South', 'East', 'West'].forEach((c, i) => {
-      const y = 180 + i * 52, w = FREQ[c] / tot * 900 * eo(seg(t, 6.3 + i * 0.15, 7.0 + i * 0.15));
+      const y = 180 + i * 52, w = FREQ[c][0] / tot * 900 * eo(seg(t, 6.3 + i * 0.15, 7.0 + i * 0.15));
       T(c, 680, y + 22, { size: 14 }); R(760, y, w, 30, { fill: C.amberS, stroke: C.amber, r: 3 });
-      A(seg(t, 7.0 + i * 0.15, 7.3 + i * 0.15), () => { M(FREQ[c] + ' of 100', 760 + w + 10, y + 20, { size: 12.5 }); M((FREQ[c] / tot).toFixed(2), 1216, y + 20, { size: 15, color: C.amber, align: 'right', weight: 600 }); });
+      A(seg(t, 7.0 + i * 0.15, 7.3 + i * 0.15), () => { M(FREQ[c][0] + ' of 240', 760 + w + 10, y + 20, { size: 12.5 }); M(FREQ[c][1].toFixed(2), 1216, y + 20, { size: 15, color: C.amber, align: 'right', weight: 600 }); });
     });
     A(seg(t, 7.8, 8.2), () => { M('FREQ_region · values in (0, 1] · null row → null', 680, 400, { size: 12.5, color: C.ink }); M('counted before filters: shares of the whole cohort', 680, 424, { size: 12.5 }); });
   });
 }
 
 /* ---------- 6. target encoding ---------- */
-const TE = [['Nurse', 40, 0.32], ['Engineer', 55, 0.18], ['Teacher', 30, 0.25], ['Artist', 4, 0.75], ['Pilot', 2, 0.0]];
-const GM = TE.reduce((a, [, n, m]) => a + n * m, 0) / TE.reduce((a, [, n]) => a + n, 0);
+// data/tetrain.out.json: training rows (split == 0) per occupation, n and mean churn;
+// data/tetrainall.out.json: the training mean. data/te.out.json holds the encoded values at
+// smoothing 0 and 10, which the formula below reproduces exactly.
+const TE = [['Nurse', 50, 0.26], ['Engineer', 59, 0.1864406779661017], ['Teacher', 44, 0.20454545454545456], ['Artist', 10, 0.9], ['Pilot', 5, 0]];
+const GM = 0.25;
 function sTarget(t) {
-  CAP('FEAT_TARGET_ENCODE occupation · params.target churned · params.smoothing s', 64, 130, { color: C.violet });
+  CAP('FEAT_TARGET_ENCODE occupation · target churned · smoothing s · fit_on "split == 0"', 64, 130, { color: C.violet });
   const s = 10 * eio(seg(t, 3.4, 5.6));
-  const X = 220, W = 560, sx = v => X + v * W;
-  A(seg(t, 0.4, 0.8), () => { Ln([[sx(GM), 156], [sx(GM), 446]], { stroke: C.amber, dash: [4, 4], lw: 1.5 }); M('cohort mean ' + GM.toFixed(3), sx(GM) + 6, 156, { size: 12, color: C.amber }); });
+  const X = 230, W = 560, sx = v => X + v * W;
+  A(seg(t, 0.4, 0.8), () => { Ln([[sx(GM), 156], [sx(GM), 446]], { stroke: C.amber, dash: [4, 4], lw: 1.5 }); M('training mean ' + GM.toFixed(3), sx(GM) + 6, 156, { size: 12, color: C.amber }); M('train n', 160, 166, { size: 11.5 }); });
   TE.forEach(([name, n, m], i) => {
     const y = 190 + i * 54; const enc = (n * m + s * GM) / (n + s);
     A(seg(t, 0.6 + i * 0.15, 0.9 + i * 0.15), () => {
-      T(name, 64, y + 6, { size: 15 }); M('n ' + n, 160, y + 6, { size: 12.5 });
+      T(name, 64, y + 6, { size: 15 }); M(String(n), 160, y + 6, { size: 12.5 });
       Ln([[X, y], [X + W, y]], { stroke: C.rule });
       dot(sx(m), y, 5, C.faint);
       if (s > 0.05) Ln([[sx(m), y], [sx(enc), y]], { stroke: C.violet, lw: 2 });
       dot(sx(enc), y, 8, C.violet);
-      M(enc.toFixed(3), X + W + 24, y + 5, { size: 14, color: C.ink });
+      M(enc.toFixed(3), X + W + 14, y + 5, { size: 14, color: C.ink });
     });
   });
-  M('s = ' + s.toFixed(1), X + W + 24, 166, { size: 13, color: C.violet });
-  A(seg(t, 2.8, 3.2), () => { card(64, 470, 760, 52); M('encoded = (n · mean_cat + s · mean_global) / (n + s)', 86, 502, { size: 14.5, color: C.ink }); });
+  M('s = ' + s.toFixed(1), X + W + 14, 166, { size: 13, color: C.violet });
+  A(seg(t, 2.8, 3.2), () => { card(64, 470, 790, 52); M('encoded = (n · mean_cat + s · mean_train) / (n + s) · training rows only', 82, 502, { size: 13.5, color: C.ink }); });
+  // the trap: no fit_on (data/leaky.predict.json)
   A(seg(t, 6.6, 7.0), () => {
-    R(880, 150, 336, 372, { fill: C.coralS, stroke: C.coral, lw: 1.6 });
-    M('PULSE_FEAT_TARGET_LEAKAGE_RISK', 900, 182, { size: 13, color: C.coral, weight: 600 });
-    ['Every encoded mean uses every', 'record\'s target: test rows and', 'the record\'s own included.', '', 'Fires on every target encoder.', 'An error under --strict.'].forEach((l, i) => T(l, 900, 220 + i * 26, { size: 14.5 }));
+    R(880, 150, 336, 176, { fill: C.coralS, stroke: C.coral, lw: 1.6 });
+    M('without fit_on', 900, 176, { size: 12, color: C.coral });
+    M('PULSE_FEAT_TARGET_LEAKAGE_RISK', 900, 198, { size: 12.5, color: C.coral, weight: 600 });
+    ['Every mean averages every record\'s', 'outcome: test rows and its own.', 'A split alone changes no value.', 'Strict mode refuses it.'].forEach((l, i) => T(l, 900, 228 + i * 24, { size: 14 }));
   });
+  // the fix (data/fiton.predict.json: no leakage warning)
   A(seg(t, 9.0, 9.4), () => {
-    Ln([[900, 384], [1196, 384]], { stroke: C.coral });
-    ['A prior split does not silence it.', 'Train-only means: average the', 'target by category on split = 0', 'in a separate request; map back.'].forEach((l, i) => T(l, 900, 412 + i * 26, { size: 14, color: i ? C.ink : C.coral }));
+    R(880, 340, 336, 182, { fill: C.violetS, stroke: C.violet, lw: 1.6 });
+    M('fit_on: "split == 0"', 900, 368, { size: 13.5, color: C.violet, weight: 600 });
+    ['only training rows feed the means', 'every row is still encoded', 'unseen category → training mean', 'no leakage warning'].forEach((l, i) => T(l, 900, 396 + i * 22, { size: 13.5, color: i === 3 ? C.violet : C.ink }));
+  });
+  A(seg(t, 11.4, 11.8), () => {
+    Ln([[900, 478], [1196, 478]], { stroke: C.violet });
+    M('folds: 5 · rng_seed: 7', 900, 498, { size: 12.5, color: C.violet }); M('training rows encoded out-of-fold', 900, 516, { size: 12 });
   });
 }
 
 /* ---------- 7. dates ---------- */
+// data/dates.out.json: one instant, 2024-03-15T02:30:00Z, read in each row's own zone (tz_field)
+const ZROWS = [['America/New_York', 14, 4, 22], ['Europe/London', 15, 5, 2], ['Asia/Tokyo', 15, 5, 11], [null, null, null, null]];
 function sDates(t) {
   CAP('FEAT_DATE_FEATURES signup', 64, 130, { color: C.violet });
   A(seg(t, 0.3, 0.7), () => { R(64, 160, 300, 64, { fill: C.panel2, stroke: C.amber }); M('signup · date', 84, 184, { size: 12, color: C.amber }); M('2024-03-14', 84, 210, { size: 18, color: C.ink }); });
   const parts = [['signup_year', '2024'], ['signup_month', '3'], ['signup_day', '14'], ['signup_dow', '4'], ['signup_quarter', '1']];
   parts.forEach(([k, v], i) => {
     const u = eo(seg(t, 0.9 + i * 0.25, 1.5 + i * 0.25));
-    A(u, () => { const x = lerp(220, 420 + i * 160, u), y = lerp(192, 192, u); R(x, y - 32, 148, 64, { fill: C.violetS, stroke: C.violet }); M(k, x + 12, y - 10, { size: 11.5, color: C.violet }); M(v, x + 12, y + 18, { size: 18, color: C.ink }); });
+    A(u, () => { const x = lerp(220, 420 + i * 160, u), y = 192; R(x, y - 32, 148, 64, { fill: C.violetS, stroke: C.violet }); M(k, x + 12, y - 10, { size: 11.5, color: C.violet }); M(v, x + 12, y + 18, { size: 18, color: C.ink }); });
   });
   A(seg(t, 3.0, 3.4), () => {
-    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-    days.forEach((d, i) => { const on = i === 4; R(420 + i * 72, 260, 64, 46, { fill: on ? C.violetS : C.panel, stroke: on ? C.violet : C.rule }); M(String(i), 452 + i * 72, 280, { size: 13, align: 'center', color: on ? C.violet : C.muted }); M(d, 452 + i * 72, 298, { size: 12, align: 'center', color: on ? C.ink : C.faint }); });
-    M('dow counts from 0 = Sunday, not ISO', 420, 330, { size: 12.5 });
+    const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    days.forEach((d, i) => { const on = i === 3; R(420 + i * 72, 244, 64, 46, { fill: on ? C.violetS : C.panel, stroke: on ? C.violet : C.rule }); M(String(i + 1), 452 + i * 72, 264, { size: 13, align: 'center', color: on ? C.violet : C.muted }); M(d, 452 + i * 72, 282, { size: 12, align: 'center', color: on ? C.ink : C.faint }); });
+    M('dow is ISO: 1 = Monday … 7 = Sunday, of the local day', 420, 312, { size: 12.5 });
   });
-  // zones
+  // per-row zones
   A(seg(t, 5.4, 5.8), () => {
-    CAP('A DATETIME IS READ ON THE LOCAL CLOCK', 64, 386, { color: C.amber });
-    R(64, 404, 380, 112, { fill: C.panel2, stroke: C.amber });
-    M('event · datetime', 84, 430, { size: 12, color: C.amber }); M('2024-03-15T02:30:00Z', 84, 458, { size: 17, color: C.ink }); M('tz America/New_York (UTC−4 in March)', 84, 488, { size: 12.5 });
-    arrow(452, 460, 500, 460, { stroke: C.amber, head: 7 });
-    [['event_year', '2024'], ['event_month', '3'], ['event_day', '14'], ['event_dow', '4'], ['event_quarter', '1'], ['event_hour', '22']].forEach(([k, v], i) => A(seg(t, 5.8 + i * 0.12, 6.1 + i * 0.12), () => { const x = 512 + i * 118; R(x, 428, 110, 64, { fill: C.violetS, stroke: k.endsWith('day') || k.endsWith('hour') ? C.amber : C.violet }); M(k, x + 10, 450, { size: 11, color: C.violet }); M(v, x + 10, 478, { size: 17, color: C.ink }); }));
-    A(seg(t, 6.8, 7.2), () => M('the hour column exists only for datetime · a plain date ignores zones', 512, 520, { size: 12.5 }));
+    CAP('A DATETIME IS READ ON THE LOCAL CLOCK · HERE, EACH ROW\'S OWN ZONE', 64, 350, { color: C.amber });
+    R(64, 366, 380, 132, { fill: C.panel2, stroke: C.amber });
+    M('event · datetime', 84, 392, { size: 12, color: C.amber }); M('2024-03-15T02:30:00Z', 84, 420, { size: 17, color: C.ink });
+    M('tz_field: "zone"', 84, 452, { size: 13, color: C.ink }); M('zone: a categorical of IANA names', 84, 478, { size: 12 });
+    arrow(452, 432, 492, 432, { stroke: C.amber, head: 7 });
+    const cx = [504, 712, 830, 948];
+    ['zone', 'event_day', 'event_dow', 'event_hour'].forEach((h, j) => M(h, cx[j], 386, { size: 11.5, color: j ? C.violet : C.amber }));
+    ZROWS.forEach((r, i) => A(seg(t, 5.8 + i * 0.25, 6.1 + i * 0.25), () => {
+      const y = 414 + i * 26;
+      M(r[0] == null ? 'null' : r[0], cx[0], y, { size: 13, color: r[0] == null ? C.coral : C.ink });
+      r.slice(1).forEach((v, j) => M(v == null ? 'null' : String(v), cx[j + 1], y, { size: 13, color: v == null ? C.coral : C.ink }));
+    }));
+    A(seg(t, 7.2, 7.6), () => M('null zone → every column null, never a UTC fallback', 504, 520, { size: 12, color: C.coral }));
+  });
+  A(seg(t, 8.6, 9.0), () => {
+    M('zone order: slot tz → tz_field → request time_zone_field → time_zone → Options.DefaultTimeZone → UTC', 64, 556, { size: 12 });
+    M('the hour column exists only for datetime · a plain date ignores zones', 64, 580, { size: 12 });
   });
 }
 
@@ -273,10 +309,10 @@ function sPoly(t) {
 }
 
 /* ---------- 9. train / test split ---------- */
-const SPLIT = (() => { const N = 60, cls = Array.from({ length: N }, (_, i) => (i * 7) % 10 < 7 ? 0 : 1);
-  const lab = new Array(N); [0, 1].forEach(c => { const idx = cls.map((v, i) => v === c ? i : -1).filter(i => i >= 0); const r = rng(42 + c * 7919); for (let i = idx.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [idx[i], idx[j]] = [idx[j], idx[i]]; }
-    const n = idx.length, a = Math.round(n * 0.7), b = Math.round(n * 0.85); idx.forEach((ri, k) => lab[ri] = k < a ? 0 : k < b ? 1 : 2); });
-  return { cls, lab }; })();
+// data/split.out.json: the split Pulse gave each of the 60 records of data/s.csv
+// (ratios [0.7, 0.15, 0.15], seed 42, stratify plan); plan is 7 Basic then 3 Pro per ten.
+const SPLIT = { cls: Array.from({ length: 60 }, (_, i) => (i * 7) % 10 < 7 ? 0 : 1),
+  lab: '000010000001100011002210200000002002000010100020000002002021'.split('').map(Number) };
 const SC = [C.teal, C.amber, C.violet];
 function sSplit(t) {
   CAP('FEAT_TRAIN_TEST_SPLIT · ratios [0.7, 0.15, 0.15] · seed 42 · stratify plan', 64, 130, { color: C.violet });
@@ -289,6 +325,7 @@ function sSplit(t) {
     });
   });
   A(seg(t, 0.6, 1.0), () => { R(64, 434, 16, 16, { fill: C.panel, stroke: C.muted, r: 3 }); M('plan Basic (70%)', 88, 447, { size: 12.5 }); R(240, 434, 16, 16, { fill: C.panel, stroke: C.muted, r: 8 }); M('plan Pro (30%)', 264, 447, { size: 12.5 }); });
+  A(seg(t, 3.0, 3.4), () => M('stratify takes a categorical or a packed_bool field', 64, 480, { size: 12.5, color: C.violet }));
   A(seg(t, 3.0, 3.4), () => {
     card(700, 160, 516, 200);
     [['0', 'train', C.teal], ['1', 'validation', C.amber], ['2', 'test', C.violet]].forEach(([k, n, c], i) => {
@@ -307,32 +344,41 @@ function sSplit(t) {
 }
 
 /* ---------- 10. a full pipeline ---------- */
+// data/pipe.json, checked by predict (data/pipe.predict.json): valid, no warnings,
+// streamable false for the two reasons quoted on screen.
 const PIPE = [['FEAT_TRAIN_TEST_SPLIT', 'ratios [0.8, 0.2] · seed 42', ['split']],
   ['FEAT_LOG income', 'label log_income', ['log_income']],
-  ['FEAT_BUCKETIZE log_income', 'quantiles 10', ['log_income_decile']],
+  ['FEAT_BUCKETIZE log_income', 'quantiles 10 · label log_income_decile', ['log_income_decile']],
   ['FEAT_ONE_HOT region', '', ['region_North', 'region_South', '…']],
-  ['FEAT_DATE_FEATURES signup_date', '', ['signup_date_year', '… _quarter']],
-  ['FEAT_TARGET_ENCODE occupation', 'target label · smoothing 10', ['occupation_target_rate']]];
+  ['FEAT_DATE_FEATURES signup', '', ['signup_year', '… signup_quarter']],
+  ['FEAT_TARGET_ENCODE occupation', 'target churned · smoothing 10 · fit_on "split == 0"', ['occupation_churn']]];
 function sPipeline(t) {
   CAP('features · in declared order', 64, 130, { color: C.violet });
   PIPE.forEach(([op, p, out], i) => {
     const y = 150 + i * 62, a = seg(t, 0.3 + i * 0.45, 0.6 + i * 0.45);
     A(a, () => {
-      R(64, y, 470, 50, { fill: C.panel, stroke: i === 5 && t > 7.6 ? C.coral : C.violet });
-      M(op, 82, y + 22, { size: 13.5, color: C.ink, weight: 600 }); M(p, 82, y + 40, { size: 11.5 });
+      R(64, y, 470, 50, { fill: C.panel, stroke: C.violet, lw: i === 5 && t > 6.0 ? 2.2 : 1.2 });
+      M(op, 82, y + 22, { size: 13.5, color: C.ink, weight: 600 }); M(p, 82, y + 40, { size: 11.5, color: i === 5 && t > 6.0 ? C.violet : C.muted });
       if (i < 5) arrow(110, y + 50, 110, y + 62, { stroke: C.faint, head: 5 });
       let x = 560; out.forEach(o => { const w = measure(o, { font: PulseFilm.MONO, size: 12 }) + 20; R(x, y + 11, w, 28, { fill: C.violetS, stroke: C.violet, r: 14 }); M(o, x + 10, y + 30, { size: 12, color: C.violet }); x += w + 8; });
     });
   });
   A(seg(t, 4.0, 4.4), () => { arrow(560 + 50, 150 + 62 + 11, 300, 150 + 2 * 62 + 4, { stroke: C.amber, head: 6, lw: 1.2 }); M('reads the column the previous feature made', 1216, 216, { size: 12, color: C.amber, align: 'right' }); });
+  A(seg(t, 6.0, 6.4), () => {
+    Ln([[536, 175], [548, 175], [548, 485]], { stroke: C.violet, lw: 1.4 }); arrow(548, 485, 538, 485, { stroke: C.violet, head: 6, lw: 1.4 });
+    M('fit_on reads split: the non-leaky form', 712, 490, { size: 12, color: C.violet });
+  });
   A(seg(t, 5.0, 5.4), () => {
     R(64, 532, 1152, 46, { fill: C.panel2, stroke: C.rule });
-    M('then  FILTER_INCLUDE split ∈ {0}  →  GROUP_CATEGORY log_income_decile  →  AGG_AVERAGE label', 86, 561, { size: 13.5, color: C.ink });
+    M('then  FILTER_INCLUDE split ∈ {0}  →  GROUP_CATEGORY log_income_decile  →  AGG_AVERAGE churned', 86, 561, { size: 13.5, color: C.ink });
   });
-  A(seg(t, 7.6, 8.0), () => {
-    R(1000, 470, 216, 50, { fill: C.coralS, stroke: C.coral });
-    M('predict: leakage risk', 1016, 500, { size: 12.5, color: C.coral });
-    M('predict reports every new column before a record is read', 1216, 130, { size: 12.5, color: C.teal, align: 'right' });
+  A(seg(t, 8.6, 9.0), () => {
+    R(840, 230, 376, 112, { fill: C.panel2, stroke: C.amber, lw: 1.6 });
+    M('predict · header and schema only', 856, 252, { size: 12.5, color: C.amber, weight: 600 });
+    M('valid · warnings: none', 856, 274, { size: 12.5, color: C.ink });
+    M('streamable: false, because', 856, 296, { size: 12, color: C.ink });
+    M('FEAT_BUCKETIZE cuts quantiles of log_income', 856, 315, { size: 11 });
+    M('FEAT_TARGET_ENCODE reads split in fit_on', 856, 333, { size: 11 });
   });
 }
 
@@ -358,9 +404,10 @@ function sRecap(t) {
 }
 
 /* ---------- scenes + script ---------- */
-const NARR = /*NARR*/[4.48, 6.571, 8.064, 6.571, 8.171, 7.275, 8.661, 3.029, 4.693, 8.107, 7.381, 8.64, 7.403, 7.509, 9.088, 7.317, 7.317, 8.704, 5.248, 6.933, 9.408, 8.256, 5.76, 2.901, 9.472, 8.192, 7.915, 5.931, 6.912, 6.464, 7.808, 7.253, 8.192, 7.253, 7.957, 8.107, 4.992, 1.067]/*END*/;
+const NARR = /*NARR*/[4.48, 6.571, 8.064, 11.669, 8.235, 7.275, 8.661, 3.029, 4.715, 11.584, 8.128, 7.381, 8.64, 7.403, 7.509, 9.088, 7.381, 7.36, 8.704, 8.747, 5.227, 7.168, 13.376, 9.6, 6.955, 5.76, 5.333, 11.328, 5.419, 12.416, 8.192, 7.915, 5.931, 6.912, 7.616, 7.808, 7.296, 8.192, 7.36, 13.696, 7.979, 8.107, 4.992, 1.109]/*END*/;
 PulseFilm.mount({
   series: 'PULSE · FEATURES',
+  title: 'Pulse Features',
   narr: NARR,
   scenes: [
     { name: 'Pulse Features', dur: 4, draw: sTitle, caps: [
@@ -368,13 +415,14 @@ PulseFilm.mount({
     { name: 'Where features run', dur: 8, draw: sWhere, caps: [
       [0, 'Features are the first stage of every request. They run before any filter, on every record in the cohort.'],
       [1.6, 'Each feature adds new columns. A later feature can build on an earlier one, like a bucketize that reads the log column just made.'],
-      [3.6, 'And every later stage can read those columns, even the filters, which is something attributes can never offer.'],
+      [3.6, 'And every later stage can read those columns, filters included. Attributes, by default, run after the filters. ATTR_PREVIOUS_STATE is the exception: it runs before them.', 'And every later stage can read those columns, filters included. Attributes, by default, run after the filters. The previous-state attribute is the exception: it runs before them.'],
       [6.0, 'Pulse ships a growing set of feature operators, and more are added over time. Your instance\'s manifest always lists the ones it offers.']] },
-    { name: 'Two cost classes', dur: 8.4, draw: sCost, caps: [
+    { name: 'Two cost classes', dur: 10.6, draw: sCost, caps: [
       [0, 'Features come in two cost classes. Per-row features need only the record in front of them, so they finish in a single pass.'],
       [1.2, 'Global-pass features need the whole cohort first: category counts, target means or quantile cut points. Pulse sweeps once to learn them.'],
       [4.9, 'Then it rewinds and emits a value for every record.'],
-      [7.0, 'Both classes can stream. A global pass just costs a second read of the file.']] },
+      [7.0, 'Both classes can stream. A global pass just costs a second read of the file.'],
+      [9.0, 'With one exception: when a global pass learns from a column an earlier feature made, such as quantiles over the log of income, the request runs buffered. Predict says so, and says why.']] },
     { name: 'Taming skew', dur: 8, draw: sSkew, caps: [
       [0, 'Many real measures have a long right tail: lots of small values and a few huge ones. That skew distorts averages and models.'],
       [3.4, 'Square root is the gentle fix. A negative value becomes null rather than an error, so the rest of the cohort keeps going.'],
@@ -386,28 +434,33 @@ PulseFilm.mount({
     { name: 'Encoding categories', dur: 9, draw: sCategories, caps: [
       [0, 'Categories need encoding before a model can use them. One-hot gives every category its own zero-or-one column.'],
       [3.3, 'The columns come from the schema\'s dictionary, so even a category with no records gets one. A null row is all zeros.'],
+      [4.6, 'A packed_bool works as a two-level category: one-hot gives it member_0 and member_1, and the encoders and stratify accept it too.', 'A packed boolean works as a two-level category: one-hot gives it member zero and member one, and the encoders and stratify accept it too.'],
       [6.0, 'Frequency encoding replaces each category with its share of the cohort. Features run before filters, so those shares count every record.']] },
-    { name: 'Target encoding', dur: 10.5, draw: sTarget, caps: [
+    { name: 'Target encoding', dur: 13.6, draw: sTarget, caps: [
       [0, 'Target encoding replaces a category with the average outcome of the records that share it.'],
-      [2.8, 'Smoothing pulls rare categories toward the overall mean. A category seen only twice shouldn\'t get an extreme score.'],
-      [6.5, 'But there\'s a trap. Each average includes every record\'s outcome, even test rows and the record\'s own. Pulse flags it every time with a leakage warning.'],
-      [8.9, 'A train-test split doesn\'t silence it. For training-only means, run a separate request on the training rows, and map the averages back.']] },
-    { name: 'Dates', dur: 8, draw: sDates, caps: [
+      [2.8, 'Smoothing pulls rare categories toward the training mean. A category seen only five times shouldn\'t get an extreme score.'],
+      [6.5, 'But there\'s a trap. Features run before filters, so without fit_on every average includes every record\'s outcome: test rows, and the record\'s own. A split alone changes nothing, and Pulse warns of the leakage.', 'But there\'s a trap. Features run before filters, so without fit-on, every average includes every record\'s outcome: test rows, and the record\'s own. A split alone changes nothing, and Pulse warns of the leakage.'],
+      [8.9, 'So name the training rows: fit_on "split == 0". Only those rows feed the averages, every row is still encoded, and the warning goes quiet.', 'So name the training rows, with fit-on: split equals zero. Only those rows feed the averages, every row is still encoded, and the warning goes quiet.'],
+      [11.3, 'Add folds and an rng_seed, and each training row is encoded from the other folds, so its own outcome never counts.', 'Add folds and a random seed, and each training row is encoded from the other folds, so its own outcome never counts.']] },
+    { name: 'Dates', dur: 10.4, draw: sDates, caps: [
       [0, 'Date features split one date into calendar parts: year, month, day, day of week, and quarter.'],
-      [3.0, 'Day of week counts from zero, starting on Sunday.'],
-      [5.4, 'A datetime adds the hour, and is read on the local clock, so a time zone can move it to a different day. A plain date has no zone, so it never shifts.']] },
+      [3.0, 'Day of week is ISO: Monday is one, and Sunday is seven, counted on the local day.'],
+      [5.4, 'A datetime adds the hour, and is read on the local clock. Name a zone column with tz_field, and each row is read in its own zone, so one instant lands on different days.', 'A datetime adds the hour, and is read on the local clock. Name a zone column with tz-field, and each row is read in its own zone, so one instant lands on different days.'],
+      [7.1, 'A row with no zone gets nulls in every date column, never a quiet UTC fallback.'],
+      [8.5, 'Pulse looks for a zone in order: the slot\'s own tz, its tz_field, the request\'s zone field, the request\'s zone, the instance default, then UTC. A plain date has no zone, so it never shifts.', 'Pulse looks for a zone in order: the slot\'s own zone, its zone field, the request\'s zone field, the request\'s zone, the instance default, then UTC. A plain date has no zone, so it never shifts.']] },
     { name: 'Curves', dur: 7.6, draw: sPoly, caps: [
       [0, 'Polynomial features add powers of a number: its square, its cube, up to the tenth power. The original column stays as it is.'],
       [3.6, 'A straight line misses a curve. Give a linear regression the squared column too, and it follows the bend. That\'s polynomial regression.'],
       [6.5, 'Watch the scale. The tenth power of one hundred is ten to the twentieth. Standardise the column first.']] },
     { name: 'Train, validation, test', dur: 7.4, draw: sSplit, caps: [
       [0, 'Train-test split tags every record with a partition: zero for train, one for validation, two for test.'],
-      [3.0, 'Stratify by a category, and each class is split in the same proportions, so the partitions stay balanced.'],
+      [3.0, 'Stratify by a category, or a packed_bool, and each class is split in the same proportions, so the partitions stay balanced.', 'Stratify by a category, or a packed boolean, and each class is split in the same proportions, so the partitions stay balanced.'],
       [5.8, 'The same seed and the same rows always give the same split. Downstream, a filter on split zero keeps just the training rows.']] },
-    { name: 'A full pipeline', dur: 9, draw: sPipeline, caps: [
+    { name: 'A full pipeline', dur: 11, draw: sPipeline, caps: [
       [0, 'Here\'s a full preparation pipeline in one request. Features run in the order you list them, so each can build on the last.'],
       [4.0, 'The log of income feeds a decile bucketize. Region becomes indicator columns, and the signup date becomes calendar parts.'],
-      [7.4, 'Predict reports every new column before a single record is read, and flags the target encoder\'s leakage risk up front.']] },
+      [6.0, 'The target encoder comes after the split, with fit_on "split == 0", so only training rows shape its averages.', 'The target encoder comes after the split, with fit-on: split equals zero, so only training rows shape its averages.'],
+      [8.5, 'Predict checks the whole pipeline from the header, before a single record is read. It finds no leakage, and it says the request buffers, because the decile bucketize and the encoder both read columns that earlier features made.']] },
     { name: 'The feature toolkit', dur: 10, draw: sRecap, caps: [
       [0, 'That\'s the feature toolkit today: reshape a number, bin it, encode a category, split a date, add curvature, or partition the cohort.'],
       [3.4, 'New feature operators are added over time, and embedders can register their own. The manifest always shows what your instance offers.'],

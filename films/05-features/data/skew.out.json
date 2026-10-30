@@ -1,0 +1,61 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "LOG_income": -0.1409214524749992,
+        "SQRT_income": 0.6621070019481946,
+        "income": 1.6920396432939329
+      }
+    ],
+    "metadata": {
+      "total_rows": 240,
+      "filtered_rows": 240,
+      "cohort_file": "f.pulse"
+    },
+    "components": {
+      "aggregations": [
+        {
+          "label": "income",
+          "n": 240,
+          "n_null": 0,
+          "operator": {
+            "m2": 494436.5317062501,
+            "m3": 37972635.47351972,
+            "mean": 67.13562499999996,
+            "skewness": 1.6920396432939329
+          }
+        },
+        {
+          "label": "SQRT_income",
+          "n": 240,
+          "n_null": 0,
+          "operator": {
+            "m2": 1586.9595616708818,
+            "m3": 2701.9129345451815,
+            "mean": 7.779671811396545,
+            "skewness": 0.6621070019481946
+          }
+        },
+        {
+          "label": "LOG_income",
+          "n": 240,
+          "n_null": 0,
+          "operator": {
+            "m2": 102.81472941157163,
+            "m3": -9.483190946021482,
+            "mean": 4.016165659742319,
+            "skewness": -0.1409214524749992
+          }
+        }
+      ],
+      "run": {
+        "total_records": 240,
+        "filtered_records": 240,
+        "null_records": 0
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

@@ -1,0 +1,5 @@
+{"cohort":{"filename":"f.pulse"},
+"features":[{"type":"FEAT_TRAIN_TEST_SPLIT","params":{"ratios":[0.7,0.3],"seed":42}}],
+"filterers":[{"type":"FILTER_INCLUDE","field":"split","values":["0"]}],
+"groups":[{"type":"GROUP_CATEGORY","field":"occupation"}],
+"aggregations":[{"type":"AGG_COUNT","field":"churned","label":"n_train"},{"type":"AGG_AVERAGE","field":"churned","label":"mean_train"}]}

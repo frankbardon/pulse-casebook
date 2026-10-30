@@ -1,0 +1,69 @@
+{
+ "cohort": {
+  "filename": "f.pulse"
+ },
+ "features": [
+  {
+   "type": "FEAT_TRAIN_TEST_SPLIT",
+   "params": {
+    "ratios": [
+     0.8,
+     0.2
+    ],
+    "seed": 42
+   }
+  },
+  {
+   "type": "FEAT_LOG",
+   "field": "income",
+   "label": "log_income"
+  },
+  {
+   "type": "FEAT_BUCKETIZE",
+   "field": "log_income",
+   "label": "log_income_decile",
+   "params": {
+    "quantiles": 10
+   }
+  },
+  {
+   "type": "FEAT_ONE_HOT",
+   "field": "region"
+  },
+  {
+   "type": "FEAT_DATE_FEATURES",
+   "field": "signup"
+  },
+  {
+   "type": "FEAT_TARGET_ENCODE",
+   "field": "occupation",
+   "label": "occupation_churn",
+   "params": {
+    "target": "churned",
+    "smoothing": 10,
+    "fit_on": "split == 0"
+   }
+  }
+ ],
+ "filterers": [
+  {
+   "type": "FILTER_INCLUDE",
+   "field": "split",
+   "values": [
+    "0"
+   ]
+  }
+ ],
+ "groups": [
+  {
+   "type": "GROUP_CATEGORY",
+   "field": "log_income_decile"
+  }
+ ],
+ "aggregations": [
+  {
+   "type": "AGG_AVERAGE",
+   "field": "churned"
+  }
+ ]
+}

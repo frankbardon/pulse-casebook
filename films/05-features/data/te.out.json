@@ -1,0 +1,245 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "n": 14,
+        "occupation": "Artist",
+        "te_s0": 0.9,
+        "te_s10": 0.575
+      },
+      {
+        "n": 90,
+        "occupation": "Engineer",
+        "te_s0": 0.1864406779661017,
+        "te_s10": 0.1956521739130435
+      },
+      {
+        "n": 70,
+        "occupation": "Nurse",
+        "te_s0": 0.26,
+        "te_s10": 0.25833333333333336
+      },
+      {
+        "n": 6,
+        "occupation": "Pilot",
+        "te_s0": 0,
+        "te_s10": 0.16666666666666666
+      },
+      {
+        "n": 60,
+        "occupation": "Teacher",
+        "te_s0": 0.20454545454545456,
+        "te_s10": 0.21296296296296297
+      }
+    ],
+    "metadata": {
+      "total_rows": 240,
+      "filtered_rows": 240,
+      "cohort_file": "f.pulse"
+    },
+    "components": {
+      "aggregations": [
+        {
+          "label": "n",
+          "n": 240,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "Artist"
+              ],
+              "n": 14,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "Engineer"
+              ],
+              "n": 90,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "Nurse"
+              ],
+              "n": 70,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "Pilot"
+              ],
+              "n": 6,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "Teacher"
+              ],
+              "n": 60,
+              "n_null": 0
+            }
+          ]
+        },
+        {
+          "label": "te_s0",
+          "n": 240,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "Artist"
+              ],
+              "n": 14,
+              "n_null": 0,
+              "operator": {
+                "sum": 12.6
+              }
+            },
+            {
+              "group_key": [
+                "Engineer"
+              ],
+              "n": 90,
+              "n_null": 0,
+              "operator": {
+                "sum": 16.779661016949152
+              }
+            },
+            {
+              "group_key": [
+                "Nurse"
+              ],
+              "n": 70,
+              "n_null": 0,
+              "operator": {
+                "sum": 18.2
+              }
+            },
+            {
+              "group_key": [
+                "Pilot"
+              ],
+              "n": 6,
+              "n_null": 0,
+              "operator": {
+                "sum": 0
+              }
+            },
+            {
+              "group_key": [
+                "Teacher"
+              ],
+              "n": 60,
+              "n_null": 0,
+              "operator": {
+                "sum": 12.272727272727273
+              }
+            }
+          ]
+        },
+        {
+          "label": "te_s10",
+          "n": 240,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "Artist"
+              ],
+              "n": 14,
+              "n_null": 0,
+              "operator": {
+                "sum": 8.049999999999999
+              }
+            },
+            {
+              "group_key": [
+                "Engineer"
+              ],
+              "n": 90,
+              "n_null": 0,
+              "operator": {
+                "sum": 17.608695652173914
+              }
+            },
+            {
+              "group_key": [
+                "Nurse"
+              ],
+              "n": 70,
+              "n_null": 0,
+              "operator": {
+                "sum": 18.083333333333336
+              }
+            },
+            {
+              "group_key": [
+                "Pilot"
+              ],
+              "n": 6,
+              "n_null": 0,
+              "operator": {
+                "sum": 1
+              }
+            },
+            {
+              "group_key": [
+                "Teacher"
+              ],
+              "n": 60,
+              "n_null": 0,
+              "operator": {
+                "sum": 12.777777777777779
+              }
+            }
+          ]
+        }
+      ],
+      "groupers": [
+        {
+          "field": "occupation",
+          "total_n": 240,
+          "operator": {
+            "buckets": [
+              {
+                "count": 14,
+                "key": "Artist",
+                "label": "Artist"
+              },
+              {
+                "count": 90,
+                "key": "Engineer",
+                "label": "Engineer"
+              },
+              {
+                "count": 70,
+                "key": "Nurse",
+                "label": "Nurse"
+              },
+              {
+                "count": 6,
+                "key": "Pilot",
+                "label": "Pilot"
+              },
+              {
+                "count": 60,
+                "key": "Teacher",
+                "label": "Teacher"
+              }
+            ],
+            "dict_size": 5
+          }
+        }
+      ],
+      "run": {
+        "total_records": 240,
+        "filtered_records": 240,
+        "null_records": 0
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

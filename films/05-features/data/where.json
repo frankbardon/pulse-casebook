@@ -1,0 +1,5 @@
+{"cohort":{"filename":"f.pulse"},
+"features":[{"type":"FEAT_LOG","field":"income"},
+{"type":"FEAT_BUCKETIZE","field":"LOG_income","label":"income_band","params":{"quantiles":4}}],
+"groups":[{"type":"GROUP_CATEGORY","field":"income_band"}],
+"aggregations":[{"type":"AGG_COUNT","field":"income","label":"n"},{"type":"AGG_MIN","field":"income","label":"lo"},{"type":"AGG_MAX","field":"income","label":"hi"}]}

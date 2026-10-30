@@ -1,151 +1,175 @@
 1
-00:00:00,250 --> 00:00:04,930
+00:00:04,250 --> 00:00:08,930
 Pulse features. The first stage of every request, taken apart in depth.
 
 2
-00:00:05,730 --> 00:00:12,501
+00:00:09,730 --> 00:00:16,501
 Features are the first stage of every request. They run before any filter, on every record in the cohort.
 
 3
-00:00:13,301 --> 00:00:21,565
+00:00:17,301 --> 00:00:25,565
 Each feature adds new columns. A later feature can build on an earlier one, like a bucketize that reads the log column just made.
 
 4
-00:00:22,365 --> 00:00:29,136
-And every later stage can read those columns, even the filters, which is something attributes can never offer.
+00:00:26,365 --> 00:00:38,234
+And every later stage can read those columns, filters included. Attributes, by default, run after the filters. The previous-state attribute is the exception: it runs before them.
 
 5
-00:00:29,936 --> 00:00:38,307
+00:00:39,034 --> 00:00:47,469
 Pulse ships a growing set of feature operators, and more are added over time. Your instance's manifest always lists the ones it offers.
 
 6
-00:00:39,107 --> 00:00:46,582
+00:00:48,269 --> 00:00:55,744
 Features come in two cost classes. Per-row features need only the record in front of them, so they finish in a single pass.
 
 7
-00:00:47,382 --> 00:00:56,243
+00:00:56,544 --> 00:01:05,405
 Global-pass features need the whole cohort first: category counts, target means or quantile cut points. Pulse sweeps once to learn them.
 
 8
-00:00:57,043 --> 00:01:00,272
+00:01:06,205 --> 00:01:09,434
 Then it rewinds and emits a value for every record.
 
 9
-00:01:01,072 --> 00:01:05,965
+00:01:10,234 --> 00:01:15,149
 Both classes can stream. A global pass just costs a second read of the file.
 
 10
-00:01:06,765 --> 00:01:15,072
-Many real measures have a long right tail: lots of small values and a few huge ones. That skew distorts averages and models.
+00:01:15,949 --> 00:01:27,733
+With one exception: when a global pass learns from a column an earlier feature made, such as quantiles over the log of income, the request runs buffered. Predict says so, and says why.
 
 11
-00:01:15,872 --> 00:01:23,453
-Square root is the gentle fix. A negative value becomes null rather than an error, so the rest of the cohort keeps going.
+00:01:28,533 --> 00:01:36,861
+Many real measures have a long right tail: lots of small values and a few huge ones. That skew distorts averages and models.
 
 12
-00:01:24,253 --> 00:01:33,093
-Log goes further. Pulse uses the log of one plus x, so zero stays zero, and anything at or below minus one becomes null.
+00:01:37,661 --> 00:01:45,242
+Square root is the gentle fix. A negative value becomes null rather than an error, so the rest of the cohort keeps going.
 
 13
-00:01:33,893 --> 00:01:41,496
-Bucketize turns a number into a band. With explicit boundaries, each value lands in a numbered bucket, in a single pass.
+00:01:46,042 --> 00:01:54,882
+Log goes further. Pulse uses the log of one plus x, so zero stays zero, and anything at or below minus one becomes null.
 
 14
-00:01:42,296 --> 00:01:50,005
-A value exactly on a cut point goes to the lower bucket. The output is the bucket number, not a label, and null stays null.
+00:01:55,682 --> 00:02:03,285
+Bucketize turns a number into a band. With explicit boundaries, each value lands in a numbered bucket, in a single pass.
 
 15
-00:01:50,805 --> 00:02:00,093
-Or ask for quantiles, and Pulse learns cut points that give every bucket the same number of records. You choose boundaries or quantiles, never both.
+00:02:04,085 --> 00:02:11,794
+A value exactly on a cut point goes to the lower bucket. The output is the bucket number, not a label, and null stays null.
 
 16
-00:02:00,893 --> 00:02:08,410
-Categories need encoding before a model can use them. One-hot gives every category its own zero-or-one column.
+00:02:12,594 --> 00:02:21,882
+Or ask for quantiles, and Pulse learns cut points that give every bucket the same number of records. You choose boundaries or quantiles, never both.
 
 17
-00:02:09,210 --> 00:02:16,727
-The columns come from the schema's dictionary, so even a category with no records gets one. A null row is all zeros.
+00:02:22,682 --> 00:02:30,263
+Categories need encoding before a model can use them. One-hot gives every category its own zero-or-one column.
 
 18
-00:02:17,527 --> 00:02:26,431
-Frequency encoding replaces each category with its share of the cohort. Features run before filters, so those shares count every record.
+00:02:31,063 --> 00:02:38,623
+The columns come from the schema's dictionary, so even a category with no records gets one. A null row is all zeros.
 
 19
-00:02:27,231 --> 00:02:32,679
-Target encoding replaces a category with the average outcome of the records that share it.
+00:02:39,423 --> 00:02:48,327
+A packed boolean works as a two-level category: one-hot gives it member zero and member one, and the encoders and stratify accept it too.
 
 20
-00:02:33,479 --> 00:02:40,612
-Smoothing pulls rare categories toward the overall mean. A category seen only twice shouldn't get an extreme score.
+00:02:49,127 --> 00:02:58,074
+Frequency encoding replaces each category with its share of the cohort. Features run before filters, so those shares count every record.
 
 21
-00:02:41,412 --> 00:02:51,020
-But there's a trap. Each average includes every record's outcome, even test rows and the record's own. Pulse flags it every time with a leakage warning.
+00:02:58,874 --> 00:03:04,301
+Target encoding replaces a category with the average outcome of the records that share it.
 
 22
-00:02:51,820 --> 00:03:00,276
-A train-test split doesn't silence it. For training-only means, run a separate request on the training rows, and map the averages back.
+00:03:05,101 --> 00:03:12,469
+Smoothing pulls rare categories toward the training mean. A category seen only five times shouldn't get an extreme score.
 
 23
-00:03:01,076 --> 00:03:07,036
-Date features split one date into calendar parts: year, month, day, day of week, and quarter.
+00:03:13,269 --> 00:03:26,845
+But there's a trap. Features run before filters, so without fit-on, every average includes every record's outcome: test rows, and the record's own. A split alone changes nothing, and Pulse warns of the leakage.
 
 24
-00:03:07,836 --> 00:03:10,937
-Day of week counts from zero, starting on Sunday.
+00:03:27,645 --> 00:03:37,445
+So name the training rows, with fit-on: split equals zero. Only those rows feed the averages, every row is still encoded, and the warning goes quiet.
 
 25
-00:03:11,737 --> 00:03:21,409
-A datetime adds the hour, and is read on the local clock, so a time zone can move it to a different day. A plain date has no zone, so it never shifts.
+00:03:38,245 --> 00:03:45,400
+Add folds and a random seed, and each training row is encoded from the other folds, so its own outcome never counts.
 
 26
-00:03:22,209 --> 00:03:30,601
-Polynomial features add powers of a number: its square, its cube, up to the tenth power. The original column stays as it is.
+00:03:46,200 --> 00:03:52,160
+Date features split one date into calendar parts: year, month, day, day of week, and quarter.
 
 27
-00:03:31,401 --> 00:03:39,516
-A straight line misses a curve. Give a linear regression the squared column too, and it follows the bend. That's polynomial regression.
+00:03:52,960 --> 00:03:58,493
+Day of week is ISO: Monday is one, and Sunday is seven, counted on the local day.
 
 28
-00:03:40,316 --> 00:03:46,447
-Watch the scale. The tenth power of one hundred is ten to the twentieth. Standardise the column first.
+00:03:59,293 --> 00:04:10,821
+A datetime adds the hour, and is read on the local clock. Name a zone column with tz-field, and each row is read in its own zone, so one instant lands on different days.
 
 29
-00:03:47,247 --> 00:03:54,359
-Train-test split tags every record with a partition: zero for train, one for validation, two for test.
+00:04:11,621 --> 00:04:17,240
+A row with no zone gets nulls in every date column, never a quiet UTC fallback.
 
 30
-00:03:55,159 --> 00:04:01,823
-Stratify by a category, and each class is split in the same proportions, so the partitions stay balanced.
+00:04:18,040 --> 00:04:30,656
+Pulse looks for a zone in order: the slot's own zone, its zone field, the request's zone field, the request's zone, the instance default, then UTC. A plain date has no zone, so it never shifts.
 
 31
-00:04:02,623 --> 00:04:10,631
-The same seed and the same rows always give the same split. Downstream, a filter on split zero keeps just the training rows.
+00:04:31,456 --> 00:04:39,848
+Polynomial features add powers of a number: its square, its cube, up to the tenth power. The original column stays as it is.
 
 32
-00:04:11,431 --> 00:04:18,884
-Here's a full preparation pipeline in one request. Features run in the order you list them, so each can build on the last.
+00:04:40,648 --> 00:04:48,763
+A straight line misses a curve. Give a linear regression the squared column too, and it follows the bend. That's polynomial regression.
 
 33
-00:04:19,684 --> 00:04:28,076
-The log of income feeds a decile bucketize. Region becomes indicator columns, and the signup date becomes calendar parts.
+00:04:49,563 --> 00:04:55,694
+Watch the scale. The tenth power of one hundred is ten to the twentieth. Standardise the column first.
 
 34
-00:04:28,876 --> 00:04:36,329
-Predict reports every new column before a single record is read, and flags the target encoder's leakage risk up front.
+00:04:56,494 --> 00:05:03,606
+Train-test split tags every record with a partition: zero for train, one for validation, two for test.
 
 35
-00:04:37,129 --> 00:04:45,286
-That's the feature toolkit today: reshape a number, bin it, encode a category, split a date, add curvature, or partition the cohort.
+00:05:04,406 --> 00:05:12,222
+Stratify by a category, or a packed boolean, and each class is split in the same proportions, so the partitions stay balanced.
 
 36
-00:04:46,086 --> 00:04:54,393
-New feature operators are added over time, and embedders can register their own. The manifest always shows what your instance offers.
+00:05:13,022 --> 00:05:21,030
+The same seed and the same rows always give the same split. Downstream, a filter on split zero keeps just the training rows.
 
 37
-00:04:55,193 --> 00:05:00,385
-Remember the one rule: features run first, so they see everything. Next up, filters.
+00:05:21,830 --> 00:05:29,326
+Here's a full preparation pipeline in one request. Features run in the order you list them, so each can build on the last.
 
 38
-00:05:01,185 --> 00:05:02,452
+00:05:30,126 --> 00:05:38,518
+The log of income feeds a decile bucketize. Region becomes indicator columns, and the signup date becomes calendar parts.
+
+39
+00:05:39,318 --> 00:05:46,878
+The target encoder comes after the split, with fit-on: split equals zero, so only training rows shape its averages.
+
+40
+00:05:47,678 --> 00:06:01,574
+Predict checks the whole pipeline from the header, before a single record is read. It finds no leakage, and it says the request buffers, because the decile bucketize and the encoder both read columns that earlier features made.
+
+41
+00:06:02,374 --> 00:06:10,553
+That's the feature toolkit today: reshape a number, bin it, encode a category, split a date, add curvature, or partition the cohort.
+
+42
+00:06:11,353 --> 00:06:19,660
+New feature operators are added over time, and embedders can register their own. The manifest always shows what your instance offers.
+
+43
+00:06:20,460 --> 00:06:25,652
+Remember the one rule: features run first, so they see everything. Next up, filters.
+
+44
+00:06:26,452 --> 00:06:27,761
 Pulse features.
