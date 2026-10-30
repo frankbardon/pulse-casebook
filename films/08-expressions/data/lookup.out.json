@@ -1,0 +1,15 @@
+{
+  "format_version": "1.1",
+  "data": null,
+  "errors": [
+    {
+      "code": "PULSE_FORMULA_COMPILE_ERROR",
+      "message": "compiling formula expression \"lookup(\\\"fx\\\", region)\": unknown name lookup (1:1)",
+      "details": {
+        "compile_error": "unknown name lookup (1:1)",
+        "expression": "lookup(\"fx\", region)"
+      }
+    }
+  ],
+  "warnings": []
+}

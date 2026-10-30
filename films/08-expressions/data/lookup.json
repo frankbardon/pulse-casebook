@@ -1,0 +1,25 @@
+{
+ "cohort": {
+  "filename": "e.pulse"
+ },
+ "attributes": [
+  {
+   "type": "ATTR_FORMULA",
+   "label": "fx",
+   "expression": "lookup(\"fx\", region)"
+  }
+ ],
+ "groups": [
+  {
+   "type": "GROUP_CATEGORY",
+   "field": "id"
+  }
+ ],
+ "aggregations": [
+  {
+   "type": "AGG_MAX",
+   "field": "fx",
+   "label": "fx"
+  }
+ ]
+}

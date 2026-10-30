@@ -1,0 +1,36 @@
+{
+ "cohort": {
+  "filename": "e.pulse"
+ },
+ "time_zone": "America/New_York",
+ "attributes": [
+  {
+   "type": "ATTR_FORMULA",
+   "label": "wd",
+   "expression": "weekday(to_day(created_at))"
+  },
+  {
+   "type": "ATTR_FORMULA",
+   "label": "day",
+   "expression": "to_day(created_at)"
+  }
+ ],
+ "groups": [
+  {
+   "type": "GROUP_CATEGORY",
+   "field": "id"
+  }
+ ],
+ "aggregations": [
+  {
+   "type": "AGG_MAX",
+   "field": "wd",
+   "label": "wd"
+  },
+  {
+   "type": "AGG_MAX",
+   "field": "day",
+   "label": "day"
+  }
+ ]
+}

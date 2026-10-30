@@ -1,0 +1,447 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "big": 14520.25,
+        "id": "1",
+        "in_ne": 1,
+        "mod": 1,
+        "negmod": -1.5,
+        "per0": null
+      },
+      {
+        "big": 6400,
+        "id": "2",
+        "in_ne": 0,
+        "mod": 2,
+        "negmod": -1.5,
+        "per0": null
+      },
+      {
+        "big": 2047.5625,
+        "id": "3",
+        "in_ne": 1,
+        "mod": 3,
+        "negmod": -1.5,
+        "per0": null
+      },
+      {
+        "big": 44100,
+        "id": "4",
+        "in_ne": 0,
+        "mod": 0,
+        "negmod": -1.5,
+        "per0": null
+      },
+      {
+        "big": 225,
+        "id": "5",
+        "in_ne": 1,
+        "mod": 1,
+        "negmod": -1.5,
+        "per0": null
+      },
+      {
+        "big": 0,
+        "id": "6",
+        "in_ne": 1,
+        "mod": 2,
+        "negmod": -1.5,
+        "per0": null
+      }
+    ],
+    "metadata": {
+      "total_rows": 6,
+      "filtered_rows": 6,
+      "cohort_file": "e.pulse"
+    },
+    "components": {
+      "aggregations": [
+        {
+          "label": "in_ne",
+          "n": 6,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "1"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 1
+              }
+            },
+            {
+              "group_key": [
+                "2"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 0
+              }
+            },
+            {
+              "group_key": [
+                "3"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 1
+              }
+            },
+            {
+              "group_key": [
+                "4"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 0
+              }
+            },
+            {
+              "group_key": [
+                "5"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 1
+              }
+            },
+            {
+              "group_key": [
+                "6"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 1
+              }
+            }
+          ]
+        },
+        {
+          "label": "mod",
+          "n": 6,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "1"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 1
+              }
+            },
+            {
+              "group_key": [
+                "2"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 2
+              }
+            },
+            {
+              "group_key": [
+                "3"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 3
+              }
+            },
+            {
+              "group_key": [
+                "4"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 0
+              }
+            },
+            {
+              "group_key": [
+                "5"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 1
+              }
+            },
+            {
+              "group_key": [
+                "6"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 2
+              }
+            }
+          ]
+        },
+        {
+          "label": "negmod",
+          "n": 6,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "1"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": -1.5
+              }
+            },
+            {
+              "group_key": [
+                "2"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": -1.5
+              }
+            },
+            {
+              "group_key": [
+                "3"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": -1.5
+              }
+            },
+            {
+              "group_key": [
+                "4"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": -1.5
+              }
+            },
+            {
+              "group_key": [
+                "5"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": -1.5
+              }
+            },
+            {
+              "group_key": [
+                "6"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": -1.5
+              }
+            }
+          ]
+        },
+        {
+          "label": "per0",
+          "n": 6,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "1"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": null
+              }
+            },
+            {
+              "group_key": [
+                "2"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": null
+              }
+            },
+            {
+              "group_key": [
+                "3"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": null
+              }
+            },
+            {
+              "group_key": [
+                "4"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": null
+              }
+            },
+            {
+              "group_key": [
+                "5"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": null
+              }
+            },
+            {
+              "group_key": [
+                "6"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": null
+              }
+            }
+          ]
+        },
+        {
+          "label": "big",
+          "n": 6,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "1"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 14520.25
+              }
+            },
+            {
+              "group_key": [
+                "2"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 6400
+              }
+            },
+            {
+              "group_key": [
+                "3"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 2047.5625
+              }
+            },
+            {
+              "group_key": [
+                "4"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 44100
+              }
+            },
+            {
+              "group_key": [
+                "5"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 225
+              }
+            },
+            {
+              "group_key": [
+                "6"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 0
+              }
+            }
+          ]
+        }
+      ],
+      "groupers": [
+        {
+          "field": "id",
+          "total_n": 6,
+          "operator": {
+            "buckets": [
+              {
+                "count": 1,
+                "key": "1",
+                "label": "1"
+              },
+              {
+                "count": 1,
+                "key": "2",
+                "label": "2"
+              },
+              {
+                "count": 1,
+                "key": "3",
+                "label": "3"
+              },
+              {
+                "count": 1,
+                "key": "4",
+                "label": "4"
+              },
+              {
+                "count": 1,
+                "key": "5",
+                "label": "5"
+              },
+              {
+                "count": 1,
+                "key": "6",
+                "label": "6"
+              }
+            ],
+            "dict_size": 0
+          }
+        }
+      ],
+      "run": {
+        "total_records": 6,
+        "filtered_records": 6,
+        "null_records": 0
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

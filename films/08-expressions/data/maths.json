@@ -1,0 +1,65 @@
+{
+ "cohort": {
+  "filename": "e.pulse"
+ },
+ "attributes": [
+  {
+   "type": "ATTR_FORMULA",
+   "label": "fourier",
+   "expression": "sin(2 * pi() * week / 52)"
+  },
+  {
+   "type": "ATTR_FORMULA",
+   "label": "sat",
+   "expression": "hill(spend, 100, 2)"
+  },
+  {
+   "type": "ATTR_FORMULA",
+   "label": "logs",
+   "expression": "log1p(spend)"
+  },
+  {
+   "type": "ATTR_FORMULA",
+   "label": "root",
+   "expression": "sqrt(-1)"
+  },
+  {
+   "type": "ATTR_FORMULA",
+   "label": "sq",
+   "expression": "pow(score ?? 0, 2)"
+  }
+ ],
+ "groups": [
+  {
+   "type": "GROUP_CATEGORY",
+   "field": "id"
+  }
+ ],
+ "aggregations": [
+  {
+   "type": "AGG_MAX",
+   "field": "fourier",
+   "label": "fourier"
+  },
+  {
+   "type": "AGG_MAX",
+   "field": "sat",
+   "label": "sat"
+  },
+  {
+   "type": "AGG_MAX",
+   "field": "logs",
+   "label": "logs"
+  },
+  {
+   "type": "AGG_MAX",
+   "field": "root",
+   "label": "root"
+  },
+  {
+   "type": "AGG_MAX",
+   "field": "sq",
+   "label": "sq"
+  }
+ ]
+}

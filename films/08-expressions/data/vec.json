@@ -1,0 +1,75 @@
+{
+ "cohort": {
+  "filename": "e.pulse"
+ },
+ "attributes": [
+  {
+   "type": "ATTR_FORMULA",
+   "label": "mean",
+   "expression": "vmean([q1, q2, q3])"
+  },
+  {
+   "type": "ATTR_FORMULA",
+   "label": "cnt",
+   "expression": "vcount([q1, q2, q3])"
+  },
+  {
+   "type": "ATTR_FORMULA",
+   "label": "sd",
+   "expression": "vsd([q1, q2, q3])"
+  },
+  {
+   "type": "ATTR_FORMULA",
+   "label": "top",
+   "expression": "argmax([q1, q2, q3])"
+  },
+  {
+   "type": "ATTR_FORMULA",
+   "label": "zmax",
+   "expression": "vmax(vzscore([q1, q2, q3]))"
+  },
+  {
+   "type": "ATTR_FORMULA",
+   "label": "gap",
+   "expression": "dist([q1, q2, q3], [5, 5, 5])"
+  }
+ ],
+ "groups": [
+  {
+   "type": "GROUP_CATEGORY",
+   "field": "id"
+  }
+ ],
+ "aggregations": [
+  {
+   "type": "AGG_MAX",
+   "field": "mean",
+   "label": "mean"
+  },
+  {
+   "type": "AGG_MAX",
+   "field": "cnt",
+   "label": "cnt"
+  },
+  {
+   "type": "AGG_MAX",
+   "field": "sd",
+   "label": "sd"
+  },
+  {
+   "type": "AGG_MAX",
+   "field": "top",
+   "label": "top"
+  },
+  {
+   "type": "AGG_MAX",
+   "field": "zmax",
+   "label": "zmax"
+  },
+  {
+   "type": "AGG_MAX",
+   "field": "gap",
+   "label": "gap"
+  }
+ ]
+}

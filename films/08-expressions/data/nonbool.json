@@ -1,0 +1,24 @@
+{
+ "cohort": {
+  "filename": "e.pulse"
+ },
+ "filterers": [
+  {
+   "type": "FILTER_EXPRESSION",
+   "expression": "week + 1"
+  }
+ ],
+ "groups": [
+  {
+   "type": "GROUP_CATEGORY",
+   "field": "id"
+  }
+ ],
+ "aggregations": [
+  {
+   "type": "AGG_COUNT",
+   "field": "id",
+   "label": "n"
+  }
+ ]
+}

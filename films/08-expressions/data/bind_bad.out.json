@@ -1,0 +1,15 @@
+{
+  "format_version": "1.1",
+  "data": null,
+  "errors": [
+    {
+      "code": "PULSE_FORMULA_COMPILE_ERROR",
+      "message": "compiling formula expression \"region + 1\": invalid operation: + (mismatched types string and int) (1:8)",
+      "details": {
+        "compile_error": "invalid operation: + (mismatched types string and int) (1:8)",
+        "expression": "region + 1"
+      }
+    }
+  ],
+  "warnings": []
+}

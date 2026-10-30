@@ -1,0 +1,447 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "fourier": 0.12053668025532305,
+        "id": "1",
+        "logs": 4.799914262780603,
+        "root": null,
+        "sat": 0.5921738155198255,
+        "sq": 16
+      },
+      {
+        "fourier": 0.23931566428755774,
+        "id": "2",
+        "logs": 4.394449154672439,
+        "root": null,
+        "sat": 0.3902439024390244,
+        "sq": 4
+      },
+      {
+        "fourier": 0.3546048870425356,
+        "id": "3",
+        "logs": 3.834061463958434,
+        "root": null,
+        "sat": 0.1699565783535051,
+        "sq": 0
+      },
+      {
+        "fourier": 0.4647231720437685,
+        "id": "4",
+        "logs": 5.351858133476067,
+        "root": null,
+        "sat": 0.8151571164510166,
+        "sq": 25
+      },
+      {
+        "fourier": 0.5680647467311558,
+        "id": "5",
+        "logs": 2.772588722239781,
+        "root": null,
+        "sat": 0.02200488997555012,
+        "sq": 9
+      },
+      {
+        "fourier": 0.6631226582407952,
+        "id": "6",
+        "logs": 0,
+        "root": null,
+        "sat": 0,
+        "sq": 1
+      }
+    ],
+    "metadata": {
+      "total_rows": 6,
+      "filtered_rows": 6,
+      "cohort_file": "e.pulse"
+    },
+    "components": {
+      "aggregations": [
+        {
+          "label": "fourier",
+          "n": 6,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "1"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 0.12053668025532305
+              }
+            },
+            {
+              "group_key": [
+                "2"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 0.23931566428755774
+              }
+            },
+            {
+              "group_key": [
+                "3"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 0.3546048870425356
+              }
+            },
+            {
+              "group_key": [
+                "4"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 0.4647231720437685
+              }
+            },
+            {
+              "group_key": [
+                "5"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 0.5680647467311558
+              }
+            },
+            {
+              "group_key": [
+                "6"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 0.6631226582407952
+              }
+            }
+          ]
+        },
+        {
+          "label": "sat",
+          "n": 6,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "1"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 0.5921738155198255
+              }
+            },
+            {
+              "group_key": [
+                "2"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 0.3902439024390244
+              }
+            },
+            {
+              "group_key": [
+                "3"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 0.1699565783535051
+              }
+            },
+            {
+              "group_key": [
+                "4"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 0.8151571164510166
+              }
+            },
+            {
+              "group_key": [
+                "5"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 0.02200488997555012
+              }
+            },
+            {
+              "group_key": [
+                "6"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 0
+              }
+            }
+          ]
+        },
+        {
+          "label": "logs",
+          "n": 6,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "1"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 4.799914262780603
+              }
+            },
+            {
+              "group_key": [
+                "2"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 4.394449154672439
+              }
+            },
+            {
+              "group_key": [
+                "3"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 3.834061463958434
+              }
+            },
+            {
+              "group_key": [
+                "4"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 5.351858133476067
+              }
+            },
+            {
+              "group_key": [
+                "5"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 2.772588722239781
+              }
+            },
+            {
+              "group_key": [
+                "6"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 0
+              }
+            }
+          ]
+        },
+        {
+          "label": "root",
+          "n": 6,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "1"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": null
+              }
+            },
+            {
+              "group_key": [
+                "2"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": null
+              }
+            },
+            {
+              "group_key": [
+                "3"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": null
+              }
+            },
+            {
+              "group_key": [
+                "4"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": null
+              }
+            },
+            {
+              "group_key": [
+                "5"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": null
+              }
+            },
+            {
+              "group_key": [
+                "6"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": null
+              }
+            }
+          ]
+        },
+        {
+          "label": "sq",
+          "n": 6,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "1"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 16
+              }
+            },
+            {
+              "group_key": [
+                "2"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 4
+              }
+            },
+            {
+              "group_key": [
+                "3"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 0
+              }
+            },
+            {
+              "group_key": [
+                "4"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 25
+              }
+            },
+            {
+              "group_key": [
+                "5"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 9
+              }
+            },
+            {
+              "group_key": [
+                "6"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 1
+              }
+            }
+          ]
+        }
+      ],
+      "groupers": [
+        {
+          "field": "id",
+          "total_n": 6,
+          "operator": {
+            "buckets": [
+              {
+                "count": 1,
+                "key": "1",
+                "label": "1"
+              },
+              {
+                "count": 1,
+                "key": "2",
+                "label": "2"
+              },
+              {
+                "count": 1,
+                "key": "3",
+                "label": "3"
+              },
+              {
+                "count": 1,
+                "key": "4",
+                "label": "4"
+              },
+              {
+                "count": 1,
+                "key": "5",
+                "label": "5"
+              },
+              {
+                "count": 1,
+                "key": "6",
+                "label": "6"
+              }
+            ],
+            "dict_size": 0
+          }
+        }
+      ],
+      "run": {
+        "total_records": 6,
+        "filtered_records": 6,
+        "null_records": 0
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

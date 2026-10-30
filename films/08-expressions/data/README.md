@@ -1,0 +1,21 @@
+# The expression language: result cards
+
+Every figure and error code on a result card in `08-expressions` comes from these Pulse v1.0.0-alpha.33 runs.
+
+- **Cohort:** `e.csv` (hand-written, six members), imported with the explicit schema `e.schema.json`: `price` and `cost` are `decimal128(18, 2)`, `signup_day` and `order_day` are dates, `created_at` is a datetime, `tags` is a multi-select set. Member 3 has a null `score` and a null `q2`; member 5 has a null `tags` set. Member 6 answered 5 on all three battery items and has a `spend` of 0.
+- **Requests:** `requests.js` writes every `<name>.json`; each is run with `pulse api process` into `<name>.out.json`. Per-member figures come from grouping by `id` and taking `AGG_MAX` of each formula label; filter requests count members per `id`, so the kept members are listed and `components.filterers` gives `n_in` / `n_out`.
+  - `bind`: one `ATTR_FORMULA` per field type: `region == "North"`, `"tech" in tags`, `price / cost` (member 4: 19.99 / 15.00 → 1.3327) and `order_day` (epoch days). `bind_bad`: `region + 1` is `PULSE_FORMULA_COMPILE_ERROR` (also `bind_bad.predict.json`).
+  - `nonbool`: `FILTER_EXPRESSION` `week + 1` is `PULSE_FORMULA_COMPILE_ERROR`, "expected bool, but got float64", at the run and at predict (`valid: false`).
+  - `ops`: `region in ["North", "East"] ? 1 : 0`, `week % 4`, `-7.5 % 2` (−1.5) and `spend / 0` (null on every row, member 6's 0 / 0 included). `big` (`spend ** 2`) is recorded but not shown.
+  - `nul_eq`, `nul_ne`, `nul_gt`, `nul_guard`: filters `score == 3` (keeps 5), `score != 3` (keeps 1, 2, 3, 4, 6), `score > 2` (keeps 1, 4, 5) and `score == nil || score > 2` (keeps 1, 3, 4, 5). `nul_tern`: `score == nil ? -1 : score` gives member 3 −1.
+  - `sets`: `popcount`, `jaccard` against `["travel", "tech"]`, `len(set_intersect(…))`, `has_all` and `has_none`. Member 5's null set reads as empty (popcount 0, `has_none` 1) and its Jaccard is null.
+  - `vec`: `vmean`, `vcount`, `vsd`, `argmax`, `vmax(vzscore(…))` and `dist(…, [5, 5, 5])` over `[q1, q2, q3]`. Member 3 skips its null `q2`; member 6's z-score maximum is null (no spread).
+  - `maths`: `sin(2 * pi() * week / 52)`, `hill(spend, 100, 2)`, `log1p(spend)`, `sqrt(-1)` (null) and `pow(score ?? 0, 2)`.
+  - `dec_eq`, `dec_feq`: `price + cost == 0.30` keeps member 3 (0.10 + 0.20); `float(price) + float(cost) == 0.30` keeps nobody. `dec_round`: `round(price / 5)` is 2 for member 1 (12.50 / 5 = 2.5, half to even), `round(float(price) / 5)` is 3. `dec_mod` (`price % 2`) and `dec_str` (`price + region`) are `PULSE_FORMULA_COMPILE_ERROR`; `dec_zero` (`price / (cost - cost)`) is `PULSE_DECIMAL_DIVIDE_BY_ZERO`.
+  - `cal_utc`, `cal_ny`: `weekday(to_day(created_at))`, `to_day(created_at)`, `month_index(order_day) - month_index(signup_day)` and `date_trunc("week", order_day)`, with no request zone and with `time_zone` America/New_York. Member 1's `2024-03-10T03:30Z` is a Sunday (7) in UTC and a Saturday (6) in New York. `cal_bare`: `weekday(created_at)` is refused at compile, naming `to_day()`.
+  - `par`, `par_sum`: params `budget` 1000 and `min_score` 3; `FILTER_EXPRESSION` `(score ?? 0) >= params.min_score` keeps 3 of 6, and `spend * params.budget / total(spend)` allocates 348.770, 607.815 and 43.415 (sum 1000.0000000000001 in f64). `par_undecl`: `params.min_scor` is `PULSE_PARAMS_UNDECLARED`. `total_site`: `total()` in a filter is `PULSE_FORMULA_TOTAL_SITE`. Both are refused at predict too.
+  - `lookup`: `lookup("fx", region)` on the stock CLI, which registers no lookup table, is `PULSE_FORMULA_COMPILE_ERROR` "unknown name lookup", at the run and at predict.
+  - `manifest.extensions.json`: the `extensions` block of `pulse manifest --json`, with every list empty.
+- **Steps:** `build.sh` writes the requests, imports `e.csv` with its schema, runs every request (and predict where a `.predict.json` is kept) and captures the manifest's extensions block.
+
+The film copies its figures from these runs into `scenes.js`, next to a comment naming the run. The embedder code card (`ExprFunctions`, `LookupTables`, `ReferenceVectors`) is illustrative and shows no figures; its error codes (`PULSE_EXTENSION_NAME_RESERVED`, `PULSE_LOOKUP_TABLE_UNKNOWN`, `PULSE_LOOKUP_MISS`) follow the skill pack and `docs/src/internals/extension-points.md`, because the stock CLI cannot register a function or table.

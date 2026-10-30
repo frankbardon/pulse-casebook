@@ -1,0 +1,42 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "metadata": {
+      "total_rows": 6,
+      "filtered_rows": 0,
+      "cohort_file": "e.pulse"
+    },
+    "components": {
+      "aggregations": [
+        {
+          "label": "n",
+          "n": 0,
+          "n_null": 0
+        }
+      ],
+      "groupers": [
+        {
+          "field": "id",
+          "operator": {
+            "buckets": [],
+            "dict_size": 0
+          }
+        }
+      ],
+      "filterers": [
+        {
+          "n_in": 6,
+          "n_out": 0,
+          "n_null_input": 0
+        }
+      ],
+      "run": {
+        "total_records": 6,
+        "filtered_records": 0,
+        "null_records": 0
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

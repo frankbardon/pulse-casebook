@@ -1,0 +1,25 @@
+{
+ "cohort": {
+  "filename": "e.pulse"
+ },
+ "attributes": [
+  {
+   "type": "ATTR_FORMULA",
+   "label": "wd",
+   "expression": "weekday(created_at)"
+  }
+ ],
+ "groups": [
+  {
+   "type": "GROUP_CATEGORY",
+   "field": "id"
+  }
+ ],
+ "aggregations": [
+  {
+   "type": "AGG_MAX",
+   "field": "wd",
+   "label": "wd"
+  }
+ ]
+}

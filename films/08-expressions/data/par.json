@@ -1,0 +1,40 @@
+{
+ "cohort": {
+  "filename": "e.pulse"
+ },
+ "params": {
+  "budget": 1000,
+  "min_score": 3
+ },
+ "filterers": [
+  {
+   "type": "FILTER_EXPRESSION",
+   "expression": "(score ?? 0) >= params.min_score"
+  }
+ ],
+ "attributes": [
+  {
+   "type": "ATTR_FORMULA",
+   "label": "alloc",
+   "expression": "spend * params.budget / total(spend)"
+  }
+ ],
+ "groups": [
+  {
+   "type": "GROUP_CATEGORY",
+   "field": "id"
+  }
+ ],
+ "aggregations": [
+  {
+   "type": "AGG_MAX",
+   "field": "alloc",
+   "label": "alloc"
+  },
+  {
+   "type": "AGG_SUM",
+   "field": "alloc",
+   "label": "sum"
+  }
+ ]
+}
