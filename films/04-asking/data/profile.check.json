@@ -1,0 +1,14 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "profile": "film-4-analyst",
+    "written_with": "1.0.0-alpha.33",
+    "version": "v1.0.0-alpha.33",
+    "valid": true,
+    "features": 5,
+    "unverified": [],
+    "warnings": []
+  },
+  "errors": [],
+  "warnings": []
+}

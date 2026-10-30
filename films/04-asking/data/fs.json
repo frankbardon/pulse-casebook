@@ -1,0 +1,5 @@
+{"cohort":{"filename":"s.pulse"},
+"fields":["spend"],
+"filterers":[{"type":"FILTER_INCLUDE","field":"region","values":["North"]}],
+"additive_fields":["region"],
+"include_histogram":true,"histogram_bins":6,"histogram_range":[0,180]}

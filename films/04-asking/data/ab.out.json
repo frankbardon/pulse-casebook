@@ -1,0 +1,80 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "avg_spend": 68.64933247753531,
+        "total_spend": 53477.83
+      }
+    ],
+    "metadata": {
+      "total_rows": 800,
+      "filtered_rows": 800,
+      "cohort_file": "s.pulse"
+    },
+    "tests": [
+      {
+        "label": "TEST_T_spend",
+        "type": "TEST_T",
+        "variant": "welch_two_sample",
+        "statistic": 1.8325490447718134,
+        "df": 776.9994802739444,
+        "p_value": 0.06725219826950242,
+        "alpha": 0.05,
+        "reject_null": false,
+        "details": {
+          "ci_high": 9.589352374172451,
+          "ci_low": -0.3296339658578254,
+          "diff": 4.629859204157313,
+          "effect_size": {
+            "cohens_d": 0.13121939837587349
+          },
+          "groups": [
+            "variant",
+            "control"
+          ],
+          "mean": [
+            70.91374371859297,
+            66.28388451443566
+          ],
+          "n": [
+            398,
+            381
+          ],
+          "reference": "control",
+          "variance": [
+            1299.0452481658936,
+            1188.36186960768
+          ]
+        }
+      }
+    ],
+    "components": {
+      "aggregations": [
+        {
+          "label": "total_spend",
+          "n": 779,
+          "n_null": 21,
+          "operator": {
+            "sum": 53477.83
+          }
+        },
+        {
+          "label": "avg_spend",
+          "n": 779,
+          "n_null": 21,
+          "operator": {
+            "sum": 53477.83
+          }
+        }
+      ],
+      "run": {
+        "total_records": 800,
+        "filtered_records": 800,
+        "null_records": 21
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

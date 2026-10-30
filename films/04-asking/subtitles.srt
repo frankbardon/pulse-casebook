@@ -1,0 +1,235 @@
+1
+00:00:04,250 --> 00:00:05,773
+Asking before running.
+
+2
+00:00:06,650 --> 00:00:12,823
+Most calls to Pulse never read a record. They read the catalog, the schema, or the request itself.
+
+3
+00:00:13,623 --> 00:00:18,644
+In this series they are amber: cheap, no-execute reads that an agent makes first.
+
+4
+00:00:19,444 --> 00:00:22,311
+Only process and its siblings read the records.
+
+5
+00:00:23,111 --> 00:00:29,668
+The session bootstrap skill gives the order. The manifest once per session, then inspect once per cohort.
+
+6
+00:00:30,468 --> 00:00:38,049
+Then, for every question: examples or recommend for a draft, skills for the gotchas, and predict until it is clean.
+
+7
+00:00:38,849 --> 00:00:45,278
+Only then process. Explain reads the result, and errors lookup explains any code that comes back.
+
+8
+00:00:46,078 --> 00:00:53,638
+The manifest is the contract: every operator, field type, error code, tool, skill and limit this instance offers.
+
+9
+00:00:54,438 --> 00:01:01,187
+Pass an intent, and it shrinks to the operators that answer one kind of question, naming the sections it left out.
+
+10
+00:01:01,987 --> 00:01:08,715
+The build version and two digests make a cache key, so an agent fetches it again only when the instance changes.
+
+11
+00:01:09,515 --> 00:01:17,630
+Pulse adds operators over time, and embedders register their own through options dot extensions. The manifest lists both.
+
+12
+00:01:18,430 --> 00:01:24,753
+A feature profile is an instance's allowlist of operators and capabilities, checked against the build.
+
+13
+00:01:25,553 --> 00:01:30,958
+Served over M C P, this one offers no recommend, explain or facet tools.
+
+14
+00:01:31,758 --> 00:01:37,462
+A hidden slot is not there at all: a request with params is refused as an unknown key.
+
+15
+00:01:38,262 --> 00:01:45,715
+Inspect reads the header and schema, never a record: each field's name, type, nullability, description and dictionary.
+
+16
+00:01:46,515 --> 00:01:50,768
+Our cohort: eight hundred shoppers in an A B test. Spend can be null.
+
+17
+00:01:51,568 --> 00:01:58,957
+Over M C P, inspect also binds these names into the tools, so a call can only name a field that exists.
+
+18
+00:01:59,757 --> 00:02:04,330
+Most questions start in words. Did the variant arm spend more than control?
+
+19
+00:02:05,130 --> 00:02:10,407
+That is a compare groups question. It needs one outcome, spend, and one group, arm.
+
+20
+00:02:11,207 --> 00:02:16,527
+The docs carry a question guide for each intent, from the question itself to its pitfalls.
+
+21
+00:02:17,327 --> 00:02:20,919
+Recommend turns an intent into ranked draft requests.
+
+22
+00:02:21,719 --> 00:02:27,807
+With no cohort, the drafts are skeletons. Every placeholder must be filled before anything runs.
+
+23
+00:02:28,607 --> 00:02:35,399
+Bind it to our cohort, with spend and arm as hints, and each draft is filled in and has already passed predict.
+
+24
+00:02:36,199 --> 00:02:44,015
+Every draft says why it fits and what to use instead. With only two groups, the ANOVA's alternatives point to a Welch t test.
+
+25
+00:02:44,815 --> 00:02:48,258
+Predict checks a request against the schema without running it.
+
+26
+00:02:49,058 --> 00:02:52,650
+It answers valid or not, with coded errors and warnings.
+
+27
+00:02:53,450 --> 00:02:59,346
+It lists the defaults it applied. Our aggregation with no type, on a float field, became a sum.
+
+28
+00:03:00,146 --> 00:03:05,530
+It says whether the run streams, and if not, why: a median has to buffer its values.
+
+29
+00:03:06,330 --> 00:03:11,394
+When they apply, it adds limit findings, post-window attributes and advisories.
+
+30
+00:03:12,194 --> 00:03:19,007
+Predict raises the codes the runtime would. Here a t test splits by arm, on a request grouped by arm.
+
+31
+00:03:19,807 --> 00:03:23,527
+Every group then holds one arm, so there is nothing to compare.
+
+32
+00:03:24,327 --> 00:03:29,647
+Predict refuses it before reading a record, and process refuses it with the same code.
+
+33
+00:03:30,447 --> 00:03:35,682
+Pulse refuses what it does not understand. A misspelt label key is not ignored.
+
+34
+00:03:36,482 --> 00:03:41,055
+The error gives the path, a did you mean, and every valid key at that spot.
+
+35
+00:03:41,855 --> 00:03:45,895
+Predict and process refuse it alike, at any depth of the request.
+
+36
+00:03:46,695 --> 00:03:51,866
+For any code, errors lookup returns the canonical message and structured fixups.
+
+37
+00:03:52,666 --> 00:03:56,791
+This one says to rename the key to its request slot, with examples.
+
+38
+00:03:57,591 --> 00:04:02,612
+An agent applies the fixup, predicts again, and runs only when predict is clean.
+
+39
+00:04:03,412 --> 00:04:09,713
+From a script, the exit status says the same: zero is fine, one is fatal, and two is a usage error.
+
+40
+00:04:10,513 --> 00:04:15,236
+An advisory answers a different question: does this analysis fit the data?
+
+41
+00:04:16,036 --> 00:04:24,215
+A t test split by region reads a dictionary of four regions. Predict stays valid, and suggests a Welch ANOVA instead.
+
+42
+00:04:25,015 --> 00:04:28,863
+An advisory is never a warning, and never changes what runs.
+
+43
+00:04:29,663 --> 00:04:36,839
+Run as written, the test slot fails alone, with its error and a slot failed warning. The average still comes back.
+
+44
+00:04:37,639 --> 00:04:41,828
+Explain says in plain words what a request will do, without running it.
+
+45
+00:04:42,628 --> 00:04:51,297
+Hand it the result too, and it reads the findings. The variant arm spent four dollars sixty-three more on average, at p point oh six seven.
+
+46
+00:04:52,097 --> 00:04:58,633
+Explain calls that no evidence of a difference, which is not evidence of none. The effect is very small.
+
+47
+00:04:59,433 --> 00:05:05,756
+Relay its caveats too: independent rows, a roughly normal average, and a two-sided p-value.
+
+48
+00:05:06,556 --> 00:05:14,095
+Request params are named constants. An expression reads params dot plan instead of a value spliced into its text.
+
+49
+00:05:14,895 --> 00:05:20,962
+Change the values, never the expression: pro shoppers with five or more visits, then basic ones.
+
+50
+00:05:21,762 --> 00:05:27,125
+Read a param the request does not declare, and predict refuses it, as process does.
+
+51
+00:05:27,925 --> 00:05:34,824
+A stored template goes one step earlier: typed variables and a body, rendered into a request, then predicted.
+
+52
+00:05:35,624 --> 00:05:42,309
+A facet is a cheap first run for profiling a cohort. Unlike the calls before it, it reads records.
+
+53
+00:05:43,109 --> 00:05:51,245
+In North, spend has two hundred twenty-one values, five nulls, a mean of sixty-seven sixty, and a histogram over bounds you set.
+
+54
+00:05:52,045 --> 00:05:57,813
+Additive counts lift the field's own filter, so every region shows how many shoppers it would bring.
+
+55
+00:05:58,613 --> 00:06:04,466
+Facets also host overlays against a population cohort. Film sixteen covers those.
+
+56
+00:06:05,266 --> 00:06:11,482
+So: read the manifest, inspect the cohort, draft with recommend, and predict until it is clean.
+
+57
+00:06:12,282 --> 00:06:17,090
+Then run, read the result with explain, and look up any code that comes back.
+
+58
+00:06:17,890 --> 00:06:25,962
+Pulse adds operators, skills and examples over time. The manifest shows what your instance offers, extensions included.
+
+59
+00:06:26,762 --> 00:06:28,775
+Pulse. Ask first, then run.

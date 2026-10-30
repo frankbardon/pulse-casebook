@@ -1,0 +1,3335 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "format_version": "1.0",
+    "pulse_version": "v1.0.0-alpha.33",
+    "tzdata_version": "2026c",
+    "feature_set_digest": "fs1:0db8e6f718ad65aa16c7b10cd79c2f9aeb8c13feac370a5f6f8d16af57f548ed",
+    "limits_digest": "lim1:ace12be491d5cbb818420290f766f22ccfa23f25884067d037dfeb9f50b9fb16",
+    "components": {
+      "aggregators": [
+        {
+          "name": "AGG_CI_LOWER",
+          "category": "aggregator",
+          "description": "",
+          "params": [
+            {
+              "name": "confidence",
+              "type": "float",
+              "required": false,
+              "default": 0.95,
+              "description": ""
+            },
+            {
+              "name": "method",
+              "type": "string",
+              "required": false,
+              "default": "normal",
+              "description": ""
+            }
+          ],
+          "accepts_types": [
+            "date",
+            "datetime",
+            "f32",
+            "f64",
+            "packed_bool",
+            "u16",
+            "u32",
+            "u4",
+            "u64",
+            "u8"
+          ],
+          "streamable": true,
+          "component_schema": {
+            "keys": [
+              {
+                "name": "n",
+                "type": "int",
+                "description": ""
+              },
+              {
+                "name": "n_null",
+                "type": "int",
+                "description": ""
+              },
+              {
+                "name": "sum_weights",
+                "type": "float64",
+                "description": "",
+                "optional": true
+              },
+              {
+                "name": "n_eff",
+                "type": "float64",
+                "description": "",
+                "optional": true
+              },
+              {
+                "name": "n_weight_invalid",
+                "type": "int",
+                "description": "",
+                "optional": true
+              },
+              {
+                "name": "mean",
+                "type": "float64",
+                "description": ""
+              },
+              {
+                "name": "stderr",
+                "type": "float64",
+                "description": ""
+              },
+              {
+                "name": "alpha",
+                "type": "float64",
+                "description": ""
+              },
+              {
+                "name": "t_critical",
+                "type": "float64",
+                "description": ""
+              },
+              {
+                "name": "lower",
+                "type": "float64",
+                "description": ""
+              }
+            ],
+            "mergeability": "mergeable"
+          },
+          "weight_aware": true,
+          "weight_kinds": [
+            "frequency",
+            "probability"
+          ],
+          "intents": [
+            "compare_groups",
+            "describe"
+          ]
+        },
+        {
+          "name": "AGG_CI_UPPER",
+          "category": "aggregator",
+          "description": "",
+          "params": [
+            {
+              "name": "confidence",
+              "type": "float",
+              "required": false,
+              "default": 0.95,
+              "description": ""
+            },
+            {
+              "name": "method",
+              "type": "string",
+              "required": false,
+              "default": "normal",
+              "description": ""
+            }
+          ],
+          "accepts_types": [
+            "date",
+            "datetime",
+            "f32",
+            "f64",
+            "packed_bool",
+            "u16",
+            "u32",
+            "u4",
+            "u64",
+            "u8"
+          ],
+          "streamable": true,
+          "component_schema": {
+            "keys": [
+              {
+                "name": "n",
+                "type": "int",
+                "description": ""
+              },
+              {
+                "name": "n_null",
+                "type": "int",
+                "description": ""
+              },
+              {
+                "name": "sum_weights",
+                "type": "float64",
+                "description": "",
+                "optional": true
+              },
+              {
+                "name": "n_eff",
+                "type": "float64",
+                "description": "",
+                "optional": true
+              },
+              {
+                "name": "n_weight_invalid",
+                "type": "int",
+                "description": "",
+                "optional": true
+              },
+              {
+                "name": "mean",
+                "type": "float64",
+                "description": ""
+              },
+              {
+                "name": "stderr",
+                "type": "float64",
+                "description": ""
+              },
+              {
+                "name": "alpha",
+                "type": "float64",
+                "description": ""
+              },
+              {
+                "name": "t_critical",
+                "type": "float64",
+                "description": ""
+              },
+              {
+                "name": "upper",
+                "type": "float64",
+                "description": ""
+              }
+            ],
+            "mergeability": "mergeable"
+          },
+          "weight_aware": true,
+          "weight_kinds": [
+            "frequency",
+            "probability"
+          ],
+          "intents": [
+            "compare_groups",
+            "describe"
+          ]
+        },
+        {
+          "name": "AGG_VEC_MEAN",
+          "category": "aggregator",
+          "description": "",
+          "params": [
+            {
+              "name": "labels",
+              "type": "list",
+              "required": false,
+              "description": ""
+            },
+            {
+              "name": "expand",
+              "type": "bool",
+              "required": false,
+              "description": ""
+            },
+            {
+              "name": "element",
+              "type": "string",
+              "required": false,
+              "description": ""
+            }
+          ],
+          "accepts_types": [
+            "f32",
+            "f64",
+            "packed_bool",
+            "u16",
+            "u32",
+            "u4",
+            "u64",
+            "u8"
+          ],
+          "streamable": true,
+          "component_schema": {
+            "keys": [
+              {
+                "name": "n",
+                "type": "int",
+                "description": ""
+              },
+              {
+                "name": "n_null",
+                "type": "int",
+                "description": ""
+              },
+              {
+                "name": "sum_weights",
+                "type": "float64",
+                "description": "",
+                "optional": true
+              },
+              {
+                "name": "n_eff",
+                "type": "float64",
+                "description": "",
+                "optional": true
+              },
+              {
+                "name": "n_weight_invalid",
+                "type": "int",
+                "description": "",
+                "optional": true
+              },
+              {
+                "name": "labels",
+                "type": "[]string",
+                "description": ""
+              },
+              {
+                "name": "element_n",
+                "type": "[]int",
+                "description": ""
+              },
+              {
+                "name": "element_sum",
+                "type": "[]float64",
+                "description": ""
+              },
+              {
+                "name": "element_sum_weights",
+                "type": "[]float64",
+                "description": "",
+                "optional": true
+              }
+            ],
+            "mergeability": "mergeable"
+          },
+          "weight_aware": true,
+          "weight_kinds": [
+            "frequency",
+            "probability"
+          ],
+          "intents": [
+            "compare_groups",
+            "describe"
+          ]
+        },
+        {
+          "name": "AGG_WELFORD",
+          "category": "aggregator",
+          "description": "",
+          "params": null,
+          "accepts_types": [
+            "f32",
+            "f64",
+            "u16",
+            "u32",
+            "u64",
+            "u8"
+          ],
+          "streamable": true,
+          "component_schema": {
+            "keys": [
+              {
+                "name": "n",
+                "type": "int",
+                "description": ""
+              },
+              {
+                "name": "n_null",
+                "type": "int",
+                "description": ""
+              },
+              {
+                "name": "sum_weights",
+                "type": "float64",
+                "description": "",
+                "optional": true
+              },
+              {
+                "name": "n_eff",
+                "type": "float64",
+                "description": "",
+                "optional": true
+              },
+              {
+                "name": "n_weight_invalid",
+                "type": "int",
+                "description": "",
+                "optional": true
+              },
+              {
+                "name": "mean",
+                "type": "float64",
+                "description": ""
+              },
+              {
+                "name": "m2",
+                "type": "float64",
+                "description": ""
+              },
+              {
+                "name": "variance",
+                "type": "float64",
+                "description": ""
+              },
+              {
+                "name": "stddev",
+                "type": "float64",
+                "description": ""
+              }
+            ],
+            "mergeability": "mergeable"
+          },
+          "weight_aware": true,
+          "weight_kinds": [
+            "frequency",
+            "probability"
+          ],
+          "intents": [
+            "compare_groups",
+            "describe"
+          ]
+        }
+      ],
+      "attributes": [],
+      "filterers": [],
+      "groupers": [
+        {
+          "name": "GROUP_CATEGORY",
+          "category": "grouper",
+          "description": "",
+          "params": null,
+          "accepts_types": [
+            "categorical_u16",
+            "categorical_u32",
+            "categorical_u8",
+            "date",
+            "datetime",
+            "decimal128",
+            "f32",
+            "f64",
+            "packed_bool",
+            "u16",
+            "u32",
+            "u4",
+            "u64",
+            "u8"
+          ],
+          "streamable": true,
+          "component_schema": {
+            "keys": [
+              {
+                "name": "total_n",
+                "type": "int",
+                "description": ""
+              },
+              {
+                "name": "n_null",
+                "type": "int",
+                "description": ""
+              },
+              {
+                "name": "dict_size",
+                "type": "int",
+                "description": ""
+              },
+              {
+                "name": "buckets",
+                "type": "[]bucket",
+                "description": ""
+              }
+            ],
+            "mergeability": "mergeable"
+          },
+          "intents": [
+            "compare_groups",
+            "composition"
+          ]
+        },
+        {
+          "name": "GROUP_DATE_RANGES",
+          "category": "grouper",
+          "description": "",
+          "params": [
+            {
+              "name": "ranges",
+              "type": "array",
+              "required": true,
+              "description": ""
+            },
+            {
+              "name": "unmatched_label",
+              "type": "string",
+              "required": false,
+              "default": "unmatched",
+              "description": ""
+            },
+            {
+              "name": "table",
+              "type": "string",
+              "required": false,
+              "description": ""
+            }
+          ],
+          "accepts_types": [
+            "date",
+            "datetime"
+          ],
+          "streamable": true,
+          "component_schema": {
+            "keys": [
+              {
+                "name": "total_n",
+                "type": "int",
+                "description": ""
+              },
+              {
+                "name": "n_null",
+                "type": "int",
+                "description": ""
+              },
+              {
+                "name": "n_ranges",
+                "type": "int",
+                "description": ""
+              },
+              {
+                "name": "unmatched_label",
+                "type": "string",
+                "description": ""
+              },
+              {
+                "name": "buckets",
+                "type": "[]bucket",
+                "description": ""
+              }
+            ],
+            "mergeability": "mergeable"
+          },
+          "zone": "capable",
+          "intents": [
+            "change_over_time",
+            "compare_groups"
+          ]
+        },
+        {
+          "name": "GROUP_NUMERIC_RANGES",
+          "category": "grouper",
+          "description": "",
+          "params": [
+            {
+              "name": "ranges",
+              "type": "array",
+              "required": true,
+              "description": ""
+            },
+            {
+              "name": "unmatched_label",
+              "type": "string",
+              "required": false,
+              "default": "unmatched",
+              "description": ""
+            },
+            {
+              "name": "table",
+              "type": "string",
+              "required": false,
+              "description": ""
+            }
+          ],
+          "accepts_types": [
+            "f32",
+            "f64",
+            "u16",
+            "u32",
+            "u4",
+            "u64",
+            "u8"
+          ],
+          "streamable": true,
+          "component_schema": {
+            "keys": [
+              {
+                "name": "total_n",
+                "type": "int",
+                "description": ""
+              },
+              {
+                "name": "n_null",
+                "type": "int",
+                "description": ""
+              },
+              {
+                "name": "n_ranges",
+                "type": "int",
+                "description": ""
+              },
+              {
+                "name": "unmatched_label",
+                "type": "string",
+                "description": ""
+              },
+              {
+                "name": "buckets",
+                "type": "[]bucket",
+                "description": ""
+              }
+            ],
+            "mergeability": "mergeable"
+          },
+          "intents": [
+            "compare_groups",
+            "segment"
+          ]
+        },
+        {
+          "name": "GROUP_SET_PER_ELEMENT",
+          "category": "grouper",
+          "description": "",
+          "params": null,
+          "accepts_types": [
+            "set_u128",
+            "set_u16",
+            "set_u256",
+            "set_u32",
+            "set_u64",
+            "set_u8"
+          ],
+          "streamable": true,
+          "component_schema": {
+            "keys": [
+              {
+                "name": "total_n",
+                "type": "int",
+                "description": ""
+              },
+              {
+                "name": "n_null",
+                "type": "int",
+                "description": ""
+              },
+              {
+                "name": "total_label_observations",
+                "type": "int",
+                "description": ""
+              },
+              {
+                "name": "buckets",
+                "type": "[]bucket",
+                "description": ""
+              }
+            ],
+            "mergeability": "mergeable"
+          },
+          "intents": [
+            "compare_groups",
+            "composition"
+          ]
+        }
+      ],
+      "windows": [],
+      "features": []
+    },
+    "tests": [
+      {
+        "name": "TEST_ANOVA_F",
+        "family": "TEST_ANOVA_F",
+        "tier": 1,
+        "description": "",
+        "streamable": true,
+        "params": [
+          {
+            "name": "alpha",
+            "type": "float",
+            "required": false,
+            "default": 0.05,
+            "description": "",
+            "slot": true
+          }
+        ],
+        "requires": [
+          "Field",
+          "SplitBy"
+        ],
+        "intents": [
+          "compare_groups"
+        ],
+        "weight_kinds": [
+          "frequency",
+          "probability"
+        ]
+      },
+      {
+        "name": "TEST_ANOVA_RM",
+        "family": "TEST_ANOVA_RM",
+        "tier": 1,
+        "description": "",
+        "streamable": false,
+        "params": [
+          {
+            "name": "alpha",
+            "type": "float",
+            "required": false,
+            "default": 0.05,
+            "description": "",
+            "slot": true
+          }
+        ],
+        "requires": [
+          "Field",
+          "SplitBy",
+          "SubjectField"
+        ],
+        "intents": [
+          "change_over_time",
+          "compare_groups"
+        ]
+      },
+      {
+        "name": "TEST_ANOVA_WELCH",
+        "family": "TEST_ANOVA_WELCH",
+        "tier": 1,
+        "description": "",
+        "streamable": true,
+        "params": [
+          {
+            "name": "alpha",
+            "type": "float",
+            "required": false,
+            "default": 0.05,
+            "description": "",
+            "slot": true
+          }
+        ],
+        "requires": [
+          "Field",
+          "SplitBy"
+        ],
+        "intents": [
+          "compare_groups"
+        ],
+        "weight_kinds": [
+          "frequency",
+          "probability"
+        ]
+      },
+      {
+        "name": "TEST_BOX_M",
+        "family": "TEST_BOX_M",
+        "tier": 1,
+        "description": "",
+        "streamable": true,
+        "params": [
+          {
+            "name": "alpha",
+            "type": "float",
+            "required": false,
+            "default": 0.05,
+            "description": "",
+            "slot": true
+          },
+          {
+            "name": "missing",
+            "type": "enum",
+            "required": false,
+            "default": "listwise",
+            "description": "",
+            "enum_values": [
+              "listwise"
+            ]
+          }
+        ],
+        "requires": [
+          "SplitBy"
+        ],
+        "intents": [
+          "compare_groups",
+          "data_quality"
+        ],
+        "weight_kinds": [
+          "frequency",
+          "probability"
+        ]
+      },
+      {
+        "name": "TEST_BROWN_FORSYTHE",
+        "family": "TEST_BROWN_FORSYTHE",
+        "tier": 1,
+        "description": "",
+        "streamable": false,
+        "params": [
+          {
+            "name": "alpha",
+            "type": "float",
+            "required": false,
+            "default": 0.05,
+            "description": "",
+            "slot": true
+          }
+        ],
+        "requires": [
+          "Field",
+          "SplitBy"
+        ],
+        "intents": [
+          "compare_groups",
+          "distribution_shape"
+        ],
+        "weight_kinds": [
+          "frequency"
+        ]
+      },
+      {
+        "name": "TEST_CHISQ",
+        "family": "TEST_CHISQ",
+        "tier": 1,
+        "description": "",
+        "streamable": true,
+        "params": [
+          {
+            "name": "alpha",
+            "type": "float",
+            "required": false,
+            "default": 0.05,
+            "description": "",
+            "slot": true
+          },
+          {
+            "name": "expected",
+            "type": "object",
+            "required": false,
+            "description": ""
+          }
+        ],
+        "requires": [
+          "Rows",
+          "Cols"
+        ],
+        "intents": [
+          "compare_groups",
+          "relationship"
+        ],
+        "weight_kinds": [
+          "frequency",
+          "probability"
+        ]
+      },
+      {
+        "name": "TEST_FISHER_EXACT",
+        "family": "TEST_FISHER_EXACT",
+        "tier": 1,
+        "description": "",
+        "streamable": false,
+        "params": [
+          {
+            "name": "alpha",
+            "type": "float",
+            "required": false,
+            "default": 0.05,
+            "description": "",
+            "slot": true
+          }
+        ],
+        "requires": [
+          "Rows",
+          "Cols"
+        ],
+        "intents": [
+          "compare_groups",
+          "relationship"
+        ],
+        "weight_kinds": [
+          "frequency"
+        ]
+      },
+      {
+        "name": "TEST_HOTELLING_T2",
+        "family": "TEST_HOTELLING_T2",
+        "tier": 1,
+        "description": "",
+        "streamable": true,
+        "params": [
+          {
+            "name": "alpha",
+            "type": "float",
+            "required": false,
+            "default": 0.05,
+            "description": "",
+            "slot": true
+          },
+          {
+            "name": "mu",
+            "type": "list",
+            "required": false,
+            "description": ""
+          },
+          {
+            "name": "variance",
+            "type": "enum",
+            "required": false,
+            "default": "pooled",
+            "description": "",
+            "enum_values": [
+              "pooled",
+              "unequal"
+            ]
+          },
+          {
+            "name": "missing",
+            "type": "enum",
+            "required": false,
+            "default": "listwise",
+            "description": "",
+            "enum_values": [
+              "listwise"
+            ]
+          }
+        ],
+        "intents": [
+          "benchmark",
+          "compare_groups"
+        ],
+        "weight_kinds": [
+          "frequency",
+          "probability"
+        ]
+      },
+      {
+        "name": "TEST_KRUSKAL_WALLIS",
+        "family": "TEST_KRUSKAL_WALLIS",
+        "tier": 1,
+        "description": "",
+        "streamable": false,
+        "params": [
+          {
+            "name": "alpha",
+            "type": "float",
+            "required": false,
+            "default": 0.05,
+            "description": "",
+            "slot": true
+          }
+        ],
+        "requires": [
+          "Field",
+          "SplitBy"
+        ],
+        "intents": [
+          "compare_groups"
+        ],
+        "weight_kinds": [
+          "frequency"
+        ]
+      },
+      {
+        "name": "TEST_KS",
+        "family": "TEST_KS",
+        "tier": 1,
+        "description": "",
+        "streamable": false,
+        "params": [
+          {
+            "name": "alpha",
+            "type": "float",
+            "required": false,
+            "default": 0.05,
+            "description": "",
+            "slot": true
+          }
+        ],
+        "requires": [
+          "Field",
+          "SplitBy"
+        ],
+        "intents": [
+          "compare_groups",
+          "distribution_shape"
+        ],
+        "weight_kinds": [
+          "frequency"
+        ]
+      },
+      {
+        "name": "TEST_MANN_WHITNEY_U",
+        "family": "TEST_MANN_WHITNEY_U",
+        "tier": 1,
+        "description": "",
+        "streamable": false,
+        "params": [
+          {
+            "name": "alpha",
+            "type": "float",
+            "required": false,
+            "default": 0.05,
+            "description": "",
+            "slot": true
+          },
+          {
+            "name": "reference",
+            "type": "string",
+            "required": false,
+            "description": ""
+          }
+        ],
+        "requires": [
+          "Field",
+          "SplitBy"
+        ],
+        "intents": [
+          "compare_groups"
+        ],
+        "weight_kinds": [
+          "frequency"
+        ]
+      },
+      {
+        "name": "TEST_MANOVA",
+        "family": "TEST_MANOVA",
+        "tier": 1,
+        "description": "",
+        "streamable": true,
+        "params": [
+          {
+            "name": "alpha",
+            "type": "float",
+            "required": false,
+            "default": 0.05,
+            "description": "",
+            "slot": true
+          },
+          {
+            "name": "missing",
+            "type": "enum",
+            "required": false,
+            "default": "listwise",
+            "description": "",
+            "enum_values": [
+              "listwise"
+            ]
+          }
+        ],
+        "requires": [
+          "SplitBy"
+        ],
+        "intents": [
+          "compare_groups"
+        ],
+        "weight_kinds": [
+          "frequency",
+          "probability"
+        ]
+      },
+      {
+        "name": "TEST_PAIRED_T",
+        "family": "TEST_PAIRED_T",
+        "tier": 1,
+        "description": "",
+        "streamable": true,
+        "params": [
+          {
+            "name": "alpha",
+            "type": "float",
+            "required": false,
+            "default": 0.05,
+            "description": "",
+            "slot": true
+          }
+        ],
+        "requires": [
+          "Field",
+          "Field2"
+        ],
+        "intents": [
+          "change_over_time",
+          "compare_groups"
+        ],
+        "weight_kinds": [
+          "frequency",
+          "probability"
+        ]
+      },
+      {
+        "name": "TEST_PROP_Z",
+        "family": "TEST_PROP_Z",
+        "tier": 1,
+        "description": "",
+        "streamable": true,
+        "params": [
+          {
+            "name": "alpha",
+            "type": "float",
+            "required": false,
+            "default": 0.05,
+            "description": "",
+            "slot": true
+          },
+          {
+            "name": "success",
+            "type": "string",
+            "required": true,
+            "description": ""
+          },
+          {
+            "name": "p0",
+            "type": "float",
+            "required": false,
+            "description": ""
+          },
+          {
+            "name": "reference",
+            "type": "string",
+            "required": false,
+            "description": ""
+          },
+          {
+            "name": "covariate",
+            "type": "string",
+            "required": false,
+            "description": "",
+            "names_column": true
+          }
+        ],
+        "requires": [
+          "Field",
+          "SplitBy"
+        ],
+        "intents": [
+          "compare_groups"
+        ],
+        "weight_kinds": [
+          "frequency",
+          "probability"
+        ]
+      },
+      {
+        "name": "TEST_T",
+        "family": "TEST_T",
+        "tier": 1,
+        "description": "",
+        "streamable": true,
+        "params": [
+          {
+            "name": "alpha",
+            "type": "float",
+            "required": false,
+            "default": 0.05,
+            "description": "",
+            "slot": true
+          },
+          {
+            "name": "mu",
+            "type": "float",
+            "required": false,
+            "default": 0,
+            "description": ""
+          },
+          {
+            "name": "reference",
+            "type": "string",
+            "required": false,
+            "description": ""
+          },
+          {
+            "name": "covariate",
+            "type": "string",
+            "required": false,
+            "description": "",
+            "names_column": true
+          }
+        ],
+        "requires": [
+          "Field"
+        ],
+        "intents": [
+          "benchmark",
+          "compare_groups"
+        ],
+        "weight_kinds": [
+          "frequency",
+          "probability"
+        ]
+      },
+      {
+        "name": "TEST_WELCH",
+        "family": "TEST_WELCH",
+        "tier": 1,
+        "description": "",
+        "streamable": true,
+        "params": [
+          {
+            "name": "alpha",
+            "type": "float",
+            "required": false,
+            "default": 0.05,
+            "description": "",
+            "slot": true
+          },
+          {
+            "name": "reference",
+            "type": "string",
+            "required": false,
+            "description": ""
+          },
+          {
+            "name": "covariate",
+            "type": "string",
+            "required": false,
+            "description": "",
+            "names_column": true
+          }
+        ],
+        "requires": [
+          "Field",
+          "SplitBy"
+        ],
+        "intents": [
+          "compare_groups"
+        ],
+        "weight_kinds": [
+          "frequency",
+          "probability"
+        ]
+      },
+      {
+        "name": "TEST_WILCOXON_SR",
+        "family": "TEST_WILCOXON_SR",
+        "tier": 1,
+        "description": "",
+        "streamable": false,
+        "params": [
+          {
+            "name": "alpha",
+            "type": "float",
+            "required": false,
+            "default": 0.05,
+            "description": "",
+            "slot": true
+          }
+        ],
+        "requires": [
+          "Field",
+          "Field2"
+        ],
+        "intents": [
+          "change_over_time",
+          "compare_groups"
+        ],
+        "weight_kinds": [
+          "frequency"
+        ]
+      },
+      {
+        "name": "TEST_Z_TWO_SAMPLE",
+        "family": "TEST_Z_TWO_SAMPLE",
+        "tier": 1,
+        "description": "",
+        "streamable": true,
+        "params": [
+          {
+            "name": "alpha",
+            "type": "float",
+            "required": false,
+            "default": 0.05,
+            "description": "",
+            "slot": true
+          },
+          {
+            "name": "reference",
+            "type": "string",
+            "required": false,
+            "description": ""
+          },
+          {
+            "name": "covariate",
+            "type": "string",
+            "required": false,
+            "description": "",
+            "names_column": true
+          }
+        ],
+        "requires": [
+          "Field",
+          "SplitBy"
+        ],
+        "intents": [
+          "compare_groups"
+        ],
+        "weight_kinds": [
+          "frequency",
+          "probability"
+        ]
+      }
+    ],
+    "post_tests": [
+      {
+        "name": "TEST_ANOVA_F/one_way_from_summary",
+        "family": "TEST_ANOVA_F",
+        "tier": 2,
+        "variant": "one_way_from_summary",
+        "description": "",
+        "streamable": false,
+        "params": [
+          {
+            "name": "alpha",
+            "type": "float",
+            "required": false,
+            "default": 0.05,
+            "description": "",
+            "slot": true
+          },
+          {
+            "name": "n_col",
+            "type": "string",
+            "required": true,
+            "description": ""
+          },
+          {
+            "name": "variance_col",
+            "type": "string",
+            "required": true,
+            "description": ""
+          },
+          {
+            "name": "partition_by",
+            "type": "list",
+            "required": false,
+            "description": ""
+          }
+        ],
+        "requires": [
+          "Field",
+          "SplitBy"
+        ],
+        "intents": [
+          "compare_groups"
+        ]
+      },
+      {
+        "name": "TEST_ANOVA_WELCH/welch_one_way_post",
+        "family": "TEST_ANOVA_WELCH",
+        "tier": 2,
+        "variant": "welch_one_way_post",
+        "description": "",
+        "streamable": false,
+        "params": [
+          {
+            "name": "alpha",
+            "type": "float",
+            "required": false,
+            "default": 0.05,
+            "description": "",
+            "slot": true
+          },
+          {
+            "name": "n_col",
+            "type": "string",
+            "required": true,
+            "description": ""
+          },
+          {
+            "name": "variance_col",
+            "type": "string",
+            "required": true,
+            "description": ""
+          },
+          {
+            "name": "partition_by",
+            "type": "list",
+            "required": false,
+            "description": ""
+          }
+        ],
+        "requires": [
+          "Field",
+          "SplitBy"
+        ],
+        "intents": [
+          "compare_groups"
+        ]
+      },
+      {
+        "name": "TEST_BROWN_FORSYTHE/median_post",
+        "family": "TEST_BROWN_FORSYTHE",
+        "tier": 2,
+        "variant": "median_post",
+        "description": "",
+        "streamable": false,
+        "params": [
+          {
+            "name": "alpha",
+            "type": "float",
+            "required": false,
+            "default": 0.05,
+            "description": "",
+            "slot": true
+          },
+          {
+            "name": "partition_by",
+            "type": "list",
+            "required": false,
+            "description": ""
+          }
+        ],
+        "requires": [
+          "Field",
+          "SplitBy"
+        ],
+        "intents": [
+          "compare_groups",
+          "distribution_shape"
+        ]
+      },
+      {
+        "name": "TEST_KS/two_sample_post",
+        "family": "TEST_KS",
+        "tier": 2,
+        "variant": "two_sample_post",
+        "description": "",
+        "streamable": false,
+        "params": [
+          {
+            "name": "alpha",
+            "type": "float",
+            "required": false,
+            "default": 0.05,
+            "description": "",
+            "slot": true
+          },
+          {
+            "name": "partition_by",
+            "type": "list",
+            "required": false,
+            "description": ""
+          }
+        ],
+        "requires": [
+          "Field",
+          "Field2"
+        ],
+        "intents": [
+          "compare_groups",
+          "distribution_shape"
+        ]
+      },
+      {
+        "name": "TEST_PAIRED_T/paired_two_sided_post",
+        "family": "TEST_PAIRED_T",
+        "tier": 2,
+        "variant": "paired_two_sided_post",
+        "description": "",
+        "streamable": false,
+        "params": [
+          {
+            "name": "alpha",
+            "type": "float",
+            "required": false,
+            "default": 0.05,
+            "description": "",
+            "slot": true
+          },
+          {
+            "name": "partition_by",
+            "type": "list",
+            "required": false,
+            "description": ""
+          }
+        ],
+        "requires": [
+          "Field",
+          "Field2"
+        ],
+        "intents": [
+          "change_over_time",
+          "compare_groups"
+        ]
+      },
+      {
+        "name": "TEST_TUKEY_HSD",
+        "family": "TEST_TUKEY_HSD",
+        "tier": 2,
+        "variant": "tukey_kramer",
+        "description": "",
+        "streamable": false,
+        "params": [
+          {
+            "name": "alpha",
+            "type": "float",
+            "required": false,
+            "default": 0.05,
+            "description": "",
+            "slot": true
+          },
+          {
+            "name": "ms_within",
+            "type": "float",
+            "required": true,
+            "description": ""
+          },
+          {
+            "name": "df_within",
+            "type": "float",
+            "required": true,
+            "description": ""
+          },
+          {
+            "name": "n_column",
+            "type": "string",
+            "required": false,
+            "default": "n",
+            "description": ""
+          },
+          {
+            "name": "partition_by",
+            "type": "list",
+            "required": false,
+            "description": ""
+          }
+        ],
+        "requires": [
+          "Field",
+          "SplitBy"
+        ],
+        "intents": [
+          "compare_groups"
+        ]
+      },
+      {
+        "name": "TEST_WILCOXON_SR/asymptotic_post",
+        "family": "TEST_WILCOXON_SR",
+        "tier": 2,
+        "variant": "asymptotic_post",
+        "description": "",
+        "streamable": false,
+        "params": [
+          {
+            "name": "alpha",
+            "type": "float",
+            "required": false,
+            "default": 0.05,
+            "description": "",
+            "slot": true
+          },
+          {
+            "name": "partition_by",
+            "type": "list",
+            "required": false,
+            "description": ""
+          }
+        ],
+        "requires": [
+          "Field",
+          "Field2"
+        ],
+        "intents": [
+          "change_over_time",
+          "compare_groups"
+        ]
+      }
+    ],
+    "regressions": [],
+    "matrices": [
+      {
+        "name": "MAT_DISTANCE",
+        "description": "",
+        "accepts_types": [
+          "f32",
+          "f64",
+          "packed_bool",
+          "u16",
+          "u32",
+          "u4",
+          "u64",
+          "u8"
+        ],
+        "params": [
+          {
+            "name": "between",
+            "type": "object",
+            "required": true,
+            "description": ""
+          },
+          {
+            "name": "metric",
+            "type": "enum",
+            "required": false,
+            "default": "euclidean",
+            "description": "",
+            "enum_values": [
+              "euclidean",
+              "sq_euclidean",
+              "manhattan",
+              "chebyshev",
+              "cosine",
+              "hellinger",
+              "aitchison",
+              "mahalanobis"
+            ]
+          },
+          {
+            "name": "min_valid",
+            "type": "int",
+            "required": false,
+            "default": 1,
+            "description": ""
+          },
+          {
+            "name": "standardize",
+            "type": "bool",
+            "required": false,
+            "default": false,
+            "description": ""
+          },
+          {
+            "name": "missing",
+            "type": "enum",
+            "required": false,
+            "default": "listwise",
+            "description": "",
+            "enum_values": [
+              "listwise"
+            ]
+          },
+          {
+            "name": "max_drop_share",
+            "type": "float",
+            "required": false,
+            "description": ""
+          }
+        ],
+        "output_keys": {
+          "primary": "distance",
+          "auxiliary": [
+            "centroids",
+            "centroids_standardized",
+            "pooled_covariance"
+          ],
+          "vectors": [
+            "counts",
+            "sizes"
+          ]
+        },
+        "streamable": true,
+        "mergeable": true,
+        "component_schema": {
+          "keys": [
+            {
+              "name": "n",
+              "type": "int",
+              "description": ""
+            },
+            {
+              "name": "n_null",
+              "type": "int",
+              "description": ""
+            },
+            {
+              "name": "n_listwise_dropped",
+              "type": "int",
+              "description": ""
+            },
+            {
+              "name": "min_pair_n",
+              "type": "int",
+              "description": "",
+              "optional": true
+            },
+            {
+              "name": "max_pair_n",
+              "type": "int",
+              "description": "",
+              "optional": true
+            },
+            {
+              "name": "sum_weights",
+              "type": "float64",
+              "description": "",
+              "optional": true
+            },
+            {
+              "name": "n_eff",
+              "type": "float64",
+              "description": "",
+              "optional": true
+            },
+            {
+              "name": "n_weight_invalid",
+              "type": "int",
+              "description": "",
+              "optional": true
+            },
+            {
+              "name": "metric",
+              "type": "string",
+              "description": ""
+            },
+            {
+              "name": "standardize",
+              "type": "bool",
+              "description": ""
+            },
+            {
+              "name": "buckets",
+              "type": "int",
+              "description": ""
+            },
+            {
+              "name": "n_null_key",
+              "type": "int",
+              "description": ""
+            }
+          ],
+          "mergeability": "mergeable"
+        },
+        "intents": [
+          "compare_groups",
+          "segment"
+        ],
+        "weight_kinds": [
+          "frequency",
+          "probability"
+        ]
+      }
+    ],
+    "skills": [
+      {
+        "name": "intents",
+        "description": ""
+      },
+      {
+        "name": "aggregation-design",
+        "description": ""
+      },
+      {
+        "name": "grouper-design",
+        "description": ""
+      },
+      {
+        "name": "overlay-formula-namespace",
+        "description": ""
+      },
+      {
+        "name": "overlay-pairwise",
+        "description": ""
+      },
+      {
+        "name": "overlay-reference-tests",
+        "description": ""
+      },
+      {
+        "name": "overlay-system",
+        "description": ""
+      },
+      {
+        "name": "pairwise-n-sources",
+        "description": ""
+      },
+      {
+        "name": "panel-n-sources",
+        "description": ""
+      },
+      {
+        "name": "statistical-testing",
+        "description": ""
+      },
+      {
+        "name": "test-variant-options",
+        "description": ""
+      },
+      {
+        "name": "op-group-category",
+        "description": ""
+      },
+      {
+        "name": "op-group-date-ranges",
+        "description": ""
+      },
+      {
+        "name": "op-test-prop-z",
+        "description": ""
+      },
+      {
+        "name": "op-agg-ci-lower",
+        "description": ""
+      },
+      {
+        "name": "op-agg-ci-upper",
+        "description": ""
+      },
+      {
+        "name": "op-agg-vec-mean",
+        "description": ""
+      },
+      {
+        "name": "op-agg-welford",
+        "description": ""
+      },
+      {
+        "name": "op-group-numeric-ranges",
+        "description": ""
+      },
+      {
+        "name": "op-group-set-per-element",
+        "description": ""
+      },
+      {
+        "name": "op-overlay-chisq-col",
+        "description": ""
+      },
+      {
+        "name": "op-overlay-chisq-row",
+        "description": ""
+      },
+      {
+        "name": "op-overlay-matrix-group-summary",
+        "description": ""
+      },
+      {
+        "name": "op-overlay-prop-z-cell",
+        "description": ""
+      },
+      {
+        "name": "op-test-anova-f",
+        "description": ""
+      },
+      {
+        "name": "op-test-anova-welch",
+        "description": ""
+      },
+      {
+        "name": "op-test-chisq",
+        "description": ""
+      },
+      {
+        "name": "op-test-fisher-exact",
+        "description": ""
+      },
+      {
+        "name": "op-test-kruskal-wallis",
+        "description": ""
+      },
+      {
+        "name": "op-test-ks",
+        "description": ""
+      },
+      {
+        "name": "op-test-mann-whitney-u",
+        "description": ""
+      },
+      {
+        "name": "op-test-paired-t",
+        "description": ""
+      },
+      {
+        "name": "op-test-t",
+        "description": ""
+      },
+      {
+        "name": "op-test-welch",
+        "description": ""
+      },
+      {
+        "name": "op-test-wilcoxon-sr",
+        "description": ""
+      },
+      {
+        "name": "op-test-z-two-sample",
+        "description": ""
+      },
+      {
+        "name": "op-mat-distance",
+        "description": ""
+      },
+      {
+        "name": "op-overlay-chisq-vs-ref",
+        "description": ""
+      },
+      {
+        "name": "op-overlay-fisher-exact-cell",
+        "description": ""
+      },
+      {
+        "name": "op-overlay-pairwise-probit-t",
+        "description": ""
+      },
+      {
+        "name": "op-overlay-pairwise-prop-z",
+        "description": ""
+      },
+      {
+        "name": "op-overlay-pairwise-two-means-z",
+        "description": ""
+      },
+      {
+        "name": "op-overlay-pairwise-weighted-two-means-z",
+        "description": ""
+      },
+      {
+        "name": "op-overlay-pairwise-welch-t",
+        "description": ""
+      },
+      {
+        "name": "op-overlay-prop-z-panel",
+        "description": ""
+      },
+      {
+        "name": "op-overlay-t-cell",
+        "description": ""
+      },
+      {
+        "name": "op-overlay-t-vs-ref",
+        "description": ""
+      },
+      {
+        "name": "op-overlay-z-cell",
+        "description": ""
+      },
+      {
+        "name": "op-overlay-z-vs-ref",
+        "description": ""
+      },
+      {
+        "name": "op-test-anova-rm",
+        "description": ""
+      },
+      {
+        "name": "op-test-box-m",
+        "description": ""
+      },
+      {
+        "name": "op-test-brown-forsythe",
+        "description": ""
+      },
+      {
+        "name": "op-test-hotelling-t2",
+        "description": ""
+      },
+      {
+        "name": "op-test-manova",
+        "description": ""
+      },
+      {
+        "name": "op-test-tukey-hsd",
+        "description": ""
+      }
+    ],
+    "examples_count": 266,
+    "example_categories": [
+      "aggregations",
+      "attributes",
+      "compose",
+      "crosstab",
+      "facet",
+      "features",
+      "filterers",
+      "groupers",
+      "materialize",
+      "matrices",
+      "overlays",
+      "regression",
+      "tests",
+      "windows"
+    ],
+    "example_tags": [
+      "anchor",
+      "bayesian",
+      "before-after",
+      "buffered-pipeline",
+      "byte-equal-test",
+      "cardinality-analysis",
+      "cohort-analysis",
+      "comparison",
+      "compose",
+      "composed",
+      "correlation-analysis",
+      "covariance",
+      "cross-tabulation",
+      "crosstab",
+      "data-quality",
+      "distribution-shape",
+      "ecological",
+      "elasticnet",
+      "exact-test",
+      "experiment-analysis",
+      "facet",
+      "feature-engineering",
+      "feature-pipeline",
+      "financial",
+      "glm",
+      "homogeneity-test",
+      "hypothesis-test",
+      "jackknife",
+      "k-sample",
+      "lasso",
+      "leakage-risk",
+      "logistic",
+      "matrix",
+      "multivariate",
+      "nonparametric",
+      "normality-test",
+      "ols",
+      "one-sample",
+      "outlier-detection",
+      "overlay",
+      "paired",
+      "parametric",
+      "polynomial",
+      "post-hoc",
+      "pre-filter",
+      "proportion-analysis",
+      "regression",
+      "regularization",
+      "repeated-measures",
+      "resampling",
+      "ridge",
+      "selection",
+      "sharded",
+      "small-sample",
+      "stepwise",
+      "streaming-friendly",
+      "t-test",
+      "tier-1-test",
+      "tier-2-test",
+      "time-series",
+      "top-n",
+      "trend-detection",
+      "two-sample",
+      "welch",
+      "welford-triple",
+      "window-operator",
+      "z"
+    ],
+    "crosstab": {
+      "name": "crosstab",
+      "normalize_modes": [
+        "column",
+        "none",
+        "row",
+        "total"
+      ],
+      "shapes": [
+        "long",
+        "matrix"
+      ],
+      "summable_aggregators": [],
+      "mean_reducible_aggregators": [],
+      "independent_aggregators": [],
+      "recompute_aggregators": [
+        "AGG_CI_LOWER",
+        "AGG_CI_UPPER",
+        "AGG_VEC_MEAN",
+        "AGG_WELFORD"
+      ],
+      "streaming_exceptions": [
+        "shape=long with margins.rows / margins.columns / margins.grand all false and normalize=none streams through the standard grouped path"
+      ],
+      "rejection_rules": [
+        "crosstab requires at least one grouper in rows (PULSE_CROSSTAB_EMPTY_ROWS)",
+        "crosstab requires a cell aggregation — cell, or several measures in cells (PULSE_CROSSTAB_MISSING_CELL)",
+        "crosstab cannot coexist with top-level groups or aggregations (PULSE_CROSSTAB_CONFLICTS_WITH_GROUPS)",
+        "matrix shape, any margin, or any normalization forces the buffered path",
+        "map-valued cell aggregators (AGG_SET_FREQUENCY) cannot pair with normalize=row/column/total (PULSE_CROSSTAB_NORMALIZE_MAP_VALUED)",
+        "array-valued aggregators (array_valued_aggregators: AGG_VEC_MEAN, AGG_VEC_SUM, AGG_VEC_SD) are refused as the cell or a margin aggregation, whatever normalize says (PROCESSING_CONFIG, reason array_valued) — unless params.element selects one element (built-in AGG_VEC_* only), which makes the slot a scalar that margins and fuses like its scalar twin (mean_reducible / summable; an AGG_VEC_SD element is recompute, like AGG_STDDEV)"
+      ],
+      "supports_normalize_level": true,
+      "normalize_level_rules": [
+        "normalize_level must be in [0, len(axis)-1] for the axis selected by normalize (PULSE_CROSSTAB_NORMALIZE_LEVEL_OUT_OF_RANGE)",
+        "normalize_level requires normalize to be row or column (PULSE_CROSSTAB_NORMALIZE_LEVEL_WITHOUT_NESTED_AXIS)",
+        "normalize_level cannot be combined with normalize=total (PULSE_CROSSTAB_NORMALIZE_LEVEL_INCOMPATIBLE)"
+      ],
+      "supports_normalize_within": true,
+      "normalize_within_rules": [
+        "normalize_within must be in [0, len(other-axis)-1] where other-axis is columns when normalize=row and rows when normalize=column (PULSE_CROSSTAB_NORMALIZE_WITHIN_OUT_OF_RANGE)",
+        "normalize_within requires normalize to be row or column (PULSE_CROSSTAB_NORMALIZE_WITHIN_WITHOUT_AXIS)",
+        "normalize_within cannot be combined with normalize=total (PULSE_CROSSTAB_NORMALIZE_WITHIN_INCOMPATIBLE)"
+      ],
+      "supports_margin_aggregations": true,
+      "margin_aggregation_rules": [
+        "every margin_aggregations entry needs an aggregation type; null entries are refused (PULSE_CROSSTAB_MARGIN_AGG_INVALID)",
+        "margin_aggregations effective labels (label, else TYPE_field) must be unique across the slot and distinct from the cell's (PULSE_CROSSTAB_MARGIN_AGG_DUPLICATE_LABEL)",
+        "auxiliary figures are emitted only where the margin is DISPLAYED (margins.rows / margins.columns / margins.grand), matching the emission rule the cell aggregator's own margin counts and components follow; declaring margin_aggregations on a section that displays no margin computes them into nowhere — advisory warning, not a refusal (PULSE_CROSSTAB_MARGIN_AGG_UNOBSERVED) — and a normalize direction does not satisfy it, because the margin it requires is a denominator and an auxiliary is never a denominator"
+      ],
+      "supports_cells": true,
+      "cells_rules": [
+        "cell and cells are mutually exclusive; a null cells entry, or one with no aggregation type smart defaults can infer, is refused (PULSE_CROSSTAB_CELLS_INVALID)",
+        "cells effective labels (label, else TYPE_field) must be unique (PULSE_CROSSTAB_CELLS_DUPLICATE_LABEL), and distinct from every margin_aggregations label (PULSE_CROSSTAB_MARGIN_AGG_DUPLICATE_LABEL)",
+        "each measure runs exactly as a single-cell crosstab would — its own cells, margins, normalize denominators, auxiliary margins and components; nothing is pooled across measures",
+        "the matrix row axis gains an innermost MEASURE position (row_header field _measure, type MEASURE): spec row r becomes len(cells) rows, row key + measure label, measures in declaration order; matrix.cell_labels names each row's measure and cell_label is empty",
+        "column margins and the grand total are per measure: matrix.measures[m] {label, column_margins, grand_total} and components.crosstab.measures[m]; the single-measure column_margins / grand_total slots stay empty",
+        "shape=long emits each measure's rows in declaration order, every row stamped _measure",
+        "only OVERLAY_PAIRWISE_* overlays run on a multi-measure crosstab, once per measure (pairs never cross measures); every other request overlay, and any Compose overlay reading such a slot, is refused (PULSE_OVERLAY_REF_INCOMPATIBLE_WITH_SHAPE)"
+      ],
+      "map_valued_cell_aggregators": [
+        "AGG_WELFORD"
+      ],
+      "array_valued_aggregators": [
+        "AGG_VEC_MEAN"
+      ]
+    },
+    "matrix": {
+      "name": "matrices",
+      "encodings": [
+        "full",
+        "upper",
+        "records"
+      ],
+      "default_encoding": "full",
+      "kinds": [
+        "square_symmetric",
+        "rectangular"
+      ],
+      "missing_modes": [
+        "listwise",
+        "pairwise"
+      ],
+      "merge_block_size": 4096,
+      "metrics": [
+        {
+          "name": "euclidean",
+          "family": "plain",
+          "description": "",
+          "direction": "distance",
+          "forms": [
+            "distance"
+          ],
+          "kinds_suited": [
+            "measure",
+            "scale"
+          ],
+          "poor_fit": [
+            "composition"
+          ],
+          "fitted": false,
+          "domain": "real",
+          "scaled": true,
+          "consumers": [
+            "expr",
+            "ATTR_VEC_DISTANCE",
+            "MAT_DISTANCE",
+            "GROUP_KMEANS"
+          ]
+        },
+        {
+          "name": "sq_euclidean",
+          "family": "plain",
+          "description": "",
+          "direction": "distance",
+          "forms": [
+            "distance"
+          ],
+          "kinds_suited": [
+            "measure",
+            "scale"
+          ],
+          "poor_fit": [
+            "composition"
+          ],
+          "fitted": false,
+          "domain": "real",
+          "scaled": true,
+          "consumers": [
+            "ATTR_VEC_DISTANCE",
+            "MAT_DISTANCE",
+            "GROUP_KMEANS"
+          ]
+        },
+        {
+          "name": "manhattan",
+          "family": "plain",
+          "description": "",
+          "direction": "distance",
+          "forms": [
+            "distance"
+          ],
+          "kinds_suited": [
+            "measure",
+            "composition"
+          ],
+          "poor_fit": [],
+          "fitted": false,
+          "domain": "real",
+          "scaled": true,
+          "consumers": [
+            "ATTR_VEC_DISTANCE",
+            "MAT_DISTANCE"
+          ]
+        },
+        {
+          "name": "chebyshev",
+          "family": "plain",
+          "description": "",
+          "direction": "distance",
+          "forms": [
+            "distance"
+          ],
+          "kinds_suited": [
+            "measure"
+          ],
+          "poor_fit": [],
+          "fitted": false,
+          "domain": "real",
+          "consumers": [
+            "ATTR_VEC_DISTANCE",
+            "MAT_DISTANCE"
+          ]
+        },
+        {
+          "name": "cosine",
+          "family": "plain",
+          "description": "",
+          "direction": "similarity",
+          "forms": [
+            "similarity",
+            "distance"
+          ],
+          "kinds_suited": [
+            "composition",
+            "binary"
+          ],
+          "poor_fit": [
+            "measure",
+            "scale"
+          ],
+          "fitted": false,
+          "domain": "real",
+          "consumers": [
+            "expr",
+            "ATTR_VEC_DISTANCE",
+            "ATTR_PROFILE_SIMILARITY",
+            "MAT_DISTANCE"
+          ]
+        },
+        {
+          "name": "correlation",
+          "family": "plain",
+          "description": "",
+          "direction": "similarity",
+          "forms": [
+            "similarity"
+          ],
+          "kinds_suited": [
+            "scale"
+          ],
+          "poor_fit": [],
+          "fitted": false,
+          "domain": "real",
+          "consumers": [
+            "ATTR_PROFILE_SIMILARITY"
+          ]
+        },
+        {
+          "name": "hellinger",
+          "family": "plain",
+          "description": "",
+          "direction": "distance",
+          "forms": [
+            "distance"
+          ],
+          "kinds_suited": [
+            "composition"
+          ],
+          "poor_fit": [],
+          "fitted": false,
+          "domain": "non_negative",
+          "consumers": [
+            "ATTR_VEC_DISTANCE",
+            "MAT_DISTANCE"
+          ]
+        },
+        {
+          "name": "aitchison",
+          "family": "plain",
+          "description": "",
+          "direction": "distance",
+          "forms": [
+            "distance"
+          ],
+          "kinds_suited": [
+            "composition"
+          ],
+          "poor_fit": [],
+          "fitted": false,
+          "domain": "non_negative",
+          "zero_undefined": true,
+          "consumers": [
+            "ATTR_VEC_DISTANCE",
+            "MAT_DISTANCE"
+          ]
+        },
+        {
+          "name": "jaccard",
+          "family": "set",
+          "description": "",
+          "direction": "similarity",
+          "forms": [
+            "similarity"
+          ],
+          "kinds_suited": [
+            "binary"
+          ],
+          "poor_fit": [],
+          "fitted": false,
+          "domain": "binary",
+          "consumers": [
+            "expr",
+            "ATTR_PROFILE_SIMILARITY"
+          ]
+        },
+        {
+          "name": "dice",
+          "family": "set",
+          "description": "",
+          "direction": "similarity",
+          "forms": [
+            "similarity"
+          ],
+          "kinds_suited": [
+            "binary"
+          ],
+          "poor_fit": [],
+          "fitted": false,
+          "domain": "binary",
+          "consumers": [
+            "expr",
+            "ATTR_PROFILE_SIMILARITY"
+          ]
+        },
+        {
+          "name": "hamming",
+          "family": "set",
+          "description": "",
+          "direction": "distance",
+          "forms": [
+            "distance"
+          ],
+          "kinds_suited": [
+            "binary"
+          ],
+          "poor_fit": [],
+          "fitted": false,
+          "domain": "binary",
+          "scaled": true,
+          "consumers": [
+            "expr",
+            "ATTR_VEC_DISTANCE"
+          ]
+        },
+        {
+          "name": "overlap",
+          "family": "set",
+          "description": "",
+          "direction": "similarity",
+          "forms": [
+            "similarity"
+          ],
+          "kinds_suited": [
+            "binary"
+          ],
+          "poor_fit": [],
+          "fitted": false,
+          "domain": "binary",
+          "consumers": [
+            "expr",
+            "ATTR_PROFILE_SIMILARITY"
+          ]
+        },
+        {
+          "name": "std_euclidean",
+          "family": "fitted",
+          "description": "",
+          "direction": "distance",
+          "forms": [
+            "distance"
+          ],
+          "kinds_suited": [
+            "measure"
+          ],
+          "poor_fit": [
+            "composition"
+          ],
+          "fitted": true,
+          "fit_stat": "sd",
+          "domain": "real",
+          "scaled": true,
+          "consumers": [
+            "ATTR_VEC_DISTANCE"
+          ]
+        },
+        {
+          "name": "mahalanobis",
+          "family": "fitted",
+          "description": "",
+          "direction": "distance",
+          "forms": [
+            "distance"
+          ],
+          "kinds_suited": [
+            "measure"
+          ],
+          "poor_fit": [],
+          "fitted": true,
+          "fit_stat": "inverse_covariance",
+          "domain": "real",
+          "complete": true,
+          "consumers": [
+            "ATTR_VEC_DISTANCE",
+            "MAT_DISTANCE"
+          ]
+        },
+        {
+          "name": "chi_square",
+          "family": "fitted",
+          "description": "",
+          "direction": "distance",
+          "forms": [
+            "distance"
+          ],
+          "kinds_suited": [
+            "composition"
+          ],
+          "poor_fit": [],
+          "fitted": true,
+          "fit_stat": "column_masses",
+          "domain": "non_negative",
+          "consumers": [
+            "OVERLAY_CORRESPONDENCE"
+          ]
+        }
+      ],
+      "vector_kinds": [
+        {
+          "name": "measure",
+          "distance_default": "std_euclidean",
+          "similarity_default": ""
+        },
+        {
+          "name": "scale",
+          "distance_default": "euclidean",
+          "similarity_default": "correlation"
+        },
+        {
+          "name": "composition",
+          "distance_default": "aitchison",
+          "similarity_default": "cosine"
+        },
+        {
+          "name": "binary",
+          "distance_default": "hamming",
+          "similarity_default": "jaccard"
+        }
+      ],
+      "limitations": [
+        "Matrices follow Request.Groups: a grouped request returns one result per spec per non-empty bucket (group_key, group_header), spec-major then bucket in the final Data row order (Request.Sort included); a thin bucket is still emitted, with PULSE_MATRIX_INSUFFICIENT_N.",
+        "A request carrying matrices fans out over DecodeWorkers and ShardWorkers with bit-identical results, per bucket on a grouped request.",
+        "A matrix result is emitted at finalize: a streamed run carries it at terminal flush only.",
+        "A rectangular matrix (kind \"rectangular\", MAT_PCA's p x k loadings and eigenvectors, MAT_FACTOR's p x k loadings, MAT_COLLINEARITY's variance decomposition) has the members as rows (MAT_COLLINEARITY's uncentered decomposition leads with an \"(intercept)\" row) and its own column keys, and is written full under upper (records: rows); MAT_DISTANCE's centroids are the one k x p matrix with the bucket labels as rows and the members as columns.",
+        "MAT_DISTANCE's primary is square but keyed by the between grouper's bucket labels, not the members.",
+        "A request carrying matrices with joins, or a ProcessChain stage after 0 carrying matrices, is refused with PULSE_MATRIX_UNSUPPORTED_SOURCE; matrices with a crosstab are refused with PULSE_MATRIX_HOST_CONFLICT.",
+        "Vector members may name a feature, attribute or record-row window label of the request; only MAT_* reads such a vector (else computed_member_unsupported)."
+      ]
+    },
+    "overlays": [
+      {
+        "kind": "OVERLAY_CHISQ_COL",
+        "shapes": [
+          "series"
+        ],
+        "scopes": [
+          "column"
+        ],
+        "ref_kinds": [],
+        "buffered": true,
+        "description": "",
+        "intents": [
+          "compare_groups"
+        ],
+        "inferential": true,
+        "weight_kinds": [
+          "frequency",
+          "probability"
+        ]
+      },
+      {
+        "kind": "OVERLAY_CHISQ_ROW",
+        "shapes": [
+          "series"
+        ],
+        "scopes": [
+          "row"
+        ],
+        "ref_kinds": [],
+        "buffered": true,
+        "description": "",
+        "intents": [
+          "compare_groups"
+        ],
+        "inferential": true,
+        "weight_kinds": [
+          "frequency",
+          "probability"
+        ]
+      },
+      {
+        "kind": "OVERLAY_CHISQ_VS_REF",
+        "shapes": [
+          "scalar"
+        ],
+        "scopes": [
+          "matrix",
+          "total"
+        ],
+        "ref_kinds": [],
+        "buffered": true,
+        "description": "",
+        "intents": [
+          "compare_groups"
+        ],
+        "inferential": true,
+        "weight_kinds": [
+          "frequency",
+          "probability"
+        ]
+      },
+      {
+        "kind": "OVERLAY_FISHER_EXACT_CELL",
+        "shapes": [
+          "matrix"
+        ],
+        "scopes": [
+          "cell"
+        ],
+        "ref_kinds": [],
+        "buffered": true,
+        "description": "",
+        "intents": [
+          "compare_groups"
+        ],
+        "inferential": true,
+        "weight_kinds": [
+          "frequency"
+        ]
+      },
+      {
+        "kind": "OVERLAY_MATRIX_GROUP_SUMMARY",
+        "shapes": [
+          "matrix"
+        ],
+        "scopes": [
+          "matrix"
+        ],
+        "ref_kinds": [
+          "Matrix"
+        ],
+        "buffered": true,
+        "description": "",
+        "intents": [
+          "compare_groups",
+          "relationship"
+        ],
+        "parts": [
+          {
+            "name": "max",
+            "shape": "matrix"
+          },
+          {
+            "name": "min",
+            "shape": "matrix"
+          },
+          {
+            "name": "n_groups",
+            "shape": "matrix"
+          },
+          {
+            "name": "range",
+            "shape": "matrix"
+          }
+        ]
+      },
+      {
+        "kind": "OVERLAY_PAIRWISE_PROBIT_T",
+        "shapes": [
+          "matrix"
+        ],
+        "scopes": [
+          "column",
+          "row"
+        ],
+        "ref_kinds": [],
+        "buffered": true,
+        "description": "",
+        "intents": [
+          "compare_groups"
+        ],
+        "inferential": true,
+        "parts": [
+          {
+            "name": "letters",
+            "shape": "matrix",
+            "when": "params.letters"
+          }
+        ],
+        "params": [
+          {
+            "name": "pair_along_dim",
+            "type": "int",
+            "required": false,
+            "description": ""
+          },
+          {
+            "name": "n_within_depth",
+            "type": "int",
+            "required": false,
+            "default": 0,
+            "description": ""
+          },
+          {
+            "name": "letters",
+            "type": "object",
+            "required": false,
+            "description": ""
+          },
+          {
+            "name": "n_source",
+            "type": "enum",
+            "required": false,
+            "description": ""
+          },
+          {
+            "name": "p_source",
+            "type": "enum",
+            "required": false,
+            "description": ""
+          }
+        ]
+      },
+      {
+        "kind": "OVERLAY_PAIRWISE_PROP_Z",
+        "shapes": [
+          "matrix"
+        ],
+        "scopes": [
+          "column",
+          "row"
+        ],
+        "ref_kinds": [],
+        "buffered": true,
+        "description": "",
+        "intents": [
+          "compare_groups"
+        ],
+        "inferential": true,
+        "weight_kinds": [
+          "frequency",
+          "probability"
+        ],
+        "parts": [
+          {
+            "name": "letters",
+            "shape": "matrix",
+            "when": "params.letters"
+          }
+        ],
+        "params": [
+          {
+            "name": "pair_along_dim",
+            "type": "int",
+            "required": false,
+            "description": ""
+          },
+          {
+            "name": "n_within_depth",
+            "type": "int",
+            "required": false,
+            "default": 0,
+            "description": ""
+          },
+          {
+            "name": "letters",
+            "type": "object",
+            "required": false,
+            "description": ""
+          },
+          {
+            "name": "n_source",
+            "type": "enum",
+            "required": false,
+            "description": ""
+          },
+          {
+            "name": "p_source",
+            "type": "enum",
+            "required": false,
+            "description": ""
+          }
+        ]
+      },
+      {
+        "kind": "OVERLAY_PAIRWISE_TWO_MEANS_Z",
+        "shapes": [
+          "matrix"
+        ],
+        "scopes": [
+          "column",
+          "row"
+        ],
+        "ref_kinds": [],
+        "buffered": true,
+        "description": "",
+        "intents": [
+          "compare_groups"
+        ],
+        "inferential": true,
+        "parts": [
+          {
+            "name": "letters",
+            "shape": "matrix",
+            "when": "params.letters"
+          }
+        ],
+        "params": [
+          {
+            "name": "pair_along_dim",
+            "type": "int",
+            "required": false,
+            "description": ""
+          },
+          {
+            "name": "n_within_depth",
+            "type": "int",
+            "required": false,
+            "default": 0,
+            "description": ""
+          },
+          {
+            "name": "letters",
+            "type": "object",
+            "required": false,
+            "description": ""
+          }
+        ]
+      },
+      {
+        "kind": "OVERLAY_PAIRWISE_WEIGHTED_TWO_MEANS_Z",
+        "shapes": [
+          "matrix"
+        ],
+        "scopes": [
+          "column",
+          "row"
+        ],
+        "ref_kinds": [],
+        "buffered": true,
+        "description": "",
+        "intents": [
+          "compare_groups"
+        ],
+        "inferential": true,
+        "weight_kinds": [
+          "frequency",
+          "probability"
+        ],
+        "parts": [
+          {
+            "name": "letters",
+            "shape": "matrix",
+            "when": "params.letters"
+          }
+        ],
+        "params": [
+          {
+            "name": "pair_along_dim",
+            "type": "int",
+            "required": false,
+            "description": ""
+          },
+          {
+            "name": "n_within_depth",
+            "type": "int",
+            "required": false,
+            "default": 0,
+            "description": ""
+          },
+          {
+            "name": "letters",
+            "type": "object",
+            "required": false,
+            "description": ""
+          },
+          {
+            "name": "n_basis",
+            "type": "enum",
+            "required": true,
+            "description": "",
+            "enum_values": [
+              "kish",
+              "weights"
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "OVERLAY_PAIRWISE_WELCH_T",
+        "shapes": [
+          "matrix"
+        ],
+        "scopes": [
+          "column",
+          "row"
+        ],
+        "ref_kinds": [],
+        "buffered": true,
+        "description": "",
+        "intents": [
+          "compare_groups"
+        ],
+        "inferential": true,
+        "weight_kinds": [
+          "frequency",
+          "probability"
+        ],
+        "parts": [
+          {
+            "name": "letters",
+            "shape": "matrix",
+            "when": "params.letters"
+          }
+        ],
+        "params": [
+          {
+            "name": "pair_along_dim",
+            "type": "int",
+            "required": false,
+            "description": ""
+          },
+          {
+            "name": "n_within_depth",
+            "type": "int",
+            "required": false,
+            "default": 0,
+            "description": ""
+          },
+          {
+            "name": "letters",
+            "type": "object",
+            "required": false,
+            "description": ""
+          }
+        ]
+      },
+      {
+        "kind": "OVERLAY_PROP_Z_CELL",
+        "shapes": [
+          "matrix"
+        ],
+        "scopes": [
+          "cell"
+        ],
+        "ref_kinds": [],
+        "buffered": true,
+        "description": "",
+        "intents": [
+          "compare_groups"
+        ],
+        "inferential": true,
+        "weight_kinds": [
+          "frequency",
+          "probability"
+        ]
+      },
+      {
+        "kind": "OVERLAY_PROP_Z_PANEL",
+        "shapes": [
+          "matrix"
+        ],
+        "scopes": [
+          "cell"
+        ],
+        "ref_kinds": [],
+        "buffered": true,
+        "description": "",
+        "intents": [
+          "compare_groups"
+        ],
+        "inferential": true,
+        "weight_kinds": [
+          "frequency",
+          "probability"
+        ],
+        "params": [
+          {
+            "name": "n_source",
+            "type": "enum",
+            "required": false,
+            "default": "row_margin_value",
+            "description": ""
+          },
+          {
+            "name": "n_within_depth",
+            "type": "int",
+            "required": false,
+            "description": ""
+          }
+        ]
+      },
+      {
+        "kind": "OVERLAY_T_CELL",
+        "shapes": [
+          "matrix"
+        ],
+        "scopes": [
+          "cell"
+        ],
+        "ref_kinds": [],
+        "buffered": true,
+        "description": "",
+        "intents": [
+          "compare_groups"
+        ],
+        "inferential": true,
+        "weight_kinds": [
+          "frequency",
+          "probability"
+        ],
+        "params": [
+          {
+            "name": "variance_target",
+            "type": "float",
+            "required": false,
+            "description": ""
+          },
+          {
+            "name": "variance_ref",
+            "type": "float",
+            "required": false,
+            "description": ""
+          },
+          {
+            "name": "variance",
+            "type": "float",
+            "required": false,
+            "description": ""
+          },
+          {
+            "name": "sample_size_target",
+            "type": "float",
+            "required": false,
+            "description": ""
+          },
+          {
+            "name": "sample_size_ref",
+            "type": "float",
+            "required": false,
+            "description": ""
+          },
+          {
+            "name": "sample_size",
+            "type": "float",
+            "required": false,
+            "description": ""
+          }
+        ]
+      },
+      {
+        "kind": "OVERLAY_T_VS_REF",
+        "shapes": [
+          "series"
+        ],
+        "scopes": [
+          "group"
+        ],
+        "ref_kinds": [],
+        "buffered": true,
+        "description": "",
+        "intents": [
+          "compare_groups"
+        ],
+        "inferential": true,
+        "weight_kinds": [
+          "frequency",
+          "probability"
+        ],
+        "params": [
+          {
+            "name": "field",
+            "type": "string",
+            "required": false,
+            "description": ""
+          },
+          {
+            "name": "variance_target",
+            "type": "float",
+            "required": false,
+            "description": ""
+          },
+          {
+            "name": "variance_ref",
+            "type": "float",
+            "required": false,
+            "description": ""
+          },
+          {
+            "name": "variance",
+            "type": "float",
+            "required": false,
+            "description": ""
+          },
+          {
+            "name": "sample_size_target",
+            "type": "float",
+            "required": false,
+            "description": ""
+          },
+          {
+            "name": "sample_size_ref",
+            "type": "float",
+            "required": false,
+            "description": ""
+          },
+          {
+            "name": "sample_size",
+            "type": "float",
+            "required": false,
+            "description": ""
+          }
+        ]
+      },
+      {
+        "kind": "OVERLAY_Z_CELL",
+        "shapes": [
+          "matrix"
+        ],
+        "scopes": [
+          "cell"
+        ],
+        "ref_kinds": [],
+        "buffered": true,
+        "description": "",
+        "intents": [
+          "compare_groups"
+        ],
+        "inferential": true,
+        "weight_kinds": [
+          "frequency",
+          "probability"
+        ],
+        "params": [
+          {
+            "name": "variance_target",
+            "type": "float",
+            "required": false,
+            "description": ""
+          },
+          {
+            "name": "variance_ref",
+            "type": "float",
+            "required": false,
+            "description": ""
+          },
+          {
+            "name": "variance",
+            "type": "float",
+            "required": false,
+            "description": ""
+          },
+          {
+            "name": "sample_size_target",
+            "type": "float",
+            "required": false,
+            "description": ""
+          },
+          {
+            "name": "sample_size_ref",
+            "type": "float",
+            "required": false,
+            "description": ""
+          },
+          {
+            "name": "sample_size",
+            "type": "float",
+            "required": false,
+            "description": ""
+          }
+        ]
+      },
+      {
+        "kind": "OVERLAY_Z_VS_REF",
+        "shapes": [
+          "series"
+        ],
+        "scopes": [
+          "group"
+        ],
+        "ref_kinds": [],
+        "buffered": true,
+        "description": "",
+        "intents": [
+          "compare_groups"
+        ],
+        "inferential": true,
+        "weight_kinds": [
+          "frequency",
+          "probability"
+        ],
+        "params": [
+          {
+            "name": "field",
+            "type": "string",
+            "required": false,
+            "description": ""
+          },
+          {
+            "name": "variance_target",
+            "type": "float",
+            "required": false,
+            "description": ""
+          },
+          {
+            "name": "variance_ref",
+            "type": "float",
+            "required": false,
+            "description": ""
+          },
+          {
+            "name": "variance",
+            "type": "float",
+            "required": false,
+            "description": ""
+          },
+          {
+            "name": "sample_size_target",
+            "type": "float",
+            "required": false,
+            "description": ""
+          },
+          {
+            "name": "sample_size_ref",
+            "type": "float",
+            "required": false,
+            "description": ""
+          },
+          {
+            "name": "sample_size",
+            "type": "float",
+            "required": false,
+            "description": ""
+          }
+        ]
+      }
+    ],
+    "intents": [
+      "benchmark",
+      "change_over_time",
+      "compare_groups",
+      "composition",
+      "data_quality",
+      "describe",
+      "distribution_shape",
+      "drivers",
+      "flows",
+      "lookup",
+      "measure_construct",
+      "prepare",
+      "relationship",
+      "segment",
+      "simulate"
+    ],
+    "return_presets": [
+      {
+        "name": "full",
+        "paths": [
+          "label",
+          "data",
+          "metadata",
+          "tests",
+          "post_tests",
+          "regressions",
+          "matrices",
+          "warnings",
+          "crosstab",
+          "overlays",
+          "components"
+        ]
+      },
+      {
+        "name": "standard",
+        "paths": [
+          "label",
+          "data",
+          "warnings",
+          "metadata",
+          "crosstab",
+          "matrices[*].name",
+          "matrices[*].type",
+          "matrices[*].group_key",
+          "matrices[*].group_header",
+          "matrices[*].primary",
+          "matrices[*].vectors",
+          "matrices[*].scalars",
+          "matrices[*].multiplicity",
+          "matrices[*].auxiliary.p",
+          "matrices[*].auxiliary.ci_lower",
+          "matrices[*].auxiliary.ci_upper",
+          "matrices[*].auxiliary.p_adjusted",
+          "matrices[*].auxiliary.significant_adjusted",
+          "tests[*].label",
+          "tests[*].type",
+          "tests[*].group_key",
+          "tests[*].variant",
+          "tests[*].statistic",
+          "tests[*].df",
+          "tests[*].p_value",
+          "tests[*].alpha",
+          "tests[*].reject_null",
+          "tests[*].p_adjusted",
+          "tests[*].significant_adjusted",
+          "tests[*].multiplicity",
+          "tests[*].details.effect_size",
+          "post_tests[*].label",
+          "post_tests[*].type",
+          "post_tests[*].group_key",
+          "post_tests[*].variant",
+          "post_tests[*].statistic",
+          "post_tests[*].df",
+          "post_tests[*].p_value",
+          "post_tests[*].alpha",
+          "post_tests[*].reject_null",
+          "post_tests[*].p_adjusted",
+          "post_tests[*].significant_adjusted",
+          "post_tests[*].multiplicity",
+          "post_tests[*].details.effect_size",
+          "regressions[*].name",
+          "regressions[*].type",
+          "regressions[*].family",
+          "regressions[*].link",
+          "regressions[*].penalty",
+          "regressions[*].alpha",
+          "regressions[*].l1_ratio",
+          "regressions[*].prior",
+          "regressions[*].resample",
+          "regressions[*].criterion",
+          "regressions[*].coefficients",
+          "regressions[*].std_errors",
+          "regressions[*].p_values",
+          "regressions[*].ci_lower",
+          "regressions[*].ci_upper",
+          "regressions[*].df",
+          "regressions[*].conf_level",
+          "regressions[*].r2",
+          "regressions[*].adj_r2",
+          "regressions[*].deviance",
+          "regressions[*].null_deviance",
+          "regressions[*].pseudo_r2",
+          "regressions[*].n_obs",
+          "regressions[*].sum_weights",
+          "regressions[*].n_eff",
+          "regressions[*].residual_std_err",
+          "regressions[*].converged_iters",
+          "regressions[*].selected_features",
+          "regressions[*].vcov",
+          "regressions[*].correlation",
+          "regressions[*].covariance",
+          "regressions[*].advisories",
+          "regressions[*].holdout",
+          "regressions[*].statistics",
+          "regressions[*].outputs",
+          "overlays"
+        ],
+        "companions": [
+          "matrices[*].auxiliary.n (with p)"
+        ]
+      },
+      {
+        "name": "minimal",
+        "paths": [
+          "label",
+          "data",
+          "warnings",
+          "crosstab.shape",
+          "crosstab.matrix",
+          "matrices[*].name",
+          "matrices[*].type",
+          "matrices[*].group_key",
+          "matrices[*].primary",
+          "tests[*].label",
+          "tests[*].type",
+          "tests[*].group_key",
+          "tests[*].statistic",
+          "tests[*].p_value",
+          "tests[*].reject_null",
+          "tests[*].p_adjusted",
+          "tests[*].significant_adjusted",
+          "post_tests[*].label",
+          "post_tests[*].type",
+          "post_tests[*].group_key",
+          "post_tests[*].statistic",
+          "post_tests[*].p_value",
+          "post_tests[*].reject_null",
+          "post_tests[*].p_adjusted",
+          "post_tests[*].significant_adjusted",
+          "regressions[*].name",
+          "regressions[*].type",
+          "regressions[*].coefficients",
+          "regressions[*].p_values",
+          "regressions[*].advisories",
+          "regressions[*].outputs",
+          "regressions[*].holdout",
+          "overlays[*].name",
+          "overlays[*].kind",
+          "overlays[*].ref",
+          "overlays[*].summary"
+        ]
+      }
+    ],
+    "scope": {
+      "intent": {
+        "id": "compare_groups",
+        "label": "Compare groups",
+        "analytic": true,
+        "sounds": [
+          "Do A and B differ?",
+          "Is this segment different from the rest?"
+        ],
+        "shapes": [
+          {
+            "roles": [
+              {
+                "name": "outcome",
+                "kinds": [
+                  "numeric",
+                  "categorical",
+                  "bool"
+                ],
+                "min": 1,
+                "max": 1
+              },
+              {
+                "name": "group",
+                "kinds": [
+                  "categorical",
+                  "bool"
+                ],
+                "min": 1,
+                "max": 1
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "elided": [
+      "cohort_types",
+      "commands",
+      "components_schemas",
+      "error_codes",
+      "error_codes_count",
+      "error_domains",
+      "export",
+      "extensions",
+      "facet",
+      "import",
+      "join",
+      "limits",
+      "mcp_tools",
+      "operations",
+      "process_chain",
+      "synth_distributions"
+    ]
+  },
+  "errors": [],
+  "warnings": []
+}

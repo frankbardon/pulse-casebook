@@ -1,0 +1,21 @@
+{
+  "format_version": "1.1",
+  "data": null,
+  "errors": [
+    {
+      "code": "PULSE_TEST_SPLIT_GROUPS_LT_2",
+      "message": "tests[0] TEST_T split_by \"arm\" is also a grouper: a grouped request runs the test once per group, and every group holds a single arm level, so there is nothing to compare; drop \"arm\" from groups or split on another field",
+      "details": {
+        "field": "arm",
+        "groups": [
+          "arm"
+        ],
+        "index": 0,
+        "reason": "split_is_grouper",
+        "slot": "split_by",
+        "type": "TEST_T"
+      }
+    }
+  ],
+  "warnings": []
+}

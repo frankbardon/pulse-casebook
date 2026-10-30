@@ -1,0 +1,76 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "avg_spend": 68.64933247753531
+      }
+    ],
+    "metadata": {
+      "total_rows": 800,
+      "filtered_rows": 800,
+      "cohort_file": "s.pulse"
+    },
+    "tests": [
+      {
+        "label": "TEST_T_spend",
+        "type": "TEST_T",
+        "error": {
+          "code": "PULSE_TEST_SPLIT_GROUPS_LT_2",
+          "message": "TEST_T two-sample sees 4 groups; use TEST_ANOVA_F for k\u003e2",
+          "details": {
+            "groups": [
+              "East",
+              "North",
+              "South",
+              "West"
+            ],
+            "max_allowed": 2
+          }
+        }
+      }
+    ],
+    "warnings": [
+      {
+        "code": "PULSE_SLOT_FAILED",
+        "message": "tests[0] \"TEST_T_spend\" failed with PULSE_TEST_SPLIT_GROUPS_LT_2: TEST_T two-sample sees 4 groups; use TEST_ANOVA_F for k\u003e2; its result carries the error and the other slots proceed",
+        "details": {
+          "code": "PULSE_TEST_SPLIT_GROUPS_LT_2",
+          "index": 0,
+          "label": "TEST_T_spend",
+          "slot_kind": "tests"
+        }
+      }
+    ],
+    "components": {
+      "aggregations": [
+        {
+          "label": "avg_spend",
+          "n": 779,
+          "n_null": 21,
+          "operator": {
+            "sum": 53477.83
+          }
+        }
+      ],
+      "run": {
+        "total_records": 800,
+        "filtered_records": 800,
+        "null_records": 21
+      }
+    }
+  },
+  "errors": [],
+  "warnings": [
+    {
+      "code": "PULSE_SLOT_FAILED",
+      "message": "tests[0] \"TEST_T_spend\" failed with PULSE_TEST_SPLIT_GROUPS_LT_2: TEST_T two-sample sees 4 groups; use TEST_ANOVA_F for k\u003e2; its result carries the error and the other slots proceed",
+      "details": {
+        "code": "PULSE_TEST_SPLIT_GROUPS_LT_2",
+        "index": 0,
+        "label": "TEST_T_spend",
+        "slot_kind": "tests"
+      }
+    }
+  ]
+}

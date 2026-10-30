@@ -1,0 +1,18 @@
+{
+  "format_version": "1.1",
+  "data": null,
+  "errors": [
+    {
+      "code": "PULSE_PARAMS_UNDECLARED",
+      "message": "expression \"plan == params.plan \u0026\u0026 visits \u003e= params.min_visits\" reads params.min_visits, which the request's params does not declare",
+      "details": {
+        "declared": [
+          "plan"
+        ],
+        "expression": "plan == params.plan \u0026\u0026 visits \u003e= params.min_visits",
+        "param": "min_visits"
+      }
+    }
+  ],
+  "warnings": []
+}

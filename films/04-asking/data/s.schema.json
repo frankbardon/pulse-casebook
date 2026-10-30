@@ -1,0 +1,7 @@
+[{"name":"id","type":"u16","nullable":false,"description":"Shopper ID, one row per shopper"},
+{"name":"region","type":"categorical_u8","nullable":false,"description":"Sales region the shopper belongs to"},
+{"name":"plan","type":"categorical_u8","nullable":false,"description":"Subscription plan: Basic, Plus or Pro"},
+{"name":"arm","type":"categorical_u8","nullable":false,"description":"A/B test arm: control or variant"},
+{"name":"spend","type":"f64","nullable":true,"description":"Spend over the test period, in dollars"},
+{"name":"visits","type":"u8","nullable":false,"description":"Store visits over the test period"},
+{"name":"signup","type":"date","nullable":false,"description":"Date the shopper signed up"}]

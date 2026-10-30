@@ -1,0 +1,109 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "field_count": 7,
+    "fields": [
+      {
+        "name": "id",
+        "type": "u16",
+        "nullable": false,
+        "byte_offset": 0,
+        "bit_position": 0,
+        "description": "Shopper ID, one row per shopper",
+        "description_source": "schema",
+        "categorical": false
+      },
+      {
+        "name": "region",
+        "type": "categorical_u8",
+        "nullable": false,
+        "byte_offset": 2,
+        "bit_position": 0,
+        "description": "Sales region the shopper belongs to",
+        "description_source": "schema",
+        "categorical": true,
+        "dictionary": {
+          "total_entries": 4,
+          "truncated": false,
+          "values": [
+            "North",
+            "West",
+            "South",
+            "East"
+          ]
+        }
+      },
+      {
+        "name": "plan",
+        "type": "categorical_u8",
+        "nullable": false,
+        "byte_offset": 3,
+        "bit_position": 0,
+        "description": "Subscription plan: Basic, Plus or Pro",
+        "description_source": "schema",
+        "categorical": true,
+        "dictionary": {
+          "total_entries": 3,
+          "truncated": false,
+          "values": [
+            "Basic",
+            "Pro",
+            "Plus"
+          ]
+        }
+      },
+      {
+        "name": "arm",
+        "type": "categorical_u8",
+        "nullable": false,
+        "byte_offset": 4,
+        "bit_position": 0,
+        "description": "A/B test arm: control or variant",
+        "description_source": "schema",
+        "categorical": true,
+        "dictionary": {
+          "total_entries": 2,
+          "truncated": false,
+          "values": [
+            "control",
+            "variant"
+          ]
+        }
+      },
+      {
+        "name": "spend",
+        "type": "f64",
+        "nullable": true,
+        "byte_offset": 5,
+        "bit_position": 0,
+        "description": "Spend over the test period, in dollars",
+        "description_source": "schema",
+        "categorical": false
+      },
+      {
+        "name": "visits",
+        "type": "u8",
+        "nullable": false,
+        "byte_offset": 13,
+        "bit_position": 0,
+        "description": "Store visits over the test period",
+        "description_source": "schema",
+        "categorical": false
+      },
+      {
+        "name": "signup",
+        "type": "date",
+        "nullable": false,
+        "byte_offset": 14,
+        "bit_position": 0,
+        "description": "Date the shopper signed up",
+        "description_source": "schema",
+        "categorical": false
+      }
+    ],
+    "shards": [],
+    "record_count": 800
+  },
+  "errors": [],
+  "warnings": []
+}

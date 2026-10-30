@@ -1,0 +1,3 @@
+{"cohort":{"filename":"s.pulse"},
+"aggregations":[{"field":"spend","label":"total_spend"},{"type":"AGG_AVERAGE","field":"spend","label":"avg_spend"}],
+"tests":[{"type":"TEST_T","field":"spend","split_by":"arm","params":{"reference":"control"}}]}
