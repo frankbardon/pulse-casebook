@@ -1,0 +1,4 @@
+{"cohort":{"filename":"c.pulse"},
+ "features":[{"type":"FEAT_LOG","field":"income","label":"log_income"},{"type":"FEAT_BUCKETIZE","field":"age","label":"age_band","params":{"boundaries":[18,35,50,65]}}],
+ "groups":[{"type":"GROUP_CATEGORY","field":"id"}],
+ "aggregations":[{"type":"AGG_MAX","field":"log_income","label":"log_income"},{"type":"AGG_MAX","field":"age_band","label":"age_band"}]}

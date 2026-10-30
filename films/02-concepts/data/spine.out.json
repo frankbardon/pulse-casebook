@@ -1,0 +1,325 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "id": "1",
+        "senior": 0,
+        "z_income": 0.4608043217181206
+      },
+      {
+        "id": "10",
+        "senior": 1,
+        "z_income": -1.0460594456520855
+      },
+      {
+        "id": "11",
+        "senior": 0,
+        "z_income": -0.33298998430725646
+      },
+      {
+        "id": "3",
+        "senior": 0,
+        "z_income": -0.6558893630294441
+      },
+      {
+        "id": "4",
+        "senior": 0,
+        "z_income": 1.6582228511462294
+      },
+      {
+        "id": "6",
+        "senior": 0,
+        "z_income": -1.395867105934455
+      },
+      {
+        "id": "7",
+        "senior": 1,
+        "z_income": null
+      },
+      {
+        "id": "8",
+        "senior": 0,
+        "z_income": 1.2007820646231324
+      },
+      {
+        "id": "9",
+        "senior": 0,
+        "z_income": 0.11099666143575024
+      }
+    ],
+    "metadata": {
+      "total_rows": 12,
+      "filtered_rows": 9,
+      "cohort_file": "c.pulse"
+    },
+    "components": {
+      "aggregations": [
+        {
+          "label": "senior",
+          "n": 9,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "1"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 0
+              }
+            },
+            {
+              "group_key": [
+                "10"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 1
+              }
+            },
+            {
+              "group_key": [
+                "11"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 0
+              }
+            },
+            {
+              "group_key": [
+                "3"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 0
+              }
+            },
+            {
+              "group_key": [
+                "4"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 0
+              }
+            },
+            {
+              "group_key": [
+                "6"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 0
+              }
+            },
+            {
+              "group_key": [
+                "7"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 1
+              }
+            },
+            {
+              "group_key": [
+                "8"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 0
+              }
+            },
+            {
+              "group_key": [
+                "9"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 0
+              }
+            }
+          ]
+        },
+        {
+          "label": "z_income",
+          "n": 8,
+          "n_null": 1,
+          "groups": [
+            {
+              "group_key": [
+                "1"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 0.4608043217181206
+              }
+            },
+            {
+              "group_key": [
+                "10"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": -1.0460594456520855
+              }
+            },
+            {
+              "group_key": [
+                "11"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": -0.33298998430725646
+              }
+            },
+            {
+              "group_key": [
+                "3"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": -0.6558893630294441
+              }
+            },
+            {
+              "group_key": [
+                "4"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 1.6582228511462294
+              }
+            },
+            {
+              "group_key": [
+                "6"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": -1.395867105934455
+              }
+            },
+            {
+              "group_key": [
+                "7"
+              ],
+              "n": 0,
+              "n_null": 1,
+              "operator": {
+                "max": null
+              }
+            },
+            {
+              "group_key": [
+                "8"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 1.2007820646231324
+              }
+            },
+            {
+              "group_key": [
+                "9"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 0.11099666143575024
+              }
+            }
+          ]
+        }
+      ],
+      "groupers": [
+        {
+          "field": "id",
+          "total_n": 9,
+          "operator": {
+            "buckets": [
+              {
+                "count": 1,
+                "key": "1",
+                "label": "1"
+              },
+              {
+                "count": 1,
+                "key": "10",
+                "label": "10"
+              },
+              {
+                "count": 1,
+                "key": "11",
+                "label": "11"
+              },
+              {
+                "count": 1,
+                "key": "3",
+                "label": "3"
+              },
+              {
+                "count": 1,
+                "key": "4",
+                "label": "4"
+              },
+              {
+                "count": 1,
+                "key": "6",
+                "label": "6"
+              },
+              {
+                "count": 1,
+                "key": "7",
+                "label": "7"
+              },
+              {
+                "count": 1,
+                "key": "8",
+                "label": "8"
+              },
+              {
+                "count": 1,
+                "key": "9",
+                "label": "9"
+              }
+            ],
+            "dict_size": 0
+          }
+        }
+      ],
+      "filterers": [
+        {
+          "n_in": 12,
+          "n_out": 9,
+          "n_null_input": 0
+        }
+      ],
+      "run": {
+        "total_records": 12,
+        "filtered_records": 9,
+        "null_records": 0
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

@@ -1,0 +1,4 @@
+{"cohort":{"filename":"s.pulse"},
+ "regressions":[{"type":"REG_OLS","target":"income","predictors":["age"]}],
+ "vectors":[{"name":"profile","fields":["age","income","tenure","spend","visits"]}],
+ "matrices":[{"name":"cor","type":"MAT_CORRELATION","vector":"profile"}]}

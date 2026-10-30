@@ -1,0 +1,251 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "lag": null,
+        "order_date": "2026-01",
+        "pct_change": null,
+        "revenue": 120,
+        "running_sum": 120
+      },
+      {
+        "lag": 120,
+        "order_date": "2026-02",
+        "pct_change": 0.125,
+        "revenue": 135,
+        "running_sum": 255
+      },
+      {
+        "lag": 135,
+        "order_date": "2026-03",
+        "pct_change": -0.05185185185185185,
+        "revenue": 128,
+        "running_sum": 383
+      },
+      {
+        "lag": 128,
+        "order_date": "2026-04",
+        "pct_change": 0.171875,
+        "revenue": 150,
+        "running_sum": 533
+      },
+      {
+        "lag": 150,
+        "order_date": "2026-05",
+        "pct_change": 0.08,
+        "revenue": 162,
+        "running_sum": 695
+      },
+      {
+        "lag": 162,
+        "order_date": "2026-06",
+        "pct_change": 0.05555555555555555,
+        "revenue": 171,
+        "running_sum": 866
+      }
+    ],
+    "metadata": {
+      "total_rows": 18,
+      "filtered_rows": 18,
+      "cohort_file": "r.pulse"
+    },
+    "overlays": [
+      {
+        "name": "delta",
+        "kind": "OVERLAY_DELTA_VS_PRIOR",
+        "scope": "group",
+        "ref": {},
+        "payload": {
+          "shape": "series",
+          "series": {
+            "entries": [
+              {
+                "key": [
+                  "2026-01"
+                ],
+                "summary": {
+                  "statistic": null
+                }
+              },
+              {
+                "key": [
+                  "2026-02"
+                ],
+                "summary": {
+                  "statistic": 15
+                }
+              },
+              {
+                "key": [
+                  "2026-03"
+                ],
+                "summary": {
+                  "statistic": -7
+                }
+              },
+              {
+                "key": [
+                  "2026-04"
+                ],
+                "summary": {
+                  "statistic": 22
+                }
+              },
+              {
+                "key": [
+                  "2026-05"
+                ],
+                "summary": {
+                  "statistic": 12
+                }
+              },
+              {
+                "key": [
+                  "2026-06"
+                ],
+                "summary": {
+                  "statistic": 9
+                }
+              }
+            ]
+          }
+        },
+        "summary": {
+          "min": -7,
+          "max": 22,
+          "count": 5,
+          "baseline": 0
+        }
+      }
+    ],
+    "components": {
+      "aggregations": [
+        {
+          "label": "revenue",
+          "n": 18,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "2026-01"
+              ],
+              "n": 3,
+              "n_null": 0,
+              "operator": {
+                "sum": 120
+              }
+            },
+            {
+              "group_key": [
+                "2026-02"
+              ],
+              "n": 3,
+              "n_null": 0,
+              "operator": {
+                "sum": 135
+              }
+            },
+            {
+              "group_key": [
+                "2026-03"
+              ],
+              "n": 3,
+              "n_null": 0,
+              "operator": {
+                "sum": 128
+              }
+            },
+            {
+              "group_key": [
+                "2026-04"
+              ],
+              "n": 3,
+              "n_null": 0,
+              "operator": {
+                "sum": 150
+              }
+            },
+            {
+              "group_key": [
+                "2026-05"
+              ],
+              "n": 3,
+              "n_null": 0,
+              "operator": {
+                "sum": 162
+              }
+            },
+            {
+              "group_key": [
+                "2026-06"
+              ],
+              "n": 3,
+              "n_null": 0,
+              "operator": {
+                "sum": 171
+              }
+            }
+          ]
+        }
+      ],
+      "groupers": [
+        {
+          "field": "order_date",
+          "total_n": 18,
+          "operator": {
+            "buckets": [
+              {
+                "count": 3,
+                "key": "2026-01",
+                "period_end": "2026-01-31",
+                "period_start": "2026-01-01"
+              },
+              {
+                "count": 3,
+                "key": "2026-02",
+                "period_end": "2026-02-28",
+                "period_start": "2026-02-01"
+              },
+              {
+                "count": 3,
+                "key": "2026-03",
+                "period_end": "2026-03-31",
+                "period_start": "2026-03-01"
+              },
+              {
+                "count": 3,
+                "key": "2026-04",
+                "period_end": "2026-04-30",
+                "period_start": "2026-04-01"
+              },
+              {
+                "count": 3,
+                "key": "2026-05",
+                "period_end": "2026-05-31",
+                "period_start": "2026-05-01"
+              },
+              {
+                "count": 3,
+                "key": "2026-06",
+                "period_end": "2026-06-30",
+                "period_start": "2026-06-01"
+              }
+            ],
+            "granularity": "month",
+            "n_buckets": 6,
+            "range_end": "2026-06-30",
+            "range_start": "2026-01-01"
+          }
+        }
+      ],
+      "run": {
+        "total_records": 18,
+        "filtered_records": 18,
+        "null_records": 0
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

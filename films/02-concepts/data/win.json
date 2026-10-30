@@ -1,0 +1,7 @@
+{"cohort":{"filename":"r.pulse"},
+ "groups":[{"type":"GROUP_DATE","field":"order_date","params":{"component":"month"}}],
+ "aggregations":[{"type":"AGG_SUM","field":"revenue","label":"revenue"}],
+ "windows":[{"type":"WIN_LAG","field":"revenue","label":"lag","order_by":[{"field":"order_date"}]},
+            {"type":"WIN_PCT_CHANGE","field":"revenue","label":"pct_change","order_by":[{"field":"order_date"}]},
+            {"type":"WIN_RUNNING_SUM","field":"revenue","label":"running_sum","frame":{"mode":"rows","preceding":null,"following":0},"order_by":[{"field":"order_date"}]}],
+ "overlays":[{"name":"delta","kind":"OVERLAY_DELTA_VS_PRIOR","scope":"group","params":{"field":"revenue"}}]}

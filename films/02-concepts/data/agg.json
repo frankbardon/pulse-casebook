@@ -1,0 +1,5 @@
+{"cohort":{"filename":"c.pulse"},
+ "filterers":[{"type":"FILTER_RANGE","field":"age","values":["18","65"]}],
+ "groups":[{"type":"GROUP_CATEGORY","field":"region"}],
+ "aggregations":[{"type":"AGG_COUNT","field":"id","label":"rows"},{"type":"AGG_AVERAGE","field":"income","label":"avg_income"}],
+ "overlays":[{"name":"share","kind":"OVERLAY_SHARE_OF_TOTAL","scope":"group","params":{"field":"rows"}}]}

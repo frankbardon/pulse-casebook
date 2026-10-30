@@ -1,4 +1,6 @@
-/* Pulse Concepts: film 2 of the Pulse Anatomy series. Scenes draw with the PulseFilm kit. */
+/* Pulse Concepts: film 2 of the 23-film Pulse Anatomy series. Scenes draw with the PulseFilm kit.
+   Follows SERIES-RULES.md at Pulse v1.0.0-alpha.33: no catalog counts, "by default" for the slot order.
+   Every figure on a result card is copied from a recorded alpha.33 run in data/ (see data/README.md). */
 (() => {
 const { C, MONO } = PulseFilm;
 const { clamp, seg, eo, eio, lerp, R, T, M, CAP, Ln, A, dot, arrow, rng, chips } = PulseFilm.h;
@@ -21,14 +23,20 @@ const ROWS = [
 ];
 const keep = r => r.age >= 18 && r.age <= 65;           // FILTER_RANGE age 18–65, inclusive
 const KEPT = ROWS.filter(keep);
-const REG = ['North', 'South', 'East', 'West'];
+const REG = ['East', 'North', 'South', 'West'];   // GROUP_CATEGORY keys, in the order the run returns them
 const BUCKETS = REG.map(g => KEPT.filter(r => r.region === g));
-const AGG = BUCKETS.map(b => { const v = b.filter(r => r.income != null); return { rows: b.length, n: v.length, nnull: b.length - v.length, avg: v.reduce((a, r) => a + r.income, 0) / v.length }; });
-const BOUNDS = [18, 35, 50, 65];
-const bucket = v => { let i = 0; while (i < BOUNDS.length && v > BOUNDS[i]) i++; return i; };   // b[i-1] < v <= b[i]
-const incVals = KEPT.map(r => r.income).filter(v => v != null);
-const MEAN = incVals.reduce((a, b) => a + b, 0) / incVals.length;
-const SD = Math.sqrt(incVals.reduce((a, b) => a + (b - MEAN) ** 2, 0) / incVals.length);   // population sd, as ATTR_ZSCORE
+/* ---------- recorded alpha.33 runs (data/<request>.out.json) ---------- */
+// feat.out.json: FEAT_LOG income and FEAT_BUCKETIZE age, on all twelve members
+const LOG_INCOME = { 1: '4.296', 2: '2.565', 3: '4.176', 4: '4.410', 5: '4.025', 6: '4.088', 7: 'null', 8: '4.368', 9: '4.260', 10: '4.130', 11: '4.212', 12: '2.351' };
+const AGE_BAND = { 1: 1, 2: 0, 3: 2, 4: 1, 5: 4, 6: 2, 7: 3, 8: 1, 9: 2, 10: 3, 11: 1, 12: 0 };
+// spine.out.json: FILTER_RANGE age 18-65 (n_in 12, n_out 9, n_null_input 0), then ATTR_FORMULA senior and ATTR_ZSCORE income
+const FILTER_RUN = { n_in: 12, n_out: 9, n_null_input: 0 };
+const Z_INCOME = { 1: '+0.46', 3: '-0.66', 4: '+1.66', 6: '-1.40', 7: 'null', 8: '+1.20', 9: '+0.11', 10: '-1.05', 11: '-0.33' };
+// pass1.out.json: the z-score's first pass, as ungrouped AGG_COUNT / AGG_AVERAGE / AGG_STDDEV (population) on income
+const PASS1 = { n: 8, mean: '68.98', sd: '7.43' };
+// agg.out.json: GROUP_CATEGORY region, AGG_COUNT id (rows), AGG_AVERAGE income with its n / n_null, OVERLAY_SHARE_OF_TOTAL on rows
+const AGG = [{ rows: 3, n: 2, nnull: 1, avg: 65.3, share: '0.333' }, { rows: 2, n: 2, nnull: 0, avg: 71.1, share: '0.222' },
+  { rows: 2, n: 2, nnull: 0, avg: 59.9, share: '0.222' }, { rows: 2, n: 2, nnull: 0, avg: 79.6, share: '0.222' }];
 
 /* ---------- table helper ---------- */
 const COLS = { id: { l: '#', w: 40 }, region: { l: 'region', w: 96, t: 'categorical_u8' }, age: { l: 'age', w: 60, t: 'u8' },
@@ -83,7 +91,8 @@ function sTitle(t) {
 /* ---------- 1. cohort ---------- */
 const TYPES = [['u4', C.teal], ['u8', C.teal], ['u16', C.teal], ['u32', C.teal], ['u64', C.teal], ['f32', C.teal], ['f64', C.teal], ['decimal128', C.teal],
   ['date', C.amber], ['datetime', C.amber], ['packed_bool', C.ink], ['categorical_u8', C.violet], ['categorical_u16', C.violet], ['categorical_u32', C.violet],
-  ['set_u8', C.coral], ['set_u16', C.coral], ['set_u32', C.coral], ['set_u64', C.coral], ['set_u128', C.coral], ['set_u256', C.coral]];
+  ['set_u8', C.coral], ['set_u16', C.coral], ['set_u32', C.coral], ['set_u64', C.coral], ['set_u128', C.coral], ['set_u256', C.coral],
+  ['vec_f32', C.teal], ['vec_f64', C.teal]];   // the manifest's cohort_types at alpha.33; vectors since alpha.12
 function sCohort(t) {
   const keys = ['id', 'region', 'age', 'income', 'joined', 'interests'];
   const cols = keys.map((k, i) => col(k, { ha: seg(t, 0.2 + i * 0.12, 0.6 + i * 0.12) }));
@@ -93,7 +102,7 @@ function sCohort(t) {
     CAP('FIELD TYPES TODAY', 720, 150);
     chips(TYPES, 720, 168, 496, { t, at: 3.0, step: 0.07, size: 12.5 });
     A(seg(t, 4.6, 5.0), () => {
-      [['numbers', C.teal], ['time', C.amber], ['categories', C.violet], ['multi-select sets', C.coral]].forEach(([l, c], i) => { dot(728 + i * 120, 352, 5, c); M(l, 740 + i * 120, 357, { size: 12 }); });
+      [['numbers, vectors', C.teal], ['time', C.amber], ['categories', C.violet], ['multi-select sets', C.coral]].forEach(([l, c], i) => { const x = 728 + [0, 148, 214, 332][i]; dot(x, 372, 5, c); M(l, x + 12, 377, { size: 12 }); });
     });
   });
   // null vs empty selection
@@ -142,18 +151,19 @@ function side(t, o = {}) {
   });
 }
 function sRecipe(t) {
-  A(seg(t, 0.2, 0.6), () => CAP('THE REQUEST SPINE · ALWAYS RUN IN THIS ORDER', 64, 168));
+  A(seg(t, 0.2, 0.6), () => CAP('THE REQUEST SPINE · THE DEFAULT ORDER', 64, 168));
   spine(t, { at: 0.4, lit: 3.0 });
   if (t >= 3.0 && t < 5.9) { const x = lerp(64, 64 + 6 * 164 + 150, seg(t, 3.0, 5.7)); dot(x, 312, 6, C.teal); }
   Ln([[64, 312], [lerp(64, 1198, seg(t, 3.0, 5.7)), 312]], { stroke: C.teal, lw: 2 });
+  A(seg(t, 4.6, 5.0), () => M('a request that groups or aggregates a window label runs the windows first, over the records', 64, 340, { size: 12.5, color: C.amber }));
   A(seg(t, 5.6, 6.0), () => CAP('AROUND THE SPINE', 64, 372));
   side(t, { at: 5.8 });
 }
 
 /* ---------- 3. features ---------- */
 function sFeatures(t) {
-  const logCol = { k: 'log', l: 'log_income', w: 108, color: C.violet, hc: C.violet, ha: seg(t, 1.0, 1.4), ca: i => seg(t, 1.3 + i * 0.13, 1.6 + i * 0.13), val: r => r.income == null ? 'null' : Math.log1p(r.income).toFixed(3) };
-  const bCol = { k: 'band', l: 'age_band', w: 96, color: C.violet, hc: C.violet, ha: seg(t, 3.6, 4.0), ca: i => seg(t, 3.9 + i * 0.13, 4.2 + i * 0.13), val: r => String(bucket(r.age)) };
+  const logCol = { k: 'log', l: 'log_income', w: 108, color: C.violet, hc: C.violet, ha: seg(t, 1.0, 1.4), ca: i => seg(t, 1.3 + i * 0.13, 1.6 + i * 0.13), val: r => LOG_INCOME[r.id] };
+  const bCol = { k: 'band', l: 'age_band', w: 96, color: C.violet, hc: C.violet, ha: seg(t, 3.6, 4.0), ca: i => seg(t, 3.9 + i * 0.13, 4.2 + i * 0.13), val: r => String(AGE_BAND[r.id]) };
   const cols = [col('id'), col('region'), col('age'), col('income'), logCol, bCol];
   const rows = ROWS.map((r, i) => ({ r, y: rowY(140, i, false), tint: !keep(r) && t > 6.2 ? 'coral' : null }));
   table(70, 150, cols, rows);
@@ -198,7 +208,7 @@ function sFilters(t) {
   A(seg(t, 0.4, 0.8), () => {
     card(620, 130, 596, 160, C.coral);
     M('FILTER_RANGE', 642, 162, { size: 14, color: C.coral, weight: 600 }); T('age between 18 and 65, inclusive', 772, 162, { size: 15 });
-    [['n_in', seen, 'records it saw', C.ink], ['n_out', admitted, 'records it let through', C.teal], ['n_null_input', 0, 'dropped for a null age', C.muted]].forEach(([k2, v, d, c], j) => {
+    [['n_in', seen, 'records it saw', C.ink], ['n_out', admitted, 'records it let through', C.teal], ['n_null_input', FILTER_RUN.n_null_input, 'with a null age on entry', C.muted]].forEach(([k2, v, d, c], j) => {
       const x = 642 + j * 190;
       M(k2, x, 202, { size: 12 }); T(String(v), x, 246, { size: 34, weight: 700, color: c, stretch: 'expanded' }); M(d, x, 272, { size: 11.5 });
     });
@@ -207,7 +217,7 @@ function sFilters(t) {
     CAP('FILTERERS · MORE ADDED OVER TIME', 620, 330);
     chips([['range', C.coral], ['include'], ['exclude'], ['null'], ['true'], ['false'], ['expression'], ['date-ranges'], ['set-contains-any'], ['set-contains-all'], ['set-contains-none'], ['set-equals']], 620, 346, 596, { t, at: 5.9 });
   });
-  A(seg(t, 6.8, 7.2), () => { card(620, 478, 596, 60); T('A filter reads source fields and features, never an attribute.', 642, 513, { size: 15 }); });
+  A(seg(t, 6.8, 7.2), () => { card(620, 478, 596, 60); T('A filter reads source fields and features. By default, attributes run after it.', 642, 513, { size: 15 }); });
 }
 
 /* ---------- 5. attributes ---------- */
@@ -218,7 +228,7 @@ function sAttributes(t) {
   KEPT.forEach((r, i) => { if (t >= p1(i) + 0.1 && r.income != null) { n++; const d = r.income - mean; mean += d / n; m2 += d * (r.income - mean); } });
   const sd = n > 0 ? Math.sqrt(m2 / n) : 0;
   const sen = { k: 'senior', l: 'senior', w: 84, color: C.violet, hc: C.violet, ha: seg(t, 0.6, 1.0), ca: i => seg(t, 0.8 + i * 0.16, 1.1 + i * 0.16), val: r => r.age >= 50 ? '1' : '0' };
-  const z = { k: 'z', l: 'z_income', w: 104, color: C.violet, hc: C.violet, ha: seg(t, 5.4, 5.8), ca: i => seg(t, 5.6 + i * 0.2, 5.9 + i * 0.2), val: r => r.income == null ? '0.00' : ((r.income - MEAN) / SD >= 0 ? '+' : '') + ((r.income - MEAN) / SD).toFixed(2) };   // null input → 0
+  const z = { k: 'z', l: 'z_income', w: 104, color: C.violet, hc: C.violet, ha: seg(t, 5.4, 5.8), ca: i => seg(t, 5.6 + i * 0.2, 5.9 + i * 0.2), val: r => Z_INCOME[r.id] };   // a null input scores null (alpha.18), shown in coral
   const cols = [col('id'), col('region'), col('age'), col('income'), sen, z];
   const rows = KEPT.map((r, i) => ({ r, y: rowY(140, i, false), tint: t >= p1(i) && t < p1(i) + 0.3 ? 'teal' : null }));
   table(70, 150, cols, rows);
@@ -232,12 +242,13 @@ function sAttributes(t) {
     card(640, 240, 576, 150, C.violet);
     CAP('TWO-PASS · STATISTICS FIRST, THEN SCORES', 662, 268, { color: C.violet });
     M('ATTR_ZSCORE', 662, 300, { size: 14, color: C.violet, weight: 600 }); M('z_income = (income − mean) / sd', 790, 300, { size: 14, color: C.ink });
-    M('pass 1', 662, 334, { size: 12.5, color: t < 5.4 ? C.teal : C.muted }); M(`n ${n}   mean ${n ? mean.toFixed(2) : '—'}   sd ${n > 0 ? sd.toFixed(2) : '—'}`, 730, 334, { size: 14, color: C.ink });
+    M('pass 1', 662, 334, { size: 12.5, color: t < 5.4 ? C.teal : C.muted }); const done = n === PASS1.n;   // once the scan ends, the card shows the recorded run
+    M(`n ${n}   mean ${done ? PASS1.mean : n ? mean.toFixed(2) : '—'}   sd ${done ? PASS1.sd : n > 0 ? sd.toFixed(2) : '—'}`, 730, 334, { size: 14, color: C.ink });
     M('pass 2', 662, 366, { size: 12.5, color: t >= 5.4 ? C.teal : C.faint }); M('score every row against those statistics', 730, 366, { size: 12.5 });
   });
   A(seg(t, 7.6, 8.0), () => {
     CAP('ATTRIBUTES · MORE ADDED OVER TIME', 640, 428);
-    chips([['formula', C.violet], ['zscore', C.violet], ['tscore'], ['percentile'], ['normalized'], ['date-part'], ['code-in'], ['set-has'], ['set-popcount'], ['mahalanobis'], ['pc-score'], ['factor-score'], ['reg-fitted'], ['reg-residual'], ['reg-leverage'], ['reg-predict']], 640, 444, 576, { t, at: 7.7, step: 0.04 });
+    chips([['formula', C.violet], ['zscore', C.violet], ['tscore'], ['percentile'], ['normalized'], ['date-part'], ['code-in'], ['set-has'], ['set-popcount'], ['mahalanobis'], ['pc-score'], ['factor-score'], ['reg-fitted'], ['reg-residual'], ['reg-leverage'], ['reg-predict'], ['previous-state'], ['sem-score'], ['+ more']], 640, 444, 576, { t, at: 7.7, step: 0.04 });
   });
 }
 
@@ -286,8 +297,8 @@ function sGroupers(t) {
     });
   });
   A(seg(t, 8.4, 8.8), () => {
-    CAP('GROUPERS · MORE OVER TIME', 830, 440);
-    chips([['category', C.teal], ['range'], ['rounded'], ['quantile'], ['date'], ['date-ranges'], ['kmeans'], ['set-per-element', C.amber], ['set-value']], 830, 456, 386, { t, at: 8.5 });
+    CAP('GROUPERS · MORE ADDED OVER TIME', 830, 440);
+    chips([['category', C.teal], ['range'], ['numeric-ranges'], ['rounded'], ['quantile'], ['date'], ['date-ranges'], ['kmeans'], ['set-per-element', C.amber], ['set-value']], 830, 456, 386, { t, at: 8.5 });
   });
 }
 
@@ -318,16 +329,18 @@ function sAggregators(t) {
     M('n · n_null → components', RX + 18, 398, { size: 13.5, color: C.violet }); M('East: 3 rows, 1 null income → n 2', RX + 18, 420, { size: 12.5 });
   });
   A(seg(t, 5.4, 5.8), () => {
-    CAP('AGGREGATORS · MORE OVER TIME', 70, 286);
-    chips([['count'], ['sum'], ['average', C.teal], ['median'], ['percentile'], ['min'], ['max'], ['stddev'], ['variance'], ['mode'], ['distinct-count'], ['ratio'], ['weighted-mean'], ['ci-lower'], ['ci-upper'], ['set-union'], ['+ more']], 70, 302, 320, { t, at: 5.5, step: 0.04 });
+    CAP('AGGREGATORS · MORE ADDED OVER TIME', 70, 286);
+    chips([['count'], ['sum'], ['average', C.teal], ['median'], ['percentile'], ['min'], ['max'], ['stddev'], ['variance'], ['mode'], ['distinct-count'], ['ratio'], ['weighted-mean'], ['ci-lower'], ['ci-upper'], ['auc'], ['set-union'], ['vec-mean'], ['+ more']], 70, 302, 320, { t, at: 5.5, step: 0.04 });
   });
   A(seg(t, 7.0, 7.4), () => { R(RX, 456, 376, 64, { fill: C.panel, stroke: C.rule }); M('no groups → one bucket:', RX + 18, 484, { size: 13.5, color: C.ink }); M('the whole filtered cohort', RX + 18, 506, { size: 12.5 }); });
 }
 
 /* ---------- 8. windows ---------- */
+// win.out.json: AGG_SUM revenue by month of r.csv. Its WIN_LAG, WIN_PCT_CHANGE and WIN_RUNNING_SUM columns, and the
+// OVERLAY_DELTA_VS_PRIOR series, equal the values computed from REV below (checked against the run).
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'], REV = [120, 135, 128, 150, 162, 171];
 function sWindows(t) {
-  A(seg(t, 0.1, 0.5), () => { CAP('GROUP_DATE month · AGG_SUM revenue', 70, 140, { color: C.teal }); });
+  A(seg(t, 0.1, 0.5), () => { CAP('GROUP_DATE order_date (month) · AGG_SUM revenue', 70, 140, { color: C.teal }); });
   const base = 520;
   MONTHS.forEach((m, i) => {
     const x = 90 + i * 80, h = REV[i] * 1.8 * eo(seg(t, 0.6 + i * 0.12, 1.2 + i * 0.12));
@@ -353,25 +366,24 @@ function sWindows(t) {
     if (i > 0) { const a = seg(t, 3.0 + i * 0.2, 3.3 + i * 0.2) * (1 - seg(t, 4.5, 4.9)); A(a, () => arrow(xs(1) + 30, y - 38 - 4, xs(2) - 4, y - 5, { stroke: C.amber, head: 6, lw: 1.2 })); }
   });
   A(seg(t, 7.4, 7.8), () => {
-    M('order_by month · partition_by optional · runs after aggregation', X, 444, { size: 12.5 });
+    M('order_by month · partition_by optional · by default after aggregation', X, 444, { size: 12.5 });
     CAP('WINDOWS · MORE ADDED OVER TIME', X, 482);
-    chips([['lag', C.amber], ['lead'], ['delta'], ['pct-change', C.amber], ['running-sum', C.amber], ['running-avg'], ['moving-avg'], ['ewma'], ['rank'], ['dense-rank'], ['row-number']], X, 496, 576, { t, at: 7.5 });
+    chips([['lag', C.amber], ['lead'], ['delta'], ['pct-change', C.amber], ['running-sum', C.amber], ['running-avg'], ['moving-avg'], ['ewma'], ['rank'], ['dense-rank'], ['row-number'], ['share'], ['lift'], ['distributed-lag']], X, 496, 576, { t, at: 7.5 });
   });
 }
 
 /* ---------- 9. tests and regressions ---------- */
-const TR = rng(21);
-const gauss = () => Math.sqrt(-2 * Math.log(TR() + 1e-9)) * Math.cos(2 * Math.PI * TR());
-const GA = Array.from({ length: 30 }, () => 68 + 8 * gauss()), GB = Array.from({ length: 30 }, () => 75 + 8 * gauss());
-const mv = a => { const m = a.reduce((x, y) => x + y, 0) / a.length; return [m, a.reduce((x, y) => x + (y - m) ** 2, 0) / (a.length - 1)]; };
-const [mA, vA] = mv(GA), [mB, vB] = mv(GB);
-const TSTAT = (mA - mB) / Math.sqrt(vA / 30 + vB / 30);
-const erf = x => { const s = Math.sign(x); x = Math.abs(x); const t = 1 / (1 + 0.3275911 * x); return s * (1 - (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-x * x)); };
-const PVAL = 2 * (1 - 0.5 * (1 + erf(Math.abs(TSTAT) / Math.SQRT2)));
-const SC = Array.from({ length: 40 }, () => { const age = 20 + TR() * 44; return [age, 42 + 0.55 * age + 6 * gauss()]; });
-const OLS = (() => { const n = SC.length, mx = SC.reduce((a, p) => a + p[0], 0) / n, my = SC.reduce((a, p) => a + p[1], 0) / n;
-  const sxy = SC.reduce((a, p) => a + (p[0] - mx) * (p[1] - my), 0), sxx = SC.reduce((a, p) => a + (p[0] - mx) ** 2, 0), syy = SC.reduce((a, p) => a + (p[1] - my) ** 2, 0);
-  const b = sxy / sxx, a = my - b * mx; return { a, b, r2: sxy * sxy / (sxx * syy) }; })();
+// s.csv (data/generate.js, seed 21): incomes of the 20 North and 20 West members, and age/income for all 80.
+const GA = [45.4, 62, 55.3, 56.8, 69.9, 50.5, 49.4, 62.6, 83.5, 63.5, 82.3, 60.1, 55.3, 58.5, 60.1, 78.7, 41.6, 57, 65.9, 53];
+const GB = [69.1, 65, 78.3, 68.4, 71.1, 70.3, 78.9, 63, 70.1, 74.7, 54.5, 66.5, 51.6, 49.2, 89.3, 63.1, 83.7, 61.4, 79.8, 64.5];
+const SC = [[27,45.4],[55,62],[20,55.3],[30,56.8],[59,69.9],[25,50.5],[25,49.4],[41,62.6],[54,83.5],[54,63.5],[56,82.3],[36,60.1],[21,55.3],[42,58.5],[44,60.1],[61,78.7],[23,41.6],[50,57],[62,65.9],[31,53],
+  [54,72.9],[33,61.9],[60,74],[62,74.5],[57,61.5],[46,63.1],[54,72.3],[46,58.1],[38,59.6],[24,56.2],[49,74.3],[30,61.8],[44,68.9],[55,72.6],[28,53],[22,57.4],[42,60.6],[42,49.5],[43,64.8],[36,79.1],
+  [23,46.3],[21,49.4],[38,65.8],[51,62.3],[37,64.1],[41,66],[48,60.5],[50,83.9],[56,69.7],[34,63.8],[33,57.7],[62,73.2],[50,85.2],[57,81.8],[32,70.4],[47,72.5],[28,58],[51,71.9],[51,71.8],[34,65.3],
+  [55,69.1],[38,65],[61,78.3],[60,68.4],[56,71.1],[35,70.3],[59,78.9],[28,63],[50,70.1],[44,74.7],[23,54.5],[43,66.5],[27,51.6],[30,49.2],[63,89.3],[20,63.1],[48,83.7],[29,61.4],[59,79.8],[44,64.5]];
+// tr.out.json: FILTER_INCLUDE region North, West, then TEST_WELCH income split_by region
+const WELCH = { t: '-2.35', p: '0.024', mean: [60.57, 68.625] };
+// sm.out.json: REG_OLS income ~ age over all 80
+const OLS = { a: 40.541931548295295, b: 0.5817619888538051, r2: '0.53' };
 function sTests(t) {
   CAP('TESTS', 70, 140, { color: C.teal });
   const px = v => 90 + (v - 40) / 60 * 470;
@@ -379,15 +391,16 @@ function sTests(t) {
     T(g, 70, y - 34, { size: 15, weight: 600 });
     Ln([[90, y], [560, y]], { stroke: C.rule });
     arr.forEach((v, i) => A(seg(t, 0.5 + i * 0.03 + gi * 0.4, 0.8 + i * 0.03 + gi * 0.4), () => dot(px(v), y - 8 + ((i * 7) % 5) * 4 - 8, 4.5, gi ? C.amber : C.teal)));
-    const m = gi ? mB : mA;
+    const m = WELCH.mean[gi];
     A(seg(t, 2.4, 2.8), () => { Ln([[px(m), y - 34], [px(m), y + 10]], { stroke: C.ink, lw: 2 }); M('mean ' + m.toFixed(1), px(m) + 6, y + 24, { size: 12.5, color: C.ink }); });
   });
   [40, 60, 80, 100].forEach(v => M(String(v), px(v), 390, { size: 11.5, align: 'center' }));
   A(seg(t, 3.2, 3.6), () => {
-    R(90, 440, 470, 96, { fill: C.panel, stroke: C.teal });
-    M('TEST_WELCH income split_by region', 110, 470, { size: 13.5, color: C.teal });
-    M(`t = ${TSTAT.toFixed(2)}`, 110, 502, { size: 16, color: C.ink }); M(`p ≈ ${PVAL < 0.001 ? '< 0.001' : PVAL.toFixed(3)}`, 260, 502, { size: 16, color: C.ink });
-    M('tests run during the scan · post_tests run on result rows', 110, 524, { size: 11.5 });
+    R(90, 424, 470, 120, { fill: C.panel, stroke: C.teal });
+    M('FILTER_INCLUDE region: North, West', 110, 450, { size: 12.5, color: C.coral });
+    M('TEST_WELCH income split_by region', 110, 474, { size: 13.5, color: C.teal });
+    M(`t = ${WELCH.t.replace('-', '−')}`, 110, 506, { size: 16, color: C.ink }); M(`p = ${WELCH.p}`, 260, 506, { size: 16, color: C.ink });
+    M('exactly two groups · post_tests run on result rows', 110, 530, { size: 11.5 });
   });
   // regression
   CAP('REGRESSIONS', 680, 140, { color: C.violet });
@@ -398,19 +411,21 @@ function sTests(t) {
   const u = eo(seg(t, 6.0, 7.0));
   if (u > 0) { const x1 = 18, x2 = lerp(18, 66, u); Ln([[sx(x1), sy(OLS.a + OLS.b * x1)], [sx(x2), sy(OLS.a + OLS.b * x2)]], { stroke: C.ink, lw: 2.5 }); }
   A(seg(t, 7.0, 7.4), () => {
-    R(680, 440, 510, 96, { fill: C.panel, stroke: C.violet });
-    M('REG_OLS income ~ age', 700, 470, { size: 13.5, color: C.violet });
-    M(`income = ${OLS.a.toFixed(1)} + ${OLS.b.toFixed(2)} · age`, 700, 502, { size: 15, color: C.ink });
-    M(`R² = ${OLS.r2.toFixed(2)}   ·   models: OLS · GLM · Bayesian linear`, 700, 524, { size: 11.5 });
+    R(680, 424, 510, 120, { fill: C.panel, stroke: C.violet });
+    M('REG_OLS income ~ age', 700, 454, { size: 13.5, color: C.violet });
+    M(`income = ${OLS.a.toFixed(1)} + ${OLS.b.toFixed(2)} · age    R² = ${OLS.r2}`, 700, 484, { size: 15, color: C.ink });
+    M('models today: OLS · GLM · Bayesian linear · MMM Hill · MMM Bayes', 700, 510, { size: 11.5 });
+    M('more added over time · your own through Options.Extensions', 700, 530, { size: 11.5 });
   });
 }
 
 /* ---------- 10. matrices ---------- */
 const FIELDS = ['age', 'income', 'tenure', 'spend', 'visits'];
-const CORR = [[1, .42, .71, .18, -.12], [.42, 1, .35, .64, .08], [.71, .35, 1, .29, -.05], [.18, .64, .29, 1, .57], [-.12, .08, -.05, .57, 1]];
+// sm.out.json: MAT_CORRELATION over the vector profile = [age, income, tenure, spend, visits], listwise, n 80
+const CORR = [[1, .73, .80, .50, .36], [.73, 1, .54, .78, .45], [.80, .54, 1, .34, .26], [.50, .78, .34, 1, .52], [.36, .45, .26, .52, 1]];
 function sMatrices(t) {
   FIELDS.forEach((f, i) => A(seg(t, 0.2 + i * 0.12, 0.5 + i * 0.12), () => { R(70 + i * 112, 140, 100, 34, { fill: C.panel2, stroke: C.teal, r: 17 }); M(f, 120 + i * 112, 162, { size: 13, color: C.teal, align: 'center' }); }));
-  A(seg(t, 0.9, 1.3), () => { M('vectors: profile = [age, income, tenure, spend, visits]', 70, 206, { size: 13, color: C.ink }); });
+  A(seg(t, 0.9, 1.3), () => { M('vectors: profile = [age, income, tenure, spend, visits]  ·  or a native vec_f64 field', 70, 206, { size: 13, color: C.ink }); });
   const X = 190, Y = 236, S = 60;
   FIELDS.forEach((f, i) => A(seg(t, 1.2, 1.6), () => { M(f, X - 12, Y + i * S + 35, { size: 12.5, align: 'right' }); M(f, X + i * S + 30, Y - 10, { size: 12, align: 'center' }); }));
   for (let i = 0; i < 5; i++) for (let j = 0; j < 5; j++) {
@@ -425,18 +440,18 @@ function sMatrices(t) {
     card(560, 236, 656, 104, C.teal);
     M('MAT_CORRELATION', 582, 268, { size: 14, color: C.teal, weight: 600 }); T('one vector of fields in, one matrix out', 730, 268, { size: 15 });
     M('symmetric · listwise or pairwise handling of missing values', 582, 296, { size: 12.5 });
-    M('tenure ↔ age 0.71 · spend ↔ income 0.64', 582, 320, { size: 12.5, color: C.ink });
+    M('tenure ↔ age 0.80 · spend ↔ income 0.78 · n 80', 582, 320, { size: 12.5, color: C.ink });
   });
   A(seg(t, 5.8, 6.2), () => {
     CAP('MATRIX OPERATORS · MORE ADDED OVER TIME', 560, 378);
-    chips([['covariance'], ['correlation', C.teal], ['partial-correlation'], ['distance'], ['pca'], ['factor'], ['reliability'], ['collinearity']], 560, 394, 656, { t, at: 5.9 });
+    chips([['covariance'], ['correlation', C.teal], ['partial-correlation'], ['distance'], ['pca'], ['factor'], ['reliability'], ['collinearity'], ['sem']], 560, 394, 656, { t, at: 5.9 });
   });
 }
 
 /* ---------- 11. overlays ---------- */
 function sOverlays(t) {
   A(seg(t, 0.1, 0.5), () => CAP('BASE RESULT · data', 70, 140));
-  ['region', 'n', 'avg income'].forEach((h, k) => T(h, 70 + [0, 120, 190][k], 176, { size: 14, weight: 600 }));
+  ['region', 'rows', 'avg income'].forEach((h, k) => T(h, 70 + [0, 120, 190][k], 176, { size: 14, weight: 600 }));
   Ln([[70, 190], [380, 190]]);
   REG.forEach((g, j) => { const y = 222 + j * 38; T(g, 70, y, { size: 15 }); M(String(AGG[j].rows), 190, y, { size: 14, color: C.ink }); M(AGG[j].avg.toFixed(2), 260, y, { size: 14, color: C.ink }); });
   // overlay sheet slides in, keyed to the same rows
@@ -445,7 +460,7 @@ function sOverlays(t) {
     const x = lerp(900, 420, u);
     R(x, 150, 230, 222, { fill: 'rgba(38,31,68,0.85)', stroke: C.violet, lw: 1.5 });
     M('OVERLAY_SHARE_OF_TOTAL', x + 14, 176, { size: 12, color: C.violet, weight: 600 });
-    REG.forEach((g, j) => { const y = 222 + j * 38; M((AGG[j].rows / KEPT.length).toFixed(3), x + 14, y, { size: 14, color: C.violet }); });
+    REG.forEach((g, j) => { const y = 222 + j * 38; M(AGG[j].share, x + 14, y, { size: 14, color: C.violet }); });
     M('sums to 1.000', x + 14, 362, { size: 11.5 });
     if (u > 0.95) REG.forEach((g, j) => Ln([[384, 216 + j * 38], [x - 4, 216 + j * 38]], { stroke: C.violet, dash: [2, 4], lw: 1 }));
   });
@@ -459,8 +474,9 @@ function sOverlays(t) {
   MONTHS.forEach((m, i) => { if (!i) return; A(seg(t, 4.8 + i * 0.15, 5.1 + i * 0.15), () => { const d = REV[i] - REV[i - 1]; M((d >= 0 ? '+' : '') + d, 70 + i * 92 + 42, 516, { size: 13.5, color: C.violet, align: 'center' }); }); });
   A(seg(t, 6.0, 6.4), () => {
     CAP('OVERLAY FAMILIES · MORE ADDED OVER TIME', 760, 140);
-    chips([['share', C.violet], ['index'], ['delta', C.violet], ['z-score'], ['t'], ['proportion z'], ['chi-square'], ['pairwise'], ['Fisher exact'], ['KS'], ['rank'], ['formula'], ['year over year']], 760, 156, 456, { t, at: 6.1 });
-    M('crosstab · series · facet · compose hosts', 760, 316, { size: 12.5 });
+    chips([['share', C.violet], ['index'], ['delta', C.violet], ['z-score'], ['t'], ['proportion z'], ['chi-square'], ['pairwise'], ['Fisher exact'], ['KS'], ['rank'], ['formula'], ['year over year'],
+      ['vs prior'], ['std residual'], ['correspondence'], ['Markov'], ['rake'], ['symmetry'], ['retention'], ['matrix group summary'], ['+ more']], 760, 156, 456, { t, at: 6.1, step: 0.04 });
+    M('hosts: crosstab · series · matrix result', 760, 346, { size: 12.5 }); M('facet · chain · compose', 760, 366, { size: 12.5 });
   });
 }
 
@@ -470,36 +486,40 @@ function sRecap(t) {
   A(1 - end, () => {
     A(seg(t, 0.1, 0.5), () => CAP('THE WHOLE TOOLKIT', 64, 168));
     spine(t, { at: 0.2 });
-    side(t, { at: 1.6 });
-    A(seg(t, 2.6, 3.0), () => M('every category grows over time · the manifest lists what your instance offers', 64, 500, { size: 13, color: C.teal }));
+    side(t, { at: 1.6, y: 336 });
+    A(seg(t, 2.6, 3.0), () => {
+      M('the spine runs in this order by default · every category grows over time · the manifest lists what your instance offers', 64, 464, { size: 13, color: C.teal });
+      M('Options.Extensions · embedders register their own features, filters, attributes, groupers, aggregators, windows, tests, regressions and matrix operators', 64, 486, { size: 12, color: C.amber });
+    });
     A(seg(t, 3.6, 4.0), () => {
-      R(64, 520, 1152, 56, { fill: C.violetS, stroke: C.violet });
-      M('components', 86, 554, { size: 14, color: C.violet, weight: 600 }); T('every figure comes back with the counts it stands on:  n · n_null · n_in · n_out · total_n', 196, 554, { size: 15 });
+      R(64, 510, 1152, 56, { fill: C.violetS, stroke: C.violet });
+      M('components', 86, 544, { size: 14, color: C.violet, weight: 600 }); T('every figure comes back with the counts it stands on:  n · n_null · n_in · n_out · total_n', 196, 544, { size: 15 });
     });
   });
   A(seg(t, 8.2, 9.0), () => {
     T('PULSE', 640, 300, { size: 92, weight: 800, stretch: 'expanded', align: 'center' });
     T('CONCEPTS', 640, 372, { size: 44, weight: 800, stretch: 'expanded', align: 'center', color: C.teal });
-    M('features → filters → attributes → groups → aggregations → windows → sort', 640, 430, { size: 15, align: 'center' });
+    M('by default: features → filters → attributes → groups → aggregations → windows → sort', 640, 430, { size: 15, align: 'center' });
     M('next: each concept in depth', 640, 470, { size: 14, align: 'center', color: C.faint });
   });
 }
 
 /* ---------- scenes + script ---------- */
-const NARR = /*NARR*/[6.059, 5.931, 8.597, 8.235, 6.251, 5.504, 6.037, 5.909, 5.163, 8.469, 5.44, 6.805, 9.643, 8.491, 6.656, 6.72, 4.885, 5.504, 10.133, 7.424, 7.104, 6.912, 6.592, 7.147, 5.44, 7.125, 7.019, 6.613, 5.547, 9.579, 6.763, 4.843, 7.936, 13.013, 5.376, 3.328]/*END*/;
+const NARR = /*NARR*/[6.08, 5.931, 11.52, 9.6, 6.4, 10.859, 6.037, 5.888, 5.227, 8.491, 5.397, 6.805, 11.072, 8.725, 6.635, 6.421, 4.096, 4.885, 5.504, 10.091, 7.424, 7.104, 6.912, 7.36, 7.147, 7.744, 8.448, 7.061, 6.635, 11.904, 7.424, 11.392, 6.784, 4.864, 4.971, 7.701, 14.229, 5.696, 5.397, 3.328]/*END*/;
 PulseFilm.mount({
   series: 'PULSE · CONCEPTS',
+  title: 'Pulse Concepts',
   narr: NARR,
   scenes: [
-    { name: 'Pulse Concepts', dur: 4, draw: sTitle, caps: [
+    { name: 'Pulse Concepts', dur: 3.5, draw: sTitle, caps: [
       [0, '', 'Pulse concepts. The building blocks of a request, explained on one small cohort of twelve members.', true]] },
     { name: 'The cohort', dur: 9, draw: sCohort, caps: [
       [0, 'Everything in Pulse starts with a cohort: a table of records, where every field has a declared type.'],
-      [2.8, 'Field types cover whole numbers, decimals, dates, true-or-false flags, categories and multi-select sets, and more can be added over time.'],
-      [6.2, 'Any field can be null, meaning no value at all. For a multi-select, an empty selection is a real answer, which is different from null.']] },
+      [2.8, 'Field types today cover whole numbers, decimals, dates, true-or-false flags, categories, multi-select sets and native vectors. More are added over time, and the manifest lists them.'],
+      [6.2, 'A field can be null if its schema allows it, meaning no value at all. For a multi-select, an empty selection is a real answer, which is different from null.']] },
     { name: 'A request is a recipe', dur: 8.5, draw: sRecipe, caps: [
-      [0, 'A request is a recipe. You fill in the slots you need, and Pulse always runs them in the same order.'],
-      [3.0, 'Features first, then filters, attributes, groups, aggregations, windows, and finally sort.'],
+      [0, 'A request is a recipe. You fill in the slots you need, and by default Pulse runs them in the same order.'],
+      [3.0, 'Features first, then filters, attributes, groups, aggregations, windows, and finally sort. A request that groups or aggregates a window\'s output runs the windows first.'],
       [5.6, 'Around that spine sit tests, regressions, matrices, crosstabs and overlays. Let\'s meet each one.']] },
     { name: 'Features', dur: 8, draw: sFeatures, caps: [
       [0, 'Features come first, before any filter. Each one adds a new column to every record in the cohort.'],
@@ -509,11 +529,12 @@ PulseFilm.mount({
     { name: 'Filters', dur: 8, draw: sFilters, caps: [
       [0, 'Filters decide which records stay. This one keeps members aged eighteen to sixty-five.'],
       [3.8, 'Three records fall away. The filter counts what it saw and what it let through, and those counts come back with the answer.'],
-      [5.8, 'Filters range from simple ranges to set membership to full expressions, and more are added over time. A filter can read features, but never an attribute.']] },
+      [5.8, 'Filters range from simple ranges to set membership to full expressions, and more are added over time. A filter can read features, and by default it runs before the attributes.']] },
     { name: 'Attributes', dur: 9, draw: sAttributes, caps: [
-      [0, 'Attributes add one derived value to every record that survived the filters. A formula reads only its own row, so it needs one pass.'],
+      [0, 'Attributes add a derived value to each record, by default after the filters. A formula reads only its own row, so it needs one pass.'],
       [2.9, 'A z-score is different. It needs the mean and spread of the whole column first, so Pulse makes a pass to learn them.'],
-      [5.4, 'Then a second pass scores every row. Pulse handles both passes for you, and the set of attributes keeps growing.']] },
+      [5.4, 'Then a second pass scores every row. Member seven has no income, so its z-score is null, not zero.'],
+      [7.6, 'Pulse handles both passes for you, and the set of attributes keeps growing.']] },
     { name: 'Groupers', dur: 9.5, draw: sGroupers, caps: [
       [0, 'Groupers sort records into buckets. The category grouper makes one bucket per region.'],
       [4.8, 'Multi-select fields can fan out. A member who chose travel and tech lands in both buckets.'],
@@ -523,22 +544,26 @@ PulseFilm.mount({
       [3.6, 'Each figure comes with its counts. In the East, one income was null, so that average stands on two records, not three.'],
       [5.4, 'Pulse ships a growing set of aggregators. And with no groupers at all, the whole filtered cohort is a single bucket.']] },
     { name: 'Windows', dur: 8.5, draw: sWindows, caps: [
-      [0, 'Windows run after aggregation. They give each row a value that depends on its neighbours, in a set order.'],
+      [0, 'By default, windows run after aggregation. They give each row a value that depends on its neighbours, in a set order.'],
       [3.0, 'Lag pulls in last month\'s revenue. Percent change compares against it. A running sum keeps a cumulative total.'],
-      [7.2, 'Windows also include ranks, moving averages and smoothing, and more are added over time.']] },
+      [7.2, 'Windows also include ranks, moving averages, smoothing, shares, lift and carry-over lags, and more are added over time.']] },
     { name: 'Tests and regressions', dur: 8.5, draw: sTests, caps: [
-      [0, 'Tests ask whether a difference is real or just noise. Here, a Welch t-test compares incomes in two regions.'],
+      [0, 'Tests ask whether a difference is real or just noise. Here, a filter keeps two regions, and a Welch t-test compares their incomes.'],
       [3.2, 'Pulse offers a growing set of tests. Some run during the scan, and post-tests run on the finished result rows.'],
-      [4.4, 'Regressions explain an outcome from its predictors. A least-squares fit finds how income rises with age.']] },
+      [4.4, 'Regressions explain an outcome from its predictors. A least-squares fit finds how income rises with age.'],
+      [7.0, 'Regressions today include least squares, GLMs, Bayesian linear and media-mix models. More are added over time, and embedders can register their own through Options.Extensions.',
+            'Regressions today include least squares, G L Ms, Bayesian linear and media-mix models. More are added over time, and embedders can register their own through options dot extensions.']] },
     { name: 'Matrices', dur: 7.5, draw: sMatrices, caps: [
-      [0, 'Matrices look at many fields at once. You name a vector of fields, and get a whole matrix back.'],
-      [4.6, 'Correlation shows which fields move together. Other matrix operators include covariance, principal components and reliability, with more added over time.']] },
+      [0, 'Matrices look at many fields at once. You name a vector of fields, or a native vector field, and get a whole matrix back.'],
+      [4.6, 'Correlation shows which fields move together. Other matrix operators include covariance, principal components, reliability and structural equation models, with more added over time.']] },
     { name: 'Overlays', dur: 8, draw: sOverlays, caps: [
       [0, 'Overlays are layers placed on top of a finished result. A share-of-total layer lines up with the regional rows.'],
       [2.6, 'The base data underneath never changes. An overlay only adds a sibling layer.'],
-      [4.2, 'Overlays work on series too. Delta versus prior shows the month-on-month change, and new overlay kinds are added over time.']] },
+      [4.2, 'Overlays work on series too. Delta versus prior shows the month-on-month change.'],
+      [6.0, 'A crosstab, a matrix result, a facet or a chain can host overlays as well, and new overlay kinds are added over time.']] },
     { name: 'The whole toolkit', dur: 9.5, draw: sRecap, caps: [
-      [0, 'That is the whole toolkit: a spine of seven slots, with tests, regressions, matrices, crosstabs and overlays around it. Every category grows over time, and the manifest lists what your instance offers.'],
+      [0, 'That is the whole toolkit: a spine of seven slots in a default order, with tests, regressions, matrices, crosstabs and overlays around it. Every category grows over time, and the manifest lists what your instance offers.'],
+      [2.6, 'In most categories, embedders can register their own operators through Options.Extensions.', 'In most categories, embedders can register their own operators through options dot extensions.'],
       [3.6, 'And every figure comes back with the counts it stands on, so you can always ask: out of how many?'],
       [7.6, '', 'Next, we\'ll take each of these concepts apart, in depth.', true]] },
   ],
