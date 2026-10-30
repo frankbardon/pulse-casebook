@@ -48,9 +48,9 @@ input[type=range] { width: 100%; accent-color: var(--teal); }
 </style>
 
 <main class="wrap">
-  <div class="eyebrow">Pulse Anatomy · film 9 · narrated</div>
+  <div class="eyebrow">film 13 of the 23-film Pulse Anatomy series · narrated</div>
   <h1><span>Matrices</span>, in depth</h1>
-  <p class="intro">Matrices put every field in a battery against every other. This film covers vectors, covariance and correlation, missing data, rank methods and partial correlation, then reliability, principal components, factor analysis, collinearity and segment distances, per-group matrices, why matrices carry no p-values, and what predict knows before a row is read.</p>
+  <p class="intro">Matrices put every field in a battery against every other. This film covers vectors (including native vector fields and computed members), covariance and correlation, missing data, rank methods and partial correlation, then reliability, principal components, factor analysis, collinearity and segment distances, per-group matrices, p-values with a matrix multiplicity family, and what predict knows before a row is read.</p>
 
   <div class="screen"><canvas id="film" width="1280" height="720" aria-label="Animated film explaining Pulse matrices"></canvas>
     <button class="bigplay" id="bigplay" hidden><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2 L14 8 L4 14 Z"/></svg>Play with narration</button>
@@ -66,7 +66,7 @@ input[type=range] { width: 100%; accent-color: var(--teal); }
   </div>
 
   <ol class="chapters" id="chapters"></ol>
-  <p class="note">The cohort is illustrative: 300 generated survey rows. Every matrix, loading, alpha and distance on screen comes from running Pulse on it; the scatter in the ranks chapter and the segment map are sketches. Operator names, parameters, null rules and warnings follow the Pulse source and skill pack. Pulse adds matrix operators over time; your instance's manifest lists the ones it offers.</p>
+  <p class="note">The cohort is illustrative: 300 generated survey rows. Every matrix, p-value, loading, alpha and distance on screen comes from a recorded Pulse v1.0.0-alpha.33 run on it (see <code>data/</code>); the scatter in the ranks chapter and the segment map are sketches. Operator names, parameters, null rules and warnings follow the Pulse source and skill pack. Pulse adds matrix operators over time; your instance's manifest lists the ones it offers, and embedders can register their own through <code>Options.Extensions</code>.</p>
 </main>
 
 <script src="../kit/film-kit.js"></script>

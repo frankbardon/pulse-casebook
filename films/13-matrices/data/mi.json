@@ -1,0 +1,4 @@
+{"cohort":{"filename":"m.pulse"},
+ "vectors":[{"name":"items","fields":["s1","s2","s3","v1","v2","v3"]}],
+ "matrices":[{"name":"cor","type":"MAT_CORRELATION","vector":"items","params":{"inference":true},
+              "multiplicity":{"method":"holm"}}]}

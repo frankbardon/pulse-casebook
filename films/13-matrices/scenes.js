@@ -1,6 +1,8 @@
-/* Pulse Matrices: film 9 of the Pulse Anatomy series. Follows SERIES-RULES.md.
+/* Pulse Matrices: film 13 of the 23-film Pulse Anatomy series. Follows SERIES-RULES.md.
  * The cohort is an illustrative 300-row survey (service items s1–s3 and reverse-keyed r4, value items v1–v3 with
- * 30 nulls in v3, age / tenure / income, a segment). Every figure on screen comes from running Pulse on it. */
+ * 30 nulls in v3, age / tenure / income, a segment). Every figure on screen comes from a recorded Pulse
+ * v1.0.0-alpha.33 run in data/ (see data/README.md): mr (the twelve operator specs), mi (inference + Holm),
+ * mv (the battery as a native vector field), mc (a computed member, standardize, records), mp (grouped, predict). */
 (() => {
 const { C } = PulseFilm;
 const { clamp, seg, eo, eio, lerp, R, T, M, CAP, Ln, A, dot, ring, arrow, chips } = PulseFilm.h;
@@ -16,6 +18,9 @@ const PAIRN = [[300, 300, 300, 300, 300, 270], [300, 300, 300, 300, 300, 270], [
 const REL_RAW = { r: [[1, 0.741, 0.696, -0.624], [0.741, 1, 0.668, -0.600], [0.696, 0.668, 1, -0.645], [-0.624, -0.600, -0.645, 1]], alpha: 0.189, itr: [0.617, 0.605, 0.526, -0.695] };
 const REL = { r: [[1, 0.741, 0.696, 0.624], [0.741, 1, 0.668, 0.600], [0.696, 0.668, 1, 0.645], [0.624, 0.600, 0.645, 1]], alpha: 0.887, omega: 0.888, mir: 0.662,
   itr: [0.791, 0.764, 0.763, 0.695], aid: [0.840, 0.851, 0.851, 0.876] };
+// mi: "inference": true + a Holm block. significant_adjusted per pair (diagonal null); s1·s2 CI; the strongest cross-block pair.
+const SIG = [[null, 1, 1, 0, 0, 0], [1, null, 1, 0, 0, 0], [1, 1, null, 0, 0, 0], [0, 0, 0, null, 1, 1], [0, 0, 0, 1, null, 1], [0, 0, 0, 1, 1, null]];
+const INF = { lo: 0.681, hi: 0.789, m: 15, crossR: 0.049, crossP: 0.419 };
 const PCA = { eig: [2.406, 2.240, 0.418, 0.363, 0.323, 0.250], expl: [0.401, 0.373], load: [[0.906, 0.098], [0.885, 0.133], [0.865, 0.153], [-0.100, 0.871], [-0.143, 0.852], [-0.155, 0.839]],
   rot: [[0.911, -0.020], [0.895, 0.017], [0.877, 0.040], [0.014, 0.877], [-0.031, 0.863], [-0.045, 0.852]], kmo: 0.725, bart: 723.5 };
 const FA = { load: [[0.885, -0.021], [0.836, 0.016], [0.791, 0.037], [0.011, 0.824], [-0.029, 0.784], [-0.039, 0.757]], uniq: [0.216, 0.301, 0.373, 0.322, 0.385, 0.426],
@@ -44,14 +49,10 @@ function heat(x, y, cs, keys, V, o = {}) {
   }));
 }
 
-/* ---------- 0. title ---------- */
+/* ---------- 0. title (the kit intro has already shown the film title) ---------- */
 function sTitle(t) {
-  A(seg(t, 0.1, 1.2), () => heat(560, 120, 26, ['', '', '', '', '', ''], COR, { t, at: 0.1, nums: false, step: 0.06 }));
-  A(seg(t, 1.2, 2.0), () => {
-    T('PULSE', 640, 360, { size: 96, weight: 800, stretch: 'expanded', align: 'center' });
-    T('MATRICES', 640, 440, { size: 52, weight: 800, stretch: 'expanded', align: 'center', color: C.violet });
-  });
-  A(seg(t, 2.0, 2.8), () => T('Every field against every field', 640, 486, { size: 20, align: 'center', color: C.muted }));
+  heat(536, 220, 34, ['', '', '', '', '', ''], COR, { t, at: 0.1, nums: false, step: 0.05 });
+  A(seg(t, 1.0, 1.6), () => T('Every field against every field', 640, 500, { size: 22, align: 'center', color: C.muted }));
 }
 
 /* ---------- 1. where they run ---------- */
@@ -108,6 +109,39 @@ function sVectors(t) {
   });
 }
 
+/* ---------- 2b. native vectors and computed members ---------- */
+function sNative(t) {
+  CAP('NATIVE VECTOR FIELDS · COMPUTED MEMBERS', 64, 124, { color: C.violet });
+  A(seg(t, 0.3, 0.7), () => {
+    card(64, 150, 560, 226, C.teal);
+    CAP('ONE FIELD: vec_f32 · vec_f64', 86, 178, { color: C.teal });
+    M('import --vector "items:s1,s2,s3,v1,v2,v3"', 86, 210, { size: 13, color: C.muted });
+    M('"matrices": [{ "type": "MAT_CORRELATION",', 86, 242, { size: 13.5, color: C.violet });
+    M('  "vector": "items" }]  · no "vectors" entry', 86, 268, { size: 13.5, color: C.violet });
+    M('row_keys items[1] … items[6] · labels s1 … v3', 86, 302, { size: 13, color: C.ink });
+    M('"fields": ["items[1]","items[2]","items[3]"] · 1-based', 86, 328, { size: 12.5, color: C.ink });
+    M('same r as the six columns: determinant 0.066 both ways', 86, 358, { size: 12.5, color: C.amber });
+  });
+  A(seg(t, 2.6, 3.0), () => {
+    card(656, 150, 560, 226, C.violet);
+    CAP('A MEMBER CAN BE COMPUTED', 678, 178, { color: C.violet });
+    M('"attributes": [{ "type": "ATTR_FORMULA",', 678, 210, { size: 13, color: C.ink });
+    M('  "label": "v3_fill", "expression": "v3 ?? 4" }]', 678, 234, { size: 13, color: C.ink });
+    M('"fields": ["s1", … , "v2", "v3_fill"]', 678, 266, { size: 13, color: C.violet });
+    M('n 300 · n_listwise_dropped 0 (was 30)', 678, 298, { size: 13, color: C.amber });
+    M('attribute, feature or window labels of the request', 678, 330, { size: 12.5, color: C.muted });
+    M('only MAT_* operators read them', 678, 352, { size: 12.5, color: C.muted });
+  });
+  A(seg(t, 4.6, 5.0), () => {
+    card(64, 392, 1152, 174);
+    M('"standardize": "zscore" on the vector, "ddof": 0 on MAT_COVARIANCE: the covariance of z-scores is the correlation', 86, 424, { size: 13, color: C.ink });
+    M('diagonal 1 · s1 · s2 0.741 · listwise co-moment matrices only; distances and row scores refuse it', 86, 450, { size: 12.5, color: C.muted });
+    M('"encoding": "records": every part as row-shaped records, nulls kept', 86, 486, { size: 13, color: C.ink });
+    M('rows: [{ "key": "s1", "s1": 1, "s2": 0.741, "s3": 0.696, "v1": 0.007, … }, …]', 86, 516, { size: 13, color: C.violet });
+    M('full (default) · upper · records', 86, 546, { size: 12.5, color: C.muted });
+  });
+}
+
 /* ---------- 3. covariance and correlation ---------- */
 function sCor(t) {
   CAP('MAT_CORRELATION · six survey items', 64, 124, { color: C.violet });
@@ -155,13 +189,15 @@ function sMissing(t) {
   A(seg(t, 2.6, 3.0), () => heat(760, 390, 26, ITEMS, PAIRN, { t, at: 2.6, scale: 600, fmt: v => String(v), fs: 9, ks: 10, step: 0.02, hl: (i, j) => i === 5 || j === 5 }));
   A(seg(t, 2.8, 3.2), () => M('auxiliary.n', 760, 560, { size: 11.5, color: C.amber }));
   A(seg(t, 4.4, 4.8), () => {
-    card(64, 360, 620, 200, C.coral);
-    M('a decomposition needs a valid matrix', 86, 392, { size: 13.5, color: C.coral, weight: 600 });
-    M('partial correlation · reliability\'s omega · PCA ·', 86, 420, { size: 12.5, color: C.ink });
-    M('factor analysis · collinearity', 86, 442, { size: 12.5, color: C.ink });
-    M('pairwise and not PSD → PULSE_MATRIX_NOT_PSD, fatal', 86, 474, { size: 12.5, color: C.coral });
-    M('"repair": "nearest" projects to the nearest correlation', 86, 504, { size: 12.5, color: C.ink });
-    M('matrix (Higham) and warns how far it moved', 86, 526, { size: 12.5, color: C.ink });
+    card(64, 360, 620, 206, C.coral);
+    M('a decomposition needs a valid matrix', 86, 388, { size: 13.5, color: C.coral, weight: 600 });
+    M('partial correlation · PCA · factor analysis · collinearity:', 86, 412, { size: 12.5, color: C.ink });
+    M('pairwise and not PSD → PULSE_MATRIX_NOT_PSD, fatal', 86, 434, { size: 12.5, color: C.coral });
+  });
+  A(seg(t, 6.0, 6.4), () => {
+    M('reliability: omega null with that warning, alpha computes', 86, 464, { size: 12.5, color: C.coral });
+    M('"repair": "nearest" projects to the nearest correlation', 86, 500, { size: 12.5, color: C.ink });
+    M('matrix (Higham) and warns how far it moved', 86, 522, { size: 12.5, color: C.ink });
   });
 }
 
@@ -206,7 +242,7 @@ function sPartial(t) {
   });
   A(seg(t, 4.6, 5.0), () => {
     card(64, 490, 1152, 76);
-    M('"control": "all" (default) or a field list · collinear fields → PULSE_MATRIX_SINGULAR with dependent_fields · no p-values', 86, 532, { size: 13, color: C.ink });
+    M('"control": "all" (default) or a field list · collinear fields → PULSE_MATRIX_SINGULAR with dependent_fields · "inference": true adds p and CI', 86, 532, { size: 13, color: C.ink });
   });
 }
 
@@ -238,8 +274,8 @@ function sRel(t) {
   });
   A(seg(t, 6.6, 7.0), () => {
     card(64, 470, 1152, 96);
-    M('the reverse range is required, never guessed: a value outside it is PROCESSING_CONFIG', 86, 504, { size: 13, color: C.ink });
-    M('omega comes from a one-factor fit; it is null with a warning on two items or a Heywood fit, while alpha always computes', 86, 534, { size: 12.5, color: C.muted });
+    M('the reverse range is required (or the vector\'s kind "scale" bounds), never guessed: a value outside it is PROCESSING_CONFIG', 86, 504, { size: 13, color: C.ink });
+    M('omega comes from a one-factor fit; it is null with a warning on two items, a Heywood fit or a non-PSD pairwise grid; alpha always computes', 86, 534, { size: 12.5, color: C.muted });
   });
 }
 
@@ -294,7 +330,7 @@ function sFactor(t) {
     M('RMSEA ' + FA.rmsea.toFixed(2) + ' (upper ' + FA.rmseaHi.toFixed(2) + ') · TLI ' + FA.tli.toFixed(2), 862, 266, { size: 13, color: C.teal });
     M('rmsr ' + FA.rmsr.toFixed(3) + ': two factors fit well', 862, 294, { size: 13, color: C.teal });
     M('minres · principal axis · ml', 862, 332, { size: 12, color: C.faint });
-    M('varimax · promax · oblimin', 862, 354, { size: 12, color: C.faint });
+    M('today: varimax · promax · oblimin · + more', 862, 354, { size: 12, color: C.faint });
   });
   A(seg(t, 5.4, 5.8), () => {
     card(840, 396, 376, 130, C.coral);
@@ -344,9 +380,9 @@ function sDist(t) {
   A(seg(t, 2.8, 3.2), () => M('Gold rates service higher and value lower', 720, 400, { size: 12.5, color: C.amber }));
   A(seg(t, 4.4, 4.8), () => {
     card(640, 424, 576, 142);
-    M('"between": any grouper, an embedder\'s own included', 662, 456, { size: 13, color: C.ink });
-    M('"metric": euclidean · sqeuclidean · manhattan · chebyshev ·', 662, 484, { size: 12.5, color: C.muted });
-    M('cosine · mahalanobis (pooled within-segment covariance)', 662, 506, { size: 12.5, color: C.muted });
+    M('"between": any grouper but a date one, an embedder\'s own included', 662, 456, { size: 13, color: C.ink });
+    M('"metric" today: euclidean · sq_euclidean · manhattan ·', 662, 484, { size: 12.5, color: C.muted });
+    M('chebyshev · cosine · hellinger · aitchison · mahalanobis', 662, 506, { size: 12.5, color: C.muted });
     M('"standardize": true z-scores first · centres only, no p-values', 662, 538, { size: 12.5, color: C.muted });
   });
 }
@@ -375,49 +411,78 @@ function sGroup(t) {
   });
 }
 
-/* ---------- 13. no p-values ---------- */
-function sNoP(t) {
-  CAP('A MATRIX DESCRIBES · A TEST DECIDES', 64, 124, { color: C.amber });
+/* ---------- 13. matrix p-values ---------- */
+function sInfer(t) {
+  CAP('MATRIX P-VALUES · ON REQUEST', 64, 124, { color: C.violet });
   A(seg(t, 0.3, 0.7), () => {
-    card(64, 150, 560, 210, C.amber);
-    M('matrices carry figures, not p-values', 86, 184, { size: 14, color: C.amber, weight: 600 });
-    M('15 cells in a six-member grid: some will look strong by luck', 86, 214, { size: 13, color: C.ink });
-    M('nothing corrects across the cells', 86, 240, { size: 13, color: C.ink });
-    M('need a p for one pair? TEST_PEARSON_R on it', 86, 280, { size: 13, color: C.teal });
-    M('treat the grid as descriptive', 86, 306, { size: 13, color: C.muted });
+    card(64, 150, 560, 190, C.violet);
+    CAP('"params": { "inference": true }', 86, 178, { color: C.violet });
+    M('auxiliary.p · ci_lower · ci_upper for every pair', 86, 212, { size: 13.5, color: C.ink });
+    M('"alpha" sets the CI level: 0.05 by default, a 95% interval', 86, 240, { size: 12.5, color: C.muted });
+    M('s1 · s2: r 0.74 · CI ' + INF.lo.toFixed(2) + ' to ' + INF.hi.toFixed(2) + ' · p < 0.001', 86, 274, { size: 13, color: C.amber });
+    M('correlation (every method) and partial correlation', 86, 304, { size: 12.5, color: C.muted });
   });
   A(seg(t, 2.6, 3.0), () => {
-    card(656, 150, 560, 210, C.violet);
-    CAP('VECTORS ELSEWHERE · TODAY', 678, 178, { color: C.violet });
-    M('tests on a whole profile', 678, 210, { size: 13, color: C.ink });
-    chips(['TEST_HOTELLING_T2', 'TEST_MANOVA', 'TEST_BOX_M', 'TEST_BARTLETT_SPHERICITY', 'TEST_MARDIA'].map(s => [s, C.violet]), 678, 222, 520, { size: 11.5 });
-    M('a score per row', 678, 300, { size: 13, color: C.ink });
-    chips(['ATTR_MAHALANOBIS', 'ATTR_PC_SCORE', 'ATTR_FACTOR_SCORE', 'GROUP_KMEANS'].map(s => [s, C.teal]), 678, 312, 520, { size: 11.5 });
+    card(64, 356, 560, 190, C.coral);
+    CAP('"multiplicity": { "method": "holm" }', 86, 384, { color: C.coral });
+    M('family "matrix": the grid\'s distinct pairs · m ' + INF.m, 86, 416, { size: 13, color: C.ink });
+    M('adds p_adjusted · significant_adjusted; raw p never moves', 86, 444, { size: 12.5, color: C.ink });
+    M('within the blocks: all 6 pairs survive', 86, 478, { size: 13, color: C.amber });
+    M('across blocks: none · strongest s3 · v1 r ' + INF.crossR.toFixed(2) + ', p ' + INF.crossP.toFixed(2), 86, 506, { size: 12.5, color: C.muted });
   });
-  A(seg(t, 4.8, 5.2), () => {
-    card(64, 380, 1152, 100);
-    M('coefficient covariance of a fitted model is not a matrix slot:', 86, 414, { size: 13, color: C.ink });
-    M('set "vcov": true on the regression', 86, 442, { size: 13, color: C.amber });
+  const gx = 760, gy = 200, cs = 50;
+  A(seg(t, 2.6, 3.0), () => {
+    ITEMS.forEach((k, j) => M(k, gx + j * cs + cs / 2, gy - 8, { size: 12, align: 'center', color: C.muted }));
+    ITEMS.forEach((k, i) => M(k, gx - 8, gy + i * cs + cs / 2 + 4, { size: 12, align: 'right', color: C.muted }));
+  });
+  SIG.forEach((row, i) => row.forEach((v, j) => A(seg(t, 2.7 + (i + j) * 0.04, 3.0 + (i + j) * 0.04), () => {
+    const x = gx + j * cs, y = gy + i * cs;
+    R(x + 1, y + 1, cs - 2, cs - 2, { fill: v === 1 ? C.violet : C.panel, stroke: v === 1 ? null : C.rule, r: 3 });
+    M(v === null ? 'null' : String(v), x + cs / 2, y + cs / 2 + 4, { size: v === null ? 10.5 : 13, align: 'center', color: v === 1 ? C.bg : v === null ? C.coral : C.muted, weight: 600 });
+  })));
+  A(seg(t, 3.0, 3.4), () => M('auxiliary.significant_adjusted · Holm', gx, gy + 6 * cs + 24, { size: 12, color: C.muted }));
+  A(seg(t, 5.0, 5.4), () => M('MAT_SEM: SE, z and p per estimate, with its own block', gx, gy + 6 * cs + 50, { size: 12.5, color: C.violet }));
+}
+
+/* ---------- 13b. vectors elsewhere ---------- */
+function sElse(t) {
+  CAP('VECTORS ELSEWHERE · TODAY', 64, 124, { color: C.violet });
+  A(seg(t, 0.3, 0.7), () => {
+    card(64, 150, 1152, 100); M('tests on a whole profile', 86, 178, { size: 13, color: C.ink });
+    chips(['TEST_HOTELLING_T2', 'TEST_MANOVA', 'TEST_BOX_M', 'TEST_BARTLETT_SPHERICITY', 'TEST_MARDIA'].map(s => [s, C.violet]), 86, 194, 1100, { size: 11.5 });
+  });
+  A(seg(t, 1.0, 1.4), () => {
+    card(64, 266, 1152, 96); M('per row: scores and clusters', 86, 294, { size: 13, color: C.ink });
+    chips(['ATTR_MAHALANOBIS', 'ATTR_PC_SCORE', 'ATTR_FACTOR_SCORE', 'ATTR_SEM_SCORE', 'ATTR_SCALE_SCORE', 'ATTR_VEC_DISTANCE', 'ATTR_PROFILE_SIMILARITY', 'GROUP_KMEANS'].map(s => [s, C.teal]), 86, 310, 1100, { size: 11.5 });
+  });
+  A(seg(t, 1.6, 2.0), () => {
+    card(64, 378, 1152, 66); M('per group: vector aggregates', 86, 416, { size: 13, color: C.ink });
+    chips(['AGG_VEC_MEAN', 'AGG_VEC_SUM', 'AGG_VEC_SD'].map(s => [s, C.violet]), 330, 398, 860, { size: 11.5 });
+  });
+  A(seg(t, 3.2, 3.6), () => {
+    card(64, 460, 1152, 66);
+    M('coefficient covariance of a fitted model is not a matrix slot: set "vcov": true on the regression', 86, 498, { size: 13, color: C.amber });
   });
 }
 
 /* ---------- 14. cost and paths ---------- */
 function sCost(t) {
   CAP('PREDICT KNOWS THE COST BEFORE A ROW IS READ', 64, 124, { color: C.teal });
-  const P = [['MAT_CORRELATION · pairwise · upper', [['shape', '[6, 6]'], ['accumulator_bytes', '1208'], ['streamable', 'true'], ['pairwise_psd_risk', 'true']], C.teal],
-    ['MAT_CORRELATION · spearman', [['shape', '[6, 6]'], ['row_buffer_bytes', '16800'], ['streamable', 'false'], ['pairwise_psd_risk', 'false']], C.coral]];
+  const P = [['MAT_CORRELATION · pairwise · upper', [['shape', '[6, 6]'], ['accumulator_bytes', '1552'], ['estimated_bytes · 3 buckets', '4656'], ['streamable', 'true'], ['pairwise_psd_risk', 'true']], C.teal],
+    ['MAT_CORRELATION · spearman', [['shape', '[6, 6]'], ['row_buffer_bytes', '16800'], ['estimated_bytes · 3 buckets', '17568'], ['streamable', 'false'], ['pairwise_psd_risk', 'false']], C.coral]];
   P.forEach(([h, L, col], k) => A(seg(t, 0.3 + k * 1.4, 0.7 + k * 1.4), () => {
-    const x = 64 + k * 590; card(x, 150, 562, 200, col);
+    const x = 64 + k * 590; card(x, 150, 562, 196, col);
     CAP(h, x + 22, 178, { color: col });
-    L.forEach(([a, b], i) => { M(a, x + 22, 214 + i * 30, { size: 13.5, color: C.muted }); M(b, x + 540, 214 + i * 30, { size: 13.5, align: 'right', color: C.ink }); });
+    L.forEach(([a, b], i) => { M(a, x + 22, 210 + i * 28, { size: 13.5, color: C.muted }); M(b, x + 540, 210 + i * 28, { size: 13.5, align: 'right', color: C.ink }); });
   }));
   A(seg(t, 3.2, 3.6), () => {
-    card(64, 370, 1152, 196);
-    M('Pearson and covariance co-moments stream and merge in fixed blocks of 4,096 records', 86, 404, { size: 13.5, color: C.ink });
-    M('serial, parallel-decode and sharded runs give bit-identical matrices on one cohort file', 86, 432, { size: 13, color: C.teal });
-    M('a multi-shard archive matches its single-file twin within rounding', 86, 458, { size: 13, color: C.muted });
-    M('refused: matrices with joins (PULSE_MATRIX_UNSUPPORTED_SOURCE) · matrices with a crosstab (PULSE_MATRIX_HOST_CONFLICT)', 86, 498, { size: 12.5, color: C.coral });
-    M('weights: frequency and probability fold in; a weight-0 row counts in n and adds no mass', 86, 530, { size: 12.5, color: C.muted });
+    card(64, 362, 1152, 204);
+    M('Pearson and covariance co-moments stream and merge in fixed blocks of 4,096 records', 86, 392, { size: 13.5, color: C.ink });
+    M('serial, parallel-decode and sharded runs are bit-identical: a multi-shard archive matches its single-file twin', 86, 420, { size: 13, color: C.teal });
+    M('refused: matrices with joins or on a chain stage after the first (PULSE_MATRIX_UNSUPPORTED_SOURCE)', 86, 456, { size: 12.5, color: C.coral });
+    M('matrices with a crosstab (PULSE_MATRIX_HOST_CONFLICT)', 86, 478, { size: 12.5, color: C.coral });
+    M('a failed matrix slot fails alone: an error on the slot, PULSE_SLOT_FAILED on the envelope', 86, 512, { size: 12.5, color: C.ink });
+    M('weights: frequency and probability fold in; a weight-0 row counts in n and adds no mass', 86, 544, { size: 12.5, color: C.muted });
   });
 }
 
@@ -426,49 +491,57 @@ function sRecap(t) {
   const end = seg(t, 8.4, 9.2);
   A(1 - end, () => {
     CAP('TODAY', 64, 124, { color: C.violet });
-    [['GRIDS', 'MAT_COVARIANCE · MAT_CORRELATION · MAT_PARTIAL_CORRELATION'], ['SCALES AND STRUCTURE', 'MAT_RELIABILITY · MAT_PCA · MAT_FACTOR'], ['CHECKS AND SEGMENTS', 'MAT_COLLINEARITY · MAT_DISTANCE'],
-     ['KNOBS', 'missing · repair · method · encoding · weight · groups']].forEach(([h, ops], k) => A(seg(t, 0.2 + k * 0.4, 0.6 + k * 0.4), () => {
+    [['GRIDS', 'MAT_COVARIANCE · MAT_CORRELATION · MAT_PARTIAL_CORRELATION'], ['SCALES AND STRUCTURE', 'MAT_RELIABILITY · MAT_PCA · MAT_FACTOR · MAT_SEM'], ['CHECKS AND SEGMENTS', 'MAT_COLLINEARITY · MAT_DISTANCE'],
+     ['KNOBS', 'missing · repair · method · inference · encoding · standardize · weight · groups']].forEach(([h, ops], k) => A(seg(t, 0.2 + k * 0.4, 0.6 + k * 0.4), () => {
       const y = 150 + k * 54; M(h, 64, y + 17, { size: 11.5, color: C.muted, weight: 600 }); chips(ops.split(' · ').map(o => [o, k === 3 ? C.amber : C.violet]), 300, y, 916, { size: 12 });
     }));
     A(seg(t, 3.4, 3.8), () => {
       R(64, 400, 566, 66, { fill: C.panel, stroke: C.teal, dash: [6, 5] }); M('+ more over time', 82, 428, { size: 14, color: C.teal, weight: 600 }); T('the manifest lists what your instance offers', 82, 452, { size: 14.5 });
-      R(650, 400, 566, 66, { fill: C.panel, stroke: C.amber, dash: [6, 5] }); M('built in today', 668, 428, { size: 14, color: C.amber, weight: 600 }); T('your own groupers can still drive MAT_DISTANCE', 668, 452, { size: 14.5 });
+      R(650, 400, 566, 66, { fill: C.panel, stroke: C.amber, dash: [6, 5] }); M('+ your own MAT_* operators', 668, 428, { size: 14, color: C.amber, weight: 600 }); T('registered through Options.Extensions, treated like built-ins', 668, 452, { size: 14.5 });
     });
   });
   A(seg(t, 9.0, 9.8), () => {
     T('PULSE', 640, 300, { size: 92, weight: 800, stretch: 'expanded', align: 'center' });
     T('MATRICES', 640, 372, { size: 44, weight: 800, stretch: 'expanded', align: 'center', color: C.violet });
     M('check the members and the n before you read a cell', 640, 430, { size: 15, align: 'center' });
-    M('next: overlays', 640, 470, { size: 14, align: 'center', color: C.faint });
+    M('next: SEM', 640, 470, { size: 14, align: 'center', color: C.faint });
   });
 }
 
 /* ---------- scenes + script ---------- */
-const NARR = /*NARR*/[4.587, 5.248, 4.864, 8.085, 9.152, 5.419, 7.147, 4.501, 3.435, 7.488, 6.037, 4.629, 6.016, 5.611, 8.661, 2.411, 5.44, 5.419, 5.12, 6.336, 4.971, 5.333, 7.744, 5.141, 3.648, 6.72, 3.733, 6.741, 4.971, 7.36, 5.099, 4.693, 5.931, 3.904, 5.781, 4.416, 5.333, 2.731, 6.229, 4.075, 5.205, 4.736, 3.179, 5.931, 4.949, 5.696, 4.288, 4.587, 5.355, 1.984, 7.979, 8.981, 9.792, 4.715, 1.152]/*END*/;
+const NARR = /*NARR*/[3.243, 5.269, 4.864, 8.085, 8.832, 5.419, 7.637, 4.48, 7.04, 7.509, 6.976, 3.435, 7.488, 6.059, 4.629, 6.059, 5.589, 9.429, 6.677, 2.432, 5.44, 5.419, 5.12, 6.507, 5.035, 5.419, 7.744, 5.141, 3.648, 7.979, 3.733, 6.741, 4.971, 7.36, 5.099, 4.715, 5.931, 3.904, 5.781, 4.416, 5.333, 2.731, 6.229, 4.075, 5.205, 5.803, 3.2, 5.952, 4.949, 9.301, 8.341, 6.357, 5.248, 4.587, 5.291, 2.027, 8.981, 6.08, 8.661, 5.696, 1.152]/*END*/;
 PulseFilm.mount({
   series: 'PULSE · MATRICES',
+  title: 'Pulse Matrices',
   narr: NARR,
   scenes: [
-    { name: 'Pulse Matrices', dur: 4, draw: sTitle, caps: [
-      [0, '', 'Pulse matrices. Every field against every field, taken apart in depth.', true]] },
+    { name: 'Pulse Matrices', dur: 2.4, draw: sTitle, caps: [
+      [0, '', 'Every field against every field, taken apart in depth.', true]] },
     { name: 'Where they run', dur: 8.4, draw: sWhere, caps: [
       [0, 'Matrices fold the records that pass the filters, during the same scan as everything else.'],
       [2.8, 'You name a battery of numeric fields once as a vector, then ask for a matrix over it.'],
       [5.0, 'Each result carries the matrix, extra figures, and any data-quality warnings. It arrives at the end of the run, never row by row.'],
-      [6.8, 'Its components count the rows used and dropped. Our cohort is three hundred illustrative survey rows, and every figure here is a real Pulse result.']] },
+      [6.8, 'Its components count the rows used and dropped. Our cohort is three hundred illustrative survey rows; every figure is a real Pulse result.']] },
     { name: 'Vectors', dur: 6.4, draw: sVectors, caps: [
       [0, 'A vector lists its members by name, by glob, or by pattern, with optional display labels.'],
-      [2.8, 'Members are numeric. Yes-or-no fields join when coerced to zero and one. Categories and dates are refused.'],
+      [2.8, 'Schema members are numeric. Yes-or-no fields join when coerced to zero and one. Categories and dates are refused.'],
       [4.6, 'Predict echoes the resolved members, so you can check a glob before you trust it.']] },
+    { name: 'Native and computed', dur: 7, draw: sNative, caps: [
+      [0, 'One native vector field can hold the whole battery. Name it directly, and pick elements as items[1], items[2].',
+        'One native vector field can hold the whole battery. Name it directly, and pick elements as items one, items two.'],
+      [2.6, 'A member can also be computed in the same request, here a formula that fills the blank v3. Now no row is dropped.',
+        'A member can also be computed in the same request, here a formula that fills the blank V three. Now no row is dropped.'],
+      [4.6, 'Standardize turns a covariance into a correlation, and records encoding sends every part as row-shaped records.']] },
     { name: 'Correlation', dur: 7.8, draw: sCor, caps: [
       [0, 'The correlation matrix puts every member against every other.'],
       [2.6, 'Here two blocks stand out: the service items move together, and so do the value items. Top pairs lists the strongest cells.'],
       [4.6, 'The covariance matrix is the same grid in the fields\' own units, with variances on the diagonal.'],
       [6.2, 'Upper encoding sends half the grid. An undefined cell is null, never zero.']] },
-    { name: 'Missing data', dur: 6.4, draw: sMissing, caps: [
+    { name: 'Missing data', dur: 7.6, draw: sMissing, caps: [
       [0, 'One item is blank on thirty rows. Listwise, the default, drops those rows from every cell.'],
       [2.2, 'Pairwise lets each cell use every row where both members are present, and reports each pair\'s count.'],
-      [4.4, 'But a pairwise grid can stop being a valid correlation matrix. Decompositions then refuse it, unless you ask for the nearest valid repair.']] },
+      [4.4, 'But a pairwise grid can stop being a valid correlation matrix. Partial correlation, PCA, factor analysis and collinearity then refuse it.'],
+      [6.0, 'Reliability keeps alpha and returns omega as null, with a warning. Or ask for the nearest valid repair.']] },
     { name: 'Ranks', dur: 5.6, draw: sRank, caps: [
       [0, 'Pearson reads values along a straight line.'],
       [1.6, 'Spearman and Kendall read ranks instead, which suits ordinal scales, outliers and curves.'],
@@ -482,7 +555,7 @@ PulseFilm.mount({
       [1.4, 'Left as it is, alpha collapses to point one nine. A low or negative alpha usually means an item was not reversed.'],
       [3.6, 'Reverse it on its one-to-seven range, and alpha and omega both reach point eight nine.'],
       [5.2, 'Per item, dropping any one would lower alpha, so all four stay.'],
-      [6.6, 'The range is required and never guessed. Omega can come back null with a warning, while alpha always computes.']] },
+      [6.6, 'The range is required unless the vector declares scale bounds. Omega can come back null with a warning; alpha always computes.']] },
     { name: 'PCA', dur: 7.6, draw: sPCA, caps: [
       [0, 'Principal components ask how many dimensions carry the variance.'],
       [1.6, 'Two eigenvalues sit above one, so Kaiser\'s rule keeps two components, with seventy-seven percent of the variance.'],
@@ -502,23 +575,29 @@ PulseFilm.mount({
     { name: 'Distance', dur: 6.6, draw: sDist, caps: [
       [0, 'Distance measures how far apart the centres of a grouper\'s buckets lie.'],
       [2.6, 'Standardized, Gold rates service higher and value lower, so it sits furthest from Bronze.'],
-      [4.4, 'Any grouper can split the rows, including an embedder\'s own, and you choose the metric.']] },
+      [4.4, 'Any grouper but a date grouper can split the rows, including an embedder\'s own, and you choose the metric.']] },
     { name: 'Per group', dur: 6.4, draw: sGroup, caps: [
       [0, 'Add groups, and every matrix comes back once per bucket.'],
       [2.6, 'Each bucket equals the ungrouped matrix over exactly its rows. Compare them as separate answers.'],
       [4.4, 'Predict estimates the buckets and bytes first, and leaves the estimate out when it cannot know.']] },
-    { name: 'No p-values', dur: 6.6, draw: sNoP, caps: [
-      [0, 'A matrix describes. It carries figures, not p-values, and nothing corrects across its cells.'],
-      [2.6, 'Vectors also feed tests on whole profiles, and scores for every row.'],
-      [4.8, 'The coefficient covariance of a fitted model lives on the regression, not here.']] },
+    { name: 'Matrix p-values', dur: 7.4, draw: sInfer, caps: [
+      [0, 'Matrices can carry p-values. Set params.inference, and correlation and partial correlation add a p-value and a confidence interval for every pair.',
+        'Matrices can carry p-values. Turn on inference, and correlation and partial correlation add a p-value and a confidence interval for every pair.'],
+      [2.6, 'A multiplicity block corrects the fifteen pairs as one matrix family. Every within-block pair survives Holm; no cross-block pair does.'],
+      [5.0, 'MAT_SEM reports a p-value for every estimate, with its own block. It gets its own film.',
+        'Structural equation models report a p-value for every estimate, with their own block. They get their own film.']] },
+    { name: 'Vectors elsewhere', dur: 5, draw: sElse, caps: [
+      [0, 'Vectors also feed profile tests, row scores and clusters, and group aggregates.'],
+      [3.2, 'The coefficient covariance of a fitted model lives on the regression, not here.']] },
     { name: 'Cost and paths', dur: 6.4, draw: sCost, caps: [
       [0, 'Predict reports each matrix\'s shape, memory and streamability before any row is read.'],
       [1.7, 'A rank method buffers every row.'],
-      [3.2, 'Streaming matrices merge in fixed blocks, so serial, parallel and sharded runs agree. Joins and crosstabs are refused.']] },
+      [3.2, 'Streaming matrices merge in fixed blocks, so serial, parallel and sharded runs are bit-identical. A failed matrix slot fails alone.']] },
     { name: 'The toolkit', dur: 10.2, draw: sRecap, caps: [
-      [0, 'That\'s the toolkit today: grids, scales and structure, checks and segments, with knobs for missing data, repair, ranks, encoding, weights and groups.'],
-      [3.4, 'More are added over time, and the manifest always shows what your instance offers. Matrix operators are built in, but your own groupers can drive distance.'],
-      [6.4, 'Remember: check the members and the n before you read a cell. Next up, overlays.'],
+      [0, 'That\'s the toolkit today: grids, scales and structure, checks and segments, and the knobs that tune them.'],
+      [3.4, 'More are added over time, and the manifest shows what your instance offers. Embedders can register their own through Options.Extensions.',
+        'More are added over time, and the manifest shows what your instance offers. Embedders can register their own through options dot extensions.'],
+      [6.4, 'Remember: check the members and the n before you read a cell. Next up, structural equation models.'],
       [9.0, '', 'Pulse matrices.', true]] },
   ],
 });

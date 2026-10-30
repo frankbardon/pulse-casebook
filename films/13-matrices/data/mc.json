@@ -1,0 +1,4 @@
+{"cohort":{"filename":"m.pulse"},
+ "attributes":[{"type":"ATTR_FORMULA","label":"v3_fill","expression":"v3 ?? 4"}],
+ "vectors":[{"name":"items","fields":["s1","s2","s3","v1","v2","v3_fill"],"standardize":"zscore"}],
+ "matrices":[{"name":"cov","type":"MAT_COVARIANCE","vector":"items","params":{"ddof":0},"encoding":"records"}]}
