@@ -8,7 +8,7 @@ Every film is a web page that draws its frames on a canvas. Its narration MP3 is
 
 Because each frame depends only on its time value, a render always matches what the page plays in the browser.
 
-All commands below run from `films/build/`. A film is named by its folder: `filters`, `04` and `04-filters` all work.
+All commands below run from `films/build/`. A film is named by its folder: its topic (`filters`), its number (`06`) or the whole folder name (`06-filters`) all work. The topic never changes when a folder is renumbered.
 
 ## Quick start: an MP4 from the committed narration
 
@@ -17,7 +17,7 @@ This needs only Node and ffmpeg. No speech synthesis is involved.
 ```sh
 cd films/build
 ./setup.sh                          # npm install playwright + its Chromium (one time)
-./render.sh filters                 # → films/04-filters/render/pulse-filters.mp4
+./render.sh filters                 # → films/06-filters/render/pulse-filters.mp4
 ./render.sh --all                     # every film
 ```
 
@@ -25,26 +25,41 @@ cd films/build
 |---|---|
 | 1. Lifecycle of a request | `lifecycle` (`01-lifecycle/`) |
 | 2. Concepts overview | `concepts` (`02-concepts/`) |
-| 3. Features in depth | `features` (`03-features/`) |
-| 4. Filters in depth | `filters` (`04-filters/`) |
-| 5. Attributes in depth | `attributes` (`05-attributes/`) |
-| 6. Aggregators in depth | `aggregators` (`06-aggregators/`) |
-| 7. Windows in depth | `windows` (`07-windows/`) |
-| 8. Tests and regressions in depth | `tests` (`08-tests/`) |
-| 9. Matrices in depth | `matrices` (`09-matrices/`) |
-| 10. Overlays in depth | `overlays` (`10-overlays/`) |
+| 3. Cohort file and scale (*planned*) | `cohort` (`03-cohort/`) |
+| 4. Asking before running (*planned*) | `asking` (`04-asking/`) |
+| 5. Features in depth | `features` (`05-features/`) |
+| 6. Filters in depth | `filters` (`06-filters/`) |
+| 7. Attributes in depth | `attributes` (`07-attributes/`) |
+| 8. The expression language (*planned*) | `expressions` (`08-expressions/`) |
+| 9. Groupers (*planned*) | `groupers` (`09-groupers/`) |
+| 10. Aggregators in depth | `aggregators` (`10-aggregators/`) |
+| 11. Windows in depth | `windows` (`11-windows/`) |
+| 12. Tests and regressions in depth | `tests` (`12-tests/`) |
+| 13. Matrices in depth | `matrices` (`13-matrices/`) |
+| 14. SEM (*planned*) | `sem` (`14-sem/`) |
+| 15. Crosstabs and survey tables (*planned*) | `crosstabs` (`15-crosstabs/`) |
+| 16. Overlays in depth | `overlays` (`16-overlays/`) |
+| 17. Compose: batch and sweep (*planned*) | `compose-sweep` (`17-compose-sweep/`) |
+| 18. Compose: fit, bind and optimize (*planned*) | `compose-fit` (`18-compose-fit/`) |
+| 19. Derived cohorts (*planned*) | `derived` (`19-derived/`) |
+| 20. Weights and raking (*planned*) | `weights` (`20-weights/`) |
+| 21. Time zones and panels (*planned*) | `time` (`21-time/`) |
+| 22. Synthetic data (*planned*) | `synth` (`22-synth/`) |
+| 23. Embedding Pulse (*planned*) | `embedding` (`23-embedding/`) |
+
+Planned films have their folder name reserved; `render.sh` finds them once the folder exists. `--all` renders every folder that exists, in series order.
 
 A full 1080p render takes a few minutes per film. To check something fast, render a short preview:
 
 ```sh
-./render.sh --preview 20 filters      # first 20 seconds → films/04-filters/render/pulse-filters-preview.mp4
+./render.sh --preview 20 filters      # first 20 seconds → films/06-filters/render/pulse-filters-preview.mp4
 RES=1280 ./render.sh filters          # 720p, roughly twice as fast
 ```
 
 To look at individual frames instead of a video:
 
 ```sh
-node stills.js ../04-filters/index.html 10 60 120    # still_10.jpg, still_60.jpg, still_120.jpg (seconds)
+node stills.js ../06-filters/index.html 10 60 120    # still_10.jpg, still_60.jpg, still_120.jpg (seconds)
 ```
 
 ## Requirements
@@ -92,15 +107,17 @@ Commit the changed `scenes.js` or `index.html` and the MP3 together, because the
 
 ## Making a new film
 
-1. Make the next numbered folder, for example `11-<topic>/`, and copy `04-filters/index.html` into it. Change the title and intro text; the `src` paths (`../kit/film-kit.js`, `scenes.js`, `narration.mp3`) stay as they are.
-2. Write `11-<topic>/scenes.js`:
+1. Make the film's folder under its reserved name from the table above, for example `08-expressions/`, and copy `06-filters/index.html` into it. Change the title and intro text; the `src` paths (`../kit/film-kit.js`, `scenes.js`, `narration.mp3`) stay as they are.
+2. Write `08-expressions/scenes.js`:
    - Draw with the helpers from `PulseFilm.h`, and end with `PulseFilm.mount({ series, narr: NARR, scenes })`.
    - Keep the line `const NARR = /*NARR*/null/*END*/;`.
    - `draw(t)` must depend only on `t`.
-3. Check layouts with `node stills.js ../11-<topic>/index.html …` before narrating, or `./shots.sh <topic> sheet 10 40 70 100` for 2×2 contact sheets (needs ImageMagick).
-   Put the film's cohort, requests and captured outputs in `11-<topic>/data/` and add a step for it to `build/data.sh`.
-4. Run `./render.sh --narrate <topic>`, then copy `11-<topic>/render/pulse-<topic>.srt` to `11-<topic>/subtitles.srt`.
-5. Check it against `SERIES-RULES.md`, then commit the page, script, MP3 and subtitles.
+3. Check layouts with `node stills.js ../08-expressions/index.html …` before narrating, or `./shots.sh <topic> sheet 10 40 70 100` for 2×2 contact sheets (needs ImageMagick).
+   Put the film's cohort, requests and captured outputs in `08-expressions/data/`, with a `data/build.sh` holding its data steps (`build/data.sh` finds it by itself; see `DATA.md` for the `imp` and `api` helpers) and a `data/README.md` describing them.
+4. Run `./render.sh --narrate <topic>`, then copy `08-expressions/render/pulse-<topic>.srt` to `08-expressions/subtitles.srt`.
+5. Check it against `SERIES-RULES.md`, then commit the page, script, MP3, subtitles and `data/`.
+
+Everything a film needs lives in its own folder. The build scripts and the site find films by folder, so a new or changed film does not edit `build/data.sh`, `DATA.md` (its index is regenerated by `build/data.sh --index`) or `site/scripts/sync.mjs`.
 
 ## Troubleshooting
 

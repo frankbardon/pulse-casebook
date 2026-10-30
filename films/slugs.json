@@ -1,0 +1,15 @@
+{
+  "about": "Film folders renamed into the 23-film order (films-refresh E1-S3). Keys are the old folder names, values the new ones. Site film pages are addressed by topic (/films/<topic>/), which did not change; the folder names change the public asset paths (/films/<folder>/...). Read by the site redirects.",
+  "folders": {
+    "01-lifecycle": "01-lifecycle",
+    "02-concepts": "02-concepts",
+    "03-features": "05-features",
+    "04-filters": "06-filters",
+    "05-attributes": "07-attributes",
+    "06-aggregators": "10-aggregators",
+    "07-windows": "11-windows",
+    "08-tests": "12-tests",
+    "09-matrices": "13-matrices",
+    "10-overlays": "16-overlays"
+  }
+}

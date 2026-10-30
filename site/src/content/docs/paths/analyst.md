@@ -17,14 +17,14 @@ Each stage of a request has its own film:
 
 | Stage | Film | What you will use it for |
 |---|---|---|
-| Features | [3. Features](/films/features/) | taming skew, binning, encoding categories |
-| Filters | [4. Filters](/films/filters/) | choosing the records, and how nulls behave |
-| Attributes | [5. Attributes](/films/attributes/) | derived scores, recodes, diagnostics |
-| Aggregators | [6. Aggregators](/films/aggregators/) | counts, centre, spread, confidence intervals |
-| Windows | [7. Windows](/films/windows/) | lags, changes, moving averages, ranks |
-| Tests and regression | [8. Tests and regressions](/films/tests/) | is a difference real, what drives an outcome |
-| Matrices | [9. Matrices](/films/matrices/) | correlation, reliability, principal components |
-| Overlays | [10. Overlays](/films/overlays/) | reading a result against a margin, a baseline or a population |
+| Features | [5. Features](/films/features/) | taming skew, binning, encoding categories |
+| Filters | [6. Filters](/films/filters/) | choosing the records, and how nulls behave |
+| Attributes | [7. Attributes](/films/attributes/) | derived scores, recodes, diagnostics |
+| Aggregators | [10. Aggregators](/films/aggregators/) | counts, centre, spread, confidence intervals |
+| Windows | [11. Windows](/films/windows/) | lags, changes, moving averages, ranks |
+| Tests and regression | [12. Tests and regressions](/films/tests/) | is a difference real, what drives an outcome |
+| Matrices | [13. Matrices](/films/matrices/) | correlation, reliability, principal components |
+| Overlays | [16. Overlays](/films/overlays/) | reading a result against a margin, a baseline or a population |
 
 ## 3. Follow a complete analysis
 

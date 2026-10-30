@@ -7,7 +7,7 @@
 #   ./render.sh --narrate-only filters   # re-synthesize narration + subtitles, no video
 #   ./render.sh --all                    # every film, using the committed narration
 #
-# A film is named by its folder: filters, 04 or 04-filters (pulse-filters also works).
+# A film is named by its folder: filters, 06 or 06-filters (pulse-filters also works).
 # Output: films/<film>/render/pulse-<topic>.mp4 (and .srt when narrating).
 # Env: CHROMIUM=/path/to/chrome (optional), VOICE=af_heart, RES=1920, FPS=30.
 set -euo pipefail
