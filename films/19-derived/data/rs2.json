@@ -1,0 +1,1 @@
+{"cohort":{"filename":"wl.pulse"},"regressions":[{"predictors":["log_value"],"target":"visits","type":"REG_OLS"}]}

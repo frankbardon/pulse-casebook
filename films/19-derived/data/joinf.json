@@ -1,0 +1,4 @@
+{"cohort":{"filename":"w.pulse"},
+ "joins":[{"right":"stf.pulse","kind":"inner","as":"st_","on":[{"left_field":"store_no","right_field":"store_no"}]}],
+ "groups":[{"type":"GROUP_CATEGORY","field":"st_manager"}],
+ "aggregations":[{"type":"AGG_SUM","field":"revenue","label":"revenue"},{"type":"AGG_MAX","field":"st_sqft","label":"sqft"}]}

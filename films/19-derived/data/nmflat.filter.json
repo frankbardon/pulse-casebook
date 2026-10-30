@@ -1,0 +1,11 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "flattened": true,
+    "input": "nmtop.pulse",
+    "output": "nmflat.pulse",
+    "written_records": 4
+  },
+  "errors": [],
+  "warnings": []
+}

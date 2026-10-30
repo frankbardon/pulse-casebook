@@ -1,0 +1,19 @@
+{
+  "format_version": "1.1",
+  "data": null,
+  "errors": [
+    {
+      "code": "PULSE_MATERIALIZE_CAST_FAILED",
+      "message": "output column \"revenue\" cannot cast row 0's value 122.4 from f64 to u16 (fractional); nothing was written",
+      "details": {
+        "column": "revenue",
+        "from_type": "f64",
+        "reason": "fractional",
+        "row": 0,
+        "to_type": "u16",
+        "value": "122.4"
+      }
+    }
+  ],
+  "warnings": []
+}

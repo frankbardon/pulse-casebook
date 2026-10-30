@@ -1,0 +1,15 @@
+{
+  "format_version": "1.1",
+  "data": null,
+  "errors": [
+    {
+      "code": "PULSE_CHAIN_NOT_MERGEABLE",
+      "message": "chain stage is not mergeable: windows, features, tests, post-tests and regressions are excluded",
+      "details": {
+        "stage_index": 0,
+        "stage_name": "per_store"
+      }
+    }
+  ],
+  "warnings": []
+}

@@ -1,0 +1,15 @@
+{
+  "format_version": "1.1",
+  "data": null,
+  "errors": [
+    {
+      "code": "PULSE_JOIN_FIELD_COLLISION",
+      "message": "joined schema field name collides between left and right",
+      "details": {
+        "as": "",
+        "field": "store_no"
+      }
+    }
+  ],
+  "warnings": []
+}

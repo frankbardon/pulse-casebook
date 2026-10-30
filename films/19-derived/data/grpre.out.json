@@ -1,0 +1,45 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "target": "o_grpre.pulse",
+    "records": 48,
+    "derived_columns": [
+      "rank"
+    ],
+    "warnings": [
+      {
+        "code": "PULSE_MATERIALIZE_GROUP_NOT_INHERITED",
+        "message": "the output does not carry source group 1 [key: store]: member \"format\" is recoded, so its members are written as row fields; declare output.groups to regroup, or [] to write none",
+        "details": {
+          "change": "recoded",
+          "fields": [
+            "store",
+            "region",
+            "format",
+            "opened"
+          ],
+          "group": "source group 1 [key: store]",
+          "member": "format"
+        }
+      }
+    ]
+  },
+  "errors": [],
+  "warnings": [
+    {
+      "code": "PULSE_MATERIALIZE_GROUP_NOT_INHERITED",
+      "message": "the output does not carry source group 1 [key: store]: member \"format\" is recoded, so its members are written as row fields; declare output.groups to regroup, or [] to write none",
+      "details": {
+        "change": "recoded",
+        "fields": [
+          "store",
+          "region",
+          "format",
+          "opened"
+        ],
+        "group": "source group 1 [key: store]",
+        "member": "format"
+      }
+    }
+  ]
+}

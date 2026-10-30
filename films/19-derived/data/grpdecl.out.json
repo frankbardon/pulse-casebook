@@ -1,0 +1,41 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "target": "o_grpdecl.pulse",
+    "records": 48,
+    "derived_columns": [
+      "rank"
+    ],
+    "groups": [
+      {
+        "label": "group 1 [key: store]",
+        "key": [
+          "store"
+        ],
+        "members": [
+          "region",
+          "format",
+          "opened"
+        ],
+        "fields": [
+          "store",
+          "region",
+          "format",
+          "opened"
+        ],
+        "verdict": "admitted",
+        "entry_count": 6,
+        "entry_width": 7,
+        "member_row_bytes": 7,
+        "index_width": 4,
+        "dictionary_bytes": 42,
+        "ratio": 8,
+        "break_even_ratio": 2.3333333333333335,
+        "ratio_floor": 2,
+        "byte_delta": -77
+      }
+    ]
+  },
+  "errors": [],
+  "warnings": []
+}

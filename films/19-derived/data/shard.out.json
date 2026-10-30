@@ -1,0 +1,20 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "target": "nm.pulse",
+    "records": 16,
+    "derived_columns": [
+      "rank"
+    ],
+    "shards": [
+      "part-00001.pulse",
+      "part-00002.pulse"
+    ],
+    "elided_constants": [
+      "region",
+      "format"
+    ]
+  },
+  "errors": [],
+  "warnings": []
+}

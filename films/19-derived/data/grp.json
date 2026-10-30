@@ -1,0 +1,3 @@
+{"cohort":{"filename":"wg.pulse"},
+ "windows":[{"type":"WIN_ROW_NUMBER","label":"rank","partition_by":["store"],"order_by":[{"field":"revenue","desc":true}]}],
+ "output":{"exclude":["visits","promo"]}}

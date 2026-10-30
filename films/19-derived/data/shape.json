@@ -1,0 +1,9 @@
+{"cohort":{"filename":"w.pulse"},
+ "windows":[{"type":"WIN_ROW_NUMBER","label":"rank","partition_by":["store"],"order_by":[{"field":"revenue","desc":true}]}],
+ "output":{"columns":[
+   {"from":"store"},
+   {"from":"week"},
+   {"from":"revenue","as":"rev","type":"decimal128","precision":6,"scale":1},
+   {"from":"revenue","as":"band","bucket":{"ranges":[{"label":"low","end":90},{"label":"mid","start":90,"end":130},{"label":"high","start":130}]}},
+   {"from":"promo","as":"promo_yn","nullable":true,"recode":{"map":{"Y":"Yes","Unsure":null},"order":["Yes","No"]}},
+   {"from":"rank","type":"u8","description":"Week's revenue rank within its store, 1 = best week"}]}}

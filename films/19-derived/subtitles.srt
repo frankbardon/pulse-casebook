@@ -1,0 +1,215 @@
+1
+00:00:04,250 --> 00:00:09,165
+Derived cohorts. Write a derived column once, and read it like any other field.
+
+2
+00:00:09,965 --> 00:00:17,141
+A derived column, from a feature, an attribute or a window, exists only inside the request that computes it.
+
+3
+00:00:17,941 --> 00:00:26,504
+Filters, groupers, joins and tests read cohort fields. A filter on a rank from the same request is refused: unknown field.
+
+4
+00:00:27,304 --> 00:00:34,523
+Materialize writes the derived columns as ordinary fields of a new cohort, and the next request reads them there.
+
+5
+00:00:35,323 --> 00:00:44,099
+Step one carries only derived slots and filters: a log of revenue, the previous promo, a rank per store, and last week's revenue.
+
+6
+00:00:44,899 --> 00:00:51,755
+Pulse A P I materialize writes it to a new path. The library and the M C P tool take the same body.
+
+7
+00:00:52,555 --> 00:00:58,664
+It wrote w d dot pulse: forty-eight records, with the derived columns in pipeline order.
+
+8
+00:00:59,464 --> 00:01:05,445
+One row per filter-passing source record, in source order. The source fields come first, verbatim.
+
+9
+00:01:06,245 --> 00:01:12,077
+Then one nullable sixty-four-bit float per derived column, each with a generated description.
+
+10
+00:01:12,877 --> 00:01:19,285
+A previous-state column is the exception: it keeps its state field's categorical type and dictionary.
+
+11
+00:01:20,085 --> 00:01:27,858
+Step two points the next request at the new cohort. Rank is a stored field now, so a range filter can keep ranks one and two.
+
+12
+00:01:28,658 --> 00:01:34,981
+That is the window-then-filter workflow the windows film pointed to: the two best weeks in every store.
+
+13
+00:01:35,781 --> 00:01:44,024
+Add dash dash predict, and nothing is written. Pulse reads the header and schema, and returns the exact columns the run would write.
+
+14
+00:01:44,824 --> 00:01:50,123
+It also lists the risks, and raises every static refusal with the run's own code.
+
+15
+00:01:50,923 --> 00:01:57,075
+Since alpha thirty-two, an output block lays out the written cohort: a columns list, or exclude.
+
+16
+00:01:57,875 --> 00:02:04,795
+Each entry reads a source field or a derived label, and can rename, describe, retype, recode or bucket it.
+
+17
+00:02:05,595 --> 00:02:11,598
+Projection runs last, so filters, sort and the derived slots can still read a dropped column.
+
+18
+00:02:12,398 --> 00:02:16,246
+Every cast is exact or it fails, and predict lists the checks.
+
+19
+00:02:17,046 --> 00:02:25,779
+Cast revenue to a sixteen-bit integer, and the run stops at row zero: one twenty-two point four is fractional. Nothing is written.
+
+20
+00:02:26,579 --> 00:02:33,008
+With on cast error set to null, those cells are written null, with one warning: forty-one values nulled.
+
+21
+00:02:33,808 --> 00:02:39,853
+Recode rewrites a categorical's dictionary: Y merges into Yes, and Unsure becomes null.
+
+22
+00:02:40,653 --> 00:02:46,890
+Bucket writes a number as labelled ranges, start included, end excluded. The missing week stays null.
+
+23
+00:02:47,690 --> 00:02:53,138
+A map key the dictionary does not hold is refused, and Pulse suggests the label you meant.
+
+24
+00:02:53,938 --> 00:02:59,279
+Container keys shape the file. Shards writes a shard archive, cut in output order.
+
+25
+00:03:00,079 --> 00:03:04,460
+Here, two shards, of ten rows and six. Predict planned at most five.
+
+26
+00:03:05,260 --> 00:03:11,732
+Elide constants stores a column with one value on every row just once: here, region and format.
+
+27
+00:03:12,532 --> 00:03:17,063
+Parent groups survive an output block when every member is written unchanged.
+
+28
+00:03:17,863 --> 00:03:23,012
+Recode the format, and the group is not inherited. Its members become row fields.
+
+29
+00:03:23,812 --> 00:03:26,999
+Declare output groups, and the group is admitted again.
+
+30
+00:03:27,799 --> 00:03:34,484
+Materialize refuses before it writes. A groups slot is refused: it would not keep one row per record.
+
+31
+00:03:35,284 --> 00:03:40,071
+So is a request with nothing derived, and an existing path without overwrite.
+
+32
+00:03:40,871 --> 00:03:46,234
+Recommend knows this recipe. Its log feature draft for revenue comes with steps.
+
+33
+00:03:47,034 --> 00:03:53,826
+First, the materialize tool writes log value to a new cohort. Then the process tool fits a regression on it.
+
+34
+00:03:54,626 --> 00:03:58,389
+Filled in and run, log value comes back as a predictor.
+
+35
+00:03:59,189 --> 00:04:05,597
+A process chain aggregates, then aggregates the aggregates. Each stage reads the last one's rows.
+
+36
+00:04:06,397 --> 00:04:14,064
+Stage zero sums revenue per store. Group keys become categorical columns, and aggregates sixty-four-bit floats.
+
+37
+00:04:14,864 --> 00:04:20,845
+Stage one averages the store totals per region. Each stage reports its own components.
+
+38
+00:04:21,645 --> 00:04:27,050
+Every stage passes a mergeable-only gate. The manifest lists what it admits today.
+
+39
+00:04:27,850 --> 00:04:33,533
+Windows, features, tests and regressions are refused. For a window, materialize first.
+
+40
+00:04:34,333 --> 00:04:41,189
+Only stage zero may join. Whole-chain overlays compare two stages, today as an index or a delta.
+
+41
+00:04:41,989 --> 00:04:48,696
+A join adds columns from a second cohort that shares a key: today, one inner hash join per request.
+
+42
+00:04:49,496 --> 00:04:55,371
+The store table is built in memory, the weeks stream past it, and the as prefix marks its columns.
+
+43
+00:04:56,171 --> 00:05:04,456
+Store S six has no row, so its weeks drop: forty of forty-eight joined. A sixty-four-bit key pairs with a thirty-two-bit one.
+
+44
+00:05:05,256 --> 00:05:11,493
+A sixty-four-bit key against a float key is refused: a float cannot hold every large integer.
+
+45
+00:05:12,293 --> 00:05:19,234
+Predict raises the same code from the schemas alone. Set keys are refused, and other kinds are reserved.
+
+46
+00:05:20,034 --> 00:05:26,250
+Without a prefix, the two store number columns collide. The manifest's join block states the limits.
+
+47
+00:05:27,050 --> 00:05:32,989
+Filter to file writes the records that pass a predicate as a new cohort: pulse cohort filter.
+
+48
+00:05:33,789 --> 00:05:39,749
+Filtered on its rank, the North archive keeps its shard layout. Dash dash flatten writes one file.
+
+49
+00:05:40,549 --> 00:05:48,984
+To-day reads the zone given by the time zone flag, else U T C. Weekend receipts: three in U T C, four in New York.
+
+50
+00:05:49,784 --> 00:05:56,981
+An unknown zone writes nothing. In the library, filter to file with request can also name the file by hash.
+
+51
+00:05:57,781 --> 00:06:07,688
+Materialize to read a derived column later. A chain to aggregate aggregates. A join for another cohort's columns. Filter to file for a subset.
+
+52
+00:06:08,488 --> 00:06:16,155
+Pulse adds operators over time, and the manifest lists yours. Embedders add their own through options dot extensions.
+
+53
+00:06:16,955 --> 00:06:21,358
+Write the column once, then read it everywhere. Next up, weights and raking.
+
+54
+00:06:22,158 --> 00:06:24,001
+Pulse. Derived cohorts.

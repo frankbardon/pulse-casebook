@@ -1,0 +1,9 @@
+{"cohort":{"filename":"w.pulse"},
+ "stages":[
+  {"name":"per_store","request":{
+    "groups":[{"type":"GROUP_CATEGORY","field":"store"}],
+    "aggregations":[{"type":"AGG_SUM","field":"revenue","label":"store_rev"}],
+    "windows":[{"type":"WIN_ROW_NUMBER","label":"rank","order_by":[{"field":"store_rev","desc":true}]}]}},
+  {"name":"top2","request":{
+    "filterers":[{"type":"FILTER_RANGE","field":"rank","values":["1","2"]}],
+    "aggregations":[{"type":"AGG_SUM","field":"store_rev","label":"top2_rev"}]}}]}

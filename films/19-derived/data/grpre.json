@@ -1,0 +1,3 @@
+{"cohort":{"filename":"wg.pulse"},
+ "windows":[{"type":"WIN_ROW_NUMBER","label":"rank","partition_by":["store"],"order_by":[{"field":"revenue","desc":true}]}],
+ "output":{"columns":[{"from":"store_no"},{"from":"store"},{"from":"region"},{"from":"format","recode":{"map":{"Street":"High street"}}},{"from":"opened"},{"from":"week"},{"from":"revenue"},{"from":"rank"}]}}

@@ -1,0 +1,5 @@
+{"cohort":{"filename":"w.pulse"},
+ "features":[{"type":"FEAT_LOG","field":"revenue","label":"log_rev"}],
+ "attributes":[{"type":"ATTR_PREVIOUS_STATE","field":"promo","subject_field":"store","order_field":"week","label":"prev_promo"}],
+ "windows":[{"type":"WIN_ROW_NUMBER","label":"rank","partition_by":["store"],"order_by":[{"field":"revenue","desc":true}]},
+            {"type":"WIN_LAG","field":"revenue","label":"rev_lag1","partition_by":["store"],"order_by":[{"field":"week"}]}]}

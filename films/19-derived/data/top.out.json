@@ -1,0 +1,290 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "store": "S1",
+        "top2_avg": 158.55,
+        "top2_log": 5.071434870305847,
+        "weeks": 2
+      },
+      {
+        "store": "S2",
+        "top2_avg": 95.75,
+        "top2_log": 4.571633186280897,
+        "weeks": 2
+      },
+      {
+        "store": "S3",
+        "top2_avg": 129.5,
+        "top2_log": 4.871323606708454,
+        "weeks": 2
+      },
+      {
+        "store": "S4",
+        "top2_avg": 98.75,
+        "top2_log": 4.5997943900996,
+        "weeks": 2
+      },
+      {
+        "store": "S5",
+        "top2_avg": 145.45,
+        "top2_log": 4.986612673249712,
+        "weeks": 2
+      },
+      {
+        "store": "S6",
+        "top2_avg": 107.55,
+        "top2_log": 4.68712167162306,
+        "weeks": 2
+      }
+    ],
+    "metadata": {
+      "total_rows": 48,
+      "filtered_rows": 12,
+      "cohort_file": "wd.pulse"
+    },
+    "components": {
+      "aggregations": [
+        {
+          "label": "weeks",
+          "n": 12,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "S1"
+              ],
+              "n": 2,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "S2"
+              ],
+              "n": 2,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "S3"
+              ],
+              "n": 2,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "S4"
+              ],
+              "n": 2,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "S5"
+              ],
+              "n": 2,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "S6"
+              ],
+              "n": 2,
+              "n_null": 0
+            }
+          ]
+        },
+        {
+          "label": "top2_avg",
+          "n": 12,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "S1"
+              ],
+              "n": 2,
+              "n_null": 0,
+              "operator": {
+                "sum": 317.1
+              }
+            },
+            {
+              "group_key": [
+                "S2"
+              ],
+              "n": 2,
+              "n_null": 0,
+              "operator": {
+                "sum": 191.5
+              }
+            },
+            {
+              "group_key": [
+                "S3"
+              ],
+              "n": 2,
+              "n_null": 0,
+              "operator": {
+                "sum": 259
+              }
+            },
+            {
+              "group_key": [
+                "S4"
+              ],
+              "n": 2,
+              "n_null": 0,
+              "operator": {
+                "sum": 197.5
+              }
+            },
+            {
+              "group_key": [
+                "S5"
+              ],
+              "n": 2,
+              "n_null": 0,
+              "operator": {
+                "sum": 290.9
+              }
+            },
+            {
+              "group_key": [
+                "S6"
+              ],
+              "n": 2,
+              "n_null": 0,
+              "operator": {
+                "sum": 215.1
+              }
+            }
+          ]
+        },
+        {
+          "label": "top2_log",
+          "n": 12,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "S1"
+              ],
+              "n": 2,
+              "n_null": 0,
+              "operator": {
+                "sum": 10.142869740611694
+              }
+            },
+            {
+              "group_key": [
+                "S2"
+              ],
+              "n": 2,
+              "n_null": 0,
+              "operator": {
+                "sum": 9.143266372561794
+              }
+            },
+            {
+              "group_key": [
+                "S3"
+              ],
+              "n": 2,
+              "n_null": 0,
+              "operator": {
+                "sum": 9.742647213416909
+              }
+            },
+            {
+              "group_key": [
+                "S4"
+              ],
+              "n": 2,
+              "n_null": 0,
+              "operator": {
+                "sum": 9.1995887801992
+              }
+            },
+            {
+              "group_key": [
+                "S5"
+              ],
+              "n": 2,
+              "n_null": 0,
+              "operator": {
+                "sum": 9.973225346499424
+              }
+            },
+            {
+              "group_key": [
+                "S6"
+              ],
+              "n": 2,
+              "n_null": 0,
+              "operator": {
+                "sum": 9.37424334324612
+              }
+            }
+          ]
+        }
+      ],
+      "groupers": [
+        {
+          "field": "store",
+          "total_n": 12,
+          "operator": {
+            "buckets": [
+              {
+                "count": 2,
+                "key": "S1",
+                "label": "S1"
+              },
+              {
+                "count": 2,
+                "key": "S2",
+                "label": "S2"
+              },
+              {
+                "count": 2,
+                "key": "S3",
+                "label": "S3"
+              },
+              {
+                "count": 2,
+                "key": "S4",
+                "label": "S4"
+              },
+              {
+                "count": 2,
+                "key": "S5",
+                "label": "S5"
+              },
+              {
+                "count": 2,
+                "key": "S6",
+                "label": "S6"
+              }
+            ],
+            "dict_size": 6
+          }
+        }
+      ],
+      "filterers": [
+        {
+          "n_in": 48,
+          "n_out": 12,
+          "n_null_input": 0
+        }
+      ],
+      "run": {
+        "total_records": 48,
+        "filtered_records": 12,
+        "null_records": 0
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

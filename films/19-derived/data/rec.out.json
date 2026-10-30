@@ -1,0 +1,826 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "intent": "distribution_shape",
+    "bound": true,
+    "shapes": [
+      {
+        "roles": [
+          {
+            "name": "measure",
+            "kinds": [
+              "numeric"
+            ],
+            "min": 1,
+            "max": -1
+          }
+        ]
+      }
+    ],
+    "recommendations": [
+      {
+        "operator": "AGG_MEDIAN",
+        "category": "aggregator",
+        "level": "basic",
+        "why": "Middle value of a numeric field once sorted: the typical row, not pulled by a few extreme values. It uses revenue (f64).",
+        "bound": true,
+        "request": {
+          "aggregations": [
+            {
+              "field": "revenue",
+              "type": "AGG_MEDIAN"
+            }
+          ],
+          "cohort": {
+            "filename": "w.pulse"
+          }
+        },
+        "alternatives": [
+          {
+            "when": "you want a value other than the middle, such as the 90th percentile",
+            "use": "AGG_PERCENTILE"
+          },
+          {
+            "when": "the field is roughly symmetric and you want a figure that combines across groups",
+            "use": "AGG_AVERAGE"
+          },
+          {
+            "when": "the field holds categories rather than numbers",
+            "use": "AGG_MODE"
+          }
+        ]
+      },
+      {
+        "operator": "AGG_RANGE",
+        "category": "aggregator",
+        "level": "basic",
+        "why": "Distance between the smallest and largest value of a numeric field, over all rows or per group. It uses revenue (f64).",
+        "bound": true,
+        "request": {
+          "aggregations": [
+            {
+              "field": "revenue",
+              "type": "AGG_RANGE"
+            }
+          ],
+          "cohort": {
+            "filename": "w.pulse"
+          }
+        },
+        "alternatives": [
+          {
+            "when": "you want a spread measure that uses every row, not only the two extremes",
+            "use": "AGG_STDDEV"
+          },
+          {
+            "when": "you want the spread of the middle of the data, ignoring extremes",
+            "use": "AGG_PERCENTILE"
+          }
+        ]
+      },
+      {
+        "operator": "AGG_STDDEV",
+        "category": "aggregator",
+        "level": "basic",
+        "why": "Typical distance of a numeric field's values from their average, in the field's own units, over all rows or per group. It uses revenue (f64).",
+        "bound": true,
+        "request": {
+          "aggregations": [
+            {
+              "field": "revenue",
+              "type": "AGG_STDDEV"
+            }
+          ],
+          "cohort": {
+            "filename": "w.pulse"
+          }
+        },
+        "alternatives": [
+          {
+            "when": "you want how precisely the average itself is known",
+            "use": "AGG_CI_LOWER"
+          },
+          {
+            "when": "you want the sample form (dividing by n - 1) together with the mean and n",
+            "use": "AGG_WELFORD"
+          },
+          {
+            "when": "the field has extreme values and you want a spread they cannot drag",
+            "use": "AGG_PERCENTILE"
+          }
+        ]
+      },
+      {
+        "operator": "ATTR_PERCENTILE",
+        "category": "attribute",
+        "level": "basic",
+        "why": "Adds to every row its percentile rank, rank / n * 100: the share of rows at or below it when values are untied. It uses revenue (f64).",
+        "bound": true,
+        "request": {
+          "attributes": [
+            {
+              "field": "revenue",
+              "type": "ATTR_PERCENTILE"
+            }
+          ],
+          "cohort": {
+            "filename": "w.pulse"
+          }
+        },
+        "alternatives": [
+          {
+            "when": "you want the value at a chosen percentile, such as the 90th",
+            "use": "AGG_PERCENTILE"
+          },
+          {
+            "when": "you want ranks within partitions, or tied values to share a rank",
+            "use": "WIN_RANK"
+          },
+          {
+            "when": "you want rows split into equal-sized bands",
+            "use": "GROUP_QUANTILE"
+          }
+        ]
+      },
+      {
+        "operator": "TEST_KS",
+        "category": "test",
+        "level": "intermediate",
+        "why": "Checks whether a numeric field's values follow the same distribution in two groups, comparing their whole shape. It uses revenue (f64) and store (categorical_u8, 6 groups).",
+        "bound": true,
+        "request": {
+          "cohort": {
+            "filename": "w.pulse"
+          },
+          "tests": [
+            {
+              "field": "revenue",
+              "split_by": "store",
+              "type": "TEST_KS"
+            }
+          ]
+        },
+        "alternatives": [
+          {
+            "when": "you want to check one field against the normal distribution",
+            "use": "TEST_SHAPIRO_WILK"
+          },
+          {
+            "when": "you only care whether one group's values tend to be larger",
+            "use": "TEST_MANN_WHITNEY_U"
+          },
+          {
+            "when": "you compare a subgroup with the whole population",
+            "use": "OVERLAY_KS_VS_POP"
+          }
+        ]
+      },
+      {
+        "operator": "TEST_KS",
+        "category": "test",
+        "level": "intermediate",
+        "why": "Checks whether a numeric field's values follow the same distribution in two groups, comparing their whole shape. It uses revenue (f64) and region (categorical_u8, 2 groups).",
+        "bound": true,
+        "request": {
+          "cohort": {
+            "filename": "w.pulse"
+          },
+          "tests": [
+            {
+              "field": "revenue",
+              "split_by": "region",
+              "type": "TEST_KS"
+            }
+          ]
+        },
+        "alternatives": [
+          {
+            "when": "you want to check one field against the normal distribution",
+            "use": "TEST_SHAPIRO_WILK"
+          },
+          {
+            "when": "you only care whether one group's values tend to be larger",
+            "use": "TEST_MANN_WHITNEY_U"
+          },
+          {
+            "when": "you compare a subgroup with the whole population",
+            "use": "OVERLAY_KS_VS_POP"
+          }
+        ]
+      },
+      {
+        "operator": "TEST_KS",
+        "category": "test",
+        "level": "intermediate",
+        "why": "Checks whether a numeric field's values follow the same distribution in two groups, comparing their whole shape. It uses revenue (f64) and format (categorical_u8, 2 groups).",
+        "bound": true,
+        "request": {
+          "cohort": {
+            "filename": "w.pulse"
+          },
+          "tests": [
+            {
+              "field": "revenue",
+              "split_by": "format",
+              "type": "TEST_KS"
+            }
+          ]
+        },
+        "alternatives": [
+          {
+            "when": "you want to check one field against the normal distribution",
+            "use": "TEST_SHAPIRO_WILK"
+          },
+          {
+            "when": "you only care whether one group's values tend to be larger",
+            "use": "TEST_MANN_WHITNEY_U"
+          },
+          {
+            "when": "you compare a subgroup with the whole population",
+            "use": "OVERLAY_KS_VS_POP"
+          }
+        ]
+      },
+      {
+        "operator": "TEST_SHAPIRO_WILK",
+        "category": "test",
+        "level": "intermediate",
+        "why": "Checks whether a numeric field looks normally distributed, overall or within each group. It uses revenue (f64).",
+        "bound": true,
+        "request": {
+          "cohort": {
+            "filename": "w.pulse"
+          },
+          "tests": [
+            {
+              "field": "revenue",
+              "type": "TEST_SHAPIRO_WILK"
+            }
+          ]
+        },
+        "alternatives": [
+          {
+            "when": "you compare the distributions of two groups with each other",
+            "use": "TEST_KS"
+          },
+          {
+            "when": "you want to check whether groups have equal spread",
+            "use": "TEST_BROWN_FORSYTHE"
+          }
+        ],
+        "follow_ups": [
+          {
+            "when": "the shape is far from normal and you planned a two-group t-test",
+            "use": "TEST_MANN_WHITNEY_U"
+          },
+          {
+            "when": "the shape is far from normal and you planned an ANOVA across three or more groups",
+            "use": "TEST_KRUSKAL_WALLIS"
+          }
+        ]
+      },
+      {
+        "operator": "AGG_SKEWNESS",
+        "category": "aggregator",
+        "level": "intermediate",
+        "why": "How lopsided a numeric field is: positive when a long tail runs to high values, negative when it runs to low ones. It uses revenue (f64).",
+        "bound": true,
+        "request": {
+          "aggregations": [
+            {
+              "field": "revenue",
+              "type": "AGG_SKEWNESS"
+            }
+          ],
+          "cohort": {
+            "filename": "w.pulse"
+          }
+        },
+        "alternatives": [
+          {
+            "when": "you want to know whether the tails are heavy rather than lopsided",
+            "use": "AGG_KURTOSIS"
+          },
+          {
+            "when": "you want a test of whether the field follows a normal shape",
+            "use": "TEST_SHAPIRO_WILK"
+          },
+          {
+            "when": "you want the typical value of a skewed field",
+            "use": "AGG_MEDIAN"
+          }
+        ]
+      },
+      {
+        "operator": "AGG_VARIANCE",
+        "category": "aggregator",
+        "level": "intermediate",
+        "why": "Spread of a numeric field as the average squared distance from its mean, in squared units, over all rows or per group. It uses revenue (f64).",
+        "bound": true,
+        "request": {
+          "aggregations": [
+            {
+              "field": "revenue",
+              "type": "AGG_VARIANCE"
+            }
+          ],
+          "cohort": {
+            "filename": "w.pulse"
+          }
+        },
+        "alternatives": [
+          {
+            "when": "you want the spread in the field's own units, which is easier to read",
+            "use": "AGG_STDDEV"
+          },
+          {
+            "when": "you want the sample variance (dividing by n - 1) with the mean and n, as pooling and study-size planning expect",
+            "use": "AGG_WELFORD"
+          }
+        ]
+      },
+      {
+        "operator": "AGG_VEC_SD",
+        "category": "aggregator",
+        "level": "intermediate",
+        "why": "Standard deviation of each item of a battery or mix, as one list per group: how much the group's rows disagree on each item. It uses revenue (f64), store_no (u64) and visits (u32).",
+        "bound": true,
+        "request": {
+          "aggregations": [
+            {
+              "fields": [
+                "revenue",
+                "store_no",
+                "visits"
+              ],
+              "type": "AGG_VEC_SD"
+            }
+          ],
+          "cohort": {
+            "filename": "w.pulse"
+          }
+        },
+        "alternatives": [
+          {
+            "when": "you want each item's average rather than its spread",
+            "use": "AGG_VEC_MEAN"
+          },
+          {
+            "when": "you want the spread of a single field",
+            "use": "AGG_STDDEV"
+          },
+          {
+            "when": "you want how the items vary together, not one by one",
+            "use": "MAT_COVARIANCE"
+          }
+        ]
+      },
+      {
+        "operator": "FEAT_LOG",
+        "category": "feature",
+        "level": "intermediate",
+        "why": "Adds a column holding the natural log of 1 + the value, which pulls in a long tail of large values so a skewed field is easier to model. It uses revenue (f64).",
+        "bound": true,
+        "request": {
+          "cohort": {
+            "filename": "w.pulse"
+          },
+          "features": [
+            {
+              "field": "revenue",
+              "type": "FEAT_LOG"
+            }
+          ]
+        },
+        "alternatives": [
+          {
+            "when": "the tail is only moderate and a gentler squeeze is enough",
+            "use": "FEAT_SQRT"
+          },
+          {
+            "when": "you want each value in standard units from the mean, not a squeezed scale",
+            "use": "ATTR_ZSCORE"
+          },
+          {
+            "when": "you want ordered bins instead of a continuous transform",
+            "use": "FEAT_BUCKETIZE"
+          }
+        ],
+        "steps": [
+          {
+            "tool": "pulse_materialize",
+            "request": {
+              "out": "\u003cout\u003e",
+              "request": {
+                "cohort": {
+                  "filename": "w.pulse"
+                },
+                "features": [
+                  {
+                    "field": "revenue",
+                    "label": "log_value",
+                    "type": "FEAT_LOG"
+                  }
+                ]
+              }
+            },
+            "placeholders": [
+              "out"
+            ],
+            "why": "A model cannot read a column its own request derives, so write the log_value column to a new cohort first."
+          },
+          {
+            "tool": "pulse_process",
+            "request": {
+              "cohort": {
+                "filename": "\u003cout\u003e"
+              },
+              "regressions": [
+                {
+                  "predictors": [
+                    "log_value"
+                  ],
+                  "target": "\u003ctarget\u003e",
+                  "type": "REG_OLS"
+                }
+              ]
+            },
+            "placeholders": [
+              "out",
+              "target"
+            ],
+            "why": "Then fit the model on the new cohort, reading log_value as a predictor."
+          }
+        ]
+      },
+      {
+        "operator": "FEAT_SQRT",
+        "category": "feature",
+        "level": "intermediate",
+        "why": "Adds a column holding the square root of the value, a gentler squeeze than a log for counts with a moderate long tail. It uses revenue (f64).",
+        "bound": true,
+        "request": {
+          "cohort": {
+            "filename": "w.pulse"
+          },
+          "features": [
+            {
+              "field": "revenue",
+              "type": "FEAT_SQRT"
+            }
+          ]
+        },
+        "alternatives": [
+          {
+            "when": "the tail is very long and needs a stronger squeeze",
+            "use": "FEAT_LOG"
+          },
+          {
+            "when": "you want each value in standard units from the mean",
+            "use": "ATTR_ZSCORE"
+          }
+        ],
+        "steps": [
+          {
+            "tool": "pulse_materialize",
+            "request": {
+              "out": "\u003cout\u003e",
+              "request": {
+                "cohort": {
+                  "filename": "w.pulse"
+                },
+                "features": [
+                  {
+                    "field": "revenue",
+                    "label": "sqrt_value",
+                    "type": "FEAT_SQRT"
+                  }
+                ]
+              }
+            },
+            "placeholders": [
+              "out"
+            ],
+            "why": "A model cannot read a column its own request derives, so write the sqrt_value column to a new cohort first."
+          },
+          {
+            "tool": "pulse_process",
+            "request": {
+              "cohort": {
+                "filename": "\u003cout\u003e"
+              },
+              "regressions": [
+                {
+                  "predictors": [
+                    "sqrt_value"
+                  ],
+                  "target": "\u003ctarget\u003e",
+                  "type": "REG_OLS"
+                }
+              ]
+            },
+            "placeholders": [
+              "out",
+              "target"
+            ],
+            "why": "Then fit the model on the new cohort, reading sqrt_value as a predictor."
+          }
+        ]
+      },
+      {
+        "operator": "GROUP_QUANTILE",
+        "category": "grouper",
+        "level": "intermediate",
+        "why": "Splits the rows into equal-sized groups by rank of a number, such as quartiles or deciles of spend, to compare top and bottom. It uses revenue (f64).",
+        "bound": true,
+        "request": {
+          "cohort": {
+            "filename": "w.pulse"
+          },
+          "groups": [
+            {
+              "field": "revenue",
+              "type": "GROUP_QUANTILE"
+            }
+          ]
+        },
+        "alternatives": [
+          {
+            "when": "you want bands of a fixed width, such as every 10 years of age",
+            "use": "GROUP_RANGE"
+          },
+          {
+            "when": "you want each row's rank as a number, not a group",
+            "use": "ATTR_PERCENTILE"
+          },
+          {
+            "when": "you want the cut-off values themselves",
+            "use": "AGG_PERCENTILE"
+          }
+        ]
+      },
+      {
+        "operator": "TEST_BROWN_FORSYTHE",
+        "category": "test",
+        "level": "advanced",
+        "why": "Checks whether the spread of a numeric field differs across groups: a robust test of equal variances. It uses revenue (f64) and store (categorical_u8, 6 groups).",
+        "bound": true,
+        "request": {
+          "cohort": {
+            "filename": "w.pulse"
+          },
+          "tests": [
+            {
+              "field": "revenue",
+              "split_by": "store",
+              "type": "TEST_BROWN_FORSYTHE"
+            }
+          ]
+        },
+        "alternatives": [
+          {
+            "when": "you want to compare the group averages themselves",
+            "use": "TEST_ANOVA_WELCH"
+          },
+          {
+            "when": "you want to check whether a measure is bell-shaped",
+            "use": "TEST_SHAPIRO_WILK"
+          }
+        ],
+        "follow_ups": [
+          {
+            "when": "the spreads differ and you still want to compare group averages",
+            "use": "TEST_ANOVA_WELCH"
+          }
+        ]
+      },
+      {
+        "operator": "TEST_BROWN_FORSYTHE",
+        "category": "test",
+        "level": "advanced",
+        "why": "Checks whether the spread of a numeric field differs across groups: a robust test of equal variances. It uses revenue (f64) and promo (categorical_u8, 4 groups).",
+        "bound": true,
+        "request": {
+          "cohort": {
+            "filename": "w.pulse"
+          },
+          "tests": [
+            {
+              "field": "revenue",
+              "split_by": "promo",
+              "type": "TEST_BROWN_FORSYTHE"
+            }
+          ]
+        },
+        "alternatives": [
+          {
+            "when": "you want to compare the group averages themselves",
+            "use": "TEST_ANOVA_WELCH"
+          },
+          {
+            "when": "you want to check whether a measure is bell-shaped",
+            "use": "TEST_SHAPIRO_WILK"
+          }
+        ],
+        "follow_ups": [
+          {
+            "when": "the spreads differ and you still want to compare group averages",
+            "use": "TEST_ANOVA_WELCH"
+          }
+        ]
+      },
+      {
+        "operator": "TEST_MARDIA",
+        "category": "test",
+        "level": "advanced",
+        "why": "Checks whether a set of numeric fields looks jointly normal, through their combined skew and tail weight. It uses revenue (f64), store_no (u64) and visits (u32).",
+        "bound": true,
+        "request": {
+          "cohort": {
+            "filename": "w.pulse"
+          },
+          "tests": [
+            {
+              "fields": [
+                "revenue",
+                "store_no",
+                "visits"
+              ],
+              "type": "TEST_MARDIA"
+            }
+          ]
+        },
+        "alternatives": [
+          {
+            "when": "there is only one numeric field and you want a sharper normality test",
+            "use": "TEST_SHAPIRO_WILK"
+          },
+          {
+            "when": "you want whether the groups share one covariance",
+            "use": "TEST_BOX_M"
+          }
+        ]
+      },
+      {
+        "operator": "AGG_KURTOSIS",
+        "category": "aggregator",
+        "level": "advanced",
+        "why": "How heavy a numeric field's tails are next to a normal distribution: positive when extreme values are more common. It uses revenue (f64).",
+        "bound": true,
+        "request": {
+          "aggregations": [
+            {
+              "field": "revenue",
+              "type": "AGG_KURTOSIS"
+            }
+          ],
+          "cohort": {
+            "filename": "w.pulse"
+          }
+        },
+        "alternatives": [
+          {
+            "when": "you want to know whether the field is lopsided",
+            "use": "AGG_SKEWNESS"
+          },
+          {
+            "when": "you want a test of whether the field follows a normal shape",
+            "use": "TEST_SHAPIRO_WILK"
+          }
+        ]
+      },
+      {
+        "operator": "AGG_PERCENTILE",
+        "category": "aggregator",
+        "level": "basic",
+        "why": "Value of a numeric field below which a chosen share of rows fall, such as the 90th percentile of delivery time. It uses revenue (f64). Fill in each placeholder in the draft before you run it.",
+        "bound": false,
+        "request": {
+          "aggregations": [
+            {
+              "field": "revenue",
+              "params": {
+                "percentile": "\u003cpercentile\u003e"
+              },
+              "type": "AGG_PERCENTILE"
+            }
+          ],
+          "cohort": {
+            "filename": "w.pulse"
+          }
+        },
+        "placeholders": [
+          "percentile"
+        ],
+        "needs": [
+          {
+            "param": "percentile",
+            "why": "Choose which percentile to report, between 0 and 100."
+          }
+        ],
+        "alternatives": [
+          {
+            "when": "you want the 50th percentile",
+            "use": "AGG_MEDIAN"
+          },
+          {
+            "when": "you want each row's own percentile position",
+            "use": "ATTR_PERCENTILE"
+          },
+          {
+            "when": "you want rows split into equal-sized bands",
+            "use": "GROUP_QUANTILE"
+          }
+        ]
+      },
+      {
+        "operator": "GROUP_RANGE",
+        "category": "grouper",
+        "level": "basic",
+        "why": "Splits a number into bands of equal width, such as ages 20-30 and 30-40, to see how values spread or to compare bands. It uses revenue (f64). Fill in each placeholder in the draft before you run it.",
+        "bound": false,
+        "request": {
+          "cohort": {
+            "filename": "w.pulse"
+          },
+          "groups": [
+            {
+              "field": "revenue",
+              "interval": "\u003cinterval\u003e",
+              "type": "GROUP_RANGE"
+            }
+          ]
+        },
+        "placeholders": [
+          "interval"
+        ],
+        "needs": [
+          {
+            "param": "interval",
+            "why": "Choose the bucket width."
+          }
+        ],
+        "alternatives": [
+          {
+            "when": "you want groups of equal size rather than equal width",
+            "use": "GROUP_QUANTILE"
+          },
+          {
+            "when": "you want each band named by its lower edge alone",
+            "use": "GROUP_ROUNDED"
+          },
+          {
+            "when": "you want to keep one band, not split into all of them",
+            "use": "FILTER_RANGE"
+          },
+          {
+            "when": "your bands have uneven, named edges, such as a train/holdout split",
+            "use": "GROUP_NUMERIC_RANGES"
+          }
+        ]
+      },
+      {
+        "operator": "GROUP_ROUNDED",
+        "category": "grouper",
+        "level": "basic",
+        "why": "Groups a number by rounding it down to a multiple of a step, such as 23 and 27 both to 20, naming each group by that multiple. It uses revenue (f64). Fill in each placeholder in the draft before you run it.",
+        "bound": false,
+        "request": {
+          "cohort": {
+            "filename": "w.pulse"
+          },
+          "groups": [
+            {
+              "field": "revenue",
+              "interval": "\u003cinterval\u003e",
+              "type": "GROUP_ROUNDED"
+            }
+          ]
+        },
+        "placeholders": [
+          "interval"
+        ],
+        "needs": [
+          {
+            "param": "interval",
+            "why": "Choose the bucket width."
+          }
+        ],
+        "alternatives": [
+          {
+            "when": "you want the band's both edges in its name",
+            "use": "GROUP_RANGE"
+          },
+          {
+            "when": "you want groups of equal size",
+            "use": "GROUP_QUANTILE"
+          }
+        ]
+      }
+    ],
+    "truncated": false,
+    "candidates_considered": 21
+  },
+  "errors": [],
+  "warnings": []
+}

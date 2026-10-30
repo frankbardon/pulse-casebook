@@ -1,0 +1,190 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "field_count": 13,
+    "fields": [
+      {
+        "name": "store_no",
+        "type": "u64",
+        "nullable": false,
+        "byte_offset": 0,
+        "bit_position": 0,
+        "description": "Store number, the key the store table shares",
+        "description_source": "schema",
+        "categorical": false
+      },
+      {
+        "name": "store",
+        "type": "categorical_u8",
+        "nullable": false,
+        "byte_offset": 8,
+        "bit_position": 0,
+        "description": "Store name, S1 to S6",
+        "description_source": "schema",
+        "categorical": true,
+        "dictionary": {
+          "total_entries": 6,
+          "truncated": false,
+          "values": [
+            "S1",
+            "S2",
+            "S3",
+            "S4",
+            "S5",
+            "S6"
+          ]
+        }
+      },
+      {
+        "name": "region",
+        "type": "categorical_u8",
+        "nullable": false,
+        "byte_offset": 9,
+        "bit_position": 0,
+        "description": "Sales region of the store: North or South",
+        "description_source": "schema",
+        "categorical": true,
+        "dictionary": {
+          "total_entries": 2,
+          "truncated": false,
+          "values": [
+            "North",
+            "South"
+          ]
+        }
+      },
+      {
+        "name": "format",
+        "type": "categorical_u8",
+        "nullable": false,
+        "byte_offset": 10,
+        "bit_position": 0,
+        "description": "Store format: Mall or Street",
+        "description_source": "schema",
+        "categorical": true,
+        "dictionary": {
+          "total_entries": 2,
+          "truncated": false,
+          "values": [
+            "Mall",
+            "Street"
+          ]
+        }
+      },
+      {
+        "name": "opened",
+        "type": "date",
+        "nullable": false,
+        "byte_offset": 11,
+        "bit_position": 0,
+        "description": "Date the store opened",
+        "description_source": "schema",
+        "categorical": false
+      },
+      {
+        "name": "week",
+        "type": "date",
+        "nullable": false,
+        "byte_offset": 15,
+        "bit_position": 0,
+        "description": "Monday that starts the sales week",
+        "description_source": "schema",
+        "categorical": false
+      },
+      {
+        "name": "revenue",
+        "type": "f64",
+        "nullable": true,
+        "byte_offset": 19,
+        "bit_position": 0,
+        "description": "Store revenue for the week, in thousands of dollars",
+        "description_source": "schema",
+        "categorical": false
+      },
+      {
+        "name": "visits",
+        "type": "u32",
+        "nullable": false,
+        "byte_offset": 27,
+        "bit_position": 0,
+        "description": "Customer visits to the store that week",
+        "description_source": "schema",
+        "categorical": false
+      },
+      {
+        "name": "promo",
+        "type": "categorical_u8",
+        "nullable": false,
+        "byte_offset": 31,
+        "bit_position": 0,
+        "description": "Whether a promotion ran that week, as the stores reported it",
+        "description_source": "schema",
+        "categorical": true,
+        "dictionary": {
+          "total_entries": 4,
+          "truncated": false,
+          "values": [
+            "No",
+            "Yes",
+            "Y",
+            "Unsure"
+          ]
+        }
+      },
+      {
+        "name": "log_rev",
+        "type": "f64",
+        "nullable": true,
+        "byte_offset": 32,
+        "bit_position": 0,
+        "description": "FEAT_LOG of revenue — derived from w.pulse",
+        "description_source": "schema",
+        "categorical": false
+      },
+      {
+        "name": "prev_promo",
+        "type": "categorical_u8",
+        "nullable": true,
+        "byte_offset": 40,
+        "bit_position": 0,
+        "description": "ATTR_PREVIOUS_STATE of promo — derived from w.pulse",
+        "description_source": "schema",
+        "categorical": true,
+        "dictionary": {
+          "total_entries": 4,
+          "truncated": false,
+          "values": [
+            "No",
+            "Yes",
+            "Y",
+            "Unsure"
+          ]
+        }
+      },
+      {
+        "name": "rank",
+        "type": "f64",
+        "nullable": true,
+        "byte_offset": 41,
+        "bit_position": 0,
+        "description": "WIN_ROW_NUMBER (partition store; order revenue desc) — derived from w.pulse",
+        "description_source": "schema",
+        "categorical": false
+      },
+      {
+        "name": "rev_lag1",
+        "type": "f64",
+        "nullable": true,
+        "byte_offset": 49,
+        "bit_position": 0,
+        "description": "WIN_LAG of revenue (partition store; order week) — derived from w.pulse",
+        "description_source": "schema",
+        "categorical": false
+      }
+    ],
+    "shards": [],
+    "record_count": 48
+  },
+  "errors": [],
+  "warnings": []
+}
