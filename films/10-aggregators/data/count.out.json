@@ -1,0 +1,73 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "AGG_COUNT_spend": 9,
+        "AGG_DISTINCT_COUNT_region": 4,
+        "AGG_FREQUENCY_region": 4,
+        "AGG_MODE_COUNT_region": 4,
+        "AGG_MODE_region": 0,
+        "AGG_NULL_COUNT_spend": 1
+      }
+    ],
+    "metadata": {
+      "total_rows": 10,
+      "filtered_rows": 10,
+      "cohort_file": "p.pulse"
+    },
+    "components": {
+      "aggregations": [
+        {
+          "n": 9,
+          "n_null": 1
+        },
+        {
+          "n": 9,
+          "n_null": 1
+        },
+        {
+          "n": 10,
+          "n_null": 0,
+          "operator": {
+            "cardinality": 4
+          }
+        },
+        {
+          "n": 10,
+          "n_null": 0,
+          "operator": {
+            "match_count": 4,
+            "share": 0.4
+          }
+        },
+        {
+          "n": 10,
+          "n_null": 0,
+          "operator": {
+            "distinct_count": 4,
+            "mode_count": 4,
+            "mode_value": 0
+          }
+        },
+        {
+          "n": 10,
+          "n_null": 0,
+          "operator": {
+            "count": 4,
+            "distinct_count": 4,
+            "tie_count": 1,
+            "value": 0
+          }
+        }
+      ],
+      "run": {
+        "total_records": 10,
+        "filtered_records": 10,
+        "null_records": 1
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

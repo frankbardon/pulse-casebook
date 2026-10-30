@@ -1,0 +1,2 @@
+{"cohort":{"filename":"z.pulse"},"groups":[{"type":"GROUP_CATEGORY","field":"shape"}],"aggregations":[
+{"type":"AGG_COUNT","field":"x"},{"type":"AGG_SKEWNESS","field":"x"},{"type":"AGG_KURTOSIS","field":"x"}]}

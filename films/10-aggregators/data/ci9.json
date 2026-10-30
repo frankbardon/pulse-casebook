@@ -1,0 +1,2 @@
+{"cohort":{"filename":"p.pulse"},"aggregations":[
+{"type":"AGG_CI_LOWER","field":"spend"},{"type":"AGG_CI_UPPER","field":"spend"},{"type":"AGG_AVERAGE","field":"spend"}]}

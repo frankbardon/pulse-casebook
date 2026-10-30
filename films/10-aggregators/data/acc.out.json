@@ -1,0 +1,79 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "AGG_AUC_score": 0.78,
+        "AGG_MAE_spend": 9.444444444444445,
+        "AGG_MAPE_spend": 0.08441876413718839,
+        "AGG_RMSE_spend": 20.234733614368253
+      }
+    ],
+    "metadata": {
+      "total_rows": 10,
+      "filtered_rows": 10,
+      "cohort_file": "p.pulse"
+    },
+    "components": {
+      "aggregations": [
+        {
+          "n": 9,
+          "n_null": 1,
+          "operator": {
+            "loss_sum": 85,
+            "mae": 9.444444444444445,
+            "n_null_prediction": 0,
+            "n_scored": 9,
+            "weight_sum": 9
+          }
+        },
+        {
+          "n": 9,
+          "n_null": 1,
+          "operator": {
+            "loss_sum": 3685,
+            "mse": 409.44444444444446,
+            "n_null_prediction": 0,
+            "n_scored": 9,
+            "rmse": 20.234733614368253,
+            "weight_sum": 9
+          }
+        },
+        {
+          "n": 9,
+          "n_null": 1,
+          "operator": {
+            "loss_sum": 0.7597688772346955,
+            "mape": 0.08441876413718839,
+            "n_null_prediction": 0,
+            "n_scored": 9,
+            "n_zero_actual": 0,
+            "weight_sum": 9
+          }
+        },
+        {
+          "n": 10,
+          "n_null": 0,
+          "operator": {
+            "auc": 0.78,
+            "ci_lower": 0.45914006732749796,
+            "ci_upper": 1,
+            "conf_level": 0.95,
+            "gini": 0.56,
+            "n_neg": 5,
+            "n_null_outcome": 0,
+            "n_pos": 5,
+            "se": 0.163707055437449
+          }
+        }
+      ],
+      "run": {
+        "total_records": 10,
+        "filtered_records": 10,
+        "null_records": 1
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

@@ -1,6 +1,7 @@
-/* Pulse Aggregators: film 6 of the Pulse Anatomy series. Follows SERIES-RULES.md.
- * Figures mirror internal/processing: nulls skipped (n vs n_null), variance / stddev population (÷n),
- * AGG_WELFORD sample (÷n−1), CI = mean ∓ z·√(s²/n) with null for n < 2, ratio = Σnum / Σden. */
+/* Pulse Aggregators: film 10 of the 23-film Pulse Anatomy series. Scenes draw with the PulseFilm kit.
+ * Follows SERIES-RULES.md at Pulse v1.0.0-alpha.33: no catalog counts, "by default" for the slot order.
+ * Every figure on a result card is copied from a recorded alpha.33 run in data/ (see data/README.md):
+ * REC below names the run each one comes from. The cohort P is data/p.csv. */
 (() => {
 const { C } = PulseFilm;
 const { clamp, seg, eo, eio, lerp, R, T, M, CAP, Ln, A, dot, ring, arrow, rng, chips } = PulseFilm.h;
@@ -8,28 +9,42 @@ const card = (x, y, w, h, stroke) => R(x, y, w, h, { fill: C.panel, stroke: stro
 const f2 = v => v.toFixed(2);
 
 /* ---------- a post-filter cohort ---------- */
-const P = [
-  { id: 1, region: 'North', spend: 42, cost: 20, pred: 45 },
-  { id: 2, region: 'East', spend: 55, cost: 25, pred: 50 },
-  { id: 3, region: 'North', spend: 38, cost: 19, pred: 41 },
-  { id: 4, region: 'West', spend: 61, cost: 30, pred: 57 },
-  { id: 5, region: 'South', spend: null, cost: 16, pred: 60 },
-  { id: 6, region: 'North', spend: 47, cost: 20, pred: 49 },
-  { id: 7, region: 'East', spend: 52, cost: 26, pred: 55 },
-  { id: 8, region: 'West', spend: 240, cost: 80, pred: 180 },
-  { id: 9, region: 'North', spend: 58, cost: 29, pred: 60 },
-  { id: 10, region: 'East', spend: 44, cost: 22, pred: 47 },
+const P = [   // data/p.csv
+  { id: 1, region: 'North', spend: 42, cost: 20, pred: 45, w: 1.2, score: 0.82, renewed: 1 },
+  { id: 2, region: 'East', spend: 55, cost: 25, pred: 50, w: 0.8, score: 0.35, renewed: 0 },
+  { id: 3, region: 'North', spend: 38, cost: 19, pred: 41, w: 1.0, score: 0.64, renewed: 1 },
+  { id: 4, region: 'West', spend: 61, cost: 30, pred: 57, w: 1.5, score: 0.71, renewed: 0 },
+  { id: 5, region: 'South', spend: null, cost: 16, pred: 60, w: 1.0, score: 0.58, renewed: 1 },
+  { id: 6, region: 'North', spend: 47, cost: 20, pred: 49, w: 0.9, score: 0.90, renewed: 1 },
+  { id: 7, region: 'East', spend: 52, cost: 26, pred: 55, w: 1.1, score: 0.22, renewed: 0 },
+  { id: 8, region: 'West', spend: 240, cost: 80, pred: 180, w: 0.4, score: 0.64, renewed: 0 },
+  { id: 9, region: 'North', spend: 58, cost: 29, pred: 60, w: 1.8, score: 0.47, renewed: 1 },
+  { id: 10, region: 'East', spend: 44, cost: 22, pred: 47, w: 0.8, score: 0.30, renewed: 0 },
 ];
 const LIVE = P.filter(r => r.spend != null);
 const VALS = LIVE.map(r => r.spend);
 const sum = a => a.reduce((x, y) => x + y, 0);
 const mean = a => sum(a) / a.length;
-const m2 = a => { const m = mean(a); return sum(a.map(v => (v - m) ** 2)); };
 const median = a => { const s = [...a].sort((x, y) => x - y), h = (s.length - 1) / 2; return (s[Math.floor(h)] + s[Math.ceil(h)]) / 2; };
-const N = VALS.length, MEAN = mean(VALS), MED = median(VALS), M2 = m2(VALS);
-const VAR_P = M2 / N, VAR_S = M2 / (N - 1);
-const ZQ = 1.959963984540054;
-const ci = a => a.length < 2 ? null : [mean(a) - ZQ * Math.sqrt(m2(a) / (a.length - 1) / a.length), mean(a) + ZQ * Math.sqrt(m2(a) / (a.length - 1) / a.length)];
+
+/* ---------- figures from the recorded alpha.33 runs (data/<request>.out.json) ---------- */
+const REC = {
+  count: { n: 9, nNull: 1, distinct: 4, north: 4, share: 0.4, modeCount: 4, modeIndex: 0 },            // count.out.json
+  centre: { sum: 637, mean: 70.77777777777777, median: 52, sumCalm: 459, meanCalm: 51, medianCalm: 52, // centre.out.json
+    min: 38, max: 240, range: 202, variance: 3631.283950617284, stddev: 60.26013566709989,
+    welford: { mean: 70.77777777777777, m2: 32681.555555555547, variance: 4085.1944444444434 }, medPos: 4,
+    ratio: { num: 637, den: 271, ratio: 2.3505535055350553 } },
+  rowRatio: 2.187037037037037,                                                                        // rowratio.out.json
+  ci: { 9: [29.020401539345702, 112.53515401620984], 4: [38.4149846983147, 59.5850153016853],          // ci9/ci4/ci2/ci1.out.json
+    2: [35.76023410048965, 61.23976589951035], 1: null },
+  acc: { mae: 9.444444444444445, rmse: 20.234733614368253, mape: 0.08441876413718839 },               // acc.out.json
+  auc: { auc: 0.78, gini: 0.56, nPos: 5, nNeg: 5, lo: 0.45914006732749796, hi: 1 },                    // acc.out.json
+  shape: { skew: 1.551649508435325, kurt: 3.0112784243521276, p90: 67.3768640808499 },                 // shape.out.json
+  shapeNull: { one: [1, null, null], flat: [3, null, null] },                                          // shapenull.out.json: [n, skew, kurt]
+  sets: { union: ['travel', 'tech', 'food', 'sport'], inter: [], cardAvg: 1.5714285714285714, distinct: 7,
+    freq: { travel: 2, tech: 4, food: 3, sport: 2 }, rows: 7 }, // sets.out.json
+  weights: { count: 9.5, mean: 58.8421052631579, unweighted: 70.77777777777777 },                     // weights.out.json
+};
 
 /* ---------- 0. title ---------- */
 function sTitle(t) {
@@ -57,22 +72,23 @@ function sWhere(t) {
     });
   });
   A(seg(t, 0.9, 1.3), () => {
-    M('folds each group\'s rows into one figure', 720, 186, { size: 12.5, color: C.violet });
+    M('by default · folds each group\'s rows into one figure', 1216, 186, { size: 12.5, color: C.violet, align: 'right' });
     M('reads fields, features and attribute labels', 64, 186, { size: 12.5, color: C.teal });
   });
+  A(seg(t, 1.6, 2.0), () => M('windows first: an aggregation that reads a window label runs the windows before the groups', 64, 210, { size: 12.5, color: C.amber }));
   A(seg(t, 2.4, 2.8), () => {
-    card(64, 214, 560, 168, C.violet);
-    CAP('THE SLOT', 86, 242);
+    card(64, 228, 560, 162, C.violet);
+    CAP('THE SLOT', 86, 254);
     const L = [['"aggregations": [', C.muted], ['  { "type": "AGG_SUM", "field": "spend" },', C.ink], ['  { "type": "AGG_MEDIAN", "field": "spend",', C.ink], ['    "label": "typical_spend" }', C.amber], [']', C.muted]];
-    L.forEach(([s, c], i) => A(seg(t, 2.6 + i * 0.12, 2.9 + i * 0.12), () => M(s, 86, 270 + i * 22, { size: 13.5, color: c })));
+    L.forEach(([s, c], i) => A(seg(t, 2.6 + i * 0.12, 2.9 + i * 0.12), () => M(s, 86, 280 + i * 22, { size: 13.5, color: c })));
   });
   A(seg(t, 3.6, 4.0), () => {
-    card(660, 214, 556, 168);
-    CAP('THE OUTPUT', 682, 242);
-    M('no label → TYPE_field', 682, 272, { size: 13, color: C.muted });
-    M('{ "AGG_SUM_spend": 637, "typical_spend": 52 }', 682, 300, { size: 13.5, color: C.violet });
-    M('no groups → one row for the whole cohort', 682, 336, { size: 13, color: C.ink });
-    M('a grouper → one row per bucket', 682, 360, { size: 13, color: C.ink });
+    card(660, 228, 556, 162);
+    CAP('THE OUTPUT', 682, 254);
+    M('no label → TYPE_field', 682, 282, { size: 13, color: C.muted });
+    M('{ "AGG_SUM_spend": ' + REC.centre.sum + ', "typical_spend": ' + REC.centre.median + ' }', 682, 310, { size: 13.5, color: C.violet });
+    M('no groups → one row for the whole cohort', 682, 344, { size: 13, color: C.ink });
+    M('a grouper → one row per bucket', 682, 368, { size: 13, color: C.ink });
   });
   A(seg(t, 5.6, 6.0), () => {
     card(64, 406, 1152, 176);
@@ -101,12 +117,12 @@ function sCount(t) {
   CAP('TEN SURVIVING MEMBERS · FIELD spend', 64, 124, { color: C.teal });
   strip(t, 138);
   const tiles = [
-    [0.8, 'AGG_COUNT spend', '9', 'non-null values only', C.violet],
-    [2.0, 'AGG_NULL_COUNT spend', '1', 'the nulls it skipped', C.coral],
-    [3.4, 'AGG_DISTINCT_COUNT region', '4', 'distinct non-null values', C.violet],
-    [4.6, 'AGG_FREQUENCY region = North', '4', 'share 0.4 of non-null rows', C.violet],
-    [6.0, 'AGG_MODE_COUNT region', '4', 'the size of the commonest value', C.violet],
-    [6.6, 'AGG_MODE region', 'North', 'returned as its dictionary index', C.violet]];
+    [0.8, 'AGG_COUNT spend', String(REC.count.n), 'non-null values only', C.violet],
+    [2.0, 'AGG_NULL_COUNT spend', String(REC.count.nNull), 'the nulls it skipped', C.coral],
+    [3.4, 'AGG_DISTINCT_COUNT region', String(REC.count.distinct), 'distinct non-null values', C.violet],
+    [4.6, 'AGG_FREQUENCY region = North', String(REC.count.north), 'share ' + REC.count.share + ' of non-null rows', C.violet],
+    [6.0, 'AGG_MODE_COUNT region', String(REC.count.modeCount), 'the size of the commonest value', C.violet],
+    [6.6, 'AGG_MODE region', 'North', 'returned as its dictionary index, ' + REC.count.modeIndex, C.violet]];
   tiles.forEach(([at, op, v, d, col], i) => A(seg(t, at, at + 0.4), () => {
     const x = 64 + (i % 3) * 388, y = 236 + Math.floor(i / 3) * 170;
     R(x, y, 372, 150, { fill: C.panel, stroke: col });
@@ -129,15 +145,16 @@ function sCentre(t) {
   const vals = VALS.map(v => v === 240 ? lerp(62, 240, u) : v);
   const X = axis(100, 1180, 330, 0, 260, [0, 50, 100, 150, 200, 250]);
   const mu = mean(vals), md = median(vals);
+  const muR = lerp(REC.centre.meanCalm, REC.centre.mean, u), smR = lerp(REC.centre.sumCalm, REC.centre.sum, u), mdR = REC.centre.median;
   A(seg(t, 0.3, 0.8), () => vals.forEach((v, i) => { dot(X(v), 300 - (i % 3) * 18, 8, v > 100 ? C.coral : C.teal); }));
   A(seg(t, 1.0, 1.4), () => {
-    Ln([[X(mu), 200], [X(mu), 340]], { stroke: C.violet, lw: 2.5 }); M('mean ' + f2(mu), X(mu) + 8, 214, { size: 14, color: C.violet, weight: 600 });
+    Ln([[X(mu), 200], [X(mu), 340]], { stroke: C.violet, lw: 2.5 }); M('mean ' + f2(muR), X(mu) + 8, 214, { size: 14, color: C.violet, weight: 600 });
   });
   A(seg(t, 1.8, 2.2), () => {
-    Ln([[X(md), 220], [X(md), 340]], { stroke: C.amber, lw: 2.5, dash: [5, 4] }); M('median ' + f2(md), X(md) - 8, 234, { size: 14, color: C.amber, weight: 600, align: 'right' });
+    Ln([[X(md), 220], [X(md), 340]], { stroke: C.amber, lw: 2.5, dash: [5, 4] }); M('median ' + f2(mdR), X(md) - 8, 234, { size: 14, color: C.amber, weight: 600, align: 'right' });
   });
   A(seg(t, 3.0, 3.4), () => M('one big spender', X(vals[6]), 260, { size: 12.5, color: C.coral, align: 'center' }));
-  const tiles = [['AGG_SUM', String(Math.round(sum(vals))), 'Σ of the non-null values'], ['AGG_AVERAGE', f2(mu), 'sum ÷ 9, not ÷ 10'], ['AGG_MEDIAN', f2(md), 'middle of the sorted values'], ['AGG_WEIGHTED_MEAN', 'Σw·x ÷ Σw', 'when rows carry weights']];
+  const tiles = [['AGG_SUM', String(Math.round(smR)), 'Σ of the non-null values'], ['AGG_AVERAGE', f2(muR), 'sum ÷ 9, not ÷ 10'], ['AGG_MEDIAN', f2(mdR), 'middle of the sorted values'], ['AGG_WEIGHTED_MEAN', 'Σw·x ÷ Σw', 'when rows carry weights']];
   tiles.forEach(([op, v, d], i) => A(seg(t, 0.6 + i * 0.3, 1.0 + i * 0.3), () => {
     const x = 64 + i * 290;
     R(x, 400, 278, 130, { fill: C.panel, stroke: i === 2 ? C.amber : C.violet });
@@ -152,20 +169,20 @@ function sCentre(t) {
 function sSpread(t) {
   CAP('HOW FAR APART?', 64, 124, { color: C.violet });
   const X = axis(100, 1180, 250, 0, 260, [0, 50, 100, 150, 200, 250]);
-  const lo = Math.min(...VALS), hi = Math.max(...VALS);
+  const lo = REC.centre.min, hi = REC.centre.max;
   VALS.forEach((v, i) => A(seg(t, 0.1 + i * 0.04, 0.4 + i * 0.04), () => dot(X(v), 222, 7, C.teal)));
   A(seg(t, 0.6, 1.0), () => {
     Ln([[X(lo), 190], [X(hi), 190]], { stroke: C.violet, lw: 2 }); Ln([[X(lo), 184], [X(lo), 196]], { stroke: C.violet, lw: 2 }); Ln([[X(hi), 184], [X(hi), 196]], { stroke: C.violet, lw: 2 });
     M('AGG_MIN ' + lo, X(lo), 176, { size: 12.5, color: C.violet }); M('AGG_MAX ' + hi, X(hi), 176, { size: 12.5, color: C.violet, align: 'right' });
-    M('AGG_RANGE ' + (hi - lo), (X(lo) + X(hi)) / 2, 176, { size: 12.5, color: C.violet, align: 'center' });
+    M('AGG_RANGE ' + REC.centre.range, (X(lo) + X(hi)) / 2, 176, { size: 12.5, color: C.violet, align: 'center' });
   });
   A(seg(t, 2.2, 2.6), () => {
     card(64, 300, 560, 220, C.violet);
     CAP('AGG_VARIANCE · AGG_STDDEV', 86, 330, { color: C.violet });
     M('population: Σ(x − mean)² ÷ n', 86, 366, { size: 14, color: C.ink });
     M('÷ 9', 86, 410, { size: 13, color: C.muted });
-    T('variance ' + f2(VAR_P), 140, 412, { size: 22, weight: 700 });
-    T('stddev ' + f2(Math.sqrt(VAR_P)), 140, 450, { size: 22, weight: 700 });
+    T('variance ' + f2(REC.centre.variance), 140, 412, { size: 22, weight: 700 });
+    T('stddev ' + f2(REC.centre.stddev), 140, 450, { size: 22, weight: 700 });
     M('the whole cohort, described as it is', 86, 496, { size: 12.5, color: C.muted });
   });
   A(seg(t, 4.4, 4.8), () => {
@@ -173,7 +190,7 @@ function sSpread(t) {
     CAP('AGG_WELFORD', 678, 330, { color: C.amber });
     M('sample: Σ(x − mean)² ÷ (n − 1)', 678, 366, { size: 14, color: C.ink });
     M('÷ 8', 678, 410, { size: 13, color: C.muted });
-    T('variance ' + f2(VAR_S), 732, 412, { size: 22, weight: 700 });
+    T('variance ' + f2(REC.centre.welford.variance), 732, 412, { size: 22, weight: 700 });
     M('{ mean, variance, n } in one pass', 678, 450, { size: 14, color: C.amber });
     M('the triple tests and t-overlays read', 678, 496, { size: 12.5, color: C.muted });
   });
@@ -186,7 +203,7 @@ function sCI(t) {
   const X = axis(240, 1180, 520, 0, 140, [0, 20, 40, 60, 80, 100, 120, 140]);
   const rows = [['all 9 members', VALS], ['first 4', VALS.slice(0, 4)], ['first 2', VALS.slice(0, 2)], ['just 1', VALS.slice(0, 1)]];
   rows.forEach(([lab, a], i) => A(seg(t, 0.4 + i * 1.1, 0.8 + i * 1.1), () => {
-    const y = 190 + i * 76, c = ci(a), mu = mean(a);
+    const y = 190 + i * 76, c = REC.ci[a.length], mu = mean(a);
     M(lab, 64, y + 5, { size: 13.5, color: C.ink }); M('n = ' + a.length, 64, y + 25, { size: 12, color: C.muted });
     if (c) {
       const l = Math.max(c[0], 0), h = Math.min(c[1], 140);
@@ -215,12 +232,11 @@ function sRatio(t) {
     M(nul ? 'skipped on both sides' : f2(r.spend / r.cost), 460, y, { size: 13.5, color: nul ? C.coral : C.muted });
     if (nul) Ln([[330, y - 5], [380, y - 5]], { stroke: C.coral });
   }));
-  const sn = sum(LIVE.map(r => r.spend)), sd = sum(LIVE.map(r => r.cost));
-  const mr = mean(LIVE.map(r => r.spend / r.cost));
+  const sn = REC.centre.ratio.num, sd = REC.centre.ratio.den, mr = REC.rowRatio;
   A(seg(t, 1.8, 2.2), () => {
     card(660, 150, 556, 150, C.violet);
     M('AGG_RATIO', 682, 180, { size: 13, color: C.violet, weight: 600 });
-    T(sn + ' ÷ ' + sd + ' = ' + f2(sn / sd), 682, 238, { size: 30, weight: 800 });
+    T(sn + ' ÷ ' + sd + ' = ' + f2(REC.centre.ratio.ratio), 682, 238, { size: 30, weight: 800 });
     M('big rows count for more: a pooled rate', 682, 278, { size: 12.5, color: C.muted });
   });
   A(seg(t, 3.8, 4.2), () => {
@@ -239,33 +255,58 @@ function sRatio(t) {
 
 /* ---------- 7. accuracy ---------- */
 function sAccuracy(t) {
-  CAP('AGG_MAE · AGG_RMSE · AGG_MAPE · actual against a prediction field', 64, 124, { color: C.violet });
-  const rows = LIVE, X0 = 90, dx = 100;
-  const Y = v => 470 - v * 1.25;
-  Ln([[70, 470], [980, 470]], { stroke: C.rule });
-  rows.forEach((r, i) => A(seg(t, 0.3 + i * 0.08, 0.6 + i * 0.08), () => {
-    const x = X0 + i * dx;
-    const g = seg(t, 1.6 + i * 0.06, 2.2 + i * 0.06);
-    A(g, () => Ln([[x + 20, Y(r.spend)], [x + 20, Y(r.pred)]], { stroke: C.coral, lw: 3 }));
-    dot(x + 20, Y(r.spend), 7, C.teal); ring(x + 20, Y(r.pred), 7, C.amber, 2);
-    M('#' + r.id, x + 20, 492, { size: 11.5, align: 'center' });
-  }));
-  A(seg(t, 0.6, 1.0), () => { dot(80, 168, 6, C.teal); M('actual spend', 92, 172, { size: 12.5 }); ring(230, 168, 6, C.amber, 2); M('prediction', 242, 172, { size: 12.5 }); Ln([[350, 168], [372, 168]], { stroke: C.coral, lw: 3 }); M('error', 380, 172, { size: 12.5 }); });
-  const e = rows.map(r => r.spend - r.pred);
-  const mae = mean(e.map(Math.abs)), rmse = Math.sqrt(mean(e.map(v => v * v))), mape = mean(rows.map((r, i) => Math.abs(e[i]) / Math.abs(r.spend)));
-  [['AGG_MAE', f2(mae), 'mean |error|, spend units'], ['AGG_RMSE', f2(rmse), 'big misses dominate'], ['AGG_MAPE', f2(mape), '0.05 means 5%']].forEach(([op, v, d], i) => A(seg(t, 2.6 + i * 1.0, 3.0 + i * 1.0), () => {
-    const y = 160 + i * 130;
-    R(1010, y, 206, 116, { fill: C.panel, stroke: C.violet });
-    M(op, 1026, y + 26, { size: 12.5, color: C.violet, weight: 600 }); T(v, 1026, y + 68, { size: 30, weight: 800 }); M(d, 1026, y + 96, { size: 10.5, color: C.muted });
-  }));
-  A(seg(t, 6.0, 6.4), () => M('member 5 has no actual, so it is skipped · RMSE is never below MAE on the same rows', 64, 560, { size: 12.5, color: C.amber }));
+  const out = 1 - seg(t, 6.6, 7.0);
+  A(out, () => {
+    CAP('AGG_MAE · AGG_RMSE · AGG_MAPE · actual against a prediction field', 64, 124, { color: C.violet });
+    const rows = LIVE, X0 = 90, dx = 100;
+    const Y = v => 470 - v * 1.25;
+    Ln([[70, 470], [980, 470]], { stroke: C.rule });
+    rows.forEach((r, i) => A(seg(t, 0.3 + i * 0.08, 0.6 + i * 0.08), () => {
+      const x = X0 + i * dx;
+      const g = seg(t, 1.6 + i * 0.06, 2.2 + i * 0.06);
+      A(g, () => Ln([[x + 20, Y(r.spend)], [x + 20, Y(r.pred)]], { stroke: C.coral, lw: 3 }));
+      dot(x + 20, Y(r.spend), 7, C.teal); ring(x + 20, Y(r.pred), 7, C.amber, 2);
+      M('#' + r.id, x + 20, 492, { size: 11.5, align: 'center' });
+    }));
+    A(seg(t, 0.6, 1.0), () => { dot(80, 168, 6, C.teal); M('actual spend', 92, 172, { size: 12.5 }); ring(230, 168, 6, C.amber, 2); M('prediction', 242, 172, { size: 12.5 }); Ln([[350, 168], [372, 168]], { stroke: C.coral, lw: 3 }); M('error', 380, 172, { size: 12.5 }); });
+    [['AGG_MAE', f2(REC.acc.mae), 'mean |error|, spend units'], ['AGG_RMSE', f2(REC.acc.rmse), 'big misses dominate'], ['AGG_MAPE', f2(REC.acc.mape), '0.05 means 5%']].forEach(([op, v, d], i) => A(seg(t, 2.6 + i * 1.0, 3.0 + i * 1.0), () => {
+      const y = 160 + i * 130;
+      R(1010, y, 206, 116, { fill: C.panel, stroke: C.violet });
+      M(op, 1026, y + 26, { size: 12.5, color: C.violet, weight: 600 }); T(v, 1026, y + 68, { size: 30, weight: 800 }); M(d, 1026, y + 96, { size: 10.5, color: C.muted });
+    }));
+    A(seg(t, 6.0, 6.4), () => M('member 5 has no actual, so it is skipped · RMSE is never below MAE on the same rows', 64, 560, { size: 12.5, color: C.amber }));
+  });
+  /* ranking accuracy: AGG_AUC of a score against a 0/1 outcome (acc.out.json) */
+  A(seg(t, 7.0, 7.4), () => {
+    CAP('AGG_AUC · a score against a 0/1 outcome · ranking accuracy', 64, 124, { color: C.violet });
+    M('score', 140, 160, { size: 12, color: C.muted }); M('renewed', 560, 160, { size: 12, color: C.muted });
+    const ranked = [...P].sort((x, y) => y.score - x.score || x.id - y.id);
+    ranked.forEach((r, i) => A(seg(t, 7.2 + i * 0.06, 7.5 + i * 0.06), () => {
+      const y = 186 + i * 36, pos = r.renewed === 1, tie = r.score === 0.64;
+      M('#' + r.id, 64, y + 5, { size: 13, color: C.teal });
+      R(140, y - 9, r.score * 380, 18, { fill: tie && seg(t, 8.6, 9.0) > 0 ? C.amberS : C.tealS, stroke: tie && seg(t, 8.6, 9.0) > 0 ? C.amber : C.teal, r: 3, lw: 1 });
+      M(r.score.toFixed(2), 150 + r.score * 380, y + 5, { size: 12.5, color: C.ink });
+      if (pos) dot(574, y, 7, C.teal); else ring(574, y, 7, C.faint, 2);
+      M(pos ? 'yes' : 'no', 592, y + 5, { size: 12.5, color: pos ? C.ink : C.muted });
+    }));
+    A(seg(t, 8.6, 9.0), () => M('a tie between a renewer and a non-renewer counts half', 64, 566, { size: 12.5, color: C.amber }));
+    A(seg(t, 9.6, 10.0), () => {
+      card(700, 160, 516, 300, C.violet);
+      M('AGG_AUC score · outcome: renewed', 722, 190, { size: 13, color: C.violet, weight: 600 });
+      T(REC.auc.auc.toFixed(2), 722, 260, { size: 54, weight: 800 });
+      M('a renewer outranks a non-renewer this often', 722, 292, { size: 12.5, color: C.muted });
+      Ln([[722, 314], [1194, 314]], { stroke: C.rule });
+      [['gini  2·AUC − 1', f2(REC.auc.gini)], ['n_pos · n_neg', REC.auc.nPos + ' · ' + REC.auc.nNeg], ['DeLong 95% interval', f2(REC.auc.lo) + ' … ' + f2(REC.auc.hi)]].forEach(([k, v], j) => A(seg(t, 10.0 + j * 0.2, 10.3 + j * 0.2), () => {
+        M(k, 722, 344 + j * 32, { size: 13, color: C.amber }); M(v, 1194, 344 + j * 32, { size: 13.5, color: C.ink, align: 'right', weight: 600 });
+      }));
+      A(seg(t, 10.8, 11.2), () => M('0.5 is chance · ranking, not calibration', 722, 444, { size: 12, color: C.muted }));
+    });
+  });
 }
 
 /* ---------- 8. shape ---------- */
+// The same 400 values as data/h.csv (data/generate.js replays this generator); the histogram draws them.
 const SH = (() => { const r = rng(11), a = []; for (let i = 0; i < 400; i++) { const g = Math.sqrt(-2 * Math.log(r() + 1e-9)) * Math.cos(2 * Math.PI * r()); a.push(Math.exp(3.4 + 0.55 * g)); } return a; })();
-const SHM = mean(SH), SHm2 = mean(SH.map(v => (v - SHM) ** 2)), SHm3 = mean(SH.map(v => (v - SHM) ** 3)), SHm4 = mean(SH.map(v => (v - SHM) ** 4));
-const G1 = SHm3 / SHm2 ** 1.5, G2 = SHm4 / SHm2 ** 2 - 3;
-const pctl = (a, p) => { const s = [...a].sort((x, y) => x - y), h = p / 100 * (s.length - 1); return s[Math.floor(h)] + (s[Math.ceil(h)] - s[Math.floor(h)]) * (h - Math.floor(h)); };
 function sShape(t) {
   CAP('THE SHAPE OF A DISTRIBUTION · 400 ILLUSTRATIVE ROWS', 64, 124, { color: C.violet });
   const bins = new Array(30).fill(0), lo = 0, hi = 150, bw = (hi - lo) / 30;
@@ -274,18 +315,26 @@ function sShape(t) {
   bins.forEach((c, i) => { const u = eo(seg(t, 0.2 + i * 0.03, 0.8 + i * 0.03)); const h = c / mx * 300 * u; R(90 + i * (760 / 30) + 1, 480 - h, 760 / 30 - 2, h, { fill: C.tealS, stroke: C.teal, r: 1, lw: 1 }); });
   Ln([[86, 480], [856, 480]], { stroke: C.rule });
   [0, 50, 100, 150].forEach(v => M(String(v), X(v), 502, { size: 12, align: 'center' }));
-  const p90 = pctl(SH, 90);
+  const p90 = REC.shape.p90;
   A(seg(t, 4.6, 5.0), () => { Ln([[X(p90), 170], [X(p90), 480]], { stroke: C.amber, lw: 2, dash: [5, 4] }); M('AGG_PERCENTILE 90 → ' + p90.toFixed(1), X(p90) + 8, 186, { size: 13, color: C.amber }); });
-  [['AGG_SKEWNESS', f2(G1), 'g1: a long right tail is positive'], ['AGG_KURTOSIS', f2(G2), 'excess: a normal curve reads 0']].forEach(([op, v, d], i) => A(seg(t, 1.4 + i * 1.6, 1.8 + i * 1.6), () => {
+  [['AGG_SKEWNESS', f2(REC.shape.skew), 'g1: a long right tail is positive'], ['AGG_KURTOSIS', f2(REC.shape.kurt), 'excess: a normal curve reads 0']].forEach(([op, v, d], i) => A(seg(t, 1.4 + i * 1.6, 1.8 + i * 1.6), () => {
     const y = 160 + i * 150;
     R(900, y, 316, 130, { fill: C.panel, stroke: C.violet });
     M(op, 920, y + 28, { size: 13, color: C.violet, weight: 600 }); T(v, 920, y + 78, { size: 38, weight: 800 }); M(d, 920, y + 110, { size: 12.5, color: C.muted });
   }));
-  A(seg(t, 6.0, 6.4), () => { card(900, 460, 316, 96, C.coral); M('fewer than 2 rows, or no spread', 920, 492, { size: 12.5, color: C.coral }); M('→ 0, not null: check n first', 920, 520, { size: 13, color: C.ink }); M('population formulas, divide by n', 920, 544, { size: 11.5, color: C.muted }); });
+  A(seg(t, 6.0, 6.4), () => {
+    card(900, 460, 316, 120, C.coral);
+    M('n ≤ 1, or no spread', 920, 488, { size: 12.5, color: C.coral });
+    M('one row:   n ' + REC.shapeNull.one[0] + ' → null, null', 920, 514, { size: 12.5, color: C.ink });
+    M('4, 4, 4:   n ' + REC.shapeNull.flat[0] + ' → null, null', 920, 538, { size: 12.5, color: C.ink });
+    M('never 0: no shape to see', 920, 564, { size: 11.5, color: C.muted });
+  });
+  A(seg(t, 3.0, 3.4), () => M('population moments, divide by n', 64, 540, { size: 12, color: C.muted }));
 }
 
 /* ---------- 9. multi-select ---------- */
-const S = [['#1', ['travel', 'tech']], ['#2', ['food']], ['#3', ['travel', 'food']], ['#4', ['tech']], ['#5', null], ['#6', ['sport', 'tech']], ['#7', []], ['#8', ['tech', 'food', 'sport']]];
+const S = [   // data/s.csv
+  ['#1', ['travel', 'tech']], ['#2', ['food']], ['#3', ['travel', 'food']], ['#4', ['tech']], ['#5', null], ['#6', ['sport', 'tech']], ['#7', []], ['#8', ['tech', 'food', 'sport']]];
 const LABS = ['travel', 'tech', 'food', 'sport'], LC = { travel: C.teal, tech: C.violet, food: C.amber, sport: C.coral };
 function sSets(t) {
   CAP('A MULTI-SELECT FIELD: interests', 64, 124, { color: C.teal });
@@ -297,16 +346,14 @@ function sSets(t) {
     s.forEach((l, j) => { R(120 + j * 96, y, 88, 28, { fill: C.panel2, stroke: LC[l], r: 14 }); M(l, 132 + j * 96, y + 18, { size: 12, color: LC[l] }); });
   }));
   const non = S.filter(r => r[1] != null).map(r => r[1]);
-  const freq = LABS.map(l => non.filter(s => s.includes(l)).length);
+  const freq = LABS.map(l => REC.sets.freq[l]);
   A(seg(t, 1.6, 2.0), () => {
     card(460, 150, 380, 220, C.violet);
     M('AGG_SET_FREQUENCY', 480, 178, { size: 12.5, color: C.violet, weight: 600 });
     LABS.forEach((l, i) => { const w = eo(seg(t, 1.9 + i * 0.15, 2.4 + i * 0.15)) * freq[i] * 50; R(560, 198 + i * 38, w, 24, { fill: C.panel2, stroke: LC[l], r: 3 }); M(l, 480, 215 + i * 38, { size: 12.5, color: LC[l] }); M(String(freq[i]), 568 + w, 215 + i * 38, { size: 12.5, color: C.ink }); });
-    M('counts add to ' + sum(freq) + ' from ' + non.length + ' rows: that is correct', 480, 360, { size: 11.5, color: C.amber });
+    M('counts add to ' + sum(freq) + ' from ' + REC.sets.rows + ' rows: that is correct', 480, 360, { size: 11.5, color: C.amber });
   });
-  const union = LABS.filter(l => non.some(s => s.includes(l)));
-  const card2 = sum(non.map(s => s.length));
-  [['AGG_SET_UNION', union.join(' · '), 'picked by anyone'], ['AGG_SET_INTERSECTION', '(none)', 'picked by everyone: one empty row empties it'], ['AGG_SET_CARDINALITY_AVG', f2(card2 / non.length), 'picks per row; empty rows count'], ['AGG_SET_DISTINCT_VALUES', String(new Set(non.map(s => [...s].sort().join('|'))).size), 'distinct exact combinations']].forEach(([op, v, d], i) => A(seg(t, 3.6 + i * 0.5, 4.0 + i * 0.5), () => {
+  [['AGG_SET_UNION', REC.sets.union.join(' · '), 'picked by anyone'], ['AGG_SET_INTERSECTION', REC.sets.inter.length ? REC.sets.inter.join(' · ') : '(none)', 'picked by everyone: one empty row empties it'], ['AGG_SET_CARDINALITY_AVG', f2(REC.sets.cardAvg), 'picks per row; empty rows count'], ['AGG_SET_DISTINCT_VALUES', String(REC.sets.distinct), 'distinct exact combinations']].forEach(([op, v, d], i) => A(seg(t, 3.6 + i * 0.5, 4.0 + i * 0.5), () => {
     const x = 870, y = 150 + i * 92;
     R(x, y, 346, 82, { fill: C.panel, stroke: C.violet });
     M(op, x + 14, y + 22, { size: 11.5, color: C.violet, weight: 600 }); T(v, x + 14, y + 50, { size: 17, weight: 700 }); M(d, x + 14, y + 70, { size: 11, color: C.muted });
@@ -318,9 +365,9 @@ function sSets(t) {
 function sMerge(t) {
   CAP('SHARDS AND STREAMING CHUNKS ARE FOLDED, THEN MERGED', 64, 124, { color: C.teal });
   const lanes = [
-    ['MERGEABLE · fixed-size running state', 'count · sum · average · min · max · variance · Welford · CI · ratio · errors · set union', C.teal, 'n=3 Σ=135', 'n=9 Σ=637', 0],
+    ['MERGEABLE · fixed-size running state', 'count · sum · average · min · max · variance · Welford · CI · ratio · errors · set union · vector mean, sum, sd', C.teal, 'n=3 Σ=135', 'n=9 Σ=637', 0],
     ['PARTIAL · a map of values, merged at the end', 'distinct counts and sums · mode · mode count · set frequency', C.amber, '{North:2, East:1}', '{North:4, East:3, …}', 2.6],
-    ['NONE · needs every value at once', 'median · percentile: buffered, cohort-sized memory', C.coral, '[42 55 38]', 'sort all 9 → 52', 5.2]];
+    ['NONE · needs every value at once', 'median · percentile · AUC: buffered, cohort-sized memory', C.coral, '[42 55 38]', 'sort all 9 → 52', 5.2]];
   lanes.forEach(([h, ops, col, part, whole, at], k) => A(seg(t, at, at + 0.4), () => {
     const y = 160 + k * 150;
     CAP(h, 64, y, { color: col }); M(ops, 64, y + 22, { size: 12.5 });
@@ -341,16 +388,14 @@ function sMerge(t) {
 /* ---------- 11. weights ---------- */
 function sWeights(t) {
   CAP('WEIGHTS · on the request, on a slot, or Options.DefaultWeight', 64, 124, { color: C.amber });
-  const W8 = [1.2, 0.8, 1.0, 1.5, 1.0, 0.9, 1.1, 0.4, 1.3, 0.8];
+  const W8 = P.map(r => r.w);
   P.forEach((r, i) => A(seg(t, 0.2 + i * 0.05, 0.5 + i * 0.05), () => {
     const x = 64 + i * 115, h = W8[i] * 60;
     R(x + 20, 300 - h, 60, h, { fill: C.amberS, stroke: C.amber, r: 3 });
     M('w ' + W8[i].toFixed(1), x + 50, 318, { size: 12, color: C.amber, align: 'center' });
     M(r.spend == null ? 'null' : String(r.spend), x + 50, 340, { size: 13, color: r.spend == null ? C.coral : C.ink, align: 'center' });
   }));
-  const L = P.map((r, i) => [r.spend, W8[i]]).filter(p => p[0] != null);
-  const sw = sum(L.map(p => p[1])), wm = sum(L.map(p => p[0] * p[1])) / sw;
-  [['AGG_COUNT', '9 → Σw ' + f2(sw), 'a count becomes a sum of weights'], ['AGG_AVERAGE', f2(MEAN) + ' → ' + f2(wm), 'Σw·x ÷ Σw'], ['"weight": null', 'opt this slot out', 'unweighted, even with a default']].forEach(([op, v, d], i) => A(seg(t, 1.4 + i * 1.3, 1.8 + i * 1.3), () => {
+  [['AGG_COUNT', REC.count.n + ' → Σw ' + f2(REC.weights.count), 'a count becomes a sum of weights'], ['AGG_AVERAGE', f2(REC.weights.unweighted) + ' → ' + f2(REC.weights.mean), 'Σw·x ÷ Σw'], ['"weight": null', 'opt this slot out', 'unweighted, even with a default']].forEach(([op, v, d], i) => A(seg(t, 1.4 + i * 1.3, 1.8 + i * 1.3), () => {
     const x = 64 + i * 388;
     R(x, 380, 372, 120, { fill: C.panel, stroke: i === 2 ? C.amber : C.violet });
     M(op, x + 18, 408, { size: 13, color: i === 2 ? C.amber : C.violet, weight: 600 }); T(v, x + 18, 448, { size: 22, weight: 700 }); M(d, x + 18, 482, { size: 12.5, color: C.muted });
@@ -362,9 +407,9 @@ function sWeights(t) {
 function sComponents(t) {
   CAP('Response.Components.Aggregations · one entry per slot', 64, 124, { color: C.amber });
   const E = [
-    ['AGG_SUM_spend', [['n', '9'], ['n_null', '1'], ['sum', '637']]],
-    ['AGG_WELFORD_spend', [['n', '9'], ['n_null', '1'], ['mean', f2(MEAN)], ['m2', f2(M2)], ['variance', f2(VAR_S)]]],
-    ['AGG_MEDIAN_spend', [['n', '9'], ['n_null', '1'], ['median', '52'], ['position_low', '4'], ['position_high', '4']]]];
+    ['AGG_SUM_spend', [['n', '9'], ['n_null', '1'], ['sum', String(REC.centre.sum)]]],
+    ['AGG_WELFORD_spend', [['n', '9'], ['n_null', '1'], ['mean', f2(REC.centre.welford.mean)], ['m2', f2(REC.centre.welford.m2)], ['variance', f2(REC.centre.welford.variance)]]],
+    ['AGG_MEDIAN_spend', [['n', '9'], ['n_null', '1'], ['median', String(REC.centre.median)], ['position_low', String(REC.centre.medPos)], ['position_high', String(REC.centre.medPos)]]]];
   E.forEach(([lab, kv], i) => A(seg(t, 0.3 + i * 0.8, 0.7 + i * 0.8), () => {
     const x = 64 + i * 388;
     R(x, 150, 372, 300, { fill: C.panel, stroke: C.amber });
@@ -379,8 +424,9 @@ function sComponents(t) {
 const FAM = [
   ['COUNTING', ['AGG_COUNT', 'AGG_NULL_COUNT', 'AGG_DISTINCT_COUNT', 'AGG_FREQUENCY', 'AGG_MODE', 'AGG_MODE_COUNT']],
   ['CENTRE AND SPREAD', ['AGG_SUM', 'AGG_AVERAGE', 'AGG_WEIGHTED_MEAN', 'AGG_MEDIAN', 'AGG_MIN', 'AGG_MAX', 'AGG_RANGE', 'AGG_VARIANCE', 'AGG_STDDEV', 'AGG_WELFORD', 'AGG_DISTINCT_SUM']],
-  ['UNCERTAINTY, SHAPE, ACCURACY', ['AGG_CI_LOWER', 'AGG_CI_UPPER', 'AGG_PERCENTILE', 'AGG_SKEWNESS', 'AGG_KURTOSIS', 'AGG_ZSCORE', 'AGG_RATIO', 'AGG_MAE', 'AGG_RMSE', 'AGG_MAPE']],
-  ['MULTI-SELECT', ['AGG_SET_FREQUENCY', 'AGG_SET_UNION', 'AGG_SET_INTERSECTION', 'AGG_SET_CARDINALITY_AVG', 'AGG_SET_CARDINALITY_SUM', 'AGG_SET_DISTINCT_VALUES']]];
+  ['UNCERTAINTY, SHAPE, ACCURACY', ['AGG_CI_LOWER', 'AGG_CI_UPPER', 'AGG_PERCENTILE', 'AGG_SKEWNESS', 'AGG_KURTOSIS', 'AGG_ZSCORE', 'AGG_RATIO', 'AGG_MAE', 'AGG_RMSE', 'AGG_MAPE', 'AGG_AUC']],
+  ['MULTI-SELECT', ['AGG_SET_FREQUENCY', 'AGG_SET_UNION', 'AGG_SET_INTERSECTION', 'AGG_SET_CARDINALITY_AVG', 'AGG_SET_CARDINALITY_SUM', 'AGG_SET_DISTINCT_VALUES']],
+  ['VECTORS', ['AGG_VEC_MEAN', 'AGG_VEC_SUM', 'AGG_VEC_SD']]];
 function sRecap(t) {
   const end = seg(t, 8.4, 9.2);
   A(1 - end, () => {
@@ -404,15 +450,17 @@ function sRecap(t) {
 }
 
 /* ---------- scenes + script ---------- */
-const NARR = /*NARR*/[4.501, 8.533, 8.789, 5.397, 10.304, 3.627, 6.251, 6.848, 9.109, 6.507, 2.603, 5.333, 2.688, 5.973, 8.256, 9.749, 4.096, 6.699, 6.699, 6.635, 6.592, 4.565, 4.715, 5.675, 6.379, 8.64, 7.957, 2.837, 4.949, 6.229, 4.309, 6.997, 6.741, 7.189, 10.56, 3.691, 8.704, 5.867, 6.869, 5.589, 5.035, 5.845, 6.741, 5.269, 8.32, 3.755, 7.168, 7.765, 3.52, 1.259]/*END*/;
+const NARR = /*NARR*/[4.501, 9.237, 8.149, 8.789, 5.397, 10.304, 3.648, 6.272, 6.891, 9.109, 6.507, 2.603, 5.333, 2.709, 5.973, 8.256, 9.749, 4.096, 6.699, 6.699, 6.677, 6.613, 4.565, 4.736, 5.675, 6.379, 8.64, 7.957, 9.131, 4.949, 8.853, 2.859, 4.949, 6.251, 4.416, 7.061, 6.741, 7.253, 10.56, 3.691, 8.704, 5.867, 8.384, 5.589, 5.056, 5.845, 6.741, 5.312, 8.341, 3.797, 10.411, 7.744, 3.52, 1.28]/*END*/;
 PulseFilm.mount({
   series: 'PULSE · AGGREGATORS',
+  title: 'Pulse Aggregators',
   narr: NARR,
   scenes: [
     { name: 'Pulse Aggregators', dur: 4, draw: sTitle, caps: [
       [0, '', 'Pulse aggregators. Many rows in, one figure out, taken apart in depth.', true]] },
     { name: 'Where aggregators run', dur: 8, draw: sWhere, caps: [
-      [0, 'Aggregators run fifth, after groups. They fold each group\'s rows into one figure, and they can read fields, features and attribute labels.'],
+      [0, 'By default, aggregators run after the groups. They fold each group\'s rows into one figure, and they can read fields, features and attribute labels.'],
+      [1.6, 'When an aggregation reads a window label, that order flips: the windows run first, over the records, and the aggregation reads their column.'],
       [2.4, 'Each aggregation names a type and a field, and optionally a label. Without a label, the output column is the type and the field joined together.'],
       [3.6, 'Without groups you get one row for the whole cohort. With a grouper, you get one row per bucket.'],
       [5.6, 'Leave out the type and Pulse picks one from the field: a sum for numbers, a modal count for categories, set frequency for multi-selects. Dates are never defaulted.', 'Leave out the type and Pulse picks one from the field: a sum for numbers, a modal count for categories, and set frequency for multi-selects. Dates are never defaulted.']] },
@@ -440,16 +488,19 @@ PulseFilm.mount({
       [1.8, 'Because it pools the sums first, bigger rows count for more. That\'s a pooled rate.'],
       [3.8, 'Averaging each row\'s ratio answers a different question, and gives a different number.'],
       [5.6, 'If the denominators sum to zero, the ratio is null. It is never an error and never zero.']] },
-    { name: 'Accuracy', dur: 7, draw: sAccuracy, caps: [
+    { name: 'Accuracy', dur: 11.4, draw: sAccuracy, caps: [
       [0, 'Accuracy aggregators compare an actual field with a prediction field, often a regression prediction attribute.'],
       [2.6, 'Mean absolute error is the average miss, in the field\'s own units. Root mean squared error squares the misses first, so big ones dominate.'],
-      [4.6, 'Mean absolute percentage error is a fraction, so point zero five means five percent. Rows missing either side are skipped.']] },
+      [4.6, 'Mean absolute percentage error is a fraction, so point zero five means five percent. Rows missing either side are skipped.'],
+      [7.0, 'AGG_AUC measures ranking instead. It takes a score and a zero-or-one outcome, and asks how often a renewer outranks a non-renewer.', 'The area under the curve measures ranking instead. It takes a score and a zero or one outcome, and asks how often a renewer outranks a non-renewer.'],
+      [8.6, 'Two members share a score of 0.64, one on each side. A tie counts half.', 'Two members share a score of point six four, one on each side. A tie counts half.'],
+      [9.6, 'Here it reads 0.78. The components add the Gini, the count on each side, and a DeLong interval. It ranks; it does not calibrate.', 'Here it reads point seven eight. The components add the Gini, the count on each side, and a DeLong interval. It ranks; it does not calibrate.']] },
     { name: 'Shape', dur: 7, draw: sShape, caps: [
       [0, 'Shape aggregators describe how values spread out.'],
       [1.4, 'Skewness is positive when a long tail stretches to the right, like most spending data.'],
       [3.0, 'Kurtosis is excess kurtosis, so a normal curve reads zero. Both use population moments.'],
       [4.6, 'Percentile cuts the sorted values at any point you choose, here the ninetieth.'],
-      [6.0, 'With fewer than two rows, or no spread at all, skewness and kurtosis return zero, not null, so check n first.']] },
+      [6.0, 'With one row or none, or no spread at all, skewness and kurtosis are null, never zero. There is no shape to see.']] },
     { name: 'Multi-select', dur: 7, draw: sSets, caps: [
       [0, 'Multi-select fields have their own aggregators. One member skipped the question, and one answered but picked nothing.'],
       [1.6, 'Set frequency counts each option. A row can count toward several options, so the counts add up to more than the rows.'],
@@ -458,7 +509,7 @@ PulseFilm.mount({
     { name: 'How they merge', dur: 8.4, draw: sMerge, caps: [
       [0, 'Shards and streaming chunks are folded separately, then merged. Most aggregators keep a small, fixed running state, so merging is instant.'],
       [2.6, 'Partial aggregators keep a map of values, such as distinct counts and modes, and merge it at the end.'],
-      [5.2, 'Median and percentile need every value at once. They buffer the rows and sort, so memory grows with the cohort.'],
+      [5.2, 'Median, percentile and AUC need every value at once. They buffer the rows and sort, so memory grows with the cohort.', 'Median, percentile and the area under the curve need every value at once. They buffer the rows and sort, so memory grows with the cohort.'],
       [7.6, 'The manifest lists each aggregator\'s class, and predict flags the buffered ones before you run.']] },
     { name: 'Weights', dur: 6.4, draw: sWeights, caps: [
       [0, 'Rows can carry weights, set on the request, on one slot, or as an instance default.'],
@@ -469,7 +520,7 @@ PulseFilm.mount({
       [3.0, 'Every one starts with the same floor: n, the values used, and n null, the values skipped. Above it are the operator\'s own parts.', 'Every one starts with the same floor: n, the values used, and n null, the values skipped. Above it are the aggregator\'s own parts.'],
       [4.8, 'You can switch components off. The figures themselves never change.']] },
     { name: 'The aggregator toolkit', dur: 10.2, draw: sRecap, caps: [
-      [0, 'That\'s the aggregator toolkit today: counting, centre and spread, uncertainty, shape, accuracy and multi-select.'],
+      [0, 'That\'s the aggregator toolkit today: counting, centre and spread, uncertainty, shape, accuracy and ranking, multi-select, and vectors that give one figure per member.'],
       [3.4, 'More aggregators are added over time, and embedders can register their own. The manifest always shows what your instance offers.'],
       [6.4, 'Remember: read n beside every figure. Next up, windows.'],
       [9.0, '', 'Pulse aggregators.', true]] },

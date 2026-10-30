@@ -1,0 +1,64 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "AGG_AVERAGE_spend": 42,
+        "AGG_CI_LOWER_spend": null,
+        "AGG_CI_UPPER_spend": null
+      }
+    ],
+    "metadata": {
+      "total_rows": 10,
+      "filtered_rows": 1,
+      "cohort_file": "p.pulse"
+    },
+    "components": {
+      "aggregations": [
+        {
+          "n": 1,
+          "n_null": 0,
+          "operator": {
+            "alpha": 0.050000000000000044,
+            "lower": null,
+            "mean": 0,
+            "stderr": 0,
+            "t_critical": 0
+          }
+        },
+        {
+          "n": 1,
+          "n_null": 0,
+          "operator": {
+            "alpha": 0.050000000000000044,
+            "mean": 0,
+            "stderr": 0,
+            "t_critical": 0,
+            "upper": null
+          }
+        },
+        {
+          "n": 1,
+          "n_null": 0,
+          "operator": {
+            "sum": 42
+          }
+        }
+      ],
+      "filterers": [
+        {
+          "n_in": 10,
+          "n_out": 1,
+          "n_null_input": 0
+        }
+      ],
+      "run": {
+        "total_records": 10,
+        "filtered_records": 1,
+        "null_records": 0
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

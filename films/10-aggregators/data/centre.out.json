@@ -1,0 +1,148 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "AGG_AVERAGE_spend": 70.77777777777777,
+        "AGG_AVERAGE_spend_calm": 51,
+        "AGG_MAX_spend": 240,
+        "AGG_MEDIAN_spend": 52,
+        "AGG_MEDIAN_spend_calm": 52,
+        "AGG_MIN_spend": 38,
+        "AGG_RANGE_spend": 202,
+        "AGG_RATIO_spend": 2.3505535055350553,
+        "AGG_STDDEV_spend": 60.26013566709989,
+        "AGG_SUM_spend": 637,
+        "AGG_SUM_spend_calm": 459,
+        "AGG_VARIANCE_spend": 3631.283950617284,
+        "AGG_WELFORD_spend": {
+          "mean": 70.77777777777777,
+          "variance": 4085.1944444444434,
+          "n": 9
+        }
+      }
+    ],
+    "metadata": {
+      "total_rows": 10,
+      "filtered_rows": 10,
+      "cohort_file": "p.pulse"
+    },
+    "components": {
+      "aggregations": [
+        {
+          "n": 9,
+          "n_null": 1,
+          "operator": {
+            "sum": 637
+          }
+        },
+        {
+          "n": 9,
+          "n_null": 1,
+          "operator": {
+            "sum": 637
+          }
+        },
+        {
+          "n": 9,
+          "n_null": 1,
+          "operator": {
+            "median": 52,
+            "position_high": 4,
+            "position_low": 4
+          }
+        },
+        {
+          "n": 9,
+          "n_null": 1,
+          "operator": {
+            "sum": 459
+          }
+        },
+        {
+          "n": 9,
+          "n_null": 1,
+          "operator": {
+            "sum": 459
+          }
+        },
+        {
+          "n": 9,
+          "n_null": 1,
+          "operator": {
+            "median": 52,
+            "position_high": 4,
+            "position_low": 4
+          }
+        },
+        {
+          "n": 9,
+          "n_null": 1,
+          "operator": {
+            "min": 38
+          }
+        },
+        {
+          "n": 9,
+          "n_null": 1,
+          "operator": {
+            "max": 240
+          }
+        },
+        {
+          "n": 9,
+          "n_null": 1,
+          "operator": {
+            "max": 240,
+            "min": 38
+          }
+        },
+        {
+          "n": 9,
+          "n_null": 1,
+          "operator": {
+            "m2": 32681.55555555556,
+            "mean": 70.77777777777777,
+            "variance": 3631.283950617284
+          }
+        },
+        {
+          "n": 9,
+          "n_null": 1,
+          "operator": {
+            "m2": 32681.55555555556,
+            "mean": 70.77777777777777,
+            "stddev": 60.26013566709989,
+            "variance": 3631.283950617284
+          }
+        },
+        {
+          "n": 9,
+          "n_null": 1,
+          "operator": {
+            "m2": 32681.555555555547,
+            "mean": 70.77777777777777,
+            "stddev": 63.91552584814149,
+            "variance": 4085.1944444444434
+          }
+        },
+        {
+          "n": 9,
+          "n_null": 1,
+          "operator": {
+            "denominator": 271,
+            "numerator": 637,
+            "ratio": 2.3505535055350553
+          }
+        }
+      ],
+      "run": {
+        "total_records": 10,
+        "filtered_records": 10,
+        "null_records": 1
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

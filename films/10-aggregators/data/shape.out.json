@@ -1,0 +1,66 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "AGG_COUNT_x": 400,
+        "AGG_KURTOSIS_x": 3.0112784243521276,
+        "AGG_PERCENTILE_x": 67.3768640808499,
+        "AGG_SKEWNESS_x": 1.551649508435325
+      }
+    ],
+    "metadata": {
+      "total_rows": 400,
+      "filtered_rows": 400,
+      "cohort_file": "h.pulse"
+    },
+    "components": {
+      "aggregations": [
+        {
+          "n": 400,
+          "n_null": 0,
+          "operator": {
+            "m2": 213758.7088153912,
+            "m3": 7667421.860801025,
+            "mean": 36.850348172879386,
+            "skewness": 1.5516495084353268
+          }
+        },
+        {
+          "n": 400,
+          "n_null": 0,
+          "operator": {
+            "kurtosis": 3.0112784243521284,
+            "m2": 213758.7088153912,
+            "m3": 7667421.860801025,
+            "m4": 686680140.4807601,
+            "mean": 36.850348172879386
+          }
+        },
+        {
+          "n": 400,
+          "n_null": 0,
+          "operator": {
+            "lower": 67.30841885734397,
+            "method": "linear",
+            "p": 90,
+            "position": 359,
+            "upper": 67.99287109240323,
+            "value": 67.3768640808499
+          }
+        },
+        {
+          "n": 400,
+          "n_null": 0
+        }
+      ],
+      "run": {
+        "total_records": 400,
+        "filtered_records": 400,
+        "null_records": 0
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

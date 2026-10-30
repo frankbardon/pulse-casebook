@@ -1,0 +1,4 @@
+{"cohort":{"filename":"p.pulse"},"aggregations":[
+{"type":"AGG_COUNT","field":"spend"},{"type":"AGG_NULL_COUNT","field":"spend"},
+{"type":"AGG_DISTINCT_COUNT","field":"region"},{"type":"AGG_FREQUENCY","field":"region","params":{"value":"North"}},
+{"type":"AGG_MODE_COUNT","field":"region"},{"type":"AGG_MODE","field":"region"}]}

@@ -1,0 +1,4 @@
+{"cohort":{"filename":"s.pulse"},"aggregations":[
+{"type":"AGG_SET_FREQUENCY","field":"interests"},{"type":"AGG_SET_UNION","field":"interests"},
+{"type":"AGG_SET_INTERSECTION","field":"interests"},{"type":"AGG_SET_CARDINALITY_AVG","field":"interests"},
+{"type":"AGG_SET_DISTINCT_VALUES","field":"interests"},{"type":"AGG_COUNT","field":"interests"}]}
