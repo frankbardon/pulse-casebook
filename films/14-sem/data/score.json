@@ -1,0 +1,61 @@
+{
+ "cohort": {
+  "filename": "sem.pulse"
+ },
+ "vectors": [
+  {
+   "name": "items",
+   "fields": [
+    "s1",
+    "s2",
+    "s3",
+    "v1",
+    "v2",
+    "v3"
+   ]
+  }
+ ],
+ "attributes": [
+  {
+   "type": "ATTR_SEM_SCORE",
+   "label": "value_score",
+   "vector": "items",
+   "params": {
+    "model": "service =~ s1 + s2 + s3\nvalue =~ v1 + v2 + v3 + s3",
+    "latent": "value"
+   }
+  },
+  {
+   "type": "ATTR_SEM_SCORE",
+   "label": "service_score",
+   "vector": "items",
+   "params": {
+    "model": "service =~ s1 + s2 + s3\nvalue =~ v1 + v2 + v3 + s3",
+    "latent": "service"
+   }
+  }
+ ],
+ "groups": [
+  {
+   "type": "GROUP_CATEGORY",
+   "field": "wave"
+  }
+ ],
+ "aggregations": [
+  {
+   "type": "AGG_AVERAGE",
+   "field": "value_score",
+   "label": "value"
+  },
+  {
+   "type": "AGG_AVERAGE",
+   "field": "service_score",
+   "label": "service"
+  },
+  {
+   "type": "AGG_COUNT",
+   "field": "s1",
+   "label": "n"
+  }
+ ]
+}

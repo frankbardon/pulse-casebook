@@ -1,0 +1,45 @@
+{
+ "cohort": {
+  "filename": "sem.pulse"
+ },
+ "vectors": [
+  {
+   "name": "items",
+   "fields": [
+    "s1",
+    "s2",
+    "s3",
+    "v1",
+    "v2",
+    "v3"
+   ]
+  }
+ ],
+ "matrices": [
+  {
+   "name": "ml",
+   "type": "MAT_SEM",
+   "vector": "items",
+   "params": {
+    "model": "service =~ s1 + s2 + s3\nvalue =~ v1 + v2 + v3 + s3"
+   }
+  },
+  {
+   "name": "wlsmv",
+   "type": "MAT_SEM",
+   "vector": "items",
+   "params": {
+    "model": "service =~ s1 + s2 + s3\nvalue =~ v1 + v2 + v3 + s3",
+    "estimator": "wlsmv",
+    "ordered": [
+     "s1",
+     "s2",
+     "s3",
+     "v1",
+     "v2",
+     "v3"
+    ]
+   }
+  }
+ ]
+}

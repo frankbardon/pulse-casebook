@@ -1,0 +1,169 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "n": 300,
+        "service": -0.14739028239535615,
+        "value": 0.1554595480821308,
+        "wave": "w1"
+      },
+      {
+        "n": 300,
+        "service": -0.011586652152694665,
+        "value": -0.014065129704909671,
+        "wave": "w2"
+      },
+      {
+        "n": 300,
+        "service": 0.15897693454804276,
+        "value": -0.14139441837721625,
+        "wave": "w3"
+      }
+    ],
+    "metadata": {
+      "total_rows": 900,
+      "filtered_rows": 900,
+      "cohort_file": "sem.pulse"
+    },
+    "components": {
+      "aggregations": [
+        {
+          "label": "value",
+          "n": 900,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "w1"
+              ],
+              "n": 300,
+              "n_null": 0,
+              "operator": {
+                "sum": 46.63786442463924
+              }
+            },
+            {
+              "group_key": [
+                "w2"
+              ],
+              "n": 300,
+              "n_null": 0,
+              "operator": {
+                "sum": -4.219538911472902
+              }
+            },
+            {
+              "group_key": [
+                "w3"
+              ],
+              "n": 300,
+              "n_null": 0,
+              "operator": {
+                "sum": -42.41832551316487
+              }
+            }
+          ]
+        },
+        {
+          "label": "service",
+          "n": 900,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "w1"
+              ],
+              "n": 300,
+              "n_null": 0,
+              "operator": {
+                "sum": -44.21708471860685
+              }
+            },
+            {
+              "group_key": [
+                "w2"
+              ],
+              "n": 300,
+              "n_null": 0,
+              "operator": {
+                "sum": -3.4759956458083994
+              }
+            },
+            {
+              "group_key": [
+                "w3"
+              ],
+              "n": 300,
+              "n_null": 0,
+              "operator": {
+                "sum": 47.69308036441283
+              }
+            }
+          ]
+        },
+        {
+          "label": "n",
+          "n": 900,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "w1"
+              ],
+              "n": 300,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "w2"
+              ],
+              "n": 300,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "w3"
+              ],
+              "n": 300,
+              "n_null": 0
+            }
+          ]
+        }
+      ],
+      "groupers": [
+        {
+          "field": "wave",
+          "total_n": 900,
+          "operator": {
+            "buckets": [
+              {
+                "count": 300,
+                "key": "w1",
+                "label": "w1"
+              },
+              {
+                "count": 300,
+                "key": "w2",
+                "label": "w2"
+              },
+              {
+                "count": 300,
+                "key": "w3",
+                "label": "w3"
+              }
+            ],
+            "dict_size": 3
+          }
+        }
+      ],
+      "run": {
+        "total_records": 900,
+        "filtered_records": 900,
+        "null_records": 0
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

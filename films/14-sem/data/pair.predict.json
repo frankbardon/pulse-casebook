@@ -1,0 +1,290 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "valid": true,
+    "request": {
+      "cohort": {
+        "filename": "sem.pulse"
+      },
+      "attributes": [
+        {
+          "type": "ATTR_FORMULA",
+          "field": "",
+          "label": "period",
+          "expression": "wave == params.to_wave ? 2 : (wave == params.from_wave ? 1 : 0)"
+        }
+      ],
+      "vectors": [
+        {
+          "name": "brand",
+          "fields": [
+            "s1",
+            "s2",
+            "s3",
+            "v1",
+            "v2",
+            "v3",
+            "recommend"
+          ]
+        }
+      ],
+      "matrices": [
+        {
+          "name": "delta",
+          "type": "MAT_SEM",
+          "vector": "brand",
+          "params": {
+            "model": "service =~ s1 + s2 + s3\nvalue =~ v1 + v2 + v3 + s3\nrecommend ~ bv*value + c(bsf, bst)*service\nv1 ~ 0*1\ns1 ~ 0*1\nvalue ~ c(mvf, mvt)*1\nservice ~ c(msf, mst)*1\ndv := bv*(mvt - mvf)\nds := bst*mst - bsf*msf\ndtot := dv + ds\nshare := dv/dtot",
+            "group": "period",
+            "group_levels": [
+              {
+                "value": 1,
+                "name": "from"
+              },
+              {
+                "value": 2,
+                "name": "to"
+              }
+            ],
+            "group_equal": [
+              "loadings",
+              "intercepts"
+            ]
+          }
+        },
+        {
+          "name": "boot",
+          "type": "MAT_SEM",
+          "vector": "brand",
+          "params": {
+            "model": "service =~ s1 + s2 + s3\nvalue =~ v1 + v2 + v3 + s3\nrecommend ~ bv*value + c(bsf, bst)*service\nv1 ~ 0*1\ns1 ~ 0*1\nvalue ~ c(mvf, mvt)*1\nservice ~ c(msf, mst)*1\ndv := bv*(mvt - mvf)\nds := bst*mst - bsf*msf\ndtot := dv + ds\nshare := dv/dtot",
+            "group": "period",
+            "group_levels": [
+              {
+                "value": 1,
+                "name": "from"
+              },
+              {
+                "value": 2,
+                "name": "to"
+              }
+            ],
+            "group_equal": [
+              "loadings",
+              "intercepts"
+            ],
+            "resample": "bootstrap",
+            "bootstrap_iters": 500,
+            "rng_seed": 14
+          }
+        }
+      ],
+      "params": {
+        "from_wave": "w1",
+        "to_wave": "w3"
+      }
+    },
+    "schema_info": {
+      "field_count": 9,
+      "fields": [
+        "wave",
+        "channel",
+        "s1",
+        "s2",
+        "s3",
+        "v1",
+        "v2",
+        "v3",
+        "recommend"
+      ]
+    },
+    "record_count": 0,
+    "shards": [],
+    "streamable": false,
+    "streamable_reasons": [
+      "matrix MAT_SEM requires the buffered path"
+    ],
+    "suggestions": [],
+    "defaults_applied": [],
+    "aggregations": [],
+    "groups": [],
+    "filterers": [],
+    "overlays_applied": [],
+    "overlays_schema_divergence": [],
+    "overlay_cost": {},
+    "time_zones": [],
+    "resolved_vectors": {
+      "brand": [
+        "s1",
+        "s2",
+        "s3",
+        "v1",
+        "v2",
+        "v3",
+        "recommend"
+      ]
+    },
+    "matrices": [
+      {
+        "name": "delta",
+        "type": "MAT_SEM",
+        "shape": [
+          7,
+          7
+        ],
+        "axis_keys": [
+          "s1",
+          "s2",
+          "s3",
+          "v1",
+          "v2",
+          "v3",
+          "recommend"
+        ],
+        "missing": "listwise",
+        "encoding": "full",
+        "accumulator_bytes": 320,
+        "bucket_basis": "ungrouped",
+        "estimated_buckets": 1,
+        "estimated_cells": 49,
+        "estimated_bytes": 960,
+        "streamable": true,
+        "mergeable": true,
+        "group_levels": [
+          "from",
+          "to"
+        ],
+        "group_levels_basis": "declared",
+        "pairwise_psd_risk": false
+      },
+      {
+        "name": "boot",
+        "type": "MAT_SEM",
+        "shape": [
+          7,
+          7
+        ],
+        "axis_keys": [
+          "s1",
+          "s2",
+          "s3",
+          "v1",
+          "v2",
+          "v3",
+          "recommend"
+        ],
+        "missing": "listwise",
+        "encoding": "full",
+        "accumulator_bytes": 320,
+        "bucket_basis": "ungrouped",
+        "estimated_buckets": 1,
+        "estimated_cells": 49,
+        "estimated_bytes": 58560,
+        "streamable": false,
+        "mergeable": false,
+        "row_buffer_bytes": 57600,
+        "group_levels": [
+          "from",
+          "to"
+        ],
+        "group_levels_basis": "declared",
+        "pairwise_psd_risk": false
+      }
+    ],
+    "sizes": [
+      {
+        "section": "metadata",
+        "full_bytes": 116,
+        "shaped_bytes": 116,
+        "basis": "heuristic"
+      },
+      {
+        "section": "matrices",
+        "full_bytes": 26592,
+        "shaped_bytes": 26592,
+        "basis": "upper_bound"
+      },
+      {
+        "section": "components",
+        "full_bytes": 114,
+        "shaped_bytes": 114,
+        "basis": "heuristic"
+      }
+    ]
+  },
+  "errors": [],
+  "warnings": [
+    {
+      "code": "PULSE_FIELD_DESCRIPTION_LOW_QUALITY",
+      "message": "field wave has a low-quality description",
+      "details": {
+        "description": "",
+        "field": "wave"
+      }
+    },
+    {
+      "code": "PULSE_FIELD_DESCRIPTION_LOW_QUALITY",
+      "message": "field channel has a low-quality description",
+      "details": {
+        "description": "",
+        "field": "channel"
+      }
+    },
+    {
+      "code": "PULSE_FIELD_DESCRIPTION_LOW_QUALITY",
+      "message": "field s1 has a low-quality description",
+      "details": {
+        "description": "",
+        "field": "s1"
+      }
+    },
+    {
+      "code": "PULSE_FIELD_DESCRIPTION_LOW_QUALITY",
+      "message": "field s2 has a low-quality description",
+      "details": {
+        "description": "",
+        "field": "s2"
+      }
+    },
+    {
+      "code": "PULSE_FIELD_DESCRIPTION_LOW_QUALITY",
+      "message": "field s3 has a low-quality description",
+      "details": {
+        "description": "",
+        "field": "s3"
+      }
+    },
+    {
+      "code": "PULSE_FIELD_DESCRIPTION_LOW_QUALITY",
+      "message": "field v1 has a low-quality description",
+      "details": {
+        "description": "",
+        "field": "v1"
+      }
+    },
+    {
+      "code": "PULSE_FIELD_DESCRIPTION_LOW_QUALITY",
+      "message": "field v2 has a low-quality description",
+      "details": {
+        "description": "",
+        "field": "v2"
+      }
+    },
+    {
+      "code": "PULSE_FIELD_DESCRIPTION_LOW_QUALITY",
+      "message": "field v3 has a low-quality description",
+      "details": {
+        "description": "",
+        "field": "v3"
+      }
+    },
+    {
+      "code": "PULSE_FIELD_DESCRIPTION_LOW_QUALITY",
+      "message": "field recommend has a low-quality description",
+      "details": {
+        "description": "",
+        "field": "recommend"
+      }
+    }
+  ]
+}

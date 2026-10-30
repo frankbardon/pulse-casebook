@@ -1,0 +1,155 @@
+1
+00:00:04,250 --> 00:00:06,775
+A model you write, fitted in one request.
+
+2
+00:00:07,575 --> 00:00:16,586
+Factor analysis finds the factors in a battery. A structural equation model goes further: you write the model, and Pulse says how well it holds.
+
+3
+00:00:17,386 --> 00:00:28,658
+The SEM matrix operator reads lavaan syntax in its model param: equals tilde for a latent and its items, tilde for a regression, double tilde for a covariance.
+
+4
+00:00:29,458 --> 00:00:39,557
+Its observed variables are exactly the vector's members, and it runs as one slot of one request. Our cohort is nine hundred illustrative survey rows.
+
+5
+00:00:40,357 --> 00:00:46,168
+Here, service and value each have three five-point items, and both drive a recommend score.
+
+6
+00:00:46,968 --> 00:00:55,381
+The estimates table has a row per parameter: estimate, standardized, standard error, z and p. A marker loading is fixed at one.
+
+7
+00:00:56,181 --> 00:01:04,040
+The scalars carry the fit indices. A chi-square of seventy-seven on twelve degrees of freedom says this model misses something.
+
+8
+00:01:04,840 --> 00:01:08,923
+The residual covariance, the sample's minus the model's, shows where.
+
+9
+00:01:09,723 --> 00:01:12,590
+Item S three runs with every value item.
+
+10
+00:01:13,390 --> 00:01:22,251
+Let S three load on value too, and the chi-square falls to two point five on eleven degrees of freedom. The rest of the film uses that model.
+
+11
+00:01:23,051 --> 00:01:34,323
+A covariance-only model follows sem-oh-pie's default fit. Means, groups, defined parameters or the bootstrap switch it to lavaan's, so compare fits on one convention.
+
+12
+00:01:35,123 --> 00:01:41,595
+The group param fits one joint model across a field's levels. Here, the online and in-store channels.
+
+13
+00:01:42,395 --> 00:01:50,830
+Group equal climbs the invariance ladder: configural, then equal loadings, then equal intercepts too. Each step is one slot.
+
+14
+00:01:51,630 --> 00:01:57,825
+Compare the fit step to step. Pulse computes no chi-square difference test; that judgement is yours.
+
+15
+00:01:58,625 --> 00:02:06,377
+The group can also be a column the request computes. A formula maps two waves, chosen by request params, to one and two.
+
+16
+00:02:07,177 --> 00:02:13,158
+Group levels declares those values and names them from and to. The names key every estimate row.
+
+17
+00:02:13,958 --> 00:02:21,027
+Wave two maps to zero, which is no level. Its three hundred rows drop, a warning counts them, and the fit stands.
+
+18
+00:02:21,827 --> 00:02:33,078
+With equal loadings and intercepts, the latent means can move. Value falls from two point nine five to two point five five, and service rises from three to three point four two.
+
+19
+00:02:33,878 --> 00:02:43,507
+A defined parameter, a name, colon equals, and an expression, turns labels into an answer. D V is value's path times its mean change.
+
+20
+00:02:44,307 --> 00:02:54,662
+Each row gets a delta-method standard error, a p and an interval. D V is clearly negative. Service's part, D S, has an interval that crosses zero.
+
+21
+00:02:55,462 --> 00:02:59,886
+A label the model never defines is refused before any row is read.
+
+22
+00:03:00,686 --> 00:03:09,505
+The bootstrap refits the model on resampled rows, drawn within each group. Here five hundred seeded replicates, and all five hundred refit.
+
+23
+00:03:10,305 --> 00:03:17,929
+The estimates stay the full data's. The standard error becomes the replicates' spread, and the interval is a percentile interval.
+
+24
+00:03:18,729 --> 00:03:29,873
+For D V the two methods agree. For share, a ratio over a total whose interval crosses zero, the bootstrap interval runs from minus three point eight to thirteen point eight.
+
+25
+00:03:30,673 --> 00:03:35,438
+The bootstrap keeps its rows, so the request buffers, and it refuses any weight.
+
+26
+00:03:36,238 --> 00:03:47,915
+Maximum likelihood reads these five-point ratings as continuous. The W L S M V estimator reads each as a cut-up latent response, through polychoric correlations.
+
+27
+00:03:48,715 --> 00:03:57,747
+Reading coarse ratings as continuous pulls loadings down. Here W L S M V's are a few hundredths higher on every item.
+
+28
+00:03:58,547 --> 00:04:04,080
+Each item gets thresholds, one fewer than its categories, each with its own standard error.
+
+29
+00:04:04,880 --> 00:04:12,163
+Judge the fit by the scaled chi-square. Log-likelihood, AIC and BIC are null: there is no likelihood.
+
+30
+00:04:12,963 --> 00:04:21,696
+The SEM score attribute puts each row on one latent: regression scores by default, or Bartlett scores under maximum likelihood.
+
+31
+00:04:22,496 --> 00:04:28,371
+Group the scores by wave and average them: value falls across the waves while service rises.
+
+32
+00:04:29,171 --> 00:04:37,691
+The fit is cohort-wide, learned first and then scored. A Compose fit can fit once and score many requests, covered in the Compose film.
+
+33
+00:04:38,491 --> 00:04:45,475
+Predict reads the request without running it. The bootstrap slot keeps its rows, so the request takes the buffered path.
+
+34
+00:04:46,275 --> 00:04:50,891
+Declared levels come back with the basis declared, an upper bound on the groups.
+
+35
+00:04:51,691 --> 00:04:59,806
+A failed SEM slot fails alone: an error on the slot, a warning on the envelope, and the rest of the response survives.
+
+36
+00:05:00,606 --> 00:05:08,550
+That's SEM in Pulse today: the model you write, the figures that judge it, groups, uncertainty, ordinal items and scores.
+
+37
+00:05:09,350 --> 00:05:19,534
+More are added over time, and the manifest lists what your instance offers. Embedders can register their own matrix operators through options dot extensions.
+
+38
+00:05:20,334 --> 00:05:24,566
+Remember: read the fit before you read the paths. Next up, crosstabs.
+
+39
+00:05:25,366 --> 00:05:26,697
+Pulse SEM.

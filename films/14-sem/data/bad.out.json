@@ -1,0 +1,20 @@
+{
+  "format_version": "1.1",
+  "data": null,
+  "errors": [
+    {
+      "code": "SERVICE_VALIDATION",
+      "message": "matrices[0] params.model: defined parameter \"dv\" reads \"mvx\", which is no label of the model; label the parameter in its statement (mvx*x)",
+      "details": {
+        "defined": "dv",
+        "error": "defined parameter \"dv\" reads \"mvx\", which is no label of the model; label the parameter in its statement (mvx*x)",
+        "matrix": "matrices[0]",
+        "param": "model",
+        "problem": "unknown_label",
+        "reason": "defined_invalid",
+        "reference": "mvx"
+      }
+    }
+  ],
+  "warnings": []
+}
