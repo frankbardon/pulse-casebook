@@ -1,0 +1,131 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "_synthetic": "0",
+        "age": 44.172,
+        "n": 1000,
+        "spend": 67.46958000000001
+      },
+      {
+        "_synthetic": "1",
+        "age": 45.152,
+        "n": 500,
+        "spend": 73.66726371691742
+      }
+    ],
+    "metadata": {
+      "total_rows": 1500,
+      "filtered_rows": 1500,
+      "cohort_file": "topup.pulse"
+    },
+    "components": {
+      "aggregations": [
+        {
+          "label": "n",
+          "n": 1500,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "0"
+              ],
+              "n": 1000,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "1"
+              ],
+              "n": 500,
+              "n_null": 0
+            }
+          ]
+        },
+        {
+          "label": "age",
+          "n": 1500,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "0"
+              ],
+              "n": 1000,
+              "n_null": 0,
+              "operator": {
+                "sum": 44172
+              }
+            },
+            {
+              "group_key": [
+                "1"
+              ],
+              "n": 500,
+              "n_null": 0,
+              "operator": {
+                "sum": 22576
+              }
+            }
+          ]
+        },
+        {
+          "label": "spend",
+          "n": 1500,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "0"
+              ],
+              "n": 1000,
+              "n_null": 0,
+              "operator": {
+                "sum": 67469.58
+              }
+            },
+            {
+              "group_key": [
+                "1"
+              ],
+              "n": 500,
+              "n_null": 0,
+              "operator": {
+                "sum": 36833.631858458706
+              }
+            }
+          ]
+        }
+      ],
+      "groupers": [
+        {
+          "field": "_synthetic",
+          "total_n": 1500,
+          "operator": {
+            "buckets": [
+              {
+                "count": 1000,
+                "key": "0",
+                "label": "0"
+              },
+              {
+                "count": 500,
+                "key": "1",
+                "label": "1"
+              }
+            ],
+            "dict_size": 0
+          }
+        }
+      ],
+      "run": {
+        "total_records": 1500,
+        "filtered_records": 1500,
+        "null_records": 0
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

@@ -1,0 +1,77 @@
+{
+  "row_count": 2000,
+  "fields": [
+    {
+      "name": "id",
+      "type": "u32",
+      "distribution": "monotonic_from",
+      "params": {
+        "start": 1
+      }
+    },
+    {
+      "name": "region",
+      "type": "categorical_u8",
+      "distribution": "weighted_categorical",
+      "params": {
+        "values": [
+          "North",
+          "South",
+          "East",
+          "West"
+        ],
+        "weights": [
+          0.4,
+          0.3,
+          0.2,
+          0.1
+        ]
+      }
+    },
+    {
+      "name": "age",
+      "type": "f64",
+      "distribution": "normal",
+      "params": {
+        "mean": 42,
+        "std": 12,
+        "min": 18,
+        "max": 80
+      }
+    },
+    {
+      "name": "spend",
+      "type": "f64",
+      "distribution": "lognormal",
+      "params": {
+        "mu": 4,
+        "sigma": 0.5
+      }
+    },
+    {
+      "name": "visits",
+      "type": "u8",
+      "distribution": "poisson",
+      "params": {
+        "rate": 3
+      }
+    },
+    {
+      "name": "member",
+      "type": "packed_bool",
+      "distribution": "bernoulli",
+      "params": {
+        "p": 0.35
+      }
+    },
+    {
+      "name": "joined",
+      "type": "date",
+      "distribution": "uniform_date",
+      "params": {
+        "start": "2024-01-01",
+        "end": "2025-12-31"
+      }
+    }
+  ]
+}

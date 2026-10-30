@@ -1,0 +1,1 @@
+{"cohort":{"filename":"rules.pulse"},"groups":[{"field":"member"}],"aggregations":[{"type":"AGG_COUNT","field":"id","label":"n"},{"type":"AGG_COUNT","field":"tier","label":"tier"},{"type":"AGG_SUM","field":"vip","label":"vip"},{"type":"AGG_MIN","field":"spend","label":"spend_min"}]}

@@ -1,0 +1,14 @@
+{
+  "format_version": "1.1",
+  "data": null,
+  "errors": [
+    {
+      "code": "PULSE_SYNTH_OUTPUT_COLLISION",
+      "message": "output path must be different from the source cohort path — the source is never opened for write",
+      "details": {
+        "path": "members.pulse"
+      }
+    }
+  ],
+  "warnings": []
+}

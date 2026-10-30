@@ -1,0 +1,73 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "member": "0",
+        "n": 1298
+      },
+      {
+        "member": "1",
+        "n": 702
+      }
+    ],
+    "metadata": {
+      "total_rows": 2000,
+      "filtered_rows": 2000,
+      "cohort_file": "shop.pulse"
+    },
+    "components": {
+      "aggregations": [
+        {
+          "label": "n",
+          "n": 2000,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "0"
+              ],
+              "n": 1298,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "1"
+              ],
+              "n": 702,
+              "n_null": 0
+            }
+          ]
+        }
+      ],
+      "groupers": [
+        {
+          "field": "member",
+          "total_n": 2000,
+          "operator": {
+            "buckets": [
+              {
+                "count": 1298,
+                "key": "0",
+                "label": "0"
+              },
+              {
+                "count": 702,
+                "key": "1",
+                "label": "1"
+              }
+            ],
+            "dict_size": 0
+          }
+        }
+      ],
+      "run": {
+        "total_records": 2000,
+        "filtered_records": 2000,
+        "null_records": 0
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

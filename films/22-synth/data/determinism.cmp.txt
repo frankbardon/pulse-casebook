@@ -1,0 +1,3 @@
+shop.pulse shop2.pulse: identical
+shop.pulse shop23.pulse differ: char 56, line 1
+   54166 shop.pulse

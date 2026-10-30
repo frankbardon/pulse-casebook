@@ -1,0 +1,191 @@
+1
+00:00:04,250 --> 00:00:07,245
+Synthetic data, from a spec or from a profile.
+
+2
+00:00:08,045 --> 00:00:14,474
+Pulse can write a cohort as well as read one. Pulse synth writes a dot pulse file, and it has two modes.
+
+3
+00:00:15,274 --> 00:00:18,034
+From schema takes a spec you write by hand.
+
+4
+00:00:18,834 --> 00:00:23,151
+From profile tops up a real cohort with new rows, each one tagged.
+
+5
+00:00:23,951 --> 00:00:29,250
+Both run from the command line or the library. There is no M C P tool for synth.
+
+6
+00:00:30,050 --> 00:00:35,818
+Here is a spec: two thousand rows and seven fields, each with a type and a distribution.
+
+7
+00:00:36,618 --> 00:00:40,701
+Seed twenty-two: two thousand rows generated, none rejected.
+
+8
+00:00:41,501 --> 00:00:46,544
+The ids come from a counter that ignores the random stream: clean primary keys.
+
+9
+00:00:47,344 --> 00:00:52,280
+Read the file back with ordinary requests. The regions land near their weights.
+
+10
+00:00:53,080 --> 00:01:01,451
+Age stays inside its clamp. Visits average two point nine three against a lambda of three, and thirty-five percent of rows are members.
+
+11
+00:01:02,251 --> 00:01:05,800
+Synth draws, so a figure lands near its target, not on it.
+
+12
+00:01:06,600 --> 00:01:17,552
+Today's distributions include normal, lognormal, Poisson, Bernoulli, categories, dates, regex and mixtures. More are added over time, and the manifest lists them.
+
+13
+00:01:18,352 --> 00:01:27,960
+Some carry rules you cannot guess: discrete values ascend, a mixture needs two or more components, and set Bernoulli registers its options up front.
+
+14
+00:01:28,760 --> 00:01:34,059
+The spec is strict: rate on a Poisson field is refused, and lambda is suggested.
+
+15
+00:01:34,859 --> 00:01:40,307
+Fields are drawn independently by default: age and spend correlate at about zero.
+
+16
+00:01:41,107 --> 00:01:53,275
+A correlations entry names a pair and a rho. Pulse draws correlated normals, turns them into probabilities, and reads each through its field's own quantile function: a Gaussian copula.
+
+17
+00:01:54,075 --> 00:02:06,008
+Each field keeps its own distribution. The rank correlation lands near zero point five nine; Pearson's r is lower, near zero point five five, because spend is lognormal.
+
+18
+00:02:06,808 --> 00:02:12,491
+A Poisson field cannot join. And a pair you leave out is drawn independent, with a warning.
+
+19
+00:02:13,291 --> 00:02:21,576
+A constraint rejects a row, and the generator redraws it. Requiring spend of at least thirty rejects two hundred and forty draws.
+
+20
+00:02:22,376 --> 00:02:28,933
+The file still holds two thousand rows, and the ids have no gaps: the counter counts accepted rows.
+
+21
+00:02:29,733 --> 00:02:35,821
+Cap the rejection rate at ten percent, and the run fails as infeasible. No file is written.
+
+22
+00:02:36,621 --> 00:02:44,416
+Rules act on a drawn row. When picks the rows. Set writes a literal, set expr an expression, and set null masks a field.
+
+23
+00:02:45,216 --> 00:02:52,627
+Rules run last, in order, and the last write wins. Here every non-member loses their tier, and every member keeps one.
+
+24
+00:02:53,427 --> 00:03:00,048
+V I P is derived from spend. A rule that never fires, here ages over ninety, gets a warning.
+
+25
+00:03:00,848 --> 00:03:06,808
+Rules are checked before any row is drawn: nulling a field that is not nullable is refused.
+
+26
+00:03:07,608 --> 00:03:15,787
+When relationships name the same field, Pulse settles them once, in a fixed order: rules, models, shapes, pairs, then correlations.
+
+27
+00:03:16,587 --> 00:03:21,779
+This rule sets spend on every row, so it claims spend ahead of the copula, with a warning.
+
+28
+00:03:22,579 --> 00:03:29,670
+Age and spend now correlate at zero point zero two. The first claim wins, and every loser is reported.
+
+29
+00:03:30,470 --> 00:03:35,491
+Rows are generated in order and never shuffled, so a rule can read earlier rows.
+
+30
+00:03:36,291 --> 00:03:44,747
+Row gives the row's number, and lag reads a field n rows back. Here stock carries sixty percent of last week's stock: an adstock.
+
+31
+00:03:45,547 --> 00:03:50,632
+Week one: thirty-two point two two, plus point six times eighty-one point five.
+
+32
+00:03:51,432 --> 00:03:55,216
+Neither draws randomness, and a profile never captures them.
+
+33
+00:03:56,016 --> 00:04:05,475
+Profile create reads a real cohort: shares for categories, histograms for small integers, moments for the rest, and the strongest correlations.
+
+34
+00:04:06,275 --> 00:04:13,984
+From profile adds five hundred rows. The source is copied through, tagged synthetic false, and the new rows are tagged true.
+
+35
+00:04:14,784 --> 00:04:20,019
+The source is never opened for write. Point the output at it, and the run is refused.
+
+36
+00:04:20,819 --> 00:04:27,931
+A fidelity report scores the new rows against the source: a K S test for numbers, chi-square for categories.
+
+37
+00:04:28,731 --> 00:04:39,918
+Region, age and plan pass. Spend fails: it was rebuilt as a clamped normal, and the source is skewed. The correlation comes back close, at zero point four four nine.
+
+38
+00:04:40,718 --> 00:04:49,537
+With fit shape, spend becomes a mixture and passes. But the shape claims spend first, so its correlation is dropped, and reported, not scored.
+
+39
+00:04:50,337 --> 00:04:57,065
+Synth is deterministic. Same spec, same seed: the file is byte-identical, and the hashes match.
+
+40
+00:04:57,865 --> 00:05:03,356
+Seed twenty-three gives a different file. Seed zero is a fixed seed, not a random one.
+
+41
+00:05:04,156 --> 00:05:07,663
+Profile capture keeps the same promise, byte for byte.
+
+42
+00:05:08,463 --> 00:05:15,810
+The cohorts in this series are not made with synth. They come from seeded generators, or small hand-written C S Vs.
+
+43
+00:05:16,610 --> 00:05:22,143
+The generators use a port of Python's random module, so each one rebuilds byte for byte.
+
+44
+00:05:22,943 --> 00:05:33,212
+Synth can make the same kind of cohort: this film topped up the generator's members with five hundred rows from Pulse. The brand tracker case study is built with synth.
+
+45
+00:05:34,012 --> 00:05:43,364
+That is synth: specs and profiles, distributions and the copula, constraints and rules, earlier rows, fidelity, and the same bytes for the same seed.
+
+46
+00:05:44,164 --> 00:05:51,980
+Synth is not private: a profile reveals the source's distributions. Add calibrated noise when the source is sensitive.
+
+47
+00:05:52,780 --> 00:06:00,148
+More distributions are added over time, and the manifest lists what your instance offers. Next up, embedding Pulse.
+
+48
+00:06:00,948 --> 00:06:02,791
+Pulse. Synthetic data.

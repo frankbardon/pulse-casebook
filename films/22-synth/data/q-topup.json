@@ -1,0 +1,1 @@
+{"cohort":{"filename":"topup.pulse"},"groups":[{"field":"_synthetic"}],"aggregations":[{"type":"AGG_COUNT","field":"age","label":"n"},{"type":"AGG_AVERAGE","field":"age","label":"age"},{"type":"AGG_AVERAGE","field":"spend","label":"spend"}]}
