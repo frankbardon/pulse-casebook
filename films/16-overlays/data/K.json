@@ -1,0 +1,4 @@
+{"cohort":{"filename":"o.pulse"},
+ "groups":[{"type":"GROUP_CATEGORY","field":"region"},{"type":"GROUP_DATE","field":"signup","params":{"component":"year"}}],
+ "aggregations":[{"type":"AGG_SUM","field":"revenue","label":"revenue"}],
+ "overlays":[{"name":"growth","kind":"OVERLAY_INDEX_VS_PRIOR","scope":"group"}]}

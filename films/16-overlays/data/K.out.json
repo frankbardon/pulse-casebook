@@ -1,0 +1,251 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "region": "East",
+        "revenue": 7796.5,
+        "signup": "2024"
+      },
+      {
+        "region": "East",
+        "revenue": 10864.32,
+        "signup": "2025"
+      },
+      {
+        "region": "North",
+        "revenue": 10102.51,
+        "signup": "2024"
+      },
+      {
+        "region": "North",
+        "revenue": 12149.84,
+        "signup": "2025"
+      },
+      {
+        "region": "South",
+        "revenue": 8603.6,
+        "signup": "2024"
+      },
+      {
+        "region": "South",
+        "revenue": 12523.9,
+        "signup": "2025"
+      }
+    ],
+    "metadata": {
+      "total_rows": 1282,
+      "filtered_rows": 1282,
+      "cohort_file": "o.pulse"
+    },
+    "overlays": [
+      {
+        "name": "growth",
+        "kind": "OVERLAY_INDEX_VS_PRIOR",
+        "scope": "group",
+        "ref": {},
+        "payload": {
+          "shape": "series",
+          "series": {
+            "entries": [
+              {
+                "key": [
+                  "East",
+                  "2024"
+                ],
+                "summary": {
+                  "statistic": null
+                }
+              },
+              {
+                "key": [
+                  "East",
+                  "2025"
+                ],
+                "summary": {
+                  "statistic": 139.34868210094274
+                }
+              },
+              {
+                "key": [
+                  "North",
+                  "2024"
+                ],
+                "summary": {
+                  "statistic": null
+                }
+              },
+              {
+                "key": [
+                  "North",
+                  "2025"
+                ],
+                "summary": {
+                  "statistic": 120.26555776732712
+                }
+              },
+              {
+                "key": [
+                  "South",
+                  "2024"
+                ],
+                "summary": {
+                  "statistic": null
+                }
+              },
+              {
+                "key": [
+                  "South",
+                  "2025"
+                ],
+                "summary": {
+                  "statistic": 145.5658096610721
+                }
+              }
+            ]
+          }
+        },
+        "summary": {
+          "min": 120.26555776732712,
+          "max": 145.5658096610721,
+          "count": 3,
+          "baseline": 100
+        }
+      }
+    ],
+    "components": {
+      "aggregations": [
+        {
+          "label": "revenue",
+          "n": 1282,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "East",
+                "2024"
+              ],
+              "n": 139,
+              "n_null": 0,
+              "operator": {
+                "sum": 7796.5
+              }
+            },
+            {
+              "group_key": [
+                "East",
+                "2025"
+              ],
+              "n": 185,
+              "n_null": 0,
+              "operator": {
+                "sum": 10864.32
+              }
+            },
+            {
+              "group_key": [
+                "North",
+                "2024"
+              ],
+              "n": 236,
+              "n_null": 0,
+              "operator": {
+                "sum": 10102.51
+              }
+            },
+            {
+              "group_key": [
+                "North",
+                "2025"
+              ],
+              "n": 270,
+              "n_null": 0,
+              "operator": {
+                "sum": 12149.84
+              }
+            },
+            {
+              "group_key": [
+                "South",
+                "2024"
+              ],
+              "n": 190,
+              "n_null": 0,
+              "operator": {
+                "sum": 8603.6
+              }
+            },
+            {
+              "group_key": [
+                "South",
+                "2025"
+              ],
+              "n": 262,
+              "n_null": 0,
+              "operator": {
+                "sum": 12523.9
+              }
+            }
+          ]
+        }
+      ],
+      "groupers": [
+        {
+          "field": "region",
+          "total_n": 1282,
+          "operator": {
+            "buckets": [
+              {
+                "count": 324,
+                "key": "East",
+                "label": "East"
+              },
+              {
+                "count": 506,
+                "key": "North",
+                "label": "North"
+              },
+              {
+                "count": 452,
+                "key": "South",
+                "label": "South"
+              }
+            ],
+            "dict_size": 3
+          }
+        },
+        {
+          "field": "signup",
+          "total_n": 1282,
+          "operator": {
+            "buckets": [
+              {
+                "count": 565,
+                "key": "2024",
+                "period_end": "2024-12-31",
+                "period_start": "2024-01-01"
+              },
+              {
+                "count": 717,
+                "key": "2025",
+                "period_end": "2025-12-31",
+                "period_start": "2025-01-01"
+              }
+            ],
+            "granularity": "year",
+            "n_buckets": 2,
+            "range_end": "2025-12-31",
+            "range_start": "2024-01-01"
+          }
+        }
+      ],
+      "run": {
+        "total_records": 1282,
+        "filtered_records": 1282,
+        "null_records": 0
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

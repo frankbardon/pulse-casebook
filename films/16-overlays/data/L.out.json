@@ -1,0 +1,744 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "n": 94,
+        "region": "East"
+      },
+      {
+        "n": 137,
+        "region": "North"
+      },
+      {
+        "n": 129,
+        "region": "South"
+      }
+    ],
+    "metadata": {
+      "total_rows": 360,
+      "filtered_rows": 360,
+      "cohort_file": "u.pulse"
+    },
+    "matrices": [
+      {
+        "name": "cor",
+        "type": "MAT_CORRELATION",
+        "group_key": [
+          "East"
+        ],
+        "group_header": {
+          "fields": [
+            "region"
+          ],
+          "types": [
+            "GROUP_CATEGORY"
+          ]
+        },
+        "primary": {
+          "kind": "square_symmetric",
+          "encoding": "full",
+          "row_keys": [
+            "sessions",
+            "minutes",
+            "tickets"
+          ],
+          "column_keys": [
+            "sessions",
+            "minutes",
+            "tickets"
+          ],
+          "values": [
+            [
+              1,
+              0.8393843237943627,
+              -0.4615160810409194
+            ],
+            [
+              0.8393843237943627,
+              1,
+              -0.3461324318771597
+            ],
+            [
+              -0.4615160810409194,
+              -0.3461324318771597,
+              1
+            ]
+          ]
+        },
+        "scalars": {
+          "determinant": 0.23080524852743467
+        }
+      },
+      {
+        "name": "cor",
+        "type": "MAT_CORRELATION",
+        "group_key": [
+          "North"
+        ],
+        "group_header": {
+          "fields": [
+            "region"
+          ],
+          "types": [
+            "GROUP_CATEGORY"
+          ]
+        },
+        "primary": {
+          "kind": "square_symmetric",
+          "encoding": "full",
+          "row_keys": [
+            "sessions",
+            "minutes",
+            "tickets"
+          ],
+          "column_keys": [
+            "sessions",
+            "minutes",
+            "tickets"
+          ],
+          "values": [
+            [
+              1,
+              0.8721117804854635,
+              -0.6493033899310292
+            ],
+            [
+              0.8721117804854635,
+              1,
+              -0.6300234068845146
+            ],
+            [
+              -0.6493033899310292,
+              -0.6300234068845146,
+              1
+            ]
+          ]
+        },
+        "scalars": {
+          "determinant": 0.13441723663511534
+        }
+      },
+      {
+        "name": "cor",
+        "type": "MAT_CORRELATION",
+        "group_key": [
+          "South"
+        ],
+        "group_header": {
+          "fields": [
+            "region"
+          ],
+          "types": [
+            "GROUP_CATEGORY"
+          ]
+        },
+        "primary": {
+          "kind": "square_symmetric",
+          "encoding": "full",
+          "row_keys": [
+            "sessions",
+            "minutes",
+            "tickets"
+          ],
+          "column_keys": [
+            "sessions",
+            "minutes",
+            "tickets"
+          ],
+          "values": [
+            [
+              1,
+              0.835338928054717,
+              -0.6154210547755165
+            ],
+            [
+              0.835338928054717,
+              1,
+              -0.5188948674471734
+            ],
+            [
+              -0.6154210547755165,
+              -0.5188948674471734,
+              1
+            ]
+          ]
+        },
+        "scalars": {
+          "determinant": 0.1877262234190281
+        }
+      }
+    ],
+    "overlays": [
+      {
+        "name": "across",
+        "kind": "OVERLAY_MATRIX_GROUP_SUMMARY",
+        "scope": "matrix",
+        "ref": {
+          "matrix": {
+            "name": "cor"
+          }
+        },
+        "payload": {
+          "shape": "matrix",
+          "matrix": {
+            "row_header": {
+              "fields": [
+                "row"
+              ],
+              "types": [
+                "matrix_key"
+              ]
+            },
+            "column_header": {
+              "fields": [
+                "column"
+              ],
+              "types": [
+                "matrix_key"
+              ]
+            },
+            "row_keys": [
+              [
+                "sessions"
+              ],
+              [
+                "minutes"
+              ],
+              [
+                "tickets"
+              ]
+            ],
+            "column_keys": [
+              [
+                "sessions"
+              ],
+              [
+                "minutes"
+              ],
+              [
+                "tickets"
+              ]
+            ],
+            "cells": [
+              [
+                {
+                  "value": 1,
+                  "present": true
+                },
+                {
+                  "value": 0.848945010778181,
+                  "present": true
+                },
+                {
+                  "value": -0.5754135085824883,
+                  "present": true
+                }
+              ],
+              [
+                {
+                  "value": 0.848945010778181,
+                  "present": true
+                },
+                {
+                  "value": 1,
+                  "present": true
+                },
+                {
+                  "value": -0.49835023540294926,
+                  "present": true
+                }
+              ],
+              [
+                {
+                  "value": -0.5754135085824883,
+                  "present": true
+                },
+                {
+                  "value": -0.49835023540294926,
+                  "present": true
+                },
+                {
+                  "value": 1,
+                  "present": true
+                }
+              ]
+            ],
+            "grand_total": {
+              "present": false
+            },
+            "cell_label": "mean",
+            "normalize_applied": "none"
+          },
+          "parts": {
+            "max": {
+              "shape": "matrix",
+              "matrix": {
+                "row_header": {
+                  "fields": [
+                    "row"
+                  ],
+                  "types": [
+                    "matrix_key"
+                  ]
+                },
+                "column_header": {
+                  "fields": [
+                    "column"
+                  ],
+                  "types": [
+                    "matrix_key"
+                  ]
+                },
+                "row_keys": [
+                  [
+                    "sessions"
+                  ],
+                  [
+                    "minutes"
+                  ],
+                  [
+                    "tickets"
+                  ]
+                ],
+                "column_keys": [
+                  [
+                    "sessions"
+                  ],
+                  [
+                    "minutes"
+                  ],
+                  [
+                    "tickets"
+                  ]
+                ],
+                "cells": [
+                  [
+                    {
+                      "value": 1,
+                      "present": true
+                    },
+                    {
+                      "value": 0.8721117804854635,
+                      "present": true
+                    },
+                    {
+                      "value": -0.4615160810409194,
+                      "present": true
+                    }
+                  ],
+                  [
+                    {
+                      "value": 0.8721117804854635,
+                      "present": true
+                    },
+                    {
+                      "value": 1,
+                      "present": true
+                    },
+                    {
+                      "value": -0.3461324318771597,
+                      "present": true
+                    }
+                  ],
+                  [
+                    {
+                      "value": -0.4615160810409194,
+                      "present": true
+                    },
+                    {
+                      "value": -0.3461324318771597,
+                      "present": true
+                    },
+                    {
+                      "value": 1,
+                      "present": true
+                    }
+                  ]
+                ],
+                "grand_total": {
+                  "present": false
+                },
+                "cell_label": "max",
+                "normalize_applied": "none"
+              }
+            },
+            "min": {
+              "shape": "matrix",
+              "matrix": {
+                "row_header": {
+                  "fields": [
+                    "row"
+                  ],
+                  "types": [
+                    "matrix_key"
+                  ]
+                },
+                "column_header": {
+                  "fields": [
+                    "column"
+                  ],
+                  "types": [
+                    "matrix_key"
+                  ]
+                },
+                "row_keys": [
+                  [
+                    "sessions"
+                  ],
+                  [
+                    "minutes"
+                  ],
+                  [
+                    "tickets"
+                  ]
+                ],
+                "column_keys": [
+                  [
+                    "sessions"
+                  ],
+                  [
+                    "minutes"
+                  ],
+                  [
+                    "tickets"
+                  ]
+                ],
+                "cells": [
+                  [
+                    {
+                      "value": 1,
+                      "present": true
+                    },
+                    {
+                      "value": 0.835338928054717,
+                      "present": true
+                    },
+                    {
+                      "value": -0.6493033899310292,
+                      "present": true
+                    }
+                  ],
+                  [
+                    {
+                      "value": 0.835338928054717,
+                      "present": true
+                    },
+                    {
+                      "value": 1,
+                      "present": true
+                    },
+                    {
+                      "value": -0.6300234068845146,
+                      "present": true
+                    }
+                  ],
+                  [
+                    {
+                      "value": -0.6493033899310292,
+                      "present": true
+                    },
+                    {
+                      "value": -0.6300234068845146,
+                      "present": true
+                    },
+                    {
+                      "value": 1,
+                      "present": true
+                    }
+                  ]
+                ],
+                "grand_total": {
+                  "present": false
+                },
+                "cell_label": "min",
+                "normalize_applied": "none"
+              }
+            },
+            "n_groups": {
+              "shape": "matrix",
+              "matrix": {
+                "row_header": {
+                  "fields": [
+                    "row"
+                  ],
+                  "types": [
+                    "matrix_key"
+                  ]
+                },
+                "column_header": {
+                  "fields": [
+                    "column"
+                  ],
+                  "types": [
+                    "matrix_key"
+                  ]
+                },
+                "row_keys": [
+                  [
+                    "sessions"
+                  ],
+                  [
+                    "minutes"
+                  ],
+                  [
+                    "tickets"
+                  ]
+                ],
+                "column_keys": [
+                  [
+                    "sessions"
+                  ],
+                  [
+                    "minutes"
+                  ],
+                  [
+                    "tickets"
+                  ]
+                ],
+                "cells": [
+                  [
+                    {
+                      "value": 3,
+                      "present": true
+                    },
+                    {
+                      "value": 3,
+                      "present": true
+                    },
+                    {
+                      "value": 3,
+                      "present": true
+                    }
+                  ],
+                  [
+                    {
+                      "value": 3,
+                      "present": true
+                    },
+                    {
+                      "value": 3,
+                      "present": true
+                    },
+                    {
+                      "value": 3,
+                      "present": true
+                    }
+                  ],
+                  [
+                    {
+                      "value": 3,
+                      "present": true
+                    },
+                    {
+                      "value": 3,
+                      "present": true
+                    },
+                    {
+                      "value": 3,
+                      "present": true
+                    }
+                  ]
+                ],
+                "grand_total": {
+                  "present": false
+                },
+                "cell_label": "n_groups",
+                "normalize_applied": "none"
+              }
+            },
+            "range": {
+              "shape": "matrix",
+              "matrix": {
+                "row_header": {
+                  "fields": [
+                    "row"
+                  ],
+                  "types": [
+                    "matrix_key"
+                  ]
+                },
+                "column_header": {
+                  "fields": [
+                    "column"
+                  ],
+                  "types": [
+                    "matrix_key"
+                  ]
+                },
+                "row_keys": [
+                  [
+                    "sessions"
+                  ],
+                  [
+                    "minutes"
+                  ],
+                  [
+                    "tickets"
+                  ]
+                ],
+                "column_keys": [
+                  [
+                    "sessions"
+                  ],
+                  [
+                    "minutes"
+                  ],
+                  [
+                    "tickets"
+                  ]
+                ],
+                "cells": [
+                  [
+                    {
+                      "value": 0,
+                      "present": true
+                    },
+                    {
+                      "value": 0.03677285243074646,
+                      "present": true
+                    },
+                    {
+                      "value": 0.1877873088901098,
+                      "present": true
+                    }
+                  ],
+                  [
+                    {
+                      "value": 0.03677285243074646,
+                      "present": true
+                    },
+                    {
+                      "value": 0,
+                      "present": true
+                    },
+                    {
+                      "value": 0.28389097500735494,
+                      "present": true
+                    }
+                  ],
+                  [
+                    {
+                      "value": 0.1877873088901098,
+                      "present": true
+                    },
+                    {
+                      "value": 0.28389097500735494,
+                      "present": true
+                    },
+                    {
+                      "value": 0,
+                      "present": true
+                    }
+                  ]
+                ],
+                "grand_total": {
+                  "present": false
+                },
+                "cell_label": "range",
+                "normalize_applied": "none"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "components": {
+      "aggregations": [
+        {
+          "label": "n",
+          "n": 360,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "East"
+              ],
+              "n": 94,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "North"
+              ],
+              "n": 137,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "South"
+              ],
+              "n": 129,
+              "n_null": 0
+            }
+          ]
+        }
+      ],
+      "groupers": [
+        {
+          "field": "region",
+          "total_n": 360,
+          "operator": {
+            "buckets": [
+              {
+                "count": 94,
+                "key": "East",
+                "label": "East"
+              },
+              {
+                "count": 137,
+                "key": "North",
+                "label": "North"
+              },
+              {
+                "count": 129,
+                "key": "South",
+                "label": "South"
+              }
+            ],
+            "dict_size": 3
+          }
+        }
+      ],
+      "run": {
+        "total_records": 360,
+        "filtered_records": 360,
+        "null_records": 0
+      },
+      "matrices": [
+        {
+          "name": "cor",
+          "type": "MAT_CORRELATION",
+          "group_key": [
+            "East"
+          ],
+          "n": 94,
+          "n_null": 0,
+          "n_listwise_dropped": 0
+        },
+        {
+          "name": "cor",
+          "type": "MAT_CORRELATION",
+          "group_key": [
+            "North"
+          ],
+          "n": 137,
+          "n_null": 0,
+          "n_listwise_dropped": 0
+        },
+        {
+          "name": "cor",
+          "type": "MAT_CORRELATION",
+          "group_key": [
+            "South"
+          ],
+          "n": 129,
+          "n_null": 0,
+          "n_listwise_dropped": 0
+        }
+      ]
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

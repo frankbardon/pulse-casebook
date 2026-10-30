@@ -1,4 +1,4 @@
-// Cohorts for film 10 (overlays): o.csv (2024-2025) and o2025.csv (the 2025 slice,
+// Cohorts for film 16 (overlays): o.csv (2024-2025) and o2025.csv (the 2025 slice,
 // used as the facet against population o.pulse). Deterministic: seed 5.
 const fs = require('fs');
 const { Random, pyRound, pyFloat } = require('../../build/pyrandom');
@@ -23,3 +23,16 @@ const header = ['id', 'region', 'plan', 'revenue', 'signup', 'year'];
 const csv = rs => [header, ...rs].map(row => row.join(',') + '\r\n').join('');
 fs.writeFileSync('o.csv', csv(rows));
 fs.writeFileSync('o2025.csv', csv(rows.filter(row => row[5] === 2025)));
+
+// u.csv: a usage cohort for the matrix-result host (its own seed, so o.csv is unchanged).
+const ru = new Random(11);
+const urows = [];
+for (let i = 1; i <= 360; i++) {
+  const region = ru.choiceWeighted(['North', 'South', 'East'], [0.4, 0.35, 0.25]);
+  const pace = { North: 6, South: 7, East: 8 }[region];
+  const sessions = ru.randint(2, 30);
+  const minutes = pyRound(sessions * pace * ru.uniform(0.6, 1.4) + ru.gauss(0, 15), 1);
+  const tickets = Math.max(0, Math.round(5 - sessions / 7 + ru.gauss(0, 1.6)));
+  urows.push([i, region, sessions, pyFloat(Math.max(1, minutes)), tickets]);
+}
+fs.writeFileSync('u.csv', [['id', 'region', 'sessions', 'minutes', 'tickets'], ...urows].map(row => row.join(',') + '\r\n').join(''));
