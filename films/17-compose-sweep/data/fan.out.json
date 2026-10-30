@@ -1,0 +1,121 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "market": "north",
+        "sales": 315.7,
+        "search": 13.7,
+        "tv": 40.9,
+        "tv_ad30": 40.9,
+        "tv_ad60": 40.9,
+        "tv_ad90": 40.9,
+        "week": 1,
+        "year": 2024
+      },
+      {
+        "market": "north",
+        "sales": 386.1,
+        "search": 7.5,
+        "tv": 58.4,
+        "tv_ad30": 70.67,
+        "tv_ad60": 82.94,
+        "tv_ad90": 95.21000000000001,
+        "week": 2,
+        "year": 2024
+      },
+      {
+        "market": "north",
+        "sales": 437.9,
+        "search": 12.5,
+        "tv": 50.6,
+        "tv_ad30": 71.801,
+        "tv_ad60": 100.364,
+        "tv_ad90": 136.289,
+        "week": 3,
+        "year": 2024
+      },
+      {
+        "market": "north",
+        "sales": 357.7,
+        "search": 5.3,
+        "tv": 0,
+        "tv_ad30": 21.5403,
+        "tv_ad60": 60.2184,
+        "tv_ad90": 122.6601,
+        "week": 4,
+        "year": 2024
+      },
+      {
+        "market": "north",
+        "sales": 393.8,
+        "search": 13,
+        "tv": 35.4,
+        "tv_ad30": 41.86209,
+        "tv_ad60": 71.53104,
+        "tv_ad90": 145.79409,
+        "week": 5,
+        "year": 2024
+      },
+      {
+        "market": "north",
+        "sales": 347.6,
+        "search": 10,
+        "tv": 0,
+        "tv_ad30": 12.558627,
+        "tv_ad60": 42.918624,
+        "tv_ad90": 131.214681,
+        "week": 6,
+        "year": 2024
+      },
+      {
+        "market": "north",
+        "sales": 317.3,
+        "search": 14.2,
+        "tv": 0,
+        "tv_ad30": 3.7675881,
+        "tv_ad60": 25.751174400000004,
+        "tv_ad90": 118.09321290000003,
+        "week": 7,
+        "year": 2024
+      },
+      {
+        "market": "north",
+        "sales": 400.8,
+        "search": 8.8,
+        "tv": 57.8,
+        "tv_ad30": 58.930276429999985,
+        "tv_ad60": 73.25070464000001,
+        "tv_ad90": 164.08389161000002,
+        "week": 8,
+        "year": 2024
+      }
+    ],
+    "metadata": {
+      "total_rows": 208,
+      "filtered_rows": 8,
+      "cohort_file": "m.pulse"
+    },
+    "components": {
+      "filterers": [
+        {
+          "n_in": 208,
+          "n_out": 104,
+          "n_null_input": 0
+        },
+        {
+          "n_in": 104,
+          "n_out": 8,
+          "n_null_input": 0
+        }
+      ],
+      "run": {
+        "total_records": 208,
+        "filtered_records": 8,
+        "null_records": 0
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

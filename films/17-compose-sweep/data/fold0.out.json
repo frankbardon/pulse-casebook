@@ -1,0 +1,173 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "responses": [
+      {
+        "label": "y2024",
+        "data": [
+          {
+            "market": "north",
+            "sales": 18986.6
+          },
+          {
+            "market": "south",
+            "sales": 15086.3
+          }
+        ],
+        "metadata": {
+          "total_rows": 208,
+          "filtered_rows": 104,
+          "cohort_file": "m.pulse"
+        },
+        "components": {
+          "aggregations": [
+            {
+              "label": "sales",
+              "n": 104,
+              "n_null": 0,
+              "groups": [
+                {
+                  "group_key": [
+                    "north"
+                  ],
+                  "n": 52,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 18986.6
+                  }
+                },
+                {
+                  "group_key": [
+                    "south"
+                  ],
+                  "n": 52,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 15086.3
+                  }
+                }
+              ]
+            }
+          ],
+          "groupers": [
+            {
+              "field": "market",
+              "total_n": 104,
+              "operator": {
+                "buckets": [
+                  {
+                    "count": 52,
+                    "key": "north",
+                    "label": "north"
+                  },
+                  {
+                    "count": 52,
+                    "key": "south",
+                    "label": "south"
+                  }
+                ],
+                "dict_size": 2
+              }
+            }
+          ],
+          "filterers": [
+            {
+              "n_in": 208,
+              "n_out": 104,
+              "n_null_input": 0
+            }
+          ],
+          "run": {
+            "total_records": 208,
+            "filtered_records": 104,
+            "null_records": 0
+          }
+        }
+      },
+      {
+        "label": "y2025",
+        "data": [
+          {
+            "market": "north",
+            "sales": 18000.7
+          },
+          {
+            "market": "south",
+            "sales": 14544.7
+          }
+        ],
+        "metadata": {
+          "total_rows": 208,
+          "filtered_rows": 104,
+          "cohort_file": "m.pulse"
+        },
+        "components": {
+          "aggregations": [
+            {
+              "label": "sales",
+              "n": 104,
+              "n_null": 0,
+              "groups": [
+                {
+                  "group_key": [
+                    "north"
+                  ],
+                  "n": 52,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 18000.7
+                  }
+                },
+                {
+                  "group_key": [
+                    "south"
+                  ],
+                  "n": 52,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 14544.7
+                  }
+                }
+              ]
+            }
+          ],
+          "groupers": [
+            {
+              "field": "market",
+              "total_n": 104,
+              "operator": {
+                "buckets": [
+                  {
+                    "count": 52,
+                    "key": "north",
+                    "label": "north"
+                  },
+                  {
+                    "count": 52,
+                    "key": "south",
+                    "label": "south"
+                  }
+                ],
+                "dict_size": 2
+              }
+            }
+          ],
+          "filterers": [
+            {
+              "n_in": 208,
+              "n_out": 104,
+              "n_null_input": 0
+            }
+          ],
+          "run": {
+            "total_records": 208,
+            "filtered_records": 104,
+            "null_records": 0
+          }
+        }
+      }
+    ]
+  },
+  "errors": [],
+  "warnings": []
+}

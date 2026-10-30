@@ -1,0 +1,160 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "responses": [
+      {
+        "label": "total",
+        "data": [
+          {
+            "sales": 66618.3,
+            "tv": 4907.6
+          }
+        ],
+        "metadata": {
+          "total_rows": 208,
+          "filtered_rows": 208,
+          "cohort_file": "m.pulse"
+        },
+        "components": {
+          "aggregations": [
+            {
+              "label": "sales",
+              "n": 208,
+              "n_null": 0,
+              "operator": {
+                "sum": 66618.3
+              }
+            },
+            {
+              "label": "tv",
+              "n": 208,
+              "n_null": 0,
+              "operator": {
+                "sum": 4907.6
+              }
+            }
+          ],
+          "run": {
+            "total_records": 208,
+            "filtered_records": 208,
+            "null_records": 0
+          }
+        }
+      },
+      {
+        "label": "by_market",
+        "data": [
+          {
+            "avg_sales": 355.6471153846154,
+            "market": "north"
+          },
+          {
+            "avg_sales": 284.91346153846155,
+            "market": "south"
+          }
+        ],
+        "metadata": {
+          "total_rows": 208,
+          "filtered_rows": 208,
+          "cohort_file": "m.pulse"
+        },
+        "components": {
+          "aggregations": [
+            {
+              "label": "avg_sales",
+              "n": 208,
+              "n_null": 0,
+              "groups": [
+                {
+                  "group_key": [
+                    "north"
+                  ],
+                  "n": 104,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 36987.3
+                  }
+                },
+                {
+                  "group_key": [
+                    "south"
+                  ],
+                  "n": 104,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 29631
+                  }
+                }
+              ]
+            }
+          ],
+          "groupers": [
+            {
+              "field": "market",
+              "total_n": 208,
+              "operator": {
+                "buckets": [
+                  {
+                    "count": 104,
+                    "key": "north",
+                    "label": "north"
+                  },
+                  {
+                    "count": 104,
+                    "key": "south",
+                    "label": "south"
+                  }
+                ],
+                "dict_size": 2
+              }
+            }
+          ],
+          "run": {
+            "total_records": 208,
+            "filtered_records": 208,
+            "null_records": 0
+          }
+        }
+      },
+      {
+        "label": "request_3",
+        "data": [
+          {
+            "avg_sales": 283.9597701149425
+          }
+        ],
+        "metadata": {
+          "total_rows": 208,
+          "filtered_rows": 87,
+          "cohort_file": "m.pulse"
+        },
+        "components": {
+          "aggregations": [
+            {
+              "label": "avg_sales",
+              "n": 87,
+              "n_null": 0,
+              "operator": {
+                "sum": 24704.5
+              }
+            }
+          ],
+          "filterers": [
+            {
+              "n_in": 208,
+              "n_out": 87,
+              "n_null_input": 0
+            }
+          ],
+          "run": {
+            "total_records": 208,
+            "filtered_records": 87,
+            "null_records": 0
+          }
+        }
+      }
+    ]
+  },
+  "errors": [],
+  "warnings": []
+}

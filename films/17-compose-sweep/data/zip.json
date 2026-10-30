@@ -1,0 +1,8 @@
+{"sweep": {
+  "mode": "zip",
+  "axes": [{"name": "band", "values": ["off", "low", "high"]}, {"name": "lo", "values": ["0", "0.1", "40"]}, {"name": "hi", "values": ["0", "40", "60"]}],
+  "label": "tv_{{band}}",
+  "request": {"cohort": {"filename": "m.pulse"},
+    "filterers": [{"type": "FILTER_RANGE", "field": "tv", "values": [{"$var": "lo"}, {"$var": "hi"}]}],
+    "aggregations": [{"type": "AGG_AVERAGE", "field": "sales", "label": "avg_sales"}]}
+}}

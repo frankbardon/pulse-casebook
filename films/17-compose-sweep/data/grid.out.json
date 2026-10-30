@@ -1,0 +1,213 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "responses": [
+      {
+        "label": "north_2024",
+        "data": [
+          {
+            "sales": 18986.6,
+            "tv": 1412.2
+          }
+        ],
+        "metadata": {
+          "total_rows": 208,
+          "filtered_rows": 52,
+          "cohort_file": "m.pulse"
+        },
+        "components": {
+          "aggregations": [
+            {
+              "label": "sales",
+              "n": 52,
+              "n_null": 0,
+              "operator": {
+                "sum": 18986.6
+              }
+            },
+            {
+              "label": "tv",
+              "n": 52,
+              "n_null": 0,
+              "operator": {
+                "sum": 1412.2
+              }
+            }
+          ],
+          "filterers": [
+            {
+              "n_in": 208,
+              "n_out": 104,
+              "n_null_input": 0
+            },
+            {
+              "n_in": 104,
+              "n_out": 52,
+              "n_null_input": 0
+            }
+          ],
+          "run": {
+            "total_records": 208,
+            "filtered_records": 52,
+            "null_records": 0
+          }
+        }
+      },
+      {
+        "label": "north_2025",
+        "data": [
+          {
+            "sales": 18000.7,
+            "tv": 1126.3
+          }
+        ],
+        "metadata": {
+          "total_rows": 208,
+          "filtered_rows": 52,
+          "cohort_file": "m.pulse"
+        },
+        "components": {
+          "aggregations": [
+            {
+              "label": "sales",
+              "n": 52,
+              "n_null": 0,
+              "operator": {
+                "sum": 18000.7
+              }
+            },
+            {
+              "label": "tv",
+              "n": 52,
+              "n_null": 0,
+              "operator": {
+                "sum": 1126.3
+              }
+            }
+          ],
+          "filterers": [
+            {
+              "n_in": 208,
+              "n_out": 104,
+              "n_null_input": 0
+            },
+            {
+              "n_in": 104,
+              "n_out": 52,
+              "n_null_input": 0
+            }
+          ],
+          "run": {
+            "total_records": 208,
+            "filtered_records": 52,
+            "null_records": 0
+          }
+        }
+      },
+      {
+        "label": "south_2024",
+        "data": [
+          {
+            "sales": 15086.3,
+            "tv": 1216.3
+          }
+        ],
+        "metadata": {
+          "total_rows": 208,
+          "filtered_rows": 52,
+          "cohort_file": "m.pulse"
+        },
+        "components": {
+          "aggregations": [
+            {
+              "label": "sales",
+              "n": 52,
+              "n_null": 0,
+              "operator": {
+                "sum": 15086.3
+              }
+            },
+            {
+              "label": "tv",
+              "n": 52,
+              "n_null": 0,
+              "operator": {
+                "sum": 1216.3
+              }
+            }
+          ],
+          "filterers": [
+            {
+              "n_in": 208,
+              "n_out": 104,
+              "n_null_input": 0
+            },
+            {
+              "n_in": 104,
+              "n_out": 52,
+              "n_null_input": 0
+            }
+          ],
+          "run": {
+            "total_records": 208,
+            "filtered_records": 52,
+            "null_records": 0
+          }
+        }
+      },
+      {
+        "label": "south_2025",
+        "data": [
+          {
+            "sales": 14544.7,
+            "tv": 1152.8
+          }
+        ],
+        "metadata": {
+          "total_rows": 208,
+          "filtered_rows": 52,
+          "cohort_file": "m.pulse"
+        },
+        "components": {
+          "aggregations": [
+            {
+              "label": "sales",
+              "n": 52,
+              "n_null": 0,
+              "operator": {
+                "sum": 14544.7
+              }
+            },
+            {
+              "label": "tv",
+              "n": 52,
+              "n_null": 0,
+              "operator": {
+                "sum": 1152.8
+              }
+            }
+          ],
+          "filterers": [
+            {
+              "n_in": 208,
+              "n_out": 104,
+              "n_null_input": 0
+            },
+            {
+              "n_in": 104,
+              "n_out": 52,
+              "n_null_input": 0
+            }
+          ],
+          "run": {
+            "total_records": 208,
+            "filtered_records": 52,
+            "null_records": 0
+          }
+        }
+      }
+    ]
+  },
+  "errors": [],
+  "warnings": []
+}

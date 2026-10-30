@@ -1,0 +1,94 @@
+{
+ "sweep": {
+  "mode": "grid",
+  "axes": [
+   {
+    "name": "cut",
+    "values": [
+     79,
+     92,
+     105
+    ]
+   }
+  ],
+  "label": "holdout_from_{{cut}}",
+  "request": {
+   "cohort": {
+    "filename": "m.pulse"
+   },
+   "attributes": [
+    {
+     "type": "ATTR_FORMULA",
+     "label": "north",
+     "expression": "market == \"north\" ? 1 : 0"
+    }
+   ],
+   "windows": [
+    {
+     "type": "WIN_DISTRIBUTED_LAG",
+     "field": "tv",
+     "label": "tv_ad",
+     "partition_by": [
+      "market"
+     ],
+     "order_by": [
+      {
+       "field": "week"
+      }
+     ],
+     "params": {
+      "kernel": "geometric",
+      "max_lag": 8,
+      "decay": 0.6,
+      "normalize": false
+     }
+    },
+    {
+     "type": "WIN_DISTRIBUTED_LAG",
+     "field": "search",
+     "label": "search_ad",
+     "partition_by": [
+      "market"
+     ],
+     "order_by": [
+      {
+       "field": "week"
+      }
+     ],
+     "params": {
+      "kernel": "geometric",
+      "max_lag": 8,
+      "decay": 0.2,
+      "normalize": false
+     }
+    }
+   ],
+   "regressions": [
+    {
+     "type": "REG_OLS",
+     "name": "sales",
+     "target": "sales",
+     "predictors": [
+      "tv_ad",
+      "search_ad",
+      "north"
+     ],
+     "holdout": "week >= params.cut"
+    }
+   ],
+   "return": {
+    "exclude": [
+     "data"
+    ]
+   },
+   "params": {
+    "cut": {
+     "$var": "cut"
+    }
+   }
+  },
+  "rank": {
+   "by": "regressions.sales.holdout.rmse"
+  }
+ }
+}

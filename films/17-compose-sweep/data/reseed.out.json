@@ -1,0 +1,3132 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "responses": [
+      {
+        "label": "sample=0_tv=0.858818627122334_search=0.7477239591108323",
+        "metadata": {
+          "total_rows": 208,
+          "filtered_rows": 208,
+          "cohort_file": "m.pulse"
+        },
+        "regressions": [
+          {
+            "name": "sales",
+            "type": "REG_OLS",
+            "coefficients": {
+              "(intercept)": 153.51568817173344,
+              "north": 59.53404895695569,
+              "search_ad": -0.35723683660418326,
+              "tv_ad": 1.2460695890467226
+            },
+            "std_errors": {
+              "(intercept)": 10.80346871140824,
+              "north": 4.06927711897617,
+              "search_ad": 0.3237470738519943,
+              "tv_ad": 0.06738643821594582
+            },
+            "p_values": {
+              "(intercept)": 4.037055346775133e-31,
+              "north": 2.4348005892291416e-32,
+              "search_ad": 0.27132383747635636,
+              "tv_ad": 2.7165830032980176e-43
+            },
+            "ci_lower": {
+              "(intercept)": 132.19632948660524,
+              "north": 51.503815260159094,
+              "search_ad": -0.9961131248673135,
+              "tv_ad": 1.1130904797239989
+            },
+            "ci_upper": {
+              "(intercept)": 174.83504685686165,
+              "north": 67.56428265375229,
+              "search_ad": 0.281639451658947,
+              "tv_ad": 1.3790486983694463
+            },
+            "df": 178,
+            "conf_level": 0.95,
+            "r2": 0.8047444036005589,
+            "adj_r2": 0.8014535789421413,
+            "n_obs": 182,
+            "residual_std_err": 26.97017351197537,
+            "holdout": {
+              "n": 26,
+              "n_null": 0,
+              "rmse": 24.267230773173235,
+              "mae": 20.21272691951777,
+              "r2": 0.774194959763497
+            }
+          }
+        ],
+        "components": {
+          "run": {
+            "total_records": 208,
+            "filtered_records": 208,
+            "null_records": 0
+          }
+        },
+        "returned": {
+          "preset": "custom",
+          "digest": "rp1:d75e499bd87dd45454117bab48551ac3b83827d3c3caa6d86c0d7ccf8ef95f0c"
+        }
+      },
+      {
+        "label": "sample=1_tv=0.1939829825830104_search=0.6000004458062912",
+        "metadata": {
+          "total_rows": 208,
+          "filtered_rows": 208,
+          "cohort_file": "m.pulse"
+        },
+        "regressions": [
+          {
+            "name": "sales",
+            "type": "REG_OLS",
+            "coefficients": {
+              "(intercept)": 168.1032005038059,
+              "north": 64.00317118918481,
+              "search_ad": 3.1358663165725527,
+              "tv_ad": 1.6591205050455828
+            },
+            "std_errors": {
+              "(intercept)": 8.65056370452269,
+              "north": 3.5275361346183187,
+              "search_ad": 0.3526973990780349,
+              "tv_ad": 0.07520521126830457
+            },
+            "p_values": {
+              "(intercept)": 7.252812781841416e-46,
+              "north": 2.4837028039819393e-42,
+              "search_ad": 6.644705057345425e-16,
+              "tv_ad": 8.254819269962782e-53
+            },
+            "ci_lower": {
+              "(intercept)": 151.03234341412673,
+              "north": 57.04199879746363,
+              "search_ad": 2.439860009791081,
+              "tv_ad": 1.510711978409434
+            },
+            "ci_upper": {
+              "(intercept)": 185.1740575934851,
+              "north": 70.96434358090599,
+              "search_ad": 3.831872623354024,
+              "tv_ad": 1.8075290316817316
+            },
+            "df": 178,
+            "conf_level": 0.95,
+            "r2": 0.85107172669951,
+            "adj_r2": 0.8485616996214119,
+            "n_obs": 182,
+            "residual_std_err": 23.554320079941515,
+            "holdout": {
+              "n": 26,
+              "n_null": 0,
+              "rmse": 23.471505317596463,
+              "mae": 19.57234726613098,
+              "r2": 0.7887605255656608
+            }
+          }
+        ],
+        "components": {
+          "run": {
+            "total_records": 208,
+            "filtered_records": 208,
+            "null_records": 0
+          }
+        },
+        "returned": {
+          "preset": "custom",
+          "digest": "rp1:d75e499bd87dd45454117bab48551ac3b83827d3c3caa6d86c0d7ccf8ef95f0c"
+        }
+      },
+      {
+        "label": "sample=2_tv=0.36520823852956064_search=0.19097088920275285",
+        "metadata": {
+          "total_rows": 208,
+          "filtered_rows": 208,
+          "cohort_file": "m.pulse"
+        },
+        "regressions": [
+          {
+            "name": "sales",
+            "type": "REG_OLS",
+            "coefficients": {
+              "(intercept)": 184.097901208579,
+              "north": 64.28952094117514,
+              "search_ad": 3.742107850848776,
+              "tv_ad": 1.663084955864025
+            },
+            "std_errors": {
+              "(intercept)": 5.279551721137469,
+              "north": 2.849911772026359,
+              "search_ad": 0.3908763103335098,
+              "tv_ad": 0.05673936767869177
+            },
+            "p_values": {
+              "(intercept)": 1.802006431847578e-81,
+              "north": 4.4182722919742623e-54,
+              "search_ad": 8.940752736087885e-18,
+              "tv_ad": 4.950630140582371e-70
+            },
+            "ci_lower": {
+              "(intercept)": 173.67933474198128,
+              "north": 58.66555951620801,
+              "search_ad": 2.9707600102501486,
+              "tv_ad": 1.5511165720585498
+            },
+            "ci_upper": {
+              "(intercept)": 194.51646767517673,
+              "north": 69.91348236614228,
+              "search_ad": 4.513455691447404,
+              "tv_ad": 1.7750533396695003
+            },
+            "df": 178,
+            "conf_level": 0.95,
+            "r2": 0.9021841609291605,
+            "adj_r2": 0.9005355793717869,
+            "n_obs": 182,
+            "residual_std_err": 19.089149868623124,
+            "holdout": {
+              "n": 26,
+              "n_null": 0,
+              "rmse": 18.16592768541705,
+              "mae": 14.479566296300874,
+              "r2": 0.8734656747838889
+            }
+          }
+        ],
+        "components": {
+          "run": {
+            "total_records": 208,
+            "filtered_records": 208,
+            "null_records": 0
+          }
+        },
+        "returned": {
+          "preset": "custom",
+          "digest": "rp1:d75e499bd87dd45454117bab48551ac3b83827d3c3caa6d86c0d7ccf8ef95f0c"
+        }
+      },
+      {
+        "label": "sample=3_tv=0.34607723875277974_search=0.7894262885440568",
+        "metadata": {
+          "total_rows": 208,
+          "filtered_rows": 208,
+          "cohort_file": "m.pulse"
+        },
+        "regressions": [
+          {
+            "name": "sales",
+            "type": "REG_OLS",
+            "coefficients": {
+              "(intercept)": 166.35746112463914,
+              "north": 63.593244617077616,
+              "search_ad": 1.6346643080252041,
+              "tv_ad": 1.6646146219296527
+            },
+            "std_errors": {
+              "(intercept)": 8.035322469995773,
+              "north": 3.0579870524814554,
+              "search_ad": 0.1963277318101675,
+              "tv_ad": 0.06113534969875472
+            },
+            "p_values": {
+              "(intercept)": 2.8707146062020977e-49,
+              "north": 1.635223106519065e-49,
+              "search_ad": 2.1515149833243216e-14,
+              "tv_ad": 2.2827856806684387e-65
+            },
+            "ci_lower": {
+              "(intercept)": 150.50070932902256,
+              "north": 57.558671410280965,
+              "search_ad": 1.2472349141788805,
+              "tv_ad": 1.543971291219381
+            },
+            "ci_upper": {
+              "(intercept)": 182.21421292025573,
+              "north": 69.62781782387427,
+              "search_ad": 2.0220937018715275,
+              "tv_ad": 1.7852579526399244
+            },
+            "df": 178,
+            "conf_level": 0.95,
+            "r2": 0.8882909700289321,
+            "adj_r2": 0.8864082335687455,
+            "n_obs": 182,
+            "residual_std_err": 20.399810613801236,
+            "holdout": {
+              "n": 26,
+              "n_null": 0,
+              "rmse": 17.780208932646453,
+              "mae": 14.229143080113724,
+              "r2": 0.8787820566224498
+            }
+          }
+        ],
+        "components": {
+          "run": {
+            "total_records": 208,
+            "filtered_records": 208,
+            "null_records": 0
+          }
+        },
+        "returned": {
+          "preset": "custom",
+          "digest": "rp1:d75e499bd87dd45454117bab48551ac3b83827d3c3caa6d86c0d7ccf8ef95f0c"
+        }
+      },
+      {
+        "label": "sample=4_tv=0.827306454410521_search=0.3907014055058974",
+        "metadata": {
+          "total_rows": 208,
+          "filtered_rows": 208,
+          "cohort_file": "m.pulse"
+        },
+        "regressions": [
+          {
+            "name": "sales",
+            "type": "REG_OLS",
+            "coefficients": {
+              "(intercept)": 124.69280586375697,
+              "north": 58.50058998863511,
+              "search_ad": 1.8845050564555845,
+              "tv_ad": 1.2708369375455337
+            },
+            "std_errors": {
+              "(intercept)": 8.32932989403932,
+              "north": 3.5024388307347056,
+              "search_ad": 0.44462492598500974,
+              "tv_ad": 0.05638269590812668
+            },
+            "p_values": {
+              "(intercept)": 2.5222089819810224e-33,
+              "north": 2.741209697227017e-38,
+              "search_ad": 0.00003608830918158094,
+              "tv_ad": 4.936737900219639e-54
+            },
+            "ci_lower": {
+              "(intercept)": 108.25586543644138,
+              "north": 51.588944136751955,
+              "search_ad": 1.007090724944331,
+              "tv_ad": 1.1595724029955765
+            },
+            "ci_upper": {
+              "(intercept)": 141.12974629107256,
+              "north": 65.41223584051826,
+              "search_ad": 2.761919387966838,
+              "tv_ad": 1.382101472095491
+            },
+            "df": 178,
+            "conf_level": 0.95,
+            "r2": 0.8550627799738186,
+            "adj_r2": 0.8526200178385459,
+            "n_obs": 182,
+            "residual_std_err": 23.236566655318335,
+            "holdout": {
+              "n": 26,
+              "n_null": 0,
+              "rmse": 19.64178340508557,
+              "mae": 16.600359160248743,
+              "r2": 0.8520704191574249
+            }
+          }
+        ],
+        "components": {
+          "run": {
+            "total_records": 208,
+            "filtered_records": 208,
+            "null_records": 0
+          }
+        },
+        "returned": {
+          "preset": "custom",
+          "digest": "rp1:d75e499bd87dd45454117bab48551ac3b83827d3c3caa6d86c0d7ccf8ef95f0c"
+        }
+      },
+      {
+        "label": "sample=5_tv=0.05884721243594722_search=0.5770812961743109",
+        "metadata": {
+          "total_rows": 208,
+          "filtered_rows": 208,
+          "cohort_file": "m.pulse"
+        },
+        "regressions": [
+          {
+            "name": "sales",
+            "type": "REG_OLS",
+            "coefficients": {
+              "(intercept)": 174.4232836534261,
+              "north": 64.70657675699849,
+              "search_ad": 3.348328019318448,
+              "tv_ad": 1.6292471579640715
+            },
+            "std_errors": {
+              "(intercept)": 9.82899282309602,
+              "north": 4.080067584326171,
+              "search_ad": 0.42240457378145857,
+              "tv_ad": 0.09140772325272678
+            },
+            "p_values": {
+              "(intercept)": 3.183214763862876e-41,
+              "north": 6.966847156285451e-36,
+              "search_ad": 2.375167228378749e-13,
+              "tv_ad": 1.9266102268151868e-41
+            },
+            "ci_lower": {
+              "(intercept)": 155.02693706264486,
+              "north": 56.65504936210165,
+              "search_ad": 2.514762906182506,
+              "tv_ad": 1.4488649038313806
+            },
+            "ci_upper": {
+              "(intercept)": 193.81963024420733,
+              "north": 72.75810415189532,
+              "search_ad": 4.18189313245439,
+              "tv_ad": 1.8096294120967624
+            },
+            "df": 178,
+            "conf_level": 0.95,
+            "r2": 0.8005666915845058,
+            "adj_r2": 0.7972054560494132,
+            "n_obs": 182,
+            "residual_std_err": 27.257174981315416,
+            "holdout": {
+              "n": 26,
+              "n_null": 0,
+              "rmse": 27.926383412597335,
+              "mae": 23.878194031576015,
+              "r2": 0.7009646133569339
+            }
+          }
+        ],
+        "components": {
+          "run": {
+            "total_records": 208,
+            "filtered_records": 208,
+            "null_records": 0
+          }
+        },
+        "returned": {
+          "preset": "custom",
+          "digest": "rp1:d75e499bd87dd45454117bab48551ac3b83827d3c3caa6d86c0d7ccf8ef95f0c"
+        }
+      },
+      {
+        "label": "sample=6_tv=0.7232104584175151_search=0.6238524557989917",
+        "metadata": {
+          "total_rows": 208,
+          "filtered_rows": 208,
+          "cohort_file": "m.pulse"
+        },
+        "regressions": [
+          {
+            "name": "sales",
+            "type": "REG_OLS",
+            "coefficients": {
+              "(intercept)": 139.83540176000062,
+              "north": 60.13856861166238,
+              "search_ad": 1.4311036182109724,
+              "tv_ad": 1.4733439585784418
+            },
+            "std_errors": {
+              "(intercept)": 6.687133453998317,
+              "north": 2.6155292470070073,
+              "search_ad": 0.2558671741157217,
+              "tv_ad": 0.04562149402959549
+            },
+            "p_values": {
+              "(intercept)": 8.1196774612496e-50,
+              "north": 3.5096910096975e-55,
+              "search_ad": 8.280094519066165e-8,
+              "tv_ad": 2.4030026467291248e-76
+            },
+            "ci_lower": {
+              "(intercept)": 126.63914040270485,
+              "north": 54.97713318217826,
+              "search_ad": 0.9261802268040129,
+              "tv_ad": 1.3833153741533937
+            },
+            "ci_upper": {
+              "(intercept)": 153.03166311729638,
+              "north": 65.30000404114651,
+              "search_ad": 1.936027009617932,
+              "tv_ad": 1.56337254300349
+            },
+            "df": 178,
+            "conf_level": 0.95,
+            "r2": 0.918751630961028,
+            "adj_r2": 0.9173822764266633,
+            "n_obs": 182,
+            "residual_std_err": 17.397599187078576,
+            "holdout": {
+              "n": 26,
+              "n_null": 0,
+              "rmse": 15.372654257102432,
+              "mae": 12.824224247306056,
+              "r2": 0.9093869162253208
+            }
+          }
+        ],
+        "components": {
+          "run": {
+            "total_records": 208,
+            "filtered_records": 208,
+            "null_records": 0
+          }
+        },
+        "returned": {
+          "preset": "custom",
+          "digest": "rp1:d75e499bd87dd45454117bab48551ac3b83827d3c3caa6d86c0d7ccf8ef95f0c"
+        }
+      },
+      {
+        "label": "sample=7_tv=0.09194136978733992_search=0.9103867375482821",
+        "metadata": {
+          "total_rows": 208,
+          "filtered_rows": 208,
+          "cohort_file": "m.pulse"
+        },
+        "regressions": [
+          {
+            "name": "sales",
+            "type": "REG_OLS",
+            "coefficients": {
+              "(intercept)": 190.95457015544287,
+              "north": 65.71505461298838,
+              "search_ad": 0.9346432248236141,
+              "tv_ad": 1.6571821148832377
+            },
+            "std_errors": {
+              "(intercept)": 10.881859412006225,
+              "north": 4.2962638563133195,
+              "search_ad": 0.17542814497181855,
+              "tv_ad": 0.09521963022288217
+            },
+            "p_values": {
+              "(intercept)": 1.137653538533861e-40,
+              "north": 2.8981703523467556e-34,
+              "search_ad": 2.977693120679551e-7,
+              "tv_ad": 2.8857503105600525e-40
+            },
+            "ci_lower": {
+              "(intercept)": 169.48051675991465,
+              "north": 57.23688962677661,
+              "search_ad": 0.5884566762226549,
+              "tv_ad": 1.469277516386716
+            },
+            "ci_upper": {
+              "(intercept)": 212.42862355097108,
+              "north": 74.19321959920016,
+              "search_ad": 1.2808297734245733,
+              "tv_ad": 1.8450867133797595
+            },
+            "df": 178,
+            "conf_level": 0.95,
+            "r2": 0.7787825737466758,
+            "adj_r2": 0.7750541901581366,
+            "n_obs": 182,
+            "residual_std_err": 28.70725472403016,
+            "holdout": {
+              "n": 26,
+              "n_null": 0,
+              "rmse": 26.180951327768124,
+              "mae": 21.717540219593364,
+              "r2": 0.7371765947048521
+            }
+          }
+        ],
+        "components": {
+          "run": {
+            "total_records": 208,
+            "filtered_records": 208,
+            "null_records": 0
+          }
+        },
+        "returned": {
+          "preset": "custom",
+          "digest": "rp1:d75e499bd87dd45454117bab48551ac3b83827d3c3caa6d86c0d7ccf8ef95f0c"
+        }
+      },
+      {
+        "label": "sample=8_tv=0.04741449639298954_search=0.7635997866861581",
+        "metadata": {
+          "total_rows": 208,
+          "filtered_rows": 208,
+          "cohort_file": "m.pulse"
+        },
+        "regressions": [
+          {
+            "name": "sales",
+            "type": "REG_OLS",
+            "coefficients": {
+              "(intercept)": 175.8049136819397,
+              "north": 64.95469078557127,
+              "search_ad": 2.0273859744778515,
+              "tv_ad": 1.6340947523290137
+            },
+            "std_errors": {
+              "(intercept)": 11.129129400634227,
+              "north": 4.262304573773524,
+              "search_ad": 0.29633878141760295,
+              "tv_ad": 0.09575707208629063
+            },
+            "p_values": {
+              "(intercept)": 1.051504240034479e-35,
+              "north": 4.217823553312395e-34,
+              "search_ad": 1.2153942338596944e-10,
+              "tv_ad": 2.5916331608465932e-39
+            },
+            "ci_lower": {
+              "(intercept)": 153.84290241654128,
+              "north": 56.54354039851236,
+              "search_ad": 1.4425966866925064,
+              "tv_ad": 1.4451295763305356
+            },
+            "ci_upper": {
+              "(intercept)": 197.7669249473381,
+              "north": 73.36584117263018,
+              "search_ad": 2.6121752622631966,
+              "tv_ad": 1.8230599283274918
+            },
+            "df": 178,
+            "conf_level": 0.95,
+            "r2": 0.7827151010209069,
+            "adj_r2": 0.7790529959819334,
+            "n_obs": 182,
+            "residual_std_err": 28.450949677853746,
+            "holdout": {
+              "n": 26,
+              "n_null": 0,
+              "rmse": 27.3623578501176,
+              "mae": 23.152227331664783,
+              "r2": 0.7129217909965039
+            }
+          }
+        ],
+        "components": {
+          "run": {
+            "total_records": 208,
+            "filtered_records": 208,
+            "null_records": 0
+          }
+        },
+        "returned": {
+          "preset": "custom",
+          "digest": "rp1:d75e499bd87dd45454117bab48551ac3b83827d3c3caa6d86c0d7ccf8ef95f0c"
+        }
+      },
+      {
+        "label": "sample=9_tv=0.7385979951621204_search=0.15503167938521303",
+        "metadata": {
+          "total_rows": 208,
+          "filtered_rows": 208,
+          "cohort_file": "m.pulse"
+        },
+        "regressions": [
+          {
+            "name": "sales",
+            "type": "REG_OLS",
+            "coefficients": {
+              "(intercept)": 138.97881455244809,
+              "north": 59.85901952986923,
+              "search_ad": 2.7665758899563935,
+              "tv_ad": 1.471142296868227
+            },
+            "std_errors": {
+              "(intercept)": 5.1097465205062695,
+              "north": 2.487861936061374,
+              "search_ad": 0.34426548866281637,
+              "tv_ad": 0.04242590496172333
+            },
+            "p_values": {
+              "(intercept)": 2.6686968791195668e-65,
+              "north": 7.697343206742292e-58,
+              "search_ad": 1.2369865063137316e-13,
+              "tv_ad": 4.293618468601867e-81
+            },
+            "ci_lower": {
+              "(intercept)": 128.89533842355218,
+              "north": 54.94952033189764,
+              "search_ad": 2.0872089540422696,
+              "tv_ad": 1.3874198268373734
+            },
+            "ci_upper": {
+              "(intercept)": 149.062290681344,
+              "north": 64.76851872784081,
+              "search_ad": 3.4459428258705174,
+              "tv_ad": 1.5548647668990807
+            },
+            "df": 178,
+            "conf_level": 0.95,
+            "r2": 0.9262156246249849,
+            "adj_r2": 0.9249720677366419,
+            "n_obs": 182,
+            "residual_std_err": 16.579223943535272,
+            "holdout": {
+              "n": 26,
+              "n_null": 0,
+              "rmse": 15.966984192744516,
+              "mae": 13.604686382407168,
+              "r2": 0.9022449995503843
+            }
+          }
+        ],
+        "components": {
+          "run": {
+            "total_records": 208,
+            "filtered_records": 208,
+            "null_records": 0
+          }
+        },
+        "returned": {
+          "preset": "custom",
+          "digest": "rp1:d75e499bd87dd45454117bab48551ac3b83827d3c3caa6d86c0d7ccf8ef95f0c"
+        }
+      },
+      {
+        "label": "sample=10_tv=0.27215116945764467_search=0.47986243998820055",
+        "metadata": {
+          "total_rows": 208,
+          "filtered_rows": 208,
+          "cohort_file": "m.pulse"
+        },
+        "regressions": [
+          {
+            "name": "sales",
+            "type": "REG_OLS",
+            "coefficients": {
+              "(intercept)": 171.0606081724997,
+              "north": 63.88032498633397,
+              "search_ad": 3.5767655685609636,
+              "tv_ad": 1.6619845426969662
+            },
+            "std_errors": {
+              "(intercept)": 7.148344523617479,
+              "north": 3.162212203896874,
+              "search_ad": 0.3675879661921189,
+              "tv_ad": 0.06536110933239893
+            },
+            "p_values": {
+              "(intercept)": 1.612888067809088e-57,
+              "north": 6.20107396495574e-48,
+              "search_ad": 3.2781338366154256e-18,
+              "tv_ad": 3.727551442667341e-61
+            },
+            "ci_lower": {
+              "(intercept)": 156.95420170483033,
+              "north": 57.64007585762802,
+              "search_ad": 2.851374501216905,
+              "tv_ad": 1.53300217868606
+            },
+            "ci_upper": {
+              "(intercept)": 185.1670146401691,
+              "north": 70.12057411503991,
+              "search_ad": 4.302156635905022,
+              "tv_ad": 1.7909669067078724
+            },
+            "df": 178,
+            "conf_level": 0.95,
+            "r2": 0.880095686206932,
+            "adj_r2": 0.8780748269857005,
+            "n_obs": 182,
+            "residual_std_err": 21.134861163134904,
+            "holdout": {
+              "n": 26,
+              "n_null": 0,
+              "rmse": 21.139266104006765,
+              "mae": 17.182217048312967,
+              "r2": 0.8286543817558536
+            }
+          }
+        ],
+        "components": {
+          "run": {
+            "total_records": 208,
+            "filtered_records": 208,
+            "null_records": 0
+          }
+        },
+        "returned": {
+          "preset": "custom",
+          "digest": "rp1:d75e499bd87dd45454117bab48551ac3b83827d3c3caa6d86c0d7ccf8ef95f0c"
+        }
+      },
+      {
+        "label": "sample=11_tv=0.6467728510951208_search=0.5219914218970265",
+        "metadata": {
+          "total_rows": 208,
+          "filtered_rows": 208,
+          "cohort_file": "m.pulse"
+        },
+        "regressions": [
+          {
+            "name": "sales",
+            "type": "REG_OLS",
+            "coefficients": {
+              "(intercept)": 143.75913675920305,
+              "north": 60.89691602406422,
+              "search_ad": 2.431875727327216,
+              "tv_ad": 1.542765462225193
+            },
+            "std_errors": {
+              "(intercept)": 5.071816325336603,
+              "north": 2.115230870185826,
+              "search_ad": 0.2364533959886623,
+              "tv_ad": 0.03771262274622468
+            },
+            "p_values": {
+              "(intercept)": 6.780264478725515e-68,
+              "north": 6.941108347969231e-69,
+              "search_ad": 9.095765938392691e-20,
+              "tv_ad": 1.8859577001810445e-92
+            },
+            "ci_lower": {
+              "(intercept)": 133.75051135255387,
+              "north": 56.72275984997101,
+              "search_ad": 1.9652631146507227,
+              "tv_ad": 1.4683440932407414
+            },
+            "ci_upper": {
+              "(intercept)": 153.76776216585222,
+              "north": 65.07107219815742,
+              "search_ad": 2.898488340003709,
+              "tv_ad": 1.6171868312096445
+            },
+            "df": 178,
+            "conf_level": 0.95,
+            "r2": 0.9466573254916738,
+            "adj_r2": 0.9457582916516458,
+            "n_obs": 182,
+            "residual_std_err": 14.09676268558637,
+            "holdout": {
+              "n": 26,
+              "n_null": 0,
+              "rmse": 12.924960393173622,
+              "mae": 10.62179238291898,
+              "r2": 0.9359452068278995
+            }
+          }
+        ],
+        "components": {
+          "run": {
+            "total_records": 208,
+            "filtered_records": 208,
+            "null_records": 0
+          }
+        },
+        "returned": {
+          "preset": "custom",
+          "digest": "rp1:d75e499bd87dd45454117bab48551ac3b83827d3c3caa6d86c0d7ccf8ef95f0c"
+        }
+      },
+      {
+        "label": "sample=12_tv=0.9094511783668313_search=0.7120747943878514",
+        "metadata": {
+          "total_rows": 208,
+          "filtered_rows": 208,
+          "cohort_file": "m.pulse"
+        },
+        "regressions": [
+          {
+            "name": "sales",
+            "type": "REG_OLS",
+            "coefficients": {
+              "(intercept)": 155.6803433619473,
+              "north": 59.81491190694944,
+              "search_ad": -0.37444315929262806,
+              "tv_ad": 1.021246852624292
+            },
+            "std_errors": {
+              "(intercept)": 12.753236501669832,
+              "north": 4.825748707817916,
+              "search_ad": 0.43403885425111577,
+              "tv_ad": 0.0741414194739195
+            },
+            "p_values": {
+              "(intercept)": 2.722341661725991e-25,
+              "north": 7.746179328053403e-26,
+              "search_ad": 0.3894659955932571,
+              "tv_ad": 7.459438121690781e-30
+            },
+            "ci_lower": {
+              "(intercept)": 130.5133501824088,
+              "north": 50.29187163400238,
+              "search_ad": -1.2309671391594084,
+              "tv_ad": 0.8749375923845776
+            },
+            "ci_upper": {
+              "(intercept)": 180.84733654148582,
+              "north": 69.3379521798965,
+              "search_ad": 0.48208082057415225,
+              "tv_ad": 1.1675561128640064
+            },
+            "df": 178,
+            "conf_level": 0.95,
+            "r2": 0.7263081737668624,
+            "adj_r2": 0.7216953901786635,
+            "n_obs": 182,
+            "residual_std_err": 31.931028616531,
+            "holdout": {
+              "n": 26,
+              "n_null": 0,
+              "rmse": 28.464263140619437,
+              "mae": 23.18336190286292,
+              "r2": 0.6893344599839123
+            }
+          }
+        ],
+        "components": {
+          "run": {
+            "total_records": 208,
+            "filtered_records": 208,
+            "null_records": 0
+          }
+        },
+        "returned": {
+          "preset": "custom",
+          "digest": "rp1:d75e499bd87dd45454117bab48551ac3b83827d3c3caa6d86c0d7ccf8ef95f0c"
+        }
+      },
+      {
+        "label": "sample=13_tv=0.10502844627153227_search=0.8194804168465261",
+        "metadata": {
+          "total_rows": 208,
+          "filtered_rows": 208,
+          "cohort_file": "m.pulse"
+        },
+        "regressions": [
+          {
+            "name": "sales",
+            "type": "REG_OLS",
+            "coefficients": {
+              "(intercept)": 178.81743168067027,
+              "north": 64.99083006237255,
+              "search_ad": 1.5565695596535696,
+              "tv_ad": 1.6554844069217876
+            },
+            "std_errors": {
+              "(intercept)": 10.747245846646171,
+              "north": 4.118469535006188,
+              "search_ad": 0.23920043637397237,
+              "tv_ad": 0.09076733859034915
+            },
+            "p_values": {
+              "(intercept)": 4.173955121770351e-38,
+              "north": 1.1724668669569848e-35,
+              "search_ad": 7.5103313369592e-10,
+              "tv_ad": 1.3555279901040338e-42
+            },
+            "ci_lower": {
+              "(intercept)": 157.609022122363,
+              "north": 56.86352099192078,
+              "search_ad": 1.0845359899806335,
+              "tv_ad": 1.4763658756431524
+            },
+            "ci_upper": {
+              "(intercept)": 200.02584123897753,
+              "north": 73.11813913282433,
+              "search_ad": 2.0286031293265054,
+              "tv_ad": 1.8346029382004228
+            },
+            "df": 178,
+            "conf_level": 0.95,
+            "r2": 0.7970773714458732,
+            "adj_r2": 0.7936573271443992,
+            "n_obs": 182,
+            "residual_std_err": 27.494589180940885,
+            "holdout": {
+              "n": 26,
+              "n_null": 0,
+              "rmse": 25.597929843458093,
+              "mae": 21.346821992450447,
+              "r2": 0.7487518455735338
+            }
+          }
+        ],
+        "components": {
+          "run": {
+            "total_records": 208,
+            "filtered_records": 208,
+            "null_records": 0
+          }
+        },
+        "returned": {
+          "preset": "custom",
+          "digest": "rp1:d75e499bd87dd45454117bab48551ac3b83827d3c3caa6d86c0d7ccf8ef95f0c"
+        }
+      },
+      {
+        "label": "sample=14_tv=0.6302191964524103_search=0.10213679076782961",
+        "metadata": {
+          "total_rows": 208,
+          "filtered_rows": 208,
+          "cohort_file": "m.pulse"
+        },
+        "regressions": [
+          {
+            "name": "sales",
+            "type": "REG_OLS",
+            "coefficients": {
+              "(intercept)": 159.69514740039108,
+              "north": 61.799513261324954,
+              "search_ad": 3.1497224574302476,
+              "tv_ad": 1.577856855183033
+            },
+            "std_errors": {
+              "(intercept)": 3.8746562085462455,
+              "north": 2.0609427839476866,
+              "search_ad": 0.2879098652751926,
+              "tv_ad": 0.036855856587856416
+            },
+            "p_values": {
+              "(intercept)": 5.658644172123469e-93,
+              "north": 1.6951669120710751e-71,
+              "search_ad": 1.2409938622101182e-21,
+              "tv_ad": 1.2105600093074293e-95
+            },
+            "ci_lower": {
+              "(intercept)": 152.04897488874886,
+              "north": 57.73248815908998,
+              "search_ad": 2.581566631671516,
+              "tv_ad": 1.5051262121614608
+            },
+            "ci_upper": {
+              "(intercept)": 167.3413199120333,
+              "north": 65.86653836355993,
+              "search_ad": 3.717878283188979,
+              "tv_ad": 1.6505874982046052
+            },
+            "df": 178,
+            "conf_level": 0.95,
+            "r2": 0.9490499223130882,
+            "adj_r2": 0.9481912131385897,
+            "n_obs": 182,
+            "residual_std_err": 13.776992454074422,
+            "holdout": {
+              "n": 26,
+              "n_null": 0,
+              "rmse": 13.882246135908723,
+              "mae": 11.105787262216328,
+              "r2": 0.9261054052138076
+            }
+          }
+        ],
+        "components": {
+          "run": {
+            "total_records": 208,
+            "filtered_records": 208,
+            "null_records": 0
+          }
+        },
+        "returned": {
+          "preset": "custom",
+          "digest": "rp1:d75e499bd87dd45454117bab48551ac3b83827d3c3caa6d86c0d7ccf8ef95f0c"
+        }
+      },
+      {
+        "label": "sample=15_tv=0.22443886510495256_search=0.0012384780890717054",
+        "metadata": {
+          "total_rows": 208,
+          "filtered_rows": 208,
+          "cohort_file": "m.pulse"
+        },
+        "regressions": [
+          {
+            "name": "sales",
+            "type": "REG_OLS",
+            "coefficients": {
+              "(intercept)": 204.04987942655723,
+              "north": 65.83996757434852,
+              "search_ad": 3.5861345567770764,
+              "tv_ad": 1.670322582685419
+            },
+            "std_errors": {
+              "(intercept)": 5.848628664072133,
+              "north": 3.6262691869825527,
+              "search_ad": 0.511839141062297,
+              "tv_ad": 0.07672867043358743
+            },
+            "p_values": {
+              "(intercept)": 1.6593359558312657e-81,
+              "north": 2.2928772168693083e-42,
+              "search_ad": 4.855829093895949e-11,
+              "tv_ad": 4.675477134050662e-52
+            },
+            "ci_lower": {
+              "(intercept)": 192.50830739665844,
+              "north": 58.68395726402367,
+              "search_ad": 2.576080977793494,
+              "tv_ad": 1.5189076908480166
+            },
+            "ci_upper": {
+              "(intercept)": 215.591451456456,
+              "north": 72.99597788467337,
+              "search_ad": 4.596188135760659,
+              "tv_ad": 1.8217374745228216
+            },
+            "df": 178,
+            "conf_level": 0.95,
+            "r2": 0.8410768745718458,
+            "adj_r2": 0.8383983949297982,
+            "n_obs": 182,
+            "residual_std_err": 24.33187316690197,
+            "holdout": {
+              "n": 26,
+              "n_null": 0,
+              "rmse": 23.121172703543465,
+              "mae": 18.668255970647092,
+              "r2": 0.7950193307589171
+            }
+          }
+        ],
+        "components": {
+          "run": {
+            "total_records": 208,
+            "filtered_records": 208,
+            "null_records": 0
+          }
+        },
+        "returned": {
+          "preset": "custom",
+          "digest": "rp1:d75e499bd87dd45454117bab48551ac3b83827d3c3caa6d86c0d7ccf8ef95f0c"
+        }
+      },
+      {
+        "label": "sample=16_tv=0.8021287435301079_search=0.16701165622036268",
+        "metadata": {
+          "total_rows": 208,
+          "filtered_rows": 208,
+          "cohort_file": "m.pulse"
+        },
+        "regressions": [
+          {
+            "name": "sales",
+            "type": "REG_OLS",
+            "coefficients": {
+              "(intercept)": 128.08861705990097,
+              "north": 58.77842073967915,
+              "search_ad": 2.505582517257447,
+              "tv_ad": 1.3508503325503725
+            },
+            "std_errors": {
+              "(intercept)": 6.737916998221685,
+              "north": 3.110033711253399,
+              "search_ad": 0.4295129684675296,
+              "tv_ad": 0.05073798104664664
+            },
+            "p_values": {
+              "(intercept)": 1.0240163803772015e-44,
+              "north": 2.053626997467425e-44,
+              "search_ad": 2.509242609377758e-8,
+              "tv_ad": 5.66661527961825e-64
+            },
+            "ci_lower": {
+              "(intercept)": 114.79214042698203,
+              "north": 52.64113965114912,
+              "search_ad": 1.6579898338997503,
+              "tv_ad": 1.2507249704293675
+            },
+            "ci_upper": {
+              "(intercept)": 141.3850936928199,
+              "north": 64.91570182820918,
+              "search_ad": 3.353175200615144,
+              "tv_ad": 1.4509756946713774
+            },
+            "df": 178,
+            "conf_level": 0.95,
+            "r2": 0.885304531321512,
+            "adj_r2": 0.8833714616246835,
+            "n_obs": 182,
+            "residual_std_err": 20.67069721462414,
+            "holdout": {
+              "n": 26,
+              "n_null": 0,
+              "rmse": 18.41744597629435,
+              "mae": 15.536071668890141,
+              "r2": 0.8699375290360227
+            }
+          }
+        ],
+        "components": {
+          "run": {
+            "total_records": 208,
+            "filtered_records": 208,
+            "null_records": 0
+          }
+        },
+        "returned": {
+          "preset": "custom",
+          "digest": "rp1:d75e499bd87dd45454117bab48551ac3b83827d3c3caa6d86c0d7ccf8ef95f0c"
+        }
+      },
+      {
+        "label": "sample=17_tv=0.5054744914508236_search=0.9295826973251378",
+        "metadata": {
+          "total_rows": 208,
+          "filtered_rows": 208,
+          "cohort_file": "m.pulse"
+        },
+        "regressions": [
+          {
+            "name": "sales",
+            "type": "REG_OLS",
+            "coefficients": {
+              "(intercept)": 175.41332905309778,
+              "north": 63.498580431066316,
+              "search_ad": 0.5916791060186165,
+              "tv_ad": 1.6371443423724739
+            },
+            "std_errors": {
+              "(intercept)": 6.8643359285226575,
+              "north": 2.705587517157496,
+              "search_ad": 0.10171644599102644,
+              "tv_ad": 0.05068558408015362
+            },
+            "p_values": {
+              "(intercept)": 1.8605924905981737e-61,
+              "north": 2.242076699725593e-56,
+              "search_ad": 2.7276198259985198e-8,
+              "tv_ad": 2.3465193597334348e-76
+            },
+            "ci_lower": {
+              "(intercept)": 161.86737971917213,
+              "north": 58.15942573241145,
+              "search_ad": 0.39095381544881624,
+              "tv_ad": 1.5371223794237643
+            },
+            "ci_upper": {
+              "(intercept)": 188.95927838702343,
+              "north": 68.83773512972118,
+              "search_ad": 0.7924043965884168,
+              "tv_ad": 1.7371663053211834
+            },
+            "df": 178,
+            "conf_level": 0.95,
+            "r2": 0.9124629340100202,
+            "adj_r2": 0.9109875902012003,
+            "n_obs": 182,
+            "residual_std_err": 18.058346766231146,
+            "holdout": {
+              "n": 26,
+              "n_null": 0,
+              "rmse": 14.918223548704354,
+              "mae": 12.223661732081892,
+              "r2": 0.9146649567666512
+            }
+          }
+        ],
+        "components": {
+          "run": {
+            "total_records": 208,
+            "filtered_records": 208,
+            "null_records": 0
+          }
+        },
+        "returned": {
+          "preset": "custom",
+          "digest": "rp1:d75e499bd87dd45454117bab48551ac3b83827d3c3caa6d86c0d7ccf8ef95f0c"
+        }
+      },
+      {
+        "label": "sample=18_tv=0.5277698361273211_search=0.45339138223085984",
+        "metadata": {
+          "total_rows": 208,
+          "filtered_rows": 208,
+          "cohort_file": "m.pulse"
+        },
+        "regressions": [
+          {
+            "name": "sales",
+            "type": "REG_OLS",
+            "coefficients": {
+              "(intercept)": 156.31297857719517,
+              "north": 62.197187572506614,
+              "search_ad": 3.1640213974775175,
+              "tv_ad": 1.6109686897422417
+            },
+            "std_errors": {
+              "(intercept)": 4.689152561813048,
+              "north": 2.0769867435268385,
+              "search_ad": 0.24766863346863544,
+              "tv_ad": 0.038625076745010464
+            },
+            "p_values": {
+              "(intercept)": 1.8887396506028962e-78,
+              "north": 2.0690910042028966e-71,
+              "search_ad": 6.0608737052995196e-27,
+              "tv_ad": 8.31893910805025e-94
+            },
+            "ci_lower": {
+              "(intercept)": 147.05949452822355,
+              "north": 58.098501627061495,
+              "search_ad": 2.6752768494975085,
+              "tv_ad": 1.5347467014749065
+            },
+            "ci_upper": {
+              "(intercept)": 165.56646262616678,
+              "north": 66.29587351795173,
+              "search_ad": 3.6527659454575265,
+              "tv_ad": 1.687190678009577
+            },
+            "df": 178,
+            "conf_level": 0.95,
+            "r2": 0.9483736266223338,
+            "adj_r2": 0.9475035192058563,
+            "n_obs": 182,
+            "residual_std_err": 13.868126812971365,
+            "holdout": {
+              "n": 26,
+              "n_null": 0,
+              "rmse": 13.087938371933252,
+              "mae": 10.27298479317059,
+              "r2": 0.9343196173872073
+            }
+          }
+        ],
+        "components": {
+          "run": {
+            "total_records": 208,
+            "filtered_records": 208,
+            "null_records": 0
+          }
+        },
+        "returned": {
+          "preset": "custom",
+          "digest": "rp1:d75e499bd87dd45454117bab48551ac3b83827d3c3caa6d86c0d7ccf8ef95f0c"
+        }
+      },
+      {
+        "label": "sample=19_tv=0.18369427425929574_search=0.5378535219645042",
+        "metadata": {
+          "total_rows": 208,
+          "filtered_rows": 208,
+          "cohort_file": "m.pulse"
+        },
+        "regressions": [
+          {
+            "name": "sales",
+            "type": "REG_OLS",
+            "coefficients": {
+              "(intercept)": 171.53320738844894,
+              "north": 64.18119054587865,
+              "search_ad": 3.4513189268951066,
+              "tv_ad": 1.6572350713336643
+            },
+            "std_errors": {
+              "(intercept)": 8.369413468166718,
+              "north": 3.559862846371464,
+              "search_ad": 0.38830994444849676,
+              "tv_ad": 0.07624976983611821
+            },
+            "p_values": {
+              "(intercept)": 1.0214752579044766e-48,
+              "north": 5.1724207697755366e-42,
+              "search_ad": 6.771943864752381e-16,
+              "tv_ad": 5.756747265275823e-52
+            },
+            "ci_lower": {
+              "(intercept)": 155.01716680200562,
+              "north": 57.15622523899418,
+              "search_ad": 2.6850355036869873,
+              "tv_ad": 1.506765232782822
+            },
+            "ci_upper": {
+              "(intercept)": 188.04924797489227,
+              "north": 71.20615585276312,
+              "search_ad": 4.217602350103226,
+              "tv_ad": 1.8077049098845066
+            },
+            "df": 178,
+            "conf_level": 0.95,
+            "r2": 0.848148537808236,
+            "adj_r2": 0.8455892435016332,
+            "n_obs": 182,
+            "residual_std_err": 23.78436079995427,
+            "holdout": {
+              "n": 26,
+              "n_null": 0,
+              "rmse": 24.082450323264972,
+              "mae": 20.127800733298077,
+              "r2": 0.7776206084748882
+            }
+          }
+        ],
+        "components": {
+          "run": {
+            "total_records": 208,
+            "filtered_records": 208,
+            "null_records": 0
+          }
+        },
+        "returned": {
+          "preset": "custom",
+          "digest": "rp1:d75e499bd87dd45454117bab48551ac3b83827d3c3caa6d86c0d7ccf8ef95f0c"
+        }
+      },
+      {
+        "label": "sample=20_tv=0.4042394215287858_search=0.31953709828007604",
+        "metadata": {
+          "total_rows": 208,
+          "filtered_rows": 208,
+          "cohort_file": "m.pulse"
+        },
+        "regressions": [
+          {
+            "name": "sales",
+            "type": "REG_OLS",
+            "coefficients": {
+              "(intercept)": 173.46915902680192,
+              "north": 63.57601885444467,
+              "search_ad": 3.6822825006734394,
+              "tv_ad": 1.6526104842015654
+            },
+            "std_errors": {
+              "(intercept)": 5.25959005625962,
+              "north": 2.590804897867042,
+              "search_ad": 0.3379597302251352,
+              "tv_ad": 0.05068850109950833
+            },
+            "p_values": {
+              "(intercept)": 9.686271565396281e-78,
+              "north": 5.179778946722321e-59,
+              "search_ad": 1.6622718987849725e-21,
+              "tv_ad": 5.647797545849646e-77
+            },
+            "ci_lower": {
+              "(intercept)": 163.08998452817775,
+              "north": 58.46337398303516,
+              "search_ad": 3.015359227948041,
+              "tv_ad": 1.5525827648626096
+            },
+            "ci_upper": {
+              "(intercept)": 183.84833352542609,
+              "north": 68.68866372585418,
+              "search_ad": 4.349205773398838,
+              "tv_ad": 1.7526382035405212
+            },
+            "df": 178,
+            "conf_level": 0.95,
+            "r2": 0.9193547564871506,
+            "adj_r2": 0.917995566989743,
+            "n_obs": 182,
+            "residual_std_err": 17.33290569368181,
+            "holdout": {
+              "n": 26,
+              "n_null": 0,
+              "rmse": 16.691571647851543,
+              "mae": 13.262375990729415,
+              "r2": 0.8931713713758469
+            }
+          }
+        ],
+        "components": {
+          "run": {
+            "total_records": 208,
+            "filtered_records": 208,
+            "null_records": 0
+          }
+        },
+        "returned": {
+          "preset": "custom",
+          "digest": "rp1:d75e499bd87dd45454117bab48551ac3b83827d3c3caa6d86c0d7ccf8ef95f0c"
+        }
+      },
+      {
+        "label": "sample=21_tv=0.14011008011083773_search=0.08863333465720619",
+        "metadata": {
+          "total_rows": 208,
+          "filtered_rows": 208,
+          "cohort_file": "m.pulse"
+        },
+        "regressions": [
+          {
+            "name": "sales",
+            "type": "REG_OLS",
+            "coefficients": {
+              "(intercept)": 203.77405262336532,
+              "north": 66.04375356620662,
+              "search_ad": 3.798904695292809,
+              "tv_ad": 1.6561241683695542
+            },
+            "std_errors": {
+              "(intercept)": 6.671330086327835,
+              "north": 3.93595331025379,
+              "search_ad": 0.5517430028468228,
+              "tv_ad": 0.08605872955589419
+            },
+            "p_values": {
+              "(intercept)": 1.0790954376356606e-72,
+              "north": 1.6608001911085212e-38,
+              "search_ad": 9.534933456145015e-11,
+              "tv_ad": 2.3572851869642894e-45
+            },
+            "ci_lower": {
+              "(intercept)": 190.60897732980519,
+              "north": 58.27661852553131,
+              "search_ad": 2.7101055980843496,
+              "tv_ad": 1.486297516171161
+            },
+            "ci_upper": {
+              "(intercept)": 216.93912791692546,
+              "north": 73.81088860688193,
+              "search_ad": 4.887703792501268,
+              "tv_ad": 1.8259508205679476
+            },
+            "df": 178,
+            "conf_level": 0.95,
+            "r2": 0.812877805398428,
+            "adj_r2": 0.8097240605455925,
+            "n_obs": 182,
+            "residual_std_err": 26.402475386182175,
+            "holdout": {
+              "n": 26,
+              "n_null": 0,
+              "rmse": 25.977735902834958,
+              "mae": 21.235651608577218,
+              "r2": 0.7412408081971518
+            }
+          }
+        ],
+        "components": {
+          "run": {
+            "total_records": 208,
+            "filtered_records": 208,
+            "null_records": 0
+          }
+        },
+        "returned": {
+          "preset": "custom",
+          "digest": "rp1:d75e499bd87dd45454117bab48551ac3b83827d3c3caa6d86c0d7ccf8ef95f0c"
+        }
+      },
+      {
+        "label": "sample=22_tv=0.4464082948101626_search=0.285262634609101",
+        "metadata": {
+          "total_rows": 208,
+          "filtered_rows": 208,
+          "cohort_file": "m.pulse"
+        },
+        "regressions": [
+          {
+            "name": "sales",
+            "type": "REG_OLS",
+            "coefficients": {
+              "(intercept)": 172.21846562512863,
+              "north": 63.35984792472841,
+              "search_ad": 3.628276326233065,
+              "tv_ad": 1.6447107576184974
+            },
+            "std_errors": {
+              "(intercept)": 4.815959505748981,
+              "north": 2.41648214789264,
+              "search_ad": 0.3203949905428383,
+              "tv_ad": 0.046457994426914416
+            },
+            "p_values": {
+              "(intercept)": 3.54455443620958e-83,
+              "north": 4.976558517915199e-63,
+              "search_ad": 9.761238871434542e-23,
+              "tv_ad": 1.7049973576760586e-82
+            },
+            "ci_lower": {
+              "(intercept)": 162.71474317645854,
+              "north": 58.59120823655766,
+              "search_ad": 2.9960149751090466,
+              "tv_ad": 1.5530314392961166
+            },
+            "ci_upper": {
+              "(intercept)": 181.72218807379872,
+              "north": 68.12848761289916,
+              "search_ad": 4.2605376773570836,
+              "tv_ad": 1.7363900759408781
+            },
+            "df": 178,
+            "conf_level": 0.95,
+            "r2": 0.9298360959516401,
+            "adj_r2": 0.9286535582429598,
+            "n_obs": 182,
+            "residual_std_err": 16.167351041593655,
+            "holdout": {
+              "n": 26,
+              "n_null": 0,
+              "rmse": 15.4154170125844,
+              "mae": 12.18859560187397,
+              "r2": 0.9088820906412324
+            }
+          }
+        ],
+        "components": {
+          "run": {
+            "total_records": 208,
+            "filtered_records": 208,
+            "null_records": 0
+          }
+        },
+        "returned": {
+          "preset": "custom",
+          "digest": "rp1:d75e499bd87dd45454117bab48551ac3b83827d3c3caa6d86c0d7ccf8ef95f0c"
+        }
+      },
+      {
+        "label": "sample=23_tv=0.7742392935809412_search=0.6800295668543698",
+        "metadata": {
+          "total_rows": 208,
+          "filtered_rows": 208,
+          "cohort_file": "m.pulse"
+        },
+        "regressions": [
+          {
+            "name": "sales",
+            "type": "REG_OLS",
+            "coefficients": {
+              "(intercept)": 142.1044925189919,
+              "north": 59.77920334226834,
+              "search_ad": 0.7016597050525322,
+              "tv_ad": 1.4121657020420655
+            },
+            "std_errors": {
+              "(intercept)": 8.105015588251986,
+              "north": 3.0916782956750364,
+              "search_ad": 0.27556649706662534,
+              "tv_ad": 0.05318187094271487
+            },
+            "p_values": {
+              "(intercept)": 1.253729115746536e-40,
+              "north": 1.3304088747484567e-45,
+              "search_ad": 0.011736341966067584,
+              "tv_ad": 8.26730947718822e-64
+            },
+            "ci_lower": {
+              "(intercept)": 126.11020965574512,
+              "north": 53.67814448004202,
+              "search_ad": 0.15786204621690814,
+              "tv_ad": 1.307217614306442
+            },
+            "ci_upper": {
+              "(intercept)": 158.09877538223867,
+              "north": 65.88026220449466,
+              "search_ad": 1.245457363888156,
+              "tv_ad": 1.517113789777689
+            },
+            "df": 178,
+            "conf_level": 0.95,
+            "r2": 0.8867652425589317,
+            "adj_r2": 0.8848567915908239,
+            "n_obs": 182,
+            "residual_std_err": 20.538648968662795,
+            "holdout": {
+              "n": 26,
+              "n_null": 0,
+              "rmse": 18.124779792732085,
+              "mae": 15.07974791841944,
+              "r2": 0.8740382548503498
+            }
+          }
+        ],
+        "components": {
+          "run": {
+            "total_records": 208,
+            "filtered_records": 208,
+            "null_records": 0
+          }
+        },
+        "returned": {
+          "preset": "custom",
+          "digest": "rp1:d75e499bd87dd45454117bab48551ac3b83827d3c3caa6d86c0d7ccf8ef95f0c"
+        }
+      },
+      {
+        "label": "sample=24_tv=0.14288507539626555_search=0.03470835296177603",
+        "metadata": {
+          "total_rows": 208,
+          "filtered_rows": 208,
+          "cohort_file": "m.pulse"
+        },
+        "regressions": [
+          {
+            "name": "sales",
+            "type": "REG_OLS",
+            "coefficients": {
+              "(intercept)": 206.732644147521,
+              "north": 66.21066265647731,
+              "search_ad": 3.6974084711661335,
+              "tv_ad": 1.6575044385558286
+            },
+            "std_errors": {
+              "(intercept)": 6.4702268956825275,
+              "north": 3.9555216018861636,
+              "search_ad": 0.5575635934203149,
+              "tv_ad": 0.08642433940423713
+            },
+            "p_values": {
+              "(intercept)": 1.2206988971218016e-75,
+              "north": 2.1674650929751729e-38,
+              "search_ad": 3.8433386594580013e-10,
+              "tv_ad": 3.552476019976909e-45
+            },
+            "ci_lower": {
+              "(intercept)": 193.9644220470065,
+              "north": 58.40491192307313,
+              "search_ad": 2.597123131759877,
+              "tv_ad": 1.48695629887005
+            },
+            "ci_upper": {
+              "(intercept)": 219.5008662480355,
+              "north": 74.01641338988149,
+              "search_ad": 4.79769381057239,
+              "tv_ad": 1.8280525782416073
+            },
+            "df": 178,
+            "conf_level": 0.95,
+            "r2": 0.8108891020524998,
+            "adj_r2": 0.8077018397275418,
+            "n_obs": 182,
+            "residual_std_err": 26.542405124659183,
+            "holdout": {
+              "n": 26,
+              "n_null": 0,
+              "rmse": 25.858543621023756,
+              "mae": 21.091966283837515,
+              "r2": 0.7436098632245034
+            }
+          }
+        ],
+        "components": {
+          "run": {
+            "total_records": 208,
+            "filtered_records": 208,
+            "null_records": 0
+          }
+        },
+        "returned": {
+          "preset": "custom",
+          "digest": "rp1:d75e499bd87dd45454117bab48551ac3b83827d3c3caa6d86c0d7ccf8ef95f0c"
+        }
+      },
+      {
+        "label": "sample=25_tv=0.8452814889474659_search=0.8592542071459396",
+        "metadata": {
+          "total_rows": 208,
+          "filtered_rows": 208,
+          "cohort_file": "m.pulse"
+        },
+        "regressions": [
+          {
+            "name": "sales",
+            "type": "REG_OLS",
+            "coefficients": {
+              "(intercept)": 166.46678790330031,
+              "north": 59.941603476995226,
+              "search_ad": -0.6028191373497732,
+              "tv_ad": 1.3418899085439395
+            },
+            "std_errors": {
+              "(intercept)": 9.973265873812363,
+              "north": 3.810169030901647,
+              "search_ad": 0.20925906697570731,
+              "tv_ad": 0.06446046901738874
+            },
+            "p_values": {
+              "(intercept)": 2.955236393074101e-38,
+              "north": 1.6134123291676148e-35,
+              "search_ad": 0.004455166577368352,
+              "tv_ad": 1.4352538655679054e-49
+            },
+            "ci_lower": {
+              "(intercept)": 146.7857356315028,
+              "north": 52.42268872927332,
+              "search_ad": -1.0157669808751923,
+              "tv_ad": 1.214684850918131
+            },
+            "ci_upper": {
+              "(intercept)": 186.14784017509783,
+              "north": 67.46051822471713,
+              "search_ad": -0.18987129382435403,
+              "tv_ad": 1.469094966169748
+            },
+            "df": 178,
+            "conf_level": 0.95,
+            "r2": 0.8284773204034903,
+            "adj_r2": 0.8255864887248975,
+            "n_obs": 182,
+            "residual_std_err": 25.278003617400433,
+            "holdout": {
+              "n": 26,
+              "n_null": 0,
+              "rmse": 24.245179574678655,
+              "mae": 20.079315073870216,
+              "r2": 0.7746051433169698
+            }
+          }
+        ],
+        "components": {
+          "run": {
+            "total_records": 208,
+            "filtered_records": 208,
+            "null_records": 0
+          }
+        },
+        "returned": {
+          "preset": "custom",
+          "digest": "rp1:d75e499bd87dd45454117bab48551ac3b83827d3c3caa6d86c0d7ccf8ef95f0c"
+        }
+      },
+      {
+        "label": "sample=26_tv=0.5831207662576406_search=0.5595216717494815",
+        "metadata": {
+          "total_rows": 208,
+          "filtered_rows": 208,
+          "cohort_file": "m.pulse"
+        },
+        "regressions": [
+          {
+            "name": "sales",
+            "type": "REG_OLS",
+            "coefficients": {
+              "(intercept)": 148.56792016718296,
+              "north": 61.55513874782985,
+              "search_ad": 2.560120641601303,
+              "tv_ad": 1.5812120206144633
+            },
+            "std_errors": {
+              "(intercept)": 4.999339896939524,
+              "north": 2.053963998292758,
+              "search_ad": 0.21861974646065843,
+              "tv_ad": 0.037433989356519044
+            },
+            "p_values": {
+              "(intercept)": 6.448722084363614e-71,
+              "north": 1.8452022266717945e-71,
+              "search_ad": 7.50133036866049e-24,
+              "tv_ad": 1.070034948650466e-94
+            },
+            "ci_lower": {
+              "(intercept)": 138.70231835920285,
+              "north": 57.50188544783159,
+              "search_ad": 2.1287006120764502,
+              "tv_ad": 1.5073405014361685
+            },
+            "ci_upper": {
+              "(intercept)": 158.43352197516307,
+              "north": 65.6083920478281,
+              "search_ad": 2.991540671126156,
+              "tv_ad": 1.6550835397927581
+            },
+            "df": 178,
+            "conf_level": 0.95,
+            "r2": 0.9496514079521962,
+            "adj_r2": 0.9488028361761096,
+            "n_obs": 182,
+            "residual_std_err": 13.695429620901493,
+            "holdout": {
+              "n": 26,
+              "n_null": 0,
+              "rmse": 12.40275741135139,
+              "mae": 10.067527946616394,
+              "r2": 0.9410166153658056
+            }
+          }
+        ],
+        "components": {
+          "run": {
+            "total_records": 208,
+            "filtered_records": 208,
+            "null_records": 0
+          }
+        },
+        "returned": {
+          "preset": "custom",
+          "digest": "rp1:d75e499bd87dd45454117bab48551ac3b83827d3c3caa6d86c0d7ccf8ef95f0c"
+        }
+      },
+      {
+        "label": "sample=27_tv=0.29388765174819664_search=0.44743954419228305",
+        "metadata": {
+          "total_rows": 208,
+          "filtered_rows": 208,
+          "cohort_file": "m.pulse"
+        },
+        "regressions": [
+          {
+            "name": "sales",
+            "type": "REG_OLS",
+            "coefficients": {
+              "(intercept)": 172.0636146606645,
+              "north": 63.86139530396485,
+              "search_ad": 3.6409013116727995,
+              "tv_ad": 1.6618788731431267
+            },
+            "std_errors": {
+              "(intercept)": 6.774822517373853,
+              "north": 3.066669658938241,
+              "search_ad": 0.36719815192525196,
+              "tv_ad": 0.06282551525189735
+            },
+            "p_values": {
+              "(intercept)": 4.401473897686564e-61,
+              "north": 1.3747161799139591e-49,
+              "search_ad": 9.970681499878816e-19,
+              "tv_ad": 1.4231661139823378e-63
+            },
+            "ci_lower": {
+              "(intercept)": 158.69430938156873,
+              "north": 57.80968800752358,
+              "search_ad": 2.91627949635306,
+              "tv_ad": 1.5379002020317998
+            },
+            "ci_upper": {
+              "(intercept)": 185.4329199397603,
+              "north": 69.91310260040612,
+              "search_ad": 4.36552312699254,
+              "tv_ad": 1.7858575442544535
+            },
+            "df": 178,
+            "conf_level": 0.95,
+            "r2": 0.8871744733622711,
+            "adj_r2": 0.8852729195425341,
+            "n_obs": 182,
+            "residual_std_err": 20.50150200191695,
+            "holdout": {
+              "n": 26,
+              "n_null": 0,
+              "rmse": 20.42452672722471,
+              "mae": 16.502302876781062,
+              "r2": 0.8400452301577148
+            }
+          }
+        ],
+        "components": {
+          "run": {
+            "total_records": 208,
+            "filtered_records": 208,
+            "null_records": 0
+          }
+        },
+        "returned": {
+          "preset": "custom",
+          "digest": "rp1:d75e499bd87dd45454117bab48551ac3b83827d3c3caa6d86c0d7ccf8ef95f0c"
+        }
+      },
+      {
+        "label": "sample=28_tv=0.018897313571013135_search=0.8852897726005582",
+        "metadata": {
+          "total_rows": 208,
+          "filtered_rows": 208,
+          "cohort_file": "m.pulse"
+        },
+        "regressions": [
+          {
+            "name": "sales",
+            "type": "REG_OLS",
+            "coefficients": {
+              "(intercept)": 190.43832245534685,
+              "north": 65.88967307900111,
+              "search_ad": 1.1020994679328648,
+              "tv_ad": 1.630242170467665
+            },
+            "std_errors": {
+              "(intercept)": 11.588803956273166,
+              "north": 4.53102442408356,
+              "search_ad": 0.20534125235279885,
+              "tv_ad": 0.10279824339308383
+            },
+            "p_values": {
+              "(intercept)": 1.6013754126127684e-37,
+              "north": 4.387845955802032e-32,
+              "search_ad": 2.4690233148553104e-7,
+              "tv_ad": 6.991461388105451e-36
+            },
+            "ci_lower": {
+              "(intercept)": 167.5691982068984,
+              "north": 56.94823607496667,
+              "search_ad": 0.6968829649091703,
+              "tv_ad": 1.427382081579363
+            },
+            "ci_upper": {
+              "(intercept)": 213.3074467037953,
+              "north": 74.83111008303555,
+              "search_ad": 1.5073159709565593,
+              "tv_ad": 1.8331022593559672
+            },
+            "df": 178,
+            "conf_level": 0.95,
+            "r2": 0.7540071199144505,
+            "adj_r2": 0.7498611724972783,
+            "n_obs": 182,
+            "residual_std_err": 30.27214980566399,
+            "holdout": {
+              "n": 26,
+              "n_null": 0,
+              "rmse": 28.15745388315303,
+              "mae": 23.40124672709496,
+              "r2": 0.6959955405414784
+            }
+          }
+        ],
+        "components": {
+          "run": {
+            "total_records": 208,
+            "filtered_records": 208,
+            "null_records": 0
+          }
+        },
+        "returned": {
+          "preset": "custom",
+          "digest": "rp1:d75e499bd87dd45454117bab48551ac3b83827d3c3caa6d86c0d7ccf8ef95f0c"
+        }
+      },
+      {
+        "label": "sample=29_tv=0.9491553014638587_search=0.33352883721369614",
+        "metadata": {
+          "total_rows": 208,
+          "filtered_rows": 208,
+          "cohort_file": "m.pulse"
+        },
+        "regressions": [
+          {
+            "name": "sales",
+            "type": "REG_OLS",
+            "coefficients": {
+              "(intercept)": 138.0478521384792,
+              "north": 59.93443677812014,
+              "search_ad": 2.1155658635896977,
+              "tv_ad": 0.7361995657299141
+            },
+            "std_errors": {
+              "(intercept)": 12.986477395591137,
+              "north": 5.302384283634724,
+              "search_ad": 0.7001840210697233,
+              "tv_ad": 0.06574413300231807
+            },
+            "p_values": {
+              "(intercept)": 9.523019950948882e-21,
+              "north": 1.1226156632419716e-22,
+              "search_ad": 0.002886508317908699,
+              "tv_ad": 2.256159068002882e-22
+            },
+            "ci_lower": {
+              "(intercept)": 112.42058583644832,
+              "north": 49.470812969053725,
+              "search_ad": 0.7338360979434386,
+              "tv_ad": 0.6064613501289275
+            },
+            "ci_upper": {
+              "(intercept)": 163.67511844051003,
+              "north": 70.39806058718655,
+              "search_ad": 3.497295629235957,
+              "tv_ad": 0.8659377813309006
+            },
+            "df": 178,
+            "conf_level": 0.95,
+            "r2": 0.6705862831566115,
+            "adj_r2": 0.6650343665805993,
+            "n_obs": 182,
+            "residual_std_err": 35.03102419783054,
+            "holdout": {
+              "n": 26,
+              "n_null": 0,
+              "rmse": 31.667940966282348,
+              "mae": 27.35267366792645,
+              "r2": 0.6154676830667657
+            }
+          }
+        ],
+        "components": {
+          "run": {
+            "total_records": 208,
+            "filtered_records": 208,
+            "null_records": 0
+          }
+        },
+        "returned": {
+          "preset": "custom",
+          "digest": "rp1:d75e499bd87dd45454117bab48551ac3b83827d3c3caa6d86c0d7ccf8ef95f0c"
+        }
+      },
+      {
+        "label": "sample=30_tv=0.45586514806788314_search=0.12276646025705014",
+        "metadata": {
+          "total_rows": 208,
+          "filtered_rows": 208,
+          "cohort_file": "m.pulse"
+        },
+        "regressions": [
+          {
+            "name": "sales",
+            "type": "REG_OLS",
+            "coefficients": {
+              "(intercept)": 180.32621832605238,
+              "north": 63.78033947227893,
+              "search_ad": 3.5588662255856134,
+              "tv_ad": 1.648568394335147
+            },
+            "std_errors": {
+              "(intercept)": 4.450335814937643,
+              "north": 2.473562041167655,
+              "search_ad": 0.3445676852963367,
+              "tv_ad": 0.04740591703679843
+            },
+            "p_values": {
+              "(intercept)": 8.760448692098261e-92,
+              "north": 5.275786761585613e-62,
+              "search_ad": 6.84267167284833e-20,
+              "tv_ad": 2.745692814414803e-81
+            },
+            "ci_lower": {
+              "(intercept)": 171.54401068123008,
+              "north": 58.89905941359886,
+              "search_ad": 2.878902940610317,
+              "tv_ad": 1.555018463650598
+            },
+            "ci_upper": {
+              "(intercept)": 189.1084259708747,
+              "north": 68.661619530959,
+              "search_ad": 4.23882951056091,
+              "tv_ad": 1.742118325019696
+            },
+            "df": 178,
+            "conf_level": 0.95,
+            "r2": 0.9263215078238223,
+            "adj_r2": 0.9250797354837743,
+            "n_obs": 182,
+            "residual_std_err": 16.56732378516122,
+            "holdout": {
+              "n": 26,
+              "n_null": 0,
+              "rmse": 15.446966217714465,
+              "mae": 12.034423353007869,
+              "r2": 0.9085087450106494
+            }
+          }
+        ],
+        "components": {
+          "run": {
+            "total_records": 208,
+            "filtered_records": 208,
+            "null_records": 0
+          }
+        },
+        "returned": {
+          "preset": "custom",
+          "digest": "rp1:d75e499bd87dd45454117bab48551ac3b83827d3c3caa6d86c0d7ccf8ef95f0c"
+        }
+      },
+      {
+        "label": "sample=31_tv=0.5640937384725783_search=0.6479198850899448",
+        "metadata": {
+          "total_rows": 208,
+          "filtered_rows": 208,
+          "cohort_file": "m.pulse"
+        },
+        "regressions": [
+          {
+            "name": "sales",
+            "type": "REG_OLS",
+            "coefficients": {
+              "(intercept)": 149.86171880912096,
+              "north": 61.772091546633916,
+              "search_ad": 2.15029266590662,
+              "tv_ad": 1.5905445636446693
+            },
+            "std_errors": {
+              "(intercept)": 5.509382655984283,
+              "north": 2.1588182149641284,
+              "search_ad": 0.1991978344804894,
+              "tv_ad": 0.03961334874688547
+            },
+            "p_values": {
+              "(intercept)": 2.6349006772961714e-65,
+              "north": 1.7038630898420099e-68,
+              "search_ad": 3.2294303583646983e-21,
+              "tv_ad": 3.789373177597261e-91
+            },
+            "ci_lower": {
+              "(intercept)": 138.98960836809923,
+              "north": 57.511920939372615,
+              "search_ad": 1.7571994663025103,
+              "tv_ad": 1.512372338296146
+            },
+            "ci_upper": {
+              "(intercept)": 160.7338292501427,
+              "north": 66.03226215389522,
+              "search_ad": 2.5433858655107295,
+              "tv_ad": 1.6687167889931926
+            },
+            "df": 178,
+            "conf_level": 0.95,
+            "r2": 0.9444248601939582,
+            "adj_r2": 0.9434882005343058,
+            "n_obs": 182,
+            "residual_std_err": 14.38872383575373,
+            "holdout": {
+              "n": 26,
+              "n_null": 0,
+              "rmse": 12.525111181868853,
+              "mae": 10.244737462820073,
+              "r2": 0.9398471275666566
+            }
+          }
+        ],
+        "components": {
+          "run": {
+            "total_records": 208,
+            "filtered_records": 208,
+            "null_records": 0
+          }
+        },
+        "returned": {
+          "preset": "custom",
+          "digest": "rp1:d75e499bd87dd45454117bab48551ac3b83827d3c3caa6d86c0d7ccf8ef95f0c"
+        }
+      },
+      {
+        "label": "sample=32_tv=0.8877870406003727_search=0.3759863335830975",
+        "metadata": {
+          "total_rows": 208,
+          "filtered_rows": 208,
+          "cohort_file": "m.pulse"
+        },
+        "regressions": [
+          {
+            "name": "sales",
+            "type": "REG_OLS",
+            "coefficients": {
+              "(intercept)": 125.48079294611225,
+              "north": 58.53589929408866,
+              "search_ad": 1.7817236768058664,
+              "tv_ad": 1.0434886021595033
+            },
+            "std_errors": {
+              "(intercept)": 10.679649057182097,
+              "north": 4.386865351532376,
+              "search_ad": 0.5654918978064526,
+              "tv_ad": 0.06445789723303694
+            },
+            "p_values": {
+              "(intercept)": 5.779291516314235e-24,
+              "north": 1.3408963521337357e-28,
+              "search_ad": 0.0019108027506562308,
+              "tv_ad": 7.955747017965318e-37
+            },
+            "ci_lower": {
+              "(intercept)": 104.40577760026062,
+              "north": 49.878943048737646,
+              "search_ad": 0.6657927730454083,
+              "tv_ad": 0.9162886196437842
+            },
+            "ci_upper": {
+              "(intercept)": 146.55580829196387,
+              "north": 67.19285553943966,
+              "search_ad": 2.8976545805663245,
+              "tv_ad": 1.1706885846752226
+            },
+            "df": 178,
+            "conf_level": 0.95,
+            "r2": 0.7737780113623108,
+            "adj_r2": 0.7699652812167318,
+            "n_obs": 182,
+            "residual_std_err": 29.03015824248602,
+            "holdout": {
+              "n": 26,
+              "n_null": 0,
+              "rmse": 24.629930137890366,
+              "mae": 21.06522436466416,
+              "r2": 0.7673947293237066
+            }
+          }
+        ],
+        "components": {
+          "run": {
+            "total_records": 208,
+            "filtered_records": 208,
+            "null_records": 0
+          }
+        },
+        "returned": {
+          "preset": "custom",
+          "digest": "rp1:d75e499bd87dd45454117bab48551ac3b83827d3c3caa6d86c0d7ccf8ef95f0c"
+        }
+      },
+      {
+        "label": "sample=33_tv=0.3963472755837381_search=0.25401251441898376",
+        "metadata": {
+          "total_rows": 208,
+          "filtered_rows": 208,
+          "cohort_file": "m.pulse"
+        },
+        "regressions": [
+          {
+            "name": "sales",
+            "type": "REG_OLS",
+            "coefficients": {
+              "(intercept)": 178.03516802759583,
+              "north": 63.85153681467812,
+              "search_ad": 3.719391963409481,
+              "tv_ad": 1.656397625733403
+            },
+            "std_errors": {
+              "(intercept)": 5.16486002716669,
+              "north": 2.663249816190229,
+              "search_ad": 0.35769817617954314,
+              "tv_ad": 0.05230190030921004
+            },
+            "p_values": {
+              "(intercept)": 1.0772053086331865e-80,
+              "north": 1.2494153312985192e-57,
+              "search_ad": 4.345045350575068e-20,
+              "tv_ad": 4.664569003732283e-75
+            },
+            "ci_lower": {
+              "(intercept)": 167.84293195795533,
+              "north": 58.59593052597715,
+              "search_ad": 3.0135172186680004,
+              "tv_ad": 1.553186055228422
+            },
+            "ci_upper": {
+              "(intercept)": 188.22740409723633,
+              "north": 69.10714310337909,
+              "search_ad": 4.425266708150962,
+              "tv_ad": 1.759609196238384
+            },
+            "df": 178,
+            "conf_level": 0.95,
+            "r2": 0.9146843674410351,
+            "adj_r2": 0.913246463521502,
+            "n_obs": 182,
+            "residual_std_err": 17.827740456763756,
+            "holdout": {
+              "n": 26,
+              "n_null": 0,
+              "rmse": 17.044057915408512,
+              "mae": 13.569060647388243,
+              "r2": 0.8886117979623422
+            }
+          }
+        ],
+        "components": {
+          "run": {
+            "total_records": 208,
+            "filtered_records": 208,
+            "null_records": 0
+          }
+        },
+        "returned": {
+          "preset": "custom",
+          "digest": "rp1:d75e499bd87dd45454117bab48551ac3b83827d3c3caa6d86c0d7ccf8ef95f0c"
+        }
+      },
+      {
+        "label": "sample=34_tv=0.6683580565934242_search=0.2621662484111126",
+        "metadata": {
+          "total_rows": 208,
+          "filtered_rows": 208,
+          "cohort_file": "m.pulse"
+        },
+        "regressions": [
+          {
+            "name": "sales",
+            "type": "REG_OLS",
+            "coefficients": {
+              "(intercept)": 147.7379266856167,
+              "north": 60.89152108897559,
+              "search_ad": 2.9880296751498876,
+              "tv_ad": 1.5407397688924003
+            },
+            "std_errors": {
+              "(intercept)": 4.352853642662006,
+              "north": 2.0969778744058454,
+              "search_ad": 0.28100964961570024,
+              "tv_ad": 0.03696844312910132
+            },
+            "p_values": {
+              "(intercept)": 1.1825330705387923e-79,
+              "north": 1.9681707713507888e-69,
+              "search_ad": 9.333232991460525e-21,
+              "tv_ad": 9.369228747846406e-94
+            },
+            "ci_lower": {
+              "(intercept)": 139.14808849653738,
+              "north": 56.75338502791335,
+              "search_ad": 2.4334906031004633,
+              "tv_ad": 1.4677869497420277
+            },
+            "ci_upper": {
+              "(intercept)": 156.32776487469604,
+              "north": 65.02965715003782,
+              "search_ad": 3.542568747199312,
+              "tv_ad": 1.6136925880427728
+            },
+            "df": 178,
+            "conf_level": 0.95,
+            "r2": 0.9474307942978523,
+            "adj_r2": 0.9465447964489396,
+            "n_obs": 182,
+            "residual_std_err": 13.994187961560998,
+            "holdout": {
+              "n": 26,
+              "n_null": 0,
+              "rmse": 13.839406205959579,
+              "mae": 11.34916570732123,
+              "r2": 0.9265607716911988
+            }
+          }
+        ],
+        "components": {
+          "run": {
+            "total_records": 208,
+            "filtered_records": 208,
+            "null_records": 0
+          }
+        },
+        "returned": {
+          "preset": "custom",
+          "digest": "rp1:d75e499bd87dd45454117bab48551ac3b83827d3c3caa6d86c0d7ccf8ef95f0c"
+        }
+      },
+      {
+        "label": "sample=35_tv=0.6938069116241068_search=0.7307158499772141",
+        "metadata": {
+          "total_rows": 208,
+          "filtered_rows": 208,
+          "cohort_file": "m.pulse"
+        },
+        "regressions": [
+          {
+            "name": "sales",
+            "type": "REG_OLS",
+            "coefficients": {
+              "(intercept)": 148.7016005941663,
+              "north": 60.86715600885089,
+              "search_ad": 0.9907288968282714,
+              "tv_ad": 1.5122890876376003
+            },
+            "std_errors": {
+              "(intercept)": 6.766687504205485,
+              "north": 2.562376314797629,
+              "search_ad": 0.19855560278726053,
+              "tv_ad": 0.045243639980616764
+            },
+            "p_values": {
+              "(intercept)": 1.371669911155783e-52,
+              "north": 4.392669411126312e-57,
+              "search_ad": 0.0000014313187693723345,
+              "tv_ad": 1.245734064258306e-78
+            },
+            "ci_lower": {
+              "(intercept)": 135.34834879458506,
+              "north": 55.810611559959085,
+              "search_ad": 0.5989030649735998,
+              "tv_ad": 1.4230061531714677
+            },
+            "ci_upper": {
+              "(intercept)": 162.05485239374755,
+              "north": 65.9237004577427,
+              "search_ad": 1.382554728682943,
+              "tv_ad": 1.6015720221037328
+            },
+            "df": 178,
+            "conf_level": 0.95,
+            "r2": 0.9219586696309149,
+            "adj_r2": 0.9206433663100876,
+            "n_obs": 182,
+            "residual_std_err": 17.050783002345682,
+            "holdout": {
+              "n": 26,
+              "n_null": 0,
+              "rmse": 15.20874154095879,
+              "mae": 12.752269291423746,
+              "r2": 0.911308959412983
+            }
+          }
+        ],
+        "components": {
+          "run": {
+            "total_records": 208,
+            "filtered_records": 208,
+            "null_records": 0
+          }
+        },
+        "returned": {
+          "preset": "custom",
+          "digest": "rp1:d75e499bd87dd45454117bab48551ac3b83827d3c3caa6d86c0d7ccf8ef95f0c"
+        }
+      },
+      {
+        "label": "sample=36_tv=0.6079878013571635_search=0.2150278546284437",
+        "metadata": {
+          "total_rows": 208,
+          "filtered_rows": 208,
+          "cohort_file": "m.pulse"
+        },
+        "regressions": [
+          {
+            "name": "sales",
+            "type": "REG_OLS",
+            "coefficients": {
+              "(intercept)": 158.36369221658802,
+              "north": 61.86074531926628,
+              "search_ad": 3.241740458320054,
+              "tv_ad": 1.5852995024210192
+            },
+            "std_errors": {
+              "(intercept)": 3.9686673972378914,
+              "north": 2.0070626159302587,
+              "search_ad": 0.27327386869040426,
+              "tv_ad": 0.03620679572304705
+            },
+            "p_values": {
+              "(intercept)": 1.024038049815672e-90,
+              "north": 2.79234575863313e-73,
+              "search_ad": 2.719075148206659e-24,
+              "tv_ad": 3.129831378519545e-97
+            },
+            "ci_lower": {
+              "(intercept)": 150.53199982187195,
+              "north": 57.900046310868696,
+              "search_ad": 2.7024670285066095,
+              "tv_ad": 1.513849703705567
+            },
+            "ci_upper": {
+              "(intercept)": 166.1953846113041,
+              "north": 65.82144432766385,
+              "search_ad": 3.7810138881334985,
+              "tv_ad": 1.6567493011364716
+            },
+            "df": 178,
+            "conf_level": 0.95,
+            "r2": 0.9517056632191221,
+            "adj_r2": 0.9508917137228151,
+            "n_obs": 182,
+            "residual_std_err": 13.413128908146927,
+            "holdout": {
+              "n": 26,
+              "n_null": 0,
+              "rmse": 13.289440234889893,
+              "mae": 10.568864879693855,
+              "r2": 0.932281618746131
+            }
+          }
+        ],
+        "components": {
+          "run": {
+            "total_records": 208,
+            "filtered_records": 208,
+            "null_records": 0
+          }
+        },
+        "returned": {
+          "preset": "custom",
+          "digest": "rp1:d75e499bd87dd45454117bab48551ac3b83827d3c3caa6d86c0d7ccf8ef95f0c"
+        }
+      },
+      {
+        "label": "sample=37_tv=0.33095980808262543_search=0.055427813275776366",
+        "metadata": {
+          "total_rows": 208,
+          "filtered_rows": 208,
+          "cohort_file": "m.pulse"
+        },
+        "regressions": [
+          {
+            "name": "sales",
+            "type": "REG_OLS",
+            "coefficients": {
+              "(intercept)": 194.20858178191978,
+              "north": 64.97352862255282,
+              "search_ad": 3.6168313275851562,
+              "tv_ad": 1.6700473360682764
+            },
+            "std_errors": {
+              "(intercept)": 5.242180393484638,
+              "north": 3.101016666957889,
+              "search_ad": 0.43616227409417235,
+              "tv_ad": 0.06270300708966907
+            },
+            "p_values": {
+              "(intercept)": 1.3728913460514757e-85,
+              "north": 6.324793343786255e-50,
+              "search_ad": 2.6415747525262717e-14,
+              "tv_ad": 5.365626733098601e-64
+            },
+            "ci_lower": {
+              "(intercept)": 183.86376317909185,
+              "north": 58.85404159690675,
+              "search_ad": 2.7561170315817227,
+              "tv_ad": 1.546310420222982
+            },
+            "ci_upper": {
+              "(intercept)": 204.5534003847477,
+              "north": 71.09301564819889,
+              "search_ad": 4.47754562358859,
+              "tv_ad": 1.7937842519135707
+            },
+            "df": 178,
+            "conf_level": 0.95,
+            "r2": 0.8839457536786834,
+            "adj_r2": 0.8819897832350657,
+            "n_obs": 182,
+            "residual_std_err": 20.792777823208848,
+            "holdout": {
+              "n": 26,
+              "n_null": 0,
+              "rmse": 19.438133811963038,
+              "mae": 15.518068318269037,
+              "r2": 0.8551220385997104
+            }
+          }
+        ],
+        "components": {
+          "run": {
+            "total_records": 208,
+            "filtered_records": 208,
+            "null_records": 0
+          }
+        },
+        "returned": {
+          "preset": "custom",
+          "digest": "rp1:d75e499bd87dd45454117bab48551ac3b83827d3c3caa6d86c0d7ccf8ef95f0c"
+        }
+      },
+      {
+        "label": "sample=38_tv=0.25300553118194585_search=0.8341699816911988",
+        "metadata": {
+          "total_rows": 208,
+          "filtered_rows": 208,
+          "cohort_file": "m.pulse"
+        },
+        "regressions": [
+          {
+            "name": "sales",
+            "type": "REG_OLS",
+            "coefficients": {
+              "(intercept)": 174.6439315006073,
+              "north": 64.34601332358547,
+              "search_ad": 1.3789931320376008,
+              "tv_ad": 1.6746786635211226
+            },
+            "std_errors": {
+              "(intercept)": 9.218764014275521,
+              "north": 3.5325840229736656,
+              "search_ad": 0.19468415468541087,
+              "tv_ad": 0.0734773407537631
+            },
+            "p_values": {
+              "(intercept)": 1.5486952443753388e-44,
+              "north": 1.577405092007845e-42,
+              "search_ad": 3.153853827237733e-11,
+              "tv_ad": 1.1302563975214142e-54
+            },
+            "ci_lower": {
+              "(intercept)": 156.45179877879434,
+              "north": 57.374879525456315,
+              "search_ad": 0.9948071418781279,
+              "tv_ad": 1.5296798835362568
+            },
+            "ci_upper": {
+              "(intercept)": 192.83606422242025,
+              "north": 71.31714712171461,
+              "search_ad": 1.7631791221970736,
+              "tv_ad": 1.8196774435059884
+            },
+            "df": 178,
+            "conf_level": 0.95,
+            "r2": 0.8507723308162141,
+            "adj_r2": 0.8482572577400829,
+            "n_obs": 182,
+            "residual_std_err": 23.57798424260092,
+            "holdout": {
+              "n": 26,
+              "n_null": 0,
+              "rmse": 20.941493887928484,
+              "mae": 17.143674260506177,
+              "r2": 0.8318454937477615
+            }
+          }
+        ],
+        "components": {
+          "run": {
+            "total_records": 208,
+            "filtered_records": 208,
+            "null_records": 0
+          }
+        },
+        "returned": {
+          "preset": "custom",
+          "digest": "rp1:d75e499bd87dd45454117bab48551ac3b83827d3c3caa6d86c0d7ccf8ef95f0c"
+        }
+      },
+      {
+        "label": "sample=39_tv=0.4815417454550783_search=0.4087230272740304",
+        "metadata": {
+          "total_rows": 208,
+          "filtered_rows": 208,
+          "cohort_file": "m.pulse"
+        },
+        "regressions": [
+          {
+            "name": "sales",
+            "type": "REG_OLS",
+            "coefficients": {
+              "(intercept)": 162.3212999670601,
+              "north": 62.70315987136852,
+              "search_ad": 3.401671417415523,
+              "tv_ad": 1.6295409451730019
+            },
+            "std_errors": {
+              "(intercept)": 4.847536968379854,
+              "north": 2.2257137817320465,
+              "search_ad": 0.2749106335318366,
+              "tv_ad": 0.042154400402808885
+            },
+            "p_values": {
+              "(intercept)": 9.461842187091958e-79,
+              "north": 1.650853940890497e-67,
+              "search_ad": 8.928280046532935e-26,
+              "tv_ad": 1.6298121084154394e-88
+            },
+            "ci_lower": {
+              "(intercept)": 152.7552631571254,
+              "north": 58.310978831118774,
+              "search_ad": 2.859168027144947,
+              "tv_ad": 1.546354257049864
+            },
+            "ci_upper": {
+              "(intercept)": 171.8873367769948,
+              "north": 67.09534091161827,
+              "search_ad": 3.9441748076860987,
+              "tv_ad": 1.7127276332961396
+            },
+            "df": 178,
+            "conf_level": 0.95,
+            "r2": 0.9406276960875947,
+            "adj_r2": 0.9396270392800822,
+            "n_obs": 182,
+            "residual_std_err": 14.872156476167815,
+            "holdout": {
+              "n": 26,
+              "n_null": 0,
+              "rmse": 14.186813820878541,
+              "mae": 11.217782459105731,
+              "r2": 0.9228274359142027
+            }
+          }
+        ],
+        "components": {
+          "run": {
+            "total_records": 208,
+            "filtered_records": 208,
+            "null_records": 0
+          }
+        },
+        "returned": {
+          "preset": "custom",
+          "digest": "rp1:d75e499bd87dd45454117bab48551ac3b83827d3c3caa6d86c0d7ccf8ef95f0c"
+        }
+      }
+    ],
+    "ranking": [
+      {
+        "label": "sample=26_tv=0.5831207662576406_search=0.5595216717494815",
+        "value": 12.40275741135139,
+        "rank": 1,
+        "slot": 26,
+        "axes": {
+          "search": 0.5595216717494815,
+          "tv": 0.5831207662576406
+        }
+      },
+      {
+        "label": "sample=31_tv=0.5640937384725783_search=0.6479198850899448",
+        "value": 12.525111181868853,
+        "rank": 2,
+        "slot": 31,
+        "axes": {
+          "search": 0.6479198850899448,
+          "tv": 0.5640937384725783
+        }
+      },
+      {
+        "label": "sample=11_tv=0.6467728510951208_search=0.5219914218970265",
+        "value": 12.924960393173622,
+        "rank": 3,
+        "slot": 11,
+        "axes": {
+          "search": 0.5219914218970265,
+          "tv": 0.6467728510951208
+        }
+      },
+      {
+        "label": "sample=18_tv=0.5277698361273211_search=0.45339138223085984",
+        "value": 13.087938371933252,
+        "rank": 4,
+        "slot": 18,
+        "axes": {
+          "search": 0.45339138223085984,
+          "tv": 0.5277698361273211
+        }
+      },
+      {
+        "label": "sample=36_tv=0.6079878013571635_search=0.2150278546284437",
+        "value": 13.289440234889893,
+        "rank": 5,
+        "slot": 36,
+        "axes": {
+          "search": 0.2150278546284437,
+          "tv": 0.6079878013571635
+        }
+      },
+      {
+        "label": "sample=34_tv=0.6683580565934242_search=0.2621662484111126",
+        "value": 13.839406205959579,
+        "rank": 6,
+        "slot": 34,
+        "axes": {
+          "search": 0.2621662484111126,
+          "tv": 0.6683580565934242
+        }
+      },
+      {
+        "label": "sample=14_tv=0.6302191964524103_search=0.10213679076782961",
+        "value": 13.882246135908723,
+        "rank": 7,
+        "slot": 14,
+        "axes": {
+          "search": 0.10213679076782961,
+          "tv": 0.6302191964524103
+        }
+      },
+      {
+        "label": "sample=39_tv=0.4815417454550783_search=0.4087230272740304",
+        "value": 14.186813820878541,
+        "rank": 8,
+        "slot": 39,
+        "axes": {
+          "search": 0.4087230272740304,
+          "tv": 0.4815417454550783
+        }
+      },
+      {
+        "label": "sample=17_tv=0.5054744914508236_search=0.9295826973251378",
+        "value": 14.918223548704354,
+        "rank": 9,
+        "slot": 17,
+        "axes": {
+          "search": 0.9295826973251378,
+          "tv": 0.5054744914508236
+        }
+      },
+      {
+        "label": "sample=35_tv=0.6938069116241068_search=0.7307158499772141",
+        "value": 15.20874154095879,
+        "rank": 10,
+        "slot": 35,
+        "axes": {
+          "search": 0.7307158499772141,
+          "tv": 0.6938069116241068
+        }
+      },
+      {
+        "label": "sample=6_tv=0.7232104584175151_search=0.6238524557989917",
+        "value": 15.372654257102432,
+        "rank": 11,
+        "slot": 6,
+        "axes": {
+          "search": 0.6238524557989917,
+          "tv": 0.7232104584175151
+        }
+      },
+      {
+        "label": "sample=22_tv=0.4464082948101626_search=0.285262634609101",
+        "value": 15.4154170125844,
+        "rank": 12,
+        "slot": 22,
+        "axes": {
+          "search": 0.285262634609101,
+          "tv": 0.4464082948101626
+        }
+      },
+      {
+        "label": "sample=30_tv=0.45586514806788314_search=0.12276646025705014",
+        "value": 15.446966217714465,
+        "rank": 13,
+        "slot": 30,
+        "axes": {
+          "search": 0.12276646025705014,
+          "tv": 0.45586514806788314
+        }
+      },
+      {
+        "label": "sample=9_tv=0.7385979951621204_search=0.15503167938521303",
+        "value": 15.966984192744516,
+        "rank": 14,
+        "slot": 9,
+        "axes": {
+          "search": 0.15503167938521303,
+          "tv": 0.7385979951621204
+        }
+      },
+      {
+        "label": "sample=20_tv=0.4042394215287858_search=0.31953709828007604",
+        "value": 16.691571647851543,
+        "rank": 15,
+        "slot": 20,
+        "axes": {
+          "search": 0.31953709828007604,
+          "tv": 0.4042394215287858
+        }
+      },
+      {
+        "label": "sample=33_tv=0.3963472755837381_search=0.25401251441898376",
+        "value": 17.044057915408512,
+        "rank": 16,
+        "slot": 33,
+        "axes": {
+          "search": 0.25401251441898376,
+          "tv": 0.3963472755837381
+        }
+      },
+      {
+        "label": "sample=3_tv=0.34607723875277974_search=0.7894262885440568",
+        "value": 17.780208932646453,
+        "rank": 17,
+        "slot": 3,
+        "axes": {
+          "search": 0.7894262885440568,
+          "tv": 0.34607723875277974
+        }
+      },
+      {
+        "label": "sample=23_tv=0.7742392935809412_search=0.6800295668543698",
+        "value": 18.124779792732085,
+        "rank": 18,
+        "slot": 23,
+        "axes": {
+          "search": 0.6800295668543698,
+          "tv": 0.7742392935809412
+        }
+      },
+      {
+        "label": "sample=2_tv=0.36520823852956064_search=0.19097088920275285",
+        "value": 18.16592768541705,
+        "rank": 19,
+        "slot": 2,
+        "axes": {
+          "search": 0.19097088920275285,
+          "tv": 0.36520823852956064
+        }
+      },
+      {
+        "label": "sample=16_tv=0.8021287435301079_search=0.16701165622036268",
+        "value": 18.41744597629435,
+        "rank": 20,
+        "slot": 16,
+        "axes": {
+          "search": 0.16701165622036268,
+          "tv": 0.8021287435301079
+        }
+      },
+      {
+        "label": "sample=37_tv=0.33095980808262543_search=0.055427813275776366",
+        "value": 19.438133811963038,
+        "rank": 21,
+        "slot": 37,
+        "axes": {
+          "search": 0.055427813275776366,
+          "tv": 0.33095980808262543
+        }
+      },
+      {
+        "label": "sample=4_tv=0.827306454410521_search=0.3907014055058974",
+        "value": 19.64178340508557,
+        "rank": 22,
+        "slot": 4,
+        "axes": {
+          "search": 0.3907014055058974,
+          "tv": 0.827306454410521
+        }
+      },
+      {
+        "label": "sample=27_tv=0.29388765174819664_search=0.44743954419228305",
+        "value": 20.42452672722471,
+        "rank": 23,
+        "slot": 27,
+        "axes": {
+          "search": 0.44743954419228305,
+          "tv": 0.29388765174819664
+        }
+      },
+      {
+        "label": "sample=38_tv=0.25300553118194585_search=0.8341699816911988",
+        "value": 20.941493887928484,
+        "rank": 24,
+        "slot": 38,
+        "axes": {
+          "search": 0.8341699816911988,
+          "tv": 0.25300553118194585
+        }
+      },
+      {
+        "label": "sample=10_tv=0.27215116945764467_search=0.47986243998820055",
+        "value": 21.139266104006765,
+        "rank": 25,
+        "slot": 10,
+        "axes": {
+          "search": 0.47986243998820055,
+          "tv": 0.27215116945764467
+        }
+      },
+      {
+        "label": "sample=15_tv=0.22443886510495256_search=0.0012384780890717054",
+        "value": 23.121172703543465,
+        "rank": 26,
+        "slot": 15,
+        "axes": {
+          "search": 0.0012384780890717054,
+          "tv": 0.22443886510495256
+        }
+      },
+      {
+        "label": "sample=1_tv=0.1939829825830104_search=0.6000004458062912",
+        "value": 23.471505317596463,
+        "rank": 27,
+        "slot": 1,
+        "axes": {
+          "search": 0.6000004458062912,
+          "tv": 0.1939829825830104
+        }
+      },
+      {
+        "label": "sample=19_tv=0.18369427425929574_search=0.5378535219645042",
+        "value": 24.082450323264972,
+        "rank": 28,
+        "slot": 19,
+        "axes": {
+          "search": 0.5378535219645042,
+          "tv": 0.18369427425929574
+        }
+      },
+      {
+        "label": "sample=25_tv=0.8452814889474659_search=0.8592542071459396",
+        "value": 24.245179574678655,
+        "rank": 29,
+        "slot": 25,
+        "axes": {
+          "search": 0.8592542071459396,
+          "tv": 0.8452814889474659
+        }
+      },
+      {
+        "label": "sample=0_tv=0.858818627122334_search=0.7477239591108323",
+        "value": 24.267230773173235,
+        "rank": 30,
+        "slot": 0,
+        "axes": {
+          "search": 0.7477239591108323,
+          "tv": 0.858818627122334
+        }
+      },
+      {
+        "label": "sample=32_tv=0.8877870406003727_search=0.3759863335830975",
+        "value": 24.629930137890366,
+        "rank": 31,
+        "slot": 32,
+        "axes": {
+          "search": 0.3759863335830975,
+          "tv": 0.8877870406003727
+        }
+      },
+      {
+        "label": "sample=13_tv=0.10502844627153227_search=0.8194804168465261",
+        "value": 25.597929843458093,
+        "rank": 32,
+        "slot": 13,
+        "axes": {
+          "search": 0.8194804168465261,
+          "tv": 0.10502844627153227
+        }
+      },
+      {
+        "label": "sample=24_tv=0.14288507539626555_search=0.03470835296177603",
+        "value": 25.858543621023756,
+        "rank": 33,
+        "slot": 24,
+        "axes": {
+          "search": 0.03470835296177603,
+          "tv": 0.14288507539626555
+        }
+      },
+      {
+        "label": "sample=21_tv=0.14011008011083773_search=0.08863333465720619",
+        "value": 25.977735902834958,
+        "rank": 34,
+        "slot": 21,
+        "axes": {
+          "search": 0.08863333465720619,
+          "tv": 0.14011008011083773
+        }
+      },
+      {
+        "label": "sample=7_tv=0.09194136978733992_search=0.9103867375482821",
+        "value": 26.180951327768124,
+        "rank": 35,
+        "slot": 7,
+        "axes": {
+          "search": 0.9103867375482821,
+          "tv": 0.09194136978733992
+        }
+      },
+      {
+        "label": "sample=8_tv=0.04741449639298954_search=0.7635997866861581",
+        "value": 27.3623578501176,
+        "rank": 36,
+        "slot": 8,
+        "axes": {
+          "search": 0.7635997866861581,
+          "tv": 0.04741449639298954
+        }
+      },
+      {
+        "label": "sample=5_tv=0.05884721243594722_search=0.5770812961743109",
+        "value": 27.926383412597335,
+        "rank": 37,
+        "slot": 5,
+        "axes": {
+          "search": 0.5770812961743109,
+          "tv": 0.05884721243594722
+        }
+      },
+      {
+        "label": "sample=28_tv=0.018897313571013135_search=0.8852897726005582",
+        "value": 28.15745388315303,
+        "rank": 38,
+        "slot": 28,
+        "axes": {
+          "search": 0.8852897726005582,
+          "tv": 0.018897313571013135
+        }
+      },
+      {
+        "label": "sample=12_tv=0.9094511783668313_search=0.7120747943878514",
+        "value": 28.464263140619437,
+        "rank": 39,
+        "slot": 12,
+        "axes": {
+          "search": 0.7120747943878514,
+          "tv": 0.9094511783668313
+        }
+      },
+      {
+        "label": "sample=29_tv=0.9491553014638587_search=0.33352883721369614",
+        "value": 31.667940966282348,
+        "rank": 40,
+        "slot": 29,
+        "axes": {
+          "search": 0.33352883721369614,
+          "tv": 0.9491553014638587
+        }
+      }
+    ],
+    "sweep_seed": 7
+  },
+  "errors": [],
+  "warnings": []
+}
