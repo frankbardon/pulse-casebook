@@ -1,0 +1,232 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "metadata": {
+      "total_rows": 600,
+      "filtered_rows": 600,
+      "cohort_file": "t.pulse"
+    },
+    "crosstab": {
+      "shape": "matrix",
+      "matrix": {
+        "row_header": {
+          "fields": [
+            "intent"
+          ],
+          "types": [
+            "GROUP_CATEGORY"
+          ]
+        },
+        "column_header": {
+          "fields": [
+            "wave"
+          ],
+          "types": [
+            "GROUP_CATEGORY"
+          ]
+        },
+        "row_keys": [
+          [
+            "Unlikely"
+          ],
+          [
+            "Maybe"
+          ],
+          [
+            "Likely"
+          ]
+        ],
+        "column_keys": [
+          [
+            "W1"
+          ],
+          [
+            "W2"
+          ]
+        ],
+        "cells": [
+          [
+            {
+              "value": 0.36333333333333334,
+              "present": true
+            },
+            {
+              "value": 0.32,
+              "present": true
+            }
+          ],
+          [
+            {
+              "value": 0.38,
+              "present": true
+            },
+            {
+              "value": 0.38333333333333336,
+              "present": true
+            }
+          ],
+          [
+            {
+              "value": 0.25666666666666665,
+              "present": true
+            },
+            {
+              "value": 0.2966666666666667,
+              "present": true
+            }
+          ]
+        ],
+        "row_margins": [
+          {
+            "value": 205,
+            "present": true
+          },
+          {
+            "value": 229,
+            "present": true
+          },
+          {
+            "value": 166,
+            "present": true
+          }
+        ],
+        "column_margins": [
+          {
+            "value": 300,
+            "present": true
+          },
+          {
+            "value": 300,
+            "present": true
+          }
+        ],
+        "grand_total": {
+          "value": 600,
+          "present": true
+        },
+        "cell_label": "n",
+        "normalize_applied": "column"
+      }
+    },
+    "components": {
+      "crosstab": {
+        "cell_counts": [
+          [
+            109,
+            96
+          ],
+          [
+            114,
+            115
+          ],
+          [
+            77,
+            89
+          ]
+        ],
+        "cell_components": [
+          [
+            {
+              "n": 109,
+              "n_null": 0
+            },
+            {
+              "n": 96,
+              "n_null": 0
+            }
+          ],
+          [
+            {
+              "n": 114,
+              "n_null": 0
+            },
+            {
+              "n": 115,
+              "n_null": 0
+            }
+          ],
+          [
+            {
+              "n": 77,
+              "n_null": 0
+            },
+            {
+              "n": 89,
+              "n_null": 0
+            }
+          ]
+        ],
+        "row_margin_counts": [
+          205,
+          229,
+          166
+        ],
+        "row_margin_components": [
+          {
+            "n": 205,
+            "n_null": 0
+          },
+          {
+            "n": 229,
+            "n_null": 0
+          },
+          {
+            "n": 166,
+            "n_null": 0
+          }
+        ],
+        "column_margin_counts": [
+          300,
+          300
+        ],
+        "column_margin_components": [
+          {
+            "n": 300,
+            "n_null": 0
+          },
+          {
+            "n": 300,
+            "n_null": 0
+          }
+        ],
+        "grand_total_count": 600,
+        "grand_total_components": {
+          "n": 600,
+          "n_null": 0
+        },
+        "row_key_components": [
+          {
+            "count": 205,
+            "key": "1",
+            "label": "1"
+          },
+          {
+            "count": 229,
+            "key": "2",
+            "label": "2"
+          },
+          {
+            "count": 166,
+            "key": "3",
+            "label": "3"
+          }
+        ],
+        "column_key_components": [
+          {
+            "count": 300,
+            "key": "W1",
+            "label": "W1"
+          },
+          {
+            "count": 300,
+            "key": "W2",
+            "label": "W2"
+          }
+        ],
+        "included_records": 600
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

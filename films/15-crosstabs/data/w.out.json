@@ -1,0 +1,387 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "metadata": {
+      "total_rows": 600,
+      "filtered_rows": 600,
+      "cohort_file": "t.pulse"
+    },
+    "crosstab": {
+      "shape": "matrix",
+      "matrix": {
+        "row_header": {
+          "fields": [
+            "region"
+          ],
+          "types": [
+            "GROUP_CATEGORY"
+          ]
+        },
+        "column_header": {
+          "fields": [
+            "brand"
+          ],
+          "types": [
+            "GROUP_CATEGORY"
+          ]
+        },
+        "row_keys": [
+          [
+            "East"
+          ],
+          [
+            "North"
+          ],
+          [
+            "South"
+          ],
+          [
+            "West"
+          ]
+        ],
+        "column_keys": [
+          [
+            "Acorn"
+          ],
+          [
+            "Birch"
+          ],
+          [
+            "Cedar"
+          ]
+        ],
+        "cells": [
+          [
+            {
+              "value": 0.13918571338951508,
+              "present": true
+            },
+            {
+              "value": 0.20635946220890267,
+              "present": true
+            },
+            {
+              "value": 0.35110838035798014,
+              "present": true
+            }
+          ],
+          [
+            {
+              "value": 0.4382314603765431,
+              "present": true
+            },
+            {
+              "value": 0.25374611641142664,
+              "present": true
+            },
+            {
+              "value": 0.2716380746034569,
+              "present": true
+            }
+          ],
+          [
+            {
+              "value": 0.21482194015181616,
+              "present": true
+            },
+            {
+              "value": 0.2820241401116274,
+              "present": true
+            },
+            {
+              "value": 0.20724529888272672,
+              "present": true
+            }
+          ],
+          [
+            {
+              "value": 0.20776088608212573,
+              "present": true
+            },
+            {
+              "value": 0.2578702812680432,
+              "present": true
+            },
+            {
+              "value": 0.17000824615583618,
+              "present": true
+            }
+          ]
+        ],
+        "row_margins": [
+          {
+            "value": 93.42,
+            "present": true
+          },
+          {
+            "value": 133.386,
+            "present": true
+          },
+          {
+            "value": 97.484,
+            "present": true
+          },
+          {
+            "value": 88.351,
+            "present": true
+          }
+        ],
+        "column_margins": [
+          {
+            "value": 143.463,
+            "present": true
+          },
+          {
+            "value": 145.484,
+            "present": true
+          },
+          {
+            "value": 123.694,
+            "present": true
+          }
+        ],
+        "grand_total": {
+          "value": 412.641,
+          "present": true
+        },
+        "cell_label": "n",
+        "normalize_applied": "column"
+      }
+    },
+    "components": {
+      "crosstab": {
+        "cell_counts": [
+          [
+            22,
+            30,
+            41
+          ],
+          [
+            65,
+            37,
+            32
+          ],
+          [
+            33,
+            41,
+            27
+          ],
+          [
+            32,
+            37,
+            23
+          ]
+        ],
+        "cell_components": [
+          [
+            {
+              "n": 22,
+              "n_eff": 20.334335767817077,
+              "n_null": 0,
+              "n_weight_invalid": 0,
+              "sum_weights": 19.968
+            },
+            {
+              "n": 30,
+              "n_eff": 27.502163507249566,
+              "n_null": 0,
+              "n_weight_invalid": 0,
+              "sum_weights": 30.022
+            },
+            {
+              "n": 41,
+              "n_eff": 37.291623590303146,
+              "n_null": 0,
+              "n_weight_invalid": 0,
+              "sum_weights": 43.43
+            }
+          ],
+          [
+            {
+              "n": 65,
+              "n_eff": 58.83831656642045,
+              "n_null": 0,
+              "n_weight_invalid": 0,
+              "sum_weights": 62.87
+            },
+            {
+              "n": 37,
+              "n_eff": 34.36407896326111,
+              "n_null": 0,
+              "n_weight_invalid": 0,
+              "sum_weights": 36.916
+            },
+            {
+              "n": 32,
+              "n_eff": 29.32873727856668,
+              "n_null": 0,
+              "n_weight_invalid": 0,
+              "sum_weights": 33.6
+            }
+          ],
+          [
+            {
+              "n": 33,
+              "n_eff": 30.249612560612793,
+              "n_null": 0,
+              "n_weight_invalid": 0,
+              "sum_weights": 30.819
+            },
+            {
+              "n": 41,
+              "n_eff": 37.48373199419822,
+              "n_null": 0,
+              "n_weight_invalid": 0,
+              "sum_weights": 41.03
+            },
+            {
+              "n": 27,
+              "n_eff": 24.442051496135203,
+              "n_null": 0,
+              "n_weight_invalid": 0,
+              "sum_weights": 25.634999999999998
+            }
+          ],
+          [
+            {
+              "n": 32,
+              "n_eff": 29.300734848818163,
+              "n_null": 0,
+              "n_weight_invalid": 0,
+              "sum_weights": 29.806
+            },
+            {
+              "n": 37,
+              "n_eff": 34.07915253108697,
+              "n_null": 0,
+              "n_weight_invalid": 0,
+              "sum_weights": 37.516
+            },
+            {
+              "n": 23,
+              "n_eff": 21.22006331486166,
+              "n_null": 0,
+              "n_weight_invalid": 0,
+              "sum_weights": 21.029
+            }
+          ]
+        ],
+        "row_margin_counts": [
+          93,
+          134,
+          101,
+          92
+        ],
+        "row_margin_components": [
+          {
+            "n": 93,
+            "n_eff": 84.76415028092822,
+            "n_null": 0,
+            "n_weight_invalid": 0,
+            "sum_weights": 93.42
+          },
+          {
+            "n": 134,
+            "n_eff": 122.42473908486909,
+            "n_null": 0,
+            "n_weight_invalid": 0,
+            "sum_weights": 133.386
+          },
+          {
+            "n": 101,
+            "n_eff": 92.08722605758156,
+            "n_null": 0,
+            "n_weight_invalid": 0,
+            "sum_weights": 97.484
+          },
+          {
+            "n": 92,
+            "n_eff": 84.42544289725558,
+            "n_null": 0,
+            "n_weight_invalid": 0,
+            "sum_weights": 88.351
+          }
+        ],
+        "column_margin_counts": [
+          152,
+          145,
+          123
+        ],
+        "column_margin_components": [
+          {
+            "n": 152,
+            "n_eff": 138.59191672415002,
+            "n_null": 0,
+            "n_weight_invalid": 0,
+            "sum_weights": 143.463
+          },
+          {
+            "n": 145,
+            "n_eff": 133.41787699936978,
+            "n_null": 0,
+            "n_weight_invalid": 0,
+            "sum_weights": 145.484
+          },
+          {
+            "n": 123,
+            "n_eff": 111.84531229262295,
+            "n_null": 0,
+            "n_weight_invalid": 0,
+            "sum_weights": 123.694
+          }
+        ],
+        "grand_total_count": 420,
+        "grand_total_components": {
+          "n": 420,
+          "n_eff": 383.5447188024954,
+          "n_null": 0,
+          "n_weight_invalid": 0,
+          "sum_weights": 412.641
+        },
+        "row_key_components": [
+          {
+            "count": 142,
+            "key": "East",
+            "label": "East"
+          },
+          {
+            "count": 190,
+            "key": "North",
+            "label": "North"
+          },
+          {
+            "count": 143,
+            "key": "South",
+            "label": "South"
+          },
+          {
+            "count": 125,
+            "key": "West",
+            "label": "West"
+          }
+        ],
+        "column_key_components": [
+          {
+            "count": 152,
+            "key": "Acorn",
+            "label": "Acorn"
+          },
+          {
+            "count": 145,
+            "key": "Birch",
+            "label": "Birch"
+          },
+          {
+            "count": 123,
+            "key": "Cedar",
+            "label": "Cedar"
+          }
+        ],
+        "included_records": 420,
+        "excluded_records": 180
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

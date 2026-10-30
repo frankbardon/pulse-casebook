@@ -1,0 +1,131 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "valid": true,
+    "request": {
+      "cohort": {
+        "filename": "t.pulse"
+      },
+      "crosstab": {
+        "rows": [
+          {
+            "type": "GROUP_CATEGORY",
+            "field": "region"
+          }
+        ],
+        "columns": [
+          {
+            "type": "GROUP_CATEGORY",
+            "field": "wave"
+          }
+        ],
+        "cell": {
+          "type": "AGG_AVERAGE",
+          "field": "score",
+          "label": "wmean"
+        },
+        "margin_aggregations": [
+          {
+            "type": "AGG_COUNT",
+            "field": "id",
+            "label": "base",
+            "weight": null
+          }
+        ],
+        "margins": {
+          "rows": true,
+          "columns": true,
+          "grand": true
+        }
+      },
+      "weight": {
+        "field": "wt"
+      }
+    },
+    "schema_info": {
+      "field_count": 9,
+      "fields": [
+        "id",
+        "wave",
+        "region",
+        "age",
+        "aware",
+        "brand",
+        "intent",
+        "score",
+        "wt"
+      ]
+    },
+    "record_count": 0,
+    "shards": [],
+    "streamable": false,
+    "streamable_reasons": [
+      "crosstab shape=matrix requires buffered reshape",
+      "crosstab margins require buffered recompute"
+    ],
+    "crosstab_fusable": true,
+    "suggestions": [],
+    "defaults_applied": [],
+    "aggregations": [],
+    "groups": [],
+    "filterers": [],
+    "overlays_applied": [],
+    "overlays_schema_divergence": [],
+    "overlay_cost": {},
+    "time_zones": [],
+    "weights": [
+      {
+        "slot": "crosstab.cell",
+        "operator": "AGG_AVERAGE",
+        "field": "wt",
+        "kind": "probability",
+        "status": "applied",
+        "source": "request"
+      },
+      {
+        "slot": "crosstab.margin_aggregations[0]",
+        "operator": "AGG_COUNT",
+        "status": "opted_out",
+        "source": "slot"
+      },
+      {
+        "slot": "crosstab.rows[0]",
+        "operator": "GROUP_CATEGORY",
+        "field": "wt",
+        "kind": "probability",
+        "status": "skipped_not_weight_aware",
+        "source": "request"
+      },
+      {
+        "slot": "crosstab.columns[0]",
+        "operator": "GROUP_CATEGORY",
+        "field": "wt",
+        "kind": "probability",
+        "status": "skipped_not_weight_aware",
+        "source": "request"
+      }
+    ],
+    "sizes": [
+      {
+        "section": "metadata",
+        "full_bytes": 116,
+        "shaped_bytes": 116,
+        "basis": "heuristic"
+      },
+      {
+        "section": "crosstab",
+        "full_bytes": 685,
+        "shaped_bytes": 685,
+        "basis": "upper_bound"
+      },
+      {
+        "section": "components",
+        "full_bytes": 974,
+        "shaped_bytes": 974,
+        "basis": "heuristic"
+      }
+    ]
+  },
+  "errors": [],
+  "warnings": []
+}

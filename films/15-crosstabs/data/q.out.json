@@ -1,0 +1,278 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "metadata": {
+      "total_rows": 600,
+      "filtered_rows": 600,
+      "cohort_file": "t.pulse"
+    },
+    "crosstab": {
+      "shape": "matrix",
+      "matrix": {
+        "row_header": {
+          "fields": [
+            "score"
+          ],
+          "types": [
+            "GROUP_QUANTILE"
+          ]
+        },
+        "column_header": {
+          "fields": [
+            "wave"
+          ],
+          "types": [
+            "GROUP_CATEGORY"
+          ]
+        },
+        "row_keys": [
+          [
+            "Q1"
+          ],
+          [
+            "Q2"
+          ],
+          [
+            "Q3"
+          ],
+          [
+            "Q4"
+          ]
+        ],
+        "column_keys": [
+          [
+            "W1"
+          ],
+          [
+            "W2"
+          ]
+        ],
+        "cells": [
+          [
+            {
+              "value": 83,
+              "present": true
+            },
+            {
+              "value": 64,
+              "present": true
+            }
+          ],
+          [
+            {
+              "value": 77,
+              "present": true
+            },
+            {
+              "value": 69,
+              "present": true
+            }
+          ],
+          [
+            {
+              "value": 71,
+              "present": true
+            },
+            {
+              "value": 76,
+              "present": true
+            }
+          ],
+          [
+            {
+              "value": 62,
+              "present": true
+            },
+            {
+              "value": 84,
+              "present": true
+            }
+          ]
+        ],
+        "row_margins": [
+          {
+            "value": 147,
+            "present": true
+          },
+          {
+            "value": 146,
+            "present": true
+          },
+          {
+            "value": 147,
+            "present": true
+          },
+          {
+            "value": 146,
+            "present": true
+          }
+        ],
+        "column_margins": [
+          {
+            "value": 293,
+            "present": true
+          },
+          {
+            "value": 293,
+            "present": true
+          }
+        ],
+        "grand_total": {
+          "value": 586,
+          "present": true
+        },
+        "cell_label": "n",
+        "normalize_applied": "none"
+      }
+    },
+    "components": {
+      "crosstab": {
+        "cell_counts": [
+          [
+            83,
+            64
+          ],
+          [
+            77,
+            69
+          ],
+          [
+            71,
+            76
+          ],
+          [
+            62,
+            84
+          ]
+        ],
+        "cell_components": [
+          [
+            {
+              "n": 83,
+              "n_null": 0
+            },
+            {
+              "n": 64,
+              "n_null": 0
+            }
+          ],
+          [
+            {
+              "n": 77,
+              "n_null": 0
+            },
+            {
+              "n": 69,
+              "n_null": 0
+            }
+          ],
+          [
+            {
+              "n": 71,
+              "n_null": 0
+            },
+            {
+              "n": 76,
+              "n_null": 0
+            }
+          ],
+          [
+            {
+              "n": 62,
+              "n_null": 0
+            },
+            {
+              "n": 84,
+              "n_null": 0
+            }
+          ]
+        ],
+        "row_margin_counts": [
+          147,
+          146,
+          147,
+          146
+        ],
+        "row_margin_components": [
+          {
+            "n": 147,
+            "n_null": 0
+          },
+          {
+            "n": 146,
+            "n_null": 0
+          },
+          {
+            "n": 147,
+            "n_null": 0
+          },
+          {
+            "n": 146,
+            "n_null": 0
+          }
+        ],
+        "column_margin_counts": [
+          293,
+          293
+        ],
+        "column_margin_components": [
+          {
+            "n": 293,
+            "n_null": 0
+          },
+          {
+            "n": 293,
+            "n_null": 0
+          }
+        ],
+        "grand_total_count": 586,
+        "grand_total_components": {
+          "n": 586,
+          "n_null": 0
+        },
+        "row_key_components": [
+          {
+            "count": 147,
+            "high": 5,
+            "key": "Q1",
+            "low": 1
+          },
+          {
+            "count": 146,
+            "high": 7,
+            "key": "Q2",
+            "low": 5
+          },
+          {
+            "count": 147,
+            "high": 8,
+            "key": "Q3",
+            "low": 7
+          },
+          {
+            "count": 146,
+            "high": 10,
+            "key": "Q4",
+            "low": 8
+          }
+        ],
+        "column_key_components": [
+          {
+            "count": 300,
+            "key": "W1",
+            "label": "W1"
+          },
+          {
+            "count": 300,
+            "key": "W2",
+            "label": "W2"
+          }
+        ],
+        "included_records": 586,
+        "excluded_records": 14
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

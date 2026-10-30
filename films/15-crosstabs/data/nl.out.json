@@ -1,0 +1,584 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "metadata": {
+      "total_rows": 600,
+      "filtered_rows": 600,
+      "cohort_file": "t.pulse"
+    },
+    "crosstab": {
+      "shape": "matrix",
+      "matrix": {
+        "row_header": {
+          "fields": [
+            "region"
+          ],
+          "types": [
+            "GROUP_CATEGORY"
+          ]
+        },
+        "column_header": {
+          "fields": [
+            "wave",
+            "brand"
+          ],
+          "types": [
+            "GROUP_CATEGORY",
+            "GROUP_CATEGORY"
+          ]
+        },
+        "row_keys": [
+          [
+            "East"
+          ],
+          [
+            "North"
+          ],
+          [
+            "South"
+          ],
+          [
+            "West"
+          ]
+        ],
+        "column_keys": [
+          [
+            "W1",
+            "Acorn"
+          ],
+          [
+            "W1",
+            "Birch"
+          ],
+          [
+            "W1",
+            "Cedar"
+          ],
+          [
+            "W2",
+            "Acorn"
+          ],
+          [
+            "W2",
+            "Birch"
+          ],
+          [
+            "W2",
+            "Cedar"
+          ]
+        ],
+        "cells": [
+          [
+            {
+              "value": 0.042105263157894736,
+              "present": true
+            },
+            {
+              "value": 0.08421052631578947,
+              "present": true
+            },
+            {
+              "value": 0.07368421052631578,
+              "present": true
+            },
+            {
+              "value": 0.06086956521739131,
+              "present": true
+            },
+            {
+              "value": 0.06086956521739131,
+              "present": true
+            },
+            {
+              "value": 0.11739130434782609,
+              "present": true
+            }
+          ],
+          [
+            {
+              "value": 0.15263157894736842,
+              "present": true
+            },
+            {
+              "value": 0.08421052631578947,
+              "present": true
+            },
+            {
+              "value": 0.08947368421052632,
+              "present": true
+            },
+            {
+              "value": 0.1565217391304348,
+              "present": true
+            },
+            {
+              "value": 0.09130434782608696,
+              "present": true
+            },
+            {
+              "value": 0.06521739130434782,
+              "present": true
+            }
+          ],
+          [
+            {
+              "value": 0.07368421052631578,
+              "present": true
+            },
+            {
+              "value": 0.11052631578947368,
+              "present": true
+            },
+            {
+              "value": 0.08421052631578947,
+              "present": true
+            },
+            {
+              "value": 0.08260869565217391,
+              "present": true
+            },
+            {
+              "value": 0.08695652173913043,
+              "present": true
+            },
+            {
+              "value": 0.04782608695652174,
+              "present": true
+            }
+          ],
+          [
+            {
+              "value": 0.07368421052631578,
+              "present": true
+            },
+            {
+              "value": 0.07894736842105263,
+              "present": true
+            },
+            {
+              "value": 0.05263157894736842,
+              "present": true
+            },
+            {
+              "value": 0.0782608695652174,
+              "present": true
+            },
+            {
+              "value": 0.09565217391304348,
+              "present": true
+            },
+            {
+              "value": 0.05652173913043478,
+              "present": true
+            }
+          ]
+        ],
+        "row_margins": [
+          {
+            "value": 93,
+            "present": true
+          },
+          {
+            "value": 134,
+            "present": true
+          },
+          {
+            "value": 101,
+            "present": true
+          },
+          {
+            "value": 92,
+            "present": true
+          }
+        ],
+        "column_margins": [
+          {
+            "value": 65,
+            "present": true
+          },
+          {
+            "value": 68,
+            "present": true
+          },
+          {
+            "value": 57,
+            "present": true
+          },
+          {
+            "value": 87,
+            "present": true
+          },
+          {
+            "value": 77,
+            "present": true
+          },
+          {
+            "value": 66,
+            "present": true
+          }
+        ],
+        "grand_total": {
+          "value": 420,
+          "present": true
+        },
+        "cell_label": "n",
+        "normalize_applied": "column"
+      }
+    },
+    "components": {
+      "crosstab": {
+        "cell_counts": [
+          [
+            8,
+            16,
+            14,
+            14,
+            14,
+            27
+          ],
+          [
+            29,
+            16,
+            17,
+            36,
+            21,
+            15
+          ],
+          [
+            14,
+            21,
+            16,
+            19,
+            20,
+            11
+          ],
+          [
+            14,
+            15,
+            10,
+            18,
+            22,
+            13
+          ]
+        ],
+        "cell_components": [
+          [
+            {
+              "n": 8,
+              "n_null": 0
+            },
+            {
+              "n": 16,
+              "n_null": 0
+            },
+            {
+              "n": 14,
+              "n_null": 0
+            },
+            {
+              "n": 14,
+              "n_null": 0
+            },
+            {
+              "n": 14,
+              "n_null": 0
+            },
+            {
+              "n": 27,
+              "n_null": 0
+            }
+          ],
+          [
+            {
+              "n": 29,
+              "n_null": 0
+            },
+            {
+              "n": 16,
+              "n_null": 0
+            },
+            {
+              "n": 17,
+              "n_null": 0
+            },
+            {
+              "n": 36,
+              "n_null": 0
+            },
+            {
+              "n": 21,
+              "n_null": 0
+            },
+            {
+              "n": 15,
+              "n_null": 0
+            }
+          ],
+          [
+            {
+              "n": 14,
+              "n_null": 0
+            },
+            {
+              "n": 21,
+              "n_null": 0
+            },
+            {
+              "n": 16,
+              "n_null": 0
+            },
+            {
+              "n": 19,
+              "n_null": 0
+            },
+            {
+              "n": 20,
+              "n_null": 0
+            },
+            {
+              "n": 11,
+              "n_null": 0
+            }
+          ],
+          [
+            {
+              "n": 14,
+              "n_null": 0
+            },
+            {
+              "n": 15,
+              "n_null": 0
+            },
+            {
+              "n": 10,
+              "n_null": 0
+            },
+            {
+              "n": 18,
+              "n_null": 0
+            },
+            {
+              "n": 22,
+              "n_null": 0
+            },
+            {
+              "n": 13,
+              "n_null": 0
+            }
+          ]
+        ],
+        "row_margin_counts": [
+          93,
+          134,
+          101,
+          92
+        ],
+        "row_margin_components": [
+          {
+            "n": 93,
+            "n_null": 0
+          },
+          {
+            "n": 134,
+            "n_null": 0
+          },
+          {
+            "n": 101,
+            "n_null": 0
+          },
+          {
+            "n": 92,
+            "n_null": 0
+          }
+        ],
+        "column_margin_counts": [
+          65,
+          68,
+          57,
+          87,
+          77,
+          66
+        ],
+        "column_margin_components": [
+          {
+            "n": 65,
+            "n_null": 0
+          },
+          {
+            "n": 68,
+            "n_null": 0
+          },
+          {
+            "n": 57,
+            "n_null": 0
+          },
+          {
+            "n": 87,
+            "n_null": 0
+          },
+          {
+            "n": 77,
+            "n_null": 0
+          },
+          {
+            "n": 66,
+            "n_null": 0
+          }
+        ],
+        "grand_total_count": 420,
+        "grand_total_components": {
+          "n": 420,
+          "n_null": 0
+        },
+        "row_key_components": [
+          {
+            "count": 142,
+            "key": "East",
+            "label": "East"
+          },
+          {
+            "count": 190,
+            "key": "North",
+            "label": "North"
+          },
+          {
+            "count": 143,
+            "key": "South",
+            "label": "South"
+          },
+          {
+            "count": 125,
+            "key": "West",
+            "label": "West"
+          }
+        ],
+        "column_key_components": [
+          {
+            "axes": [
+              {
+                "bucket": {
+                  "count": 300,
+                  "key": "W1",
+                  "label": "W1"
+                },
+                "field": "wave"
+              },
+              {
+                "bucket": {
+                  "count": 152,
+                  "key": "Acorn",
+                  "label": "Acorn"
+                },
+                "field": "brand"
+              }
+            ]
+          },
+          {
+            "axes": [
+              {
+                "bucket": {
+                  "count": 300,
+                  "key": "W1",
+                  "label": "W1"
+                },
+                "field": "wave"
+              },
+              {
+                "bucket": {
+                  "count": 145,
+                  "key": "Birch",
+                  "label": "Birch"
+                },
+                "field": "brand"
+              }
+            ]
+          },
+          {
+            "axes": [
+              {
+                "bucket": {
+                  "count": 300,
+                  "key": "W1",
+                  "label": "W1"
+                },
+                "field": "wave"
+              },
+              {
+                "bucket": {
+                  "count": 123,
+                  "key": "Cedar",
+                  "label": "Cedar"
+                },
+                "field": "brand"
+              }
+            ]
+          },
+          {
+            "axes": [
+              {
+                "bucket": {
+                  "count": 300,
+                  "key": "W2",
+                  "label": "W2"
+                },
+                "field": "wave"
+              },
+              {
+                "bucket": {
+                  "count": 152,
+                  "key": "Acorn",
+                  "label": "Acorn"
+                },
+                "field": "brand"
+              }
+            ]
+          },
+          {
+            "axes": [
+              {
+                "bucket": {
+                  "count": 300,
+                  "key": "W2",
+                  "label": "W2"
+                },
+                "field": "wave"
+              },
+              {
+                "bucket": {
+                  "count": 145,
+                  "key": "Birch",
+                  "label": "Birch"
+                },
+                "field": "brand"
+              }
+            ]
+          },
+          {
+            "axes": [
+              {
+                "bucket": {
+                  "count": 300,
+                  "key": "W2",
+                  "label": "W2"
+                },
+                "field": "wave"
+              },
+              {
+                "bucket": {
+                  "count": 123,
+                  "key": "Cedar",
+                  "label": "Cedar"
+                },
+                "field": "brand"
+              }
+            ]
+          }
+        ],
+        "included_records": 420,
+        "excluded_records": 180
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

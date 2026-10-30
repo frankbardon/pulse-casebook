@@ -1,0 +1,4 @@
+{"cohort": {"filename": "t.pulse"},
+ "groups": [{"type": "GROUP_CATEGORY", "field": "wave"}],
+ "aggregations": [{"type": "AGG_COUNT", "field": "id", "label": "n"}],
+ "crosstab": {"rows": [{"type": "GROUP_CATEGORY", "field": "region"}], "columns": [{"type": "GROUP_CATEGORY", "field": "brand"}], "cell": {"type": "AGG_COUNT", "field": "id", "label": "n"}}}
