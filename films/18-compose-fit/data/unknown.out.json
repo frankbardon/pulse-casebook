@@ -1,0 +1,18 @@
+{
+  "format_version": "1.1",
+  "data": null,
+  "errors": [
+    {
+      "code": "PULSE_MODEL_UNKNOWN",
+      "message": "no fit or model named \"bsae\" is bound in this request",
+      "details": {
+        "available": [
+          "base"
+        ],
+        "name": "bsae",
+        "request": 1
+      }
+    }
+  ],
+  "warnings": []
+}

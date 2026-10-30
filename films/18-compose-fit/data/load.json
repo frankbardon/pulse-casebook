@@ -1,0 +1,93 @@
+{
+ "cohort": {
+  "filename": "h.pulse"
+ },
+ "models": [
+  {
+   "name": "mmm",
+   "path": "models/mmm.pulse-model.json"
+  }
+ ],
+ "attributes": [
+  {
+   "type": "ATTR_FORMULA",
+   "label": "north",
+   "expression": "market == \"north\" ? 1 : 0"
+  },
+  {
+   "type": "ATTR_REG_PREDICT",
+   "label": "pred",
+   "params": {
+    "fit": "mmm"
+   }
+  },
+  {
+   "type": "ATTR_FORMULA",
+   "label": "miss",
+   "expression": "sales - pred"
+  }
+ ],
+ "windows": [
+  {
+   "type": "WIN_DISTRIBUTED_LAG",
+   "field": "tv",
+   "label": "tv_ad",
+   "partition_by": [
+    "market"
+   ],
+   "order_by": [
+    {
+     "field": "week"
+    }
+   ],
+   "params": {
+    "kernel": "geometric",
+    "max_lag": 8,
+    "decay": 0.6158411490157257,
+    "normalize": false
+   }
+  },
+  {
+   "type": "WIN_DISTRIBUTED_LAG",
+   "field": "search",
+   "label": "search_ad",
+   "partition_by": [
+    "market"
+   ],
+   "order_by": [
+    {
+     "field": "week"
+    }
+   ],
+   "params": {
+    "kernel": "geometric",
+    "max_lag": 8,
+    "decay": 0.5483920049222699,
+    "normalize": false
+   }
+  }
+ ],
+ "groups": [
+  {
+   "type": "GROUP_CATEGORY",
+   "field": "year"
+  }
+ ],
+ "aggregations": [
+  {
+   "type": "AGG_AVERAGE",
+   "field": "sales",
+   "label": "mean_sales"
+  },
+  {
+   "type": "AGG_AVERAGE",
+   "field": "pred",
+   "label": "mean_pred"
+  },
+  {
+   "type": "AGG_STDDEV",
+   "field": "miss",
+   "label": "sd_miss"
+  }
+ ]
+}

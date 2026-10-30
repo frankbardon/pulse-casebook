@@ -1,0 +1,375 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "metadata": {
+      "total_rows": 208,
+      "filtered_rows": 104,
+      "cohort_file": "h.pulse"
+    },
+    "regressions": [
+      {
+        "name": "bayes",
+        "type": "REG_MMM_BAYES",
+        "coefficients": {
+          "(intercept)": 214.92419456312888,
+          "decay:search": 0.20384481204505384,
+          "decay:tv": 0.5867428834323761,
+          "k:search": 19.154257235553988,
+          "k:tv": 120.18140138080838,
+          "s:search": 2.073360150770971,
+          "s:tv": 1.3768067699317688,
+          "search": 204.33935586404397,
+          "sigma": 10.107471756823214,
+          "tv": 344.0288769560708
+        },
+        "std_errors": {
+          "(intercept)": 25.25298761543728,
+          "decay:search": 0.041094036505905415,
+          "decay:tv": 0.01496224839331207,
+          "k:search": 8.334667504737078,
+          "k:tv": 32.49540423963216,
+          "s:search": 0.9713143127352164,
+          "s:tv": 0.20621687600404556,
+          "search": 97.98580068823938,
+          "sigma": 0.7445397985876466,
+          "tv": 72.77398069627402
+        },
+        "p_values": {
+          "(intercept)": null,
+          "decay:search": null,
+          "decay:tv": null,
+          "k:search": null,
+          "k:tv": null,
+          "s:search": null,
+          "s:tv": null,
+          "search": null,
+          "sigma": null,
+          "tv": null
+        },
+        "statistics": {
+          "(intercept)": null,
+          "decay:search": null,
+          "decay:tv": null,
+          "k:search": null,
+          "k:tv": null,
+          "s:search": null,
+          "s:tv": null,
+          "search": null,
+          "sigma": null,
+          "tv": null
+        },
+        "ci_lower": {
+          "(intercept)": 165.4292483348358,
+          "decay:search": 0.12330198051410501,
+          "decay:tv": 0.5574174154537421,
+          "k:search": 2.818609103152994,
+          "k:tv": 56.491579408059174,
+          "s:search": 0.16961908014167193,
+          "s:tv": 0.9726291199594774,
+          "search": 12.290715518774732,
+          "sigma": 8.64820056653472,
+          "tv": 201.3944957797606
+        },
+        "ci_upper": {
+          "(intercept)": 264.41914079142197,
+          "decay:search": 0.28438764357600266,
+          "decay:tv": 0.6160683514110101,
+          "k:search": 35.48990536795498,
+          "k:tv": 183.87122335355758,
+          "s:search": 3.97710122140027,
+          "s:tv": 1.78098441990406,
+          "search": 396.3879962093132,
+          "sigma": 11.566742947111708,
+          "tv": 486.663258132381
+        },
+        "conf_level": 0.95,
+        "n_obs": 104,
+        "outputs": {
+          "contribution": {
+            "search": {
+              "lower": 4075.9896140853825,
+              "mean": 7019.416975664398,
+              "median": 6498.492554917911,
+              "sd": 2520.1794980116933,
+              "upper": 11791.970433683651
+            },
+            "tv": {
+              "lower": 8458.500262042615,
+              "mean": 9564.370737929765,
+              "median": 9515.632149334137,
+              "sd": 731.4771849544815,
+              "upper": 10835.209890586651
+            }
+          },
+          "diagnostics": {
+            "accept_stat": [
+              0.9352152653140463,
+              0.9034353169899378,
+              0.9289388727718451,
+              0.9321393981011608
+            ],
+            "chains": 4,
+            "divergences": 17,
+            "draws": 1000,
+            "map_start": true,
+            "max_rhat": 1.0045185978083015,
+            "max_tree_depth": 10,
+            "min_ess_bulk": 919.2880630400526,
+            "min_ess_tail": 686.4968325838198,
+            "parameters": {
+              "(intercept)": {
+                "ess_bulk": 919.2880630400526,
+                "ess_tail": 686.4968325838198,
+                "rhat": 1.0045185978083015
+              },
+              "decay:search": {
+                "ess_bulk": 3225.477042581679,
+                "ess_tail": 2015.638371734268,
+                "rhat": 1.0001525541823573
+              },
+              "decay:tv": {
+                "ess_bulk": 3353.6135715434148,
+                "ess_tail": 2779.4627271049403,
+                "rhat": 1.0023736007682762
+              },
+              "k:search": {
+                "ess_bulk": 1977.4285923809823,
+                "ess_tail": 2368.355415935203,
+                "rhat": 1.0006098748476528
+              },
+              "k:tv": {
+                "ess_bulk": 1869.2740784191399,
+                "ess_tail": 2569.5037266109116,
+                "rhat": 1.0021099141068097
+              },
+              "s:search": {
+                "ess_bulk": 936.779059106346,
+                "ess_tail": 711.986147682677,
+                "rhat": 1.0033582946093795
+              },
+              "s:tv": {
+                "ess_bulk": 1657.1639899990491,
+                "ess_tail": 2461.9390025392445,
+                "rhat": 1.001908442866026
+              },
+              "search": {
+                "ess_bulk": 1109.442089441271,
+                "ess_tail": 903.5553032690705,
+                "rhat": 1.0029198868851226
+              },
+              "sigma": {
+                "ess_bulk": 2778.9527035898486,
+                "ess_tail": 2488.171091977359,
+                "rhat": 1.0005014333724116
+              },
+              "tv": {
+                "ess_bulk": 1770.5747752836094,
+                "ess_tail": 2519.6596658272474,
+                "rhat": 1.0022631213969868
+              }
+            },
+            "roi": {
+              "search": {
+                "ess_bulk": 947.516898342289,
+                "ess_tail": 706.7042963452891,
+                "rhat": 1.003426923660287
+              },
+              "tv": {
+                "ess_bulk": 2018.1244966538502,
+                "ess_tail": 2584.176769582627,
+                "rhat": 1.0022918993621217
+              }
+            },
+            "step_size": [
+              0.028571709888141665,
+              0.03730436014217175,
+              0.03417667159928584,
+              0.030314566247137277
+            ],
+            "treedepth_saturated": 0,
+            "warmup": 1000
+          },
+          "mroi": {
+            "search": {
+              "lower": 6.229052947465764,
+              "mean": 7.101379981031419,
+              "median": 7.1083499686089695,
+              "sd": 0.5386594650274774,
+              "upper": 7.990039925973299
+            },
+            "tv": {
+              "lower": 3.0833339296294864,
+              "mean": 3.3317901683536197,
+              "median": 3.3304553315014847,
+              "sd": 0.15569495896700525,
+              "upper": 3.59108358071809
+            }
+          },
+          "params": {
+            "(intercept)": {
+              "lower": 167.9816130594159,
+              "mean": 214.92419456312888,
+              "median": 219.41011237830145,
+              "sd": 25.25298761543728,
+              "upper": 246.0351669227447
+            },
+            "decay:search": {
+              "lower": 0.13527650849068595,
+              "mean": 0.20384481204505384,
+              "median": 0.20487291066300278,
+              "sd": 0.041094036505905415,
+              "upper": 0.2687302603767614
+            },
+            "decay:tv": {
+              "lower": 0.5622848962134832,
+              "mean": 0.5867428834323761,
+              "median": 0.586919833951744,
+              "sd": 0.01496224839331207,
+              "upper": 0.6110942910629951
+            },
+            "k:search": {
+              "lower": 11.21252292362569,
+              "mean": 19.154257235553988,
+              "median": 16.214060143406634,
+              "sd": 8.334667504737078,
+              "upper": 37.1248564178201
+            },
+            "k:tv": {
+              "lower": 78.58137221256789,
+              "mean": 120.18140138080838,
+              "median": 114.12657730416163,
+              "sd": 32.49540423963216,
+              "upper": 183.10217071389562
+            },
+            "s:search": {
+              "lower": 0.9619910318013335,
+              "mean": 2.073360150770971,
+              "median": 1.832946661352667,
+              "sd": 0.9713143127352164,
+              "upper": 4.058440060177806
+            },
+            "s:tv": {
+              "lower": 1.091324737245152,
+              "mean": 1.3768067699317688,
+              "median": 1.3446466916215492,
+              "sd": 0.20621687600404556,
+              "upper": 1.7565684237903363
+            },
+            "search": {
+              "lower": 84.76852279532396,
+              "mean": 204.33935586404397,
+              "median": 181.86618609822898,
+              "sd": 97.98580068823938,
+              "upper": 400.544483810702
+            },
+            "sigma": {
+              "lower": 8.980163886689496,
+              "mean": 10.107471756823214,
+              "median": 10.057669081785331,
+              "sd": 0.7445397985876466,
+              "upper": 11.378859696325977
+            },
+            "tv": {
+              "lower": 239.3199153596479,
+              "mean": 344.0288769560708,
+              "median": 336.629873613229,
+              "sd": 72.77398069627402,
+              "upper": 475.60573862201005
+            }
+          },
+          "roi": {
+            "search": {
+              "lower": 4.026066390838979,
+              "mean": 6.933442291252867,
+              "median": 6.418898217026779,
+              "sd": 2.4893120288539032,
+              "upper": 11.647540926198786
+            },
+            "tv": {
+              "lower": 3.3320859807140497,
+              "mean": 3.7677253251643794,
+              "median": 3.748525566016993,
+              "sd": 0.2881533129621752,
+              "upper": 4.268351345513748
+            }
+          },
+          "seed": 18
+        },
+        "warnings": [
+          {
+            "code": "PROCESSING_REGRESSION_DIAGNOSTIC",
+            "message": "REG_MMM_BAYES regression \"bayes\": 17 of 4000 post-warmup transitions diverged — raise target_accept or tighten the priors; the posterior summaries may not be trustworthy",
+            "details": {
+              "count": 17,
+              "draws": 4000,
+              "per_chain": [
+                0,
+                16,
+                0,
+                1
+              ],
+              "reason": "divergences"
+            }
+          }
+        ]
+      }
+    ],
+    "warnings": [
+      {
+        "code": "PROCESSING_REGRESSION_DIAGNOSTIC",
+        "message": "REG_MMM_BAYES regression \"bayes\": 17 of 4000 post-warmup transitions diverged — raise target_accept or tighten the priors; the posterior summaries may not be trustworthy",
+        "details": {
+          "count": 17,
+          "draws": 4000,
+          "index": 0,
+          "per_chain": [
+            0,
+            16,
+            0,
+            1
+          ],
+          "reason": "divergences",
+          "regression": "bayes"
+        }
+      }
+    ],
+    "components": {
+      "filterers": [
+        {
+          "n_in": 208,
+          "n_out": 104,
+          "n_null_input": 0
+        }
+      ],
+      "run": {
+        "total_records": 208,
+        "filtered_records": 104,
+        "null_records": 0
+      }
+    },
+    "returned": {
+      "preset": "custom",
+      "digest": "rp1:d75e499bd87dd45454117bab48551ac3b83827d3c3caa6d86c0d7ccf8ef95f0c"
+    }
+  },
+  "errors": [],
+  "warnings": [
+    {
+      "code": "PROCESSING_REGRESSION_DIAGNOSTIC",
+      "message": "REG_MMM_BAYES regression \"bayes\": 17 of 4000 post-warmup transitions diverged — raise target_accept or tighten the priors; the posterior summaries may not be trustworthy",
+      "details": {
+        "count": 17,
+        "draws": 4000,
+        "index": 0,
+        "per_chain": [
+          0,
+          16,
+          0,
+          1
+        ],
+        "reason": "divergences",
+        "regression": "bayes"
+      }
+    }
+  ]
+}

@@ -1,0 +1,74 @@
+{
+  "model_format_version": 3,
+  "name": "mmm",
+  "type": "REG_MMM_HILL",
+  "target": "sales",
+  "predictors": [
+    "tv_ad",
+    "search_ad",
+    "north"
+  ],
+  "terms": [
+    "tv_ad",
+    "search_ad",
+    "north"
+  ],
+  "coefficients": {
+    "(intercept)": 172.96098898578083,
+    "k:search_ad": 22.302959999230367,
+    "k:tv_ad": 90.42911955139296,
+    "north": 58.583472756933375,
+    "s:search_ad": 5,
+    "s:tv_ad": 1.390469305729352,
+    "search_ad": 92.4767032435333,
+    "tv_ad": 295.9916119891684
+  },
+  "std_errors": {
+    "(intercept)": 10.435234732069672,
+    "k:search_ad": 1.0920053310846027,
+    "k:tv_ad": 29.349502574535222,
+    "north": 2.146195132120396,
+    "s:search_ad": null,
+    "s:tv_ad": 0.29759342261277566,
+    "search_ad": 5.716493921376052,
+    "tv_ad": 82.13844017665912
+  },
+  "ci_lower": {
+    "(intercept)": 152.36505552324965,
+    "k:search_ad": 20.14767842510069,
+    "k:tv_ad": 32.50225755893394,
+    "north": 54.34754579662119,
+    "s:search_ad": null,
+    "s:tv_ad": 0.803111714990805,
+    "search_ad": 81.19410812549575,
+    "tv_ad": 133.87567573757994
+  },
+  "ci_upper": {
+    "(intercept)": 193.556922448312,
+    "k:search_ad": 24.458241573360045,
+    "k:tv_ad": 148.35598154385198,
+    "north": 62.81939971724556,
+    "s:search_ad": null,
+    "s:tv_ad": 1.9778268964678989,
+    "search_ad": 103.75929836157084,
+    "tv_ad": 458.10754824075684
+  },
+  "df": 174,
+  "conf_level": 0.95,
+  "outputs": {
+    "k": {
+      "search_ad": 22.302959999230367,
+      "tv_ad": 90.42911955139296
+    },
+    "s": {
+      "search_ad": 5,
+      "tv_ad": 1.390469305729352
+    }
+  },
+  "n_obs": 182,
+  "provenance": {
+    "cohort": "h.pulse",
+    "fingerprint": "sha256:f4e657d7d87b8c12a0c164ec63a5716d4f031f5a26ce088aed9cb6259d709b56",
+    "request_digest": "de260d8a056f4bc3e328799b44a57e89"
+  }
+}

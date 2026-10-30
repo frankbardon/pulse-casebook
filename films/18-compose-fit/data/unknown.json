@@ -1,0 +1,276 @@
+{
+ "fits": [
+  {
+   "name": "base",
+   "request": {
+    "cohort": {
+     "filename": "m.pulse"
+    },
+    "attributes": [
+     {
+      "type": "ATTR_FORMULA",
+      "label": "north",
+      "expression": "market == \"north\" ? 1 : 0"
+     }
+    ],
+    "windows": [
+     {
+      "type": "WIN_DISTRIBUTED_LAG",
+      "field": "tv",
+      "label": "tv_ad",
+      "partition_by": [
+       "market"
+      ],
+      "order_by": [
+       {
+        "field": "week"
+       }
+      ],
+      "params": {
+       "kernel": "geometric",
+       "max_lag": 8,
+       "decay": 0.6,
+       "normalize": false
+      }
+     },
+     {
+      "type": "WIN_DISTRIBUTED_LAG",
+      "field": "search",
+      "label": "search_ad",
+      "partition_by": [
+       "market"
+      ],
+      "order_by": [
+       {
+        "field": "week"
+       }
+      ],
+      "params": {
+       "kernel": "geometric",
+       "max_lag": 8,
+       "decay": 0.2,
+       "normalize": false
+      }
+     }
+    ],
+    "regressions": [
+     {
+      "type": "REG_OLS",
+      "name": "base",
+      "target": "sales",
+      "predictors": [
+       "tv_ad",
+       "search_ad",
+       "north"
+      ],
+      "holdout": "week >= 92"
+     }
+    ]
+   }
+  }
+ ],
+ "requests": [
+  {
+   "label": "north",
+   "cohort": {
+    "filename": "m.pulse"
+   },
+   "filterers": [
+    {
+     "type": "FILTER_INCLUDE",
+     "field": "market",
+     "values": [
+      "north"
+     ]
+    }
+   ],
+   "attributes": [
+    {
+     "type": "ATTR_FORMULA",
+     "label": "north",
+     "expression": "market == \"north\" ? 1 : 0"
+    },
+    {
+     "type": "ATTR_REG_PREDICT",
+     "label": "pred",
+     "params": {
+      "fit": "base"
+     }
+    },
+    {
+     "type": "ATTR_FORMULA",
+     "label": "miss",
+     "expression": "sales - pred"
+    },
+    {
+     "type": "ATTR_FORMULA",
+     "label": "tv_part",
+     "expression": "coef(\"base\", \"tv_ad\") * tv_ad"
+    }
+   ],
+   "windows": [
+    {
+     "type": "WIN_DISTRIBUTED_LAG",
+     "field": "tv",
+     "label": "tv_ad",
+     "partition_by": [
+      "market"
+     ],
+     "order_by": [
+      {
+       "field": "week"
+      }
+     ],
+     "params": {
+      "kernel": "geometric",
+      "max_lag": 8,
+      "decay": 0.6,
+      "normalize": false
+     }
+    },
+    {
+     "type": "WIN_DISTRIBUTED_LAG",
+     "field": "search",
+     "label": "search_ad",
+     "partition_by": [
+      "market"
+     ],
+     "order_by": [
+      {
+       "field": "week"
+      }
+     ],
+     "params": {
+      "kernel": "geometric",
+      "max_lag": 8,
+      "decay": 0.2,
+      "normalize": false
+     }
+    }
+   ],
+   "aggregations": [
+    {
+     "type": "AGG_SUM",
+     "field": "sales",
+     "label": "sales"
+    },
+    {
+     "type": "AGG_SUM",
+     "field": "tv_part",
+     "label": "tv_part"
+    },
+    {
+     "type": "AGG_AVERAGE",
+     "field": "miss",
+     "label": "mean_miss"
+    },
+    {
+     "type": "AGG_STDDEV",
+     "field": "miss",
+     "label": "sd_miss"
+    }
+   ]
+  },
+  {
+   "label": "south",
+   "cohort": {
+    "filename": "m.pulse"
+   },
+   "filterers": [
+    {
+     "type": "FILTER_INCLUDE",
+     "field": "market",
+     "values": [
+      "south"
+     ]
+    }
+   ],
+   "attributes": [
+    {
+     "type": "ATTR_FORMULA",
+     "label": "north",
+     "expression": "market == \"north\" ? 1 : 0"
+    },
+    {
+     "type": "ATTR_REG_PREDICT",
+     "label": "pred",
+     "params": {
+      "fit": "bsae"
+     }
+    },
+    {
+     "type": "ATTR_FORMULA",
+     "label": "miss",
+     "expression": "sales - pred"
+    },
+    {
+     "type": "ATTR_FORMULA",
+     "label": "tv_part",
+     "expression": "coef(\"base\", \"tv_ad\") * tv_ad"
+    }
+   ],
+   "windows": [
+    {
+     "type": "WIN_DISTRIBUTED_LAG",
+     "field": "tv",
+     "label": "tv_ad",
+     "partition_by": [
+      "market"
+     ],
+     "order_by": [
+      {
+       "field": "week"
+      }
+     ],
+     "params": {
+      "kernel": "geometric",
+      "max_lag": 8,
+      "decay": 0.6,
+      "normalize": false
+     }
+    },
+    {
+     "type": "WIN_DISTRIBUTED_LAG",
+     "field": "search",
+     "label": "search_ad",
+     "partition_by": [
+      "market"
+     ],
+     "order_by": [
+      {
+       "field": "week"
+      }
+     ],
+     "params": {
+      "kernel": "geometric",
+      "max_lag": 8,
+      "decay": 0.2,
+      "normalize": false
+     }
+    }
+   ],
+   "aggregations": [
+    {
+     "type": "AGG_SUM",
+     "field": "sales",
+     "label": "sales"
+    },
+    {
+     "type": "AGG_SUM",
+     "field": "tv_part",
+     "label": "tv_part"
+    },
+    {
+     "type": "AGG_AVERAGE",
+     "field": "miss",
+     "label": "mean_miss"
+    },
+    {
+     "type": "AGG_STDDEV",
+     "field": "miss",
+     "label": "sd_miss"
+    }
+   ]
+  }
+ ]
+}

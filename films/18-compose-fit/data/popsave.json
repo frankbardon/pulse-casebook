@@ -1,0 +1,49 @@
+{
+ "fits": [
+  {
+   "name": "y2024",
+   "save": "pops/y2024.pulse-population.json",
+   "request": {
+    "cohort": {
+     "filename": "m.pulse"
+    },
+    "filterers": [
+     {
+      "type": "FILTER_RANGE",
+      "field": "year",
+      "values": [
+       "2024",
+       "2024"
+      ]
+     }
+    ],
+    "matrices": [
+     {
+      "type": "MAT_COVARIANCE",
+      "name": "y2024",
+      "fields": [
+       "tv",
+       "search",
+       "sales"
+      ]
+     }
+    ]
+   }
+  }
+ ],
+ "requests": [
+  {
+   "label": "weeks",
+   "cohort": {
+    "filename": "m.pulse"
+   },
+   "aggregations": [
+    {
+     "type": "AGG_COUNT",
+     "field": "week",
+     "label": "n"
+    }
+   ]
+  }
+ ]
+}

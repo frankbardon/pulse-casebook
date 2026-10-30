@@ -1,0 +1,39 @@
+{
+ "cohort": {
+  "filename": "h.pulse"
+ },
+ "filterers": [
+  {
+   "type": "FILTER_INCLUDE",
+   "field": "market",
+   "values": [
+    "north"
+   ]
+  }
+ ],
+ "regressions": [
+  {
+   "type": "REG_MMM_BAYES",
+   "name": "bayes",
+   "target": "sales",
+   "predictors": [
+    "tv",
+    "search"
+   ],
+   "rng_seed": 18,
+   "params": {
+    "channels": [
+     "tv",
+     "search"
+    ],
+    "time": "week",
+    "max_lag": 8
+   }
+  }
+ ],
+ "return": {
+  "exclude": [
+   "data"
+  ]
+ }
+}

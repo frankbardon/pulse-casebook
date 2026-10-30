@@ -1,0 +1,94 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "responses": [
+      {
+        "label": "weeks",
+        "data": [
+          {
+            "n": 208
+          }
+        ],
+        "metadata": {
+          "total_rows": 208,
+          "filtered_rows": 208,
+          "cohort_file": "m.pulse"
+        },
+        "components": {
+          "aggregations": [
+            {
+              "label": "n",
+              "n": 208,
+              "n_null": 0
+            }
+          ],
+          "run": {
+            "total_records": 208,
+            "filtered_records": 208,
+            "null_records": 0
+          }
+        }
+      }
+    ],
+    "fits": {
+      "y2024": {
+        "vector": {
+          "operator": "MAT_COVARIANCE",
+          "labels": [
+            "tv",
+            "search",
+            "sales"
+          ],
+          "members": [
+            "tv",
+            "search",
+            "sales"
+          ],
+          "basis": "unweighted",
+          "n": 104,
+          "n_weight_invalid": 0,
+          "sum_weights": 104,
+          "n_star": 104,
+          "mean": [
+            25.274038461538467,
+            9.56826923076923,
+            327.6240384615383
+          ],
+          "covariance": {
+            "kind": "square_symmetric",
+            "encoding": "full",
+            "row_keys": [
+              "tv",
+              "search",
+              "sales"
+            ],
+            "column_keys": [
+              "tv",
+              "search",
+              "sales"
+            ],
+            "values": [
+              [
+                500.3347563480205,
+                -11.882773525018667,
+                802.267232076176
+              ],
+              [
+                -11.882773525018667,
+                12.471507654966398,
+                27.297663368185205
+              ],
+              [
+                802.267232076176,
+                27.297663368185205,
+                3526.093300037335
+              ]
+            ]
+          }
+        }
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}
