@@ -1,215 +1,219 @@
 1
-00:00:04,250 --> 00:00:08,951
-Pulse aggregators. Many rows in, one figure out, taken apart in depth.
+00:00:04,250 --> 00:00:06,413
+Many rows in, one figure out.
 
 2
-00:00:09,751 --> 00:00:19,188
+00:00:07,213 --> 00:00:16,650
 By default, aggregators run after the groups. They fold each group's rows into one figure, and they can read fields, features and attribute labels.
 
 3
-00:00:19,988 --> 00:00:28,337
+00:00:17,450 --> 00:00:25,799
 When an aggregation reads a window label, that order flips: the windows run first, over the records, and the aggregation reads their column.
 
 4
-00:00:29,137 --> 00:00:38,126
+00:00:26,599 --> 00:00:35,588
 Each aggregation names a type and a field, and optionally a label. Without a label, the output column is the type and the field joined together.
 
 5
-00:00:38,926 --> 00:00:44,523
+00:00:36,388 --> 00:00:41,985
 Without groups you get one row for the whole cohort. With a grouper, you get one row per bucket.
 
 6
-00:00:45,323 --> 00:00:55,827
+00:00:42,785 --> 00:00:53,289
 Leave out the type and Pulse picks one from the field: a sum for numbers, a modal count for categories, and set frequency for multi-selects. Dates are never defaulted.
 
 7
-00:00:56,627 --> 00:01:00,475
+00:00:54,089 --> 00:00:57,937
 Ten members survived the filters. One of them has no spend.
 
 8
-00:01:01,275 --> 00:01:07,747
+00:00:58,737 --> 00:01:05,209
 Count counts non-null values only, so it says nine, not ten. Null count reports the one it skipped.
 
 9
-00:01:08,547 --> 00:01:15,638
+00:01:06,009 --> 00:01:13,100
 Distinct count counts different values. Frequency counts one value you name, here North, and also gives its share.
 
 10
-00:01:16,438 --> 00:01:25,747
+00:01:13,900 --> 00:01:23,209
 Mode count is the size of the commonest value, and mode is the value itself. On a tie, mode picks the smallest value, not the first one seen.
 
 11
-00:01:26,547 --> 00:01:33,254
+00:01:24,009 --> 00:01:30,716
 Sum and average skip nulls too. The average divides by nine, the values that exist, not by ten.
 
 12
-00:01:34,054 --> 00:01:36,857
+00:01:31,516 --> 00:01:34,319
 Median takes the middle of the sorted values.
 
 13
-00:01:37,657 --> 00:01:43,190
+00:01:35,119 --> 00:01:40,652
 Now watch one big spender. The mean chases the outlier, while the median barely moves.
 
 14
-00:01:43,990 --> 00:01:46,899
+00:01:41,452 --> 00:01:44,361
 Weighted mean averages with a weight on each row.
 
 15
-00:01:47,699 --> 00:01:53,872
+00:01:45,161 --> 00:01:51,334
 Min, max and range describe the edges. One extreme value can stretch the range on its own.
 
 16
-00:01:54,672 --> 00:02:03,128
+00:01:52,134 --> 00:02:00,590
 Variance and standard deviation use the population formula. They divide by n, describing these rows exactly as they are.
 
 17
-00:02:03,928 --> 00:02:13,877
+00:02:01,390 --> 00:02:11,339
 Welford divides by n minus one, the sample formula, and returns the mean, the variance and the count together. Tests and t overlays read that triple.
 
 18
-00:02:14,677 --> 00:02:18,973
+00:02:12,139 --> 00:02:16,435
 Same rows, two different variances. Use the one your method expects.
 
 19
-00:02:19,773 --> 00:02:26,672
+00:02:17,235 --> 00:02:24,134
 The confidence-interval bounds put a range around the mean: the mean, plus or minus z times the standard error.
 
 20
-00:02:27,472 --> 00:02:34,371
-Fewer rows give a wider interval. With a single row there's no variance to estimate, so both bounds are null.
+00:02:24,934 --> 00:02:35,907
+Leave the big spender out and let the rows fall: eight, four, two. Fewer rows give a wider interval. With a single row there's no variance to estimate, so both bounds are null.
 
 21
-00:02:35,171 --> 00:02:42,048
+00:02:36,707 --> 00:02:43,584
 Pulse uses the normal z, not Student's t, so very small samples read narrower than a t interval would.
 
 22
-00:02:42,848 --> 00:02:49,661
-Ratio divides one field's sum by another's. A row with a null on either side is left out of both sums.
+00:02:44,384 --> 00:02:50,685
+Spread widens it too. Put the big spender back, and all nine rows give the widest interval on screen.
 
 23
-00:02:50,461 --> 00:02:55,226
-Because it pools the sums first, bigger rows count for more. That's a pooled rate.
+00:02:51,485 --> 00:02:58,298
+Ratio divides one field's sum by another's. A row with a null on either side is left out of both sums.
 
 24
-00:02:56,026 --> 00:03:00,962
-Averaging each row's ratio answers a different question, and gives a different number.
+00:02:59,098 --> 00:03:03,863
+Because it pools the sums first, bigger rows count for more. That's a pooled rate.
 
 25
-00:03:01,762 --> 00:03:07,637
-If the denominators sum to zero, the ratio is null. It is never an error and never zero.
+00:03:04,663 --> 00:03:09,599
+Averaging each row's ratio answers a different question, and gives a different number.
 
 26
-00:03:08,437 --> 00:03:15,016
-Accuracy aggregators compare an actual field with a prediction field, often a regression prediction attribute.
+00:03:10,399 --> 00:03:16,274
+If the denominators sum to zero, the ratio is null. It is never an error and never zero.
 
 27
-00:03:15,816 --> 00:03:24,656
-Mean absolute error is the average miss, in the field's own units. Root mean squared error squares the misses first, so big ones dominate.
+00:03:17,074 --> 00:03:23,653
+Accuracy aggregators compare an actual field with a prediction field, often a regression prediction attribute.
 
 28
-00:03:25,456 --> 00:03:33,613
-Mean absolute percentage error is a fraction, so point zero five means five percent. Rows missing either side are skipped.
+00:03:24,453 --> 00:03:33,293
+Mean absolute error is the average miss, in the field's own units. Root mean squared error squares the misses first, so big ones dominate.
 
 29
-00:03:34,413 --> 00:03:43,744
-The area under the curve measures ranking instead. It takes a score and a zero or one outcome, and asks how often a renewer outranks a non-renewer.
+00:03:34,093 --> 00:03:42,250
+Mean absolute percentage error is a fraction, so point zero five means five percent. Rows missing either side are skipped.
 
 30
-00:03:44,544 --> 00:03:49,693
-Two members share a score of point six four, one on each side. A tie counts half.
+00:03:43,050 --> 00:03:52,381
+The area under the curve measures ranking instead. It takes a score and a zero or one outcome, and asks how often a renewer outranks a non-renewer.
 
 31
-00:03:50,493 --> 00:03:59,546
-Here it reads point seven eight. The components add the Gini, the count on each side, and a DeLong interval. It ranks; it does not calibrate.
+00:03:53,181 --> 00:03:58,330
+Two members share a score of point six four, one on each side. A tie counts half.
 
 32
-00:04:00,346 --> 00:04:03,405
-Shape aggregators describe how values spread out.
+00:03:59,130 --> 00:04:08,183
+Here it reads point seven eight. The components add the Gini, the count on each side, and a DeLong interval. It ranks; it does not calibrate.
 
 33
-00:04:04,205 --> 00:04:09,354
-Skewness is positive when a long tail stretches to the right, like most spending data.
+00:04:08,983 --> 00:04:12,042
+Shape aggregators describe how values spread out.
 
 34
-00:04:10,154 --> 00:04:16,605
-Kurtosis is excess kurtosis, so a normal curve reads zero. Both use population moments.
+00:04:12,842 --> 00:04:17,991
+Skewness is positive when a long tail stretches to the right, like most spending data.
 
 35
-00:04:17,405 --> 00:04:22,021
-Percentile cuts the sorted values at any point you choose, here the ninetieth.
+00:04:18,791 --> 00:04:25,242
+Kurtosis is excess kurtosis, so a normal curve reads zero. Both use population moments.
 
 36
-00:04:22,821 --> 00:04:30,082
-With one row or none, or no spread at all, skewness and kurtosis are null, never zero. There is no shape to see.
+00:04:26,042 --> 00:04:30,658
+Percentile cuts the sorted values at any point you choose, here the ninetieth.
 
 37
-00:04:30,882 --> 00:04:37,823
-Multi-select fields have their own aggregators. One member skipped the question, and one answered but picked nothing.
+00:04:31,458 --> 00:04:38,719
+With one row or none, or no spread at all, skewness and kurtosis are null, never zero. There is no shape to see.
 
 38
-00:04:38,623 --> 00:04:46,076
-Set frequency counts each option. A row can count toward several options, so the counts add up to more than the rows.
+00:04:39,519 --> 00:04:46,460
+Multi-select fields have their own aggregators. One member skipped the question, and one answered but picked nothing.
 
 39
-00:04:46,876 --> 00:04:57,636
-Union is what anyone picked. Intersection is what everyone picked, so one empty answer empties it. Cardinality and distinct values count picks and combinations.
+00:04:47,260 --> 00:04:54,713
+Set frequency counts each option. A row can count toward several options, so the counts add up to more than the rows.
 
 40
-00:04:58,436 --> 00:05:02,327
-An empty selection is a real answer. Only null is skipped.
+00:04:55,513 --> 00:05:06,273
+Union is what anyone picked. Intersection is what everyone picked, so one empty answer empties it. Cardinality and distinct values count picks and combinations.
 
 41
-00:05:03,127 --> 00:05:12,031
-Shards and streaming chunks are folded separately, then merged. Most aggregators keep a small, fixed running state, so merging is instant.
+00:05:07,073 --> 00:05:10,964
+An empty selection is a real answer. Only null is skipped.
 
 42
-00:05:12,831 --> 00:05:18,898
-Partial aggregators keep a map of values, such as distinct counts and modes, and merge it at the end.
+00:05:11,764 --> 00:05:20,668
+Shards and streaming chunks are folded separately, then merged. Most aggregators keep a small, fixed running state, so merging is instant.
 
 43
-00:05:19,698 --> 00:05:28,282
-Median, percentile and the area under the curve need every value at once. They buffer the rows and sort, so memory grows with the cohort.
+00:05:21,468 --> 00:05:27,535
+Partial aggregators keep a map of values, such as distinct counts and modes, and merge it at the end.
 
 44
-00:05:29,082 --> 00:05:34,871
-The manifest lists each aggregator's class, and predict flags the buffered ones before you run.
+00:05:28,335 --> 00:05:36,919
+Median, percentile and the area under the curve need every value at once. They buffer the rows and sort, so memory grows with the cohort.
 
 45
-00:05:35,671 --> 00:05:40,927
-Rows can carry weights, set on the request, on one slot, or as an instance default.
+00:05:37,719 --> 00:05:43,508
+The manifest lists each aggregator's class, and predict flags the buffered ones before you run.
 
 46
-00:05:41,727 --> 00:05:47,772
-A weighted count becomes a sum of weights, and a weighted average is the weighted sum over the sum of weights.
+00:05:44,308 --> 00:05:49,564
+Rows can carry weights, set on the request, on one slot, or as an instance default.
 
 47
-00:05:48,572 --> 00:05:55,513
-Setting weight to null opts one slot out. Invalid weights are left out with a warning, and n stays a raw count.
+00:05:50,364 --> 00:05:56,409
+A weighted count becomes a sum of weights, and a weighted average is the weighted sum over the sum of weights.
 
 48
-00:05:56,313 --> 00:06:01,825
-Every aggregation also reports its components: the pieces its figure was made from.
+00:05:57,209 --> 00:06:04,150
+Setting weight to null opts one slot out. Invalid weights are left out with a warning, and n stays a raw count.
 
 49
-00:06:02,625 --> 00:06:11,166
-Every one starts with the same floor: n, the values used, and n null, the values skipped. Above it are the aggregator's own parts.
+00:06:04,950 --> 00:06:10,462
+Every aggregation also reports its components: the pieces its figure was made from.
 
 50
-00:06:11,966 --> 00:06:15,963
-You can switch components off. The figures themselves never change.
+00:06:11,262 --> 00:06:19,803
+Every one starts with the same floor: n, the values used, and n null, the values skipped. Above it are the aggregator's own parts.
 
 51
-00:06:16,763 --> 00:06:27,374
-That's the aggregator toolkit today: counting, centre and spread, uncertainty, shape, accuracy and ranking, multi-select, and vectors that give one figure per member.
+00:06:20,603 --> 00:06:24,600
+You can switch components off. The figures themselves never change.
 
 52
-00:06:28,174 --> 00:06:36,118
-More aggregators are added over time, and embedders can register their own. The manifest always shows what your instance offers.
+00:06:25,400 --> 00:06:36,011
+That's the aggregator toolkit today: counting, centre and spread, uncertainty, shape, accuracy and ranking, multi-select, and vectors that give one figure per member.
 
 53
-00:06:36,918 --> 00:06:40,638
-Remember: read n beside every figure. Next up, windows.
+00:06:36,811 --> 00:06:44,755
+More aggregators are added over time, and embedders can register their own. The manifest always shows what your instance offers.
 
 54
-00:06:41,438 --> 00:06:42,918
+00:06:45,555 --> 00:06:49,275
+Remember: read n beside every figure. Next up, windows.
+
+55
+00:06:50,075 --> 00:06:51,555
 Pulse aggregators.

@@ -9,7 +9,8 @@
 - **Requests:**
   - `count.json` → `count.out.json`: count, null count, distinct count, frequency of North (with `share`), mode count and mode (a dictionary index).
   - `centre.json` → `centre.out.json`: sum, average and median of `spend` and `spend_calm`; min, max, range, variance, stddev, Welford and ratio, with their components.
-  - `ci9.json`, `ci4.json`, `ci2.json`, `ci1.json` → `.out.json`: the CI bounds over all nine members, then members 1–4, 1–2 and 1 alone (both bounds null).
+  - `ci8.json`, `ci4.json`, `ci2.json`, `ci1.json` → `.out.json`: the CI bounds as the rows fall with member 8 (spend 240) left out: eight members, then members 1–4, 1–2 and 1 alone (both bounds null).
+  - `ci9.json` → `ci9.out.json`: all nine members with member 8 back in, the widest interval: spread widens it too.
   - `rowratio.json` → `rowratio.out.json`: the average of the row ratios (`ATTR_FORMULA` spend / cost, then `AGG_AVERAGE`), for contrast with `AGG_RATIO`.
   - `acc.json` → `acc.out.json`: MAE, RMSE and MAPE of `spend` against `pred`, and `AGG_AUC` of `score` against `renewed` (AUC 0.78, gini, `n_pos`, `n_neg`, DeLong interval).
   - `shape.json` → `shape.out.json`: skewness, kurtosis and the 90th percentile of `h.csv`.

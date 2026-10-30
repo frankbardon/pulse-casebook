@@ -35,7 +35,7 @@ const REC = {
     welford: { mean: 70.77777777777777, m2: 32681.555555555547, variance: 4085.1944444444434 }, medPos: 4,
     ratio: { num: 637, den: 271, ratio: 2.3505535055350553 } },
   rowRatio: 2.187037037037037,                                                                        // rowratio.out.json
-  ci: { 9: [29.020401539345702, 112.53515401620984], 4: [38.4149846983147, 59.5850153016853],          // ci9/ci4/ci2/ci1.out.json
+  ci: { 9: [29.020401539345702, 112.53515401620984], 8: [43.97187250262098, 55.27812749737902], 4: [38.4149846983147, 59.5850153016853],          // ci9/ci8/ci4/ci2/ci1.out.json
     2: [35.76023410048965, 61.23976589951035], 1: null },
   acc: { mae: 9.444444444444445, rmse: 20.234733614368253, mape: 0.08441876413718839 },               // acc.out.json
   auc: { auc: 0.78, gini: 0.56, nPos: 5, nNeg: 5, lo: 0.45914006732749796, hi: 1 },                    // acc.out.json
@@ -47,17 +47,13 @@ const REC = {
 };
 
 /* ---------- 0. title ---------- */
-function sTitle(t) {
+function sTitle(t) {   // the kit intro already shows the title: just the fold, Σ and the tagline
   for (let i = 0; i < 8; i++) {
-    const u = eio(seg(t, 0.5 + i * 0.06, 1.3 + i * 0.06));
-    A(seg(t, 0.05 + i * 0.05, 0.4 + i * 0.05), () => R(lerp(420 + i * 28, 618, u), lerp(330, 340, u), lerp(22, 44, u * 0), 22, { fill: C.tealS, stroke: C.teal, r: 3, lw: 1 }));
+    const u = eio(seg(t, 0.2 + i * 0.05, 0.8 + i * 0.05));
+    A(seg(t, 0.0 + i * 0.03, 0.25 + i * 0.03), () => R(lerp(420 + i * 28, 618, u), 330 + 10 * u, 44, 22, { fill: C.tealS, stroke: C.teal, r: 3, lw: 1 }));
   }
-  A(seg(t, 1.3, 1.7), () => { R(600, 322, 80, 40, { fill: C.violetS, stroke: C.violet, r: 4, lw: 2 }); T('Σ', 640, 350, { size: 24, weight: 700, align: 'center', color: C.violet }); });
-  A(seg(t, 1.2, 2.0), () => {
-    T('PULSE', 640, 290, { size: 96, weight: 800, stretch: 'expanded', align: 'center' });
-    T('AGGREGATORS', 640, 470, { size: 50, weight: 800, stretch: 'expanded', align: 'center', color: C.violet });
-  });
-  A(seg(t, 2.0, 2.8), () => T('Many rows in, one figure out', 640, 518, { size: 20, align: 'center', color: C.muted }));
+  A(seg(t, 0.9, 1.2), () => { R(600, 322, 80, 40, { fill: C.violetS, stroke: C.violet, r: 4, lw: 2 }); T('Σ', 640, 350, { size: 24, weight: 700, align: 'center', color: C.violet }); });
+  A(seg(t, 1.0, 1.6), () => T('Many rows in, one figure out', 640, 430, { size: 24, align: 'center', color: C.muted }));
 }
 
 /* ---------- 1. where aggregators run ---------- */
@@ -201,13 +197,15 @@ function sSpread(t) {
 function sCI(t) {
   CAP('AGG_CI_LOWER · AGG_CI_UPPER · mean ∓ z·√(s² ÷ n)', 64, 124, { color: C.violet });
   const X = axis(240, 1180, 520, 0, 140, [0, 20, 40, 60, 80, 100, 120, 140]);
-  const rows = [['all 9 members', VALS], ['first 4', VALS.slice(0, 4)], ['first 2', VALS.slice(0, 2)], ['just 1', VALS.slice(0, 1)]];
-  rows.forEach(([lab, a], i) => A(seg(t, 0.4 + i * 1.1, 0.8 + i * 1.1), () => {
-    const y = 190 + i * 76, c = REC.ci[a.length], mu = mean(a);
-    M(lab, 64, y + 5, { size: 13.5, color: C.ink }); M('n = ' + a.length, 64, y + 25, { size: 12, color: C.muted });
+  // Rows 1-4 leave member 8 (spend 240) out, so only n changes; the last row puts it back.
+  const calm = VALS.filter(v => v !== 240);
+  const rows = [['8, without #8', calm], ['first 4', VALS.slice(0, 4)], ['first 2', VALS.slice(0, 2)], ['just 1', VALS.slice(0, 1)], ['all 9, #8 back in', VALS]];
+  rows.forEach(([lab, a], i) => A(seg(t, i < 4 ? 0.4 + i * 1.1 : 6.2, i < 4 ? 0.8 + i * 1.1 : 6.6), () => {
+    const y = 190 + i * 70, c = REC.ci[a.length], mu = mean(a), out = i === 4;
+    M(lab, 64, y + 5, { size: 13.5, color: out ? C.amber : C.ink }); M('n = ' + a.length, 64, y + 25, { size: 12, color: C.muted });
     if (c) {
       const l = Math.max(c[0], 0), h = Math.min(c[1], 140);
-      R(X(l), y - 8, X(h) - X(l), 16, { fill: C.violetS, stroke: C.violet, r: 8 });
+      R(X(l), y - 8, X(h) - X(l), 16, { fill: out ? C.amberS : C.violetS, stroke: out ? C.amber : C.violet, r: 8 });
       dot(X(mu), y, 5, C.ink);
       M(f2(c[0]) + ' … ' + f2(c[1]), X(h) + 12, y + 5, { size: 12.5, color: C.violet });
     } else {
@@ -215,7 +213,7 @@ function sCI(t) {
       M('null: no variance from one value', X(mu) + 14, y + 5, { size: 12.5, color: C.coral });
     }
   }));
-  A(seg(t, 5.2, 5.6), () => M('fewer rows → a wider interval · normal z, not Student\'s t, so small samples read narrower than a t-interval', 64, 580, { size: 12.5, color: C.amber }));
+  A(seg(t, 5.2, 5.6), () => M('fewer rows or more spread → a wider interval · normal z, not Student\'s t, so small samples read narrower than a t-interval', 64, 584, { size: 12.5, color: C.amber }));
 }
 
 /* ---------- 6. ratios ---------- */
@@ -450,14 +448,14 @@ function sRecap(t) {
 }
 
 /* ---------- scenes + script ---------- */
-const NARR = /*NARR*/[4.501, 9.237, 8.149, 8.789, 5.397, 10.304, 3.648, 6.272, 6.891, 9.109, 6.507, 2.603, 5.333, 2.709, 5.973, 8.256, 9.749, 4.096, 6.699, 6.699, 6.677, 6.613, 4.565, 4.736, 5.675, 6.379, 8.64, 7.957, 9.131, 4.949, 8.853, 2.859, 4.949, 6.251, 4.416, 7.061, 6.741, 7.253, 10.56, 3.691, 8.704, 5.867, 8.384, 5.589, 5.056, 5.845, 6.741, 5.312, 8.341, 3.797, 10.411, 7.744, 3.52, 1.28]/*END*/;
+const NARR = /*NARR*/[1.963, 9.237, 8.149, 8.789, 5.397, 10.304, 3.648, 6.272, 6.891, 9.109, 6.507, 2.603, 5.333, 2.709, 5.973, 8.256, 9.749, 4.096, 6.699, 10.773, 6.677, 6.101, 6.613, 4.565, 4.736, 5.675, 6.379, 8.64, 7.957, 9.131, 4.949, 8.853, 2.859, 4.949, 6.251, 4.416, 7.061, 6.741, 7.253, 10.56, 3.691, 8.704, 5.867, 8.384, 5.589, 5.056, 5.845, 6.741, 5.312, 8.341, 3.797, 10.411, 7.744, 3.52, 1.28]/*END*/;
 PulseFilm.mount({
   series: 'PULSE · AGGREGATORS',
   title: 'Pulse Aggregators',
   narr: NARR,
   scenes: [
-    { name: 'Pulse Aggregators', dur: 4, draw: sTitle, caps: [
-      [0, '', 'Pulse aggregators. Many rows in, one figure out, taken apart in depth.', true]] },
+    { name: 'Pulse Aggregators', dur: 2.4, draw: sTitle, caps: [
+      [0, '', 'Many rows in, one figure out.', true]] },
     { name: 'Where aggregators run', dur: 8, draw: sWhere, caps: [
       [0, 'By default, aggregators run after the groups. They fold each group\'s rows into one figure, and they can read fields, features and attribute labels.'],
       [1.6, 'When an aggregation reads a window label, that order flips: the windows run first, over the records, and the aggregation reads their column.'],
@@ -479,10 +477,11 @@ PulseFilm.mount({
       [2.2, 'Variance and standard deviation use the population formula. They divide by n, describing these rows exactly as they are.'],
       [4.4, 'Welford divides by n minus one, the sample formula, and returns the mean, variance and count together. Tests and t-overlays read that triple.', 'Welford divides by n minus one, the sample formula, and returns the mean, the variance and the count together. Tests and t overlays read that triple.'],
       [6.4, 'Same rows, two different variances. Use the one your method expects.']] },
-    { name: 'Uncertainty', dur: 6.2, draw: sCI, caps: [
+    { name: 'Uncertainty', dur: 7.4, draw: sCI, caps: [
       [0, 'The confidence-interval bounds put a range around the mean: the mean, plus or minus z times the standard error.'],
-      [2.6, 'Fewer rows give a wider interval. With a single row there\'s no variance to estimate, so both bounds are null.'],
-      [5.2, 'Pulse uses the normal z, not Student\'s t, so very small samples read narrower than a t-interval would.', 'Pulse uses the normal z, not Student\'s t, so very small samples read narrower than a t interval would.']] },
+      [2.6, 'Leave the big spender out and let the rows fall: eight, four, two. Fewer rows give a wider interval. With a single row there\'s no variance to estimate, so both bounds are null.'],
+      [5.2, 'Pulse uses the normal z, not Student\'s t, so very small samples read narrower than a t-interval would.', 'Pulse uses the normal z, not Student\'s t, so very small samples read narrower than a t interval would.'],
+      [6.2, 'Spread widens it too. Put the big spender back, and all nine rows give the widest interval on screen.']] },
     { name: 'Ratios', dur: 7, draw: sRatio, caps: [
       [0, 'Ratio divides one field\'s sum by another\'s. A row with a null on either side is left out of both sums.'],
       [1.8, 'Because it pools the sums first, bigger rows count for more. That\'s a pooled rate.'],

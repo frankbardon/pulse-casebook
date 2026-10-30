@@ -1,0 +1,2 @@
+{"cohort":{"filename":"p.pulse"},"filterers":[{"type":"FILTER_EXCLUDE","field":"id","values":["8"]}],"aggregations":[
+{"type":"AGG_CI_LOWER","field":"spend"},{"type":"AGG_CI_UPPER","field":"spend"},{"type":"AGG_AVERAGE","field":"spend"},{"type":"AGG_COUNT","field":"spend"}]}
