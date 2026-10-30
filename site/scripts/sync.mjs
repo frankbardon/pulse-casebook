@@ -102,7 +102,7 @@ for (const t of TOPICS) {
   t.film = t.films.map(n => films.find(f => f.topic === n)).find(Boolean);
   t.inDepth = t.film && t.film.topic === t.films[0];
 }
-copyFiles(FILMS, path.join(PUBLIC, 'films'), ['kit/film-kit.js']);
+copyFiles(FILMS, path.join(PUBLIC, 'films'), ['kit/film-kit.js', 'kit/pulse-ring.js'].filter(f => fs.existsSync(path.join(FILMS, f))));
 copyFiles(path.join(FILMS, 'plates'), path.join(PUBLIC, 'plates'), ['index.html', 'pulse-ring.svg']);
 for (const f of films) {
   const keep = ['index.html', 'scenes.js', 'narration.mp3', 'subtitles.srt'].filter(n => fs.existsSync(path.join(FILMS, f.dir, n)));
