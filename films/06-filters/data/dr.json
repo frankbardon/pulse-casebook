@@ -1,0 +1,1 @@
+{"cohort":{"filename":"f.pulse"},"filterers":[{"type":"FILTER_DATE_RANGES","field":"joined","params":{"ranges":[{"label":"spring","start":"2023-03-01","end":"2023-05-31"},{"label":"since-2024","start":"2024-01-01","end":null}]}}],"groups":[{"type":"GROUP_CATEGORY","field":"id"}],"aggregations":[{"type":"AGG_COUNT","field":"id","label":"n"}]}

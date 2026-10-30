@@ -1,0 +1,15 @@
+{
+  "format_version": "1.1",
+  "data": null,
+  "errors": [
+    {
+      "code": "PULSE_FORMULA_COMPILE_ERROR",
+      "message": "compiling filter expression \"weekday(at) \u003e= 6\": weekday() reads epoch days but \"at\" is a datetime field (epoch seconds): wrap it in to_day(), as in weekday(to_day(at)) (1:1)",
+      "details": {
+        "compile_error": "weekday() reads epoch days but \"at\" is a datetime field (epoch seconds): wrap it in to_day(), as in weekday(to_day(at)) (1:1)",
+        "expression": "weekday(at) \u003e= 6"
+      }
+    }
+  ],
+  "warnings": []
+}

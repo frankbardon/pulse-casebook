@@ -1,0 +1,1 @@
+{"cohort":{"filename":"p.pulse"},"attributes":[{"type":"ATTR_PREVIOUS_STATE","field":"plan","subject_field":"subject","order_field":"wave","label":"prev"}],"filterers":[{"type":"FILTER_EXPRESSION","expression":"prev == \"trial\" and plan == \"paid\""}],"groups":[{"type":"GROUP_CATEGORY","field":"subject"}],"aggregations":[{"type":"AGG_COUNT","field":"subject","label":"n"}]}

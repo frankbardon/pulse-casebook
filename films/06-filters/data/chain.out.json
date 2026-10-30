@@ -1,0 +1,48 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "n": 304
+      }
+    ],
+    "metadata": {
+      "total_rows": 1000,
+      "filtered_rows": 304,
+      "cohort_file": "k.pulse"
+    },
+    "components": {
+      "aggregations": [
+        {
+          "label": "n",
+          "n": 304,
+          "n_null": 0
+        }
+      ],
+      "filterers": [
+        {
+          "n_in": 1000,
+          "n_out": 959,
+          "n_null_input": 41
+        },
+        {
+          "n_in": 959,
+          "n_out": 643,
+          "n_null_input": 0
+        },
+        {
+          "n_in": 643,
+          "n_out": 304,
+          "n_null_input": 19
+        }
+      ],
+      "run": {
+        "total_records": 1000,
+        "filtered_records": 304,
+        "null_records": 0
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

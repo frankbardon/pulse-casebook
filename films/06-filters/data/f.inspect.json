@@ -1,0 +1,92 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "field_count": 6,
+    "fields": [
+      {
+        "name": "id",
+        "type": "u4",
+        "nullable": false,
+        "byte_offset": 0,
+        "bit_position": 0,
+        "description": "Numeric field: id",
+        "description_source": "synthesized",
+        "categorical": false
+      },
+      {
+        "name": "region",
+        "type": "categorical_u8",
+        "nullable": true,
+        "byte_offset": 1,
+        "bit_position": 0,
+        "description": "Categorical field: region",
+        "description_source": "synthesized",
+        "categorical": true,
+        "dictionary": {
+          "total_entries": 4,
+          "truncated": false,
+          "values": [
+            "North",
+            "South",
+            "East",
+            "West"
+          ]
+        }
+      },
+      {
+        "name": "age",
+        "type": "u8",
+        "nullable": true,
+        "byte_offset": 2,
+        "bit_position": 0,
+        "description": "Numeric field: age",
+        "description_source": "synthesized",
+        "categorical": false
+      },
+      {
+        "name": "opted_in",
+        "type": "packed_bool",
+        "nullable": true,
+        "byte_offset": 3,
+        "bit_position": 0,
+        "description": "Numeric field: opted_in",
+        "description_source": "synthesized",
+        "categorical": false
+      },
+      {
+        "name": "joined",
+        "type": "date",
+        "nullable": false,
+        "byte_offset": 4,
+        "bit_position": 0,
+        "description": "Numeric field: joined",
+        "description_source": "synthesized",
+        "categorical": false
+      },
+      {
+        "name": "interests",
+        "type": "set_u8",
+        "nullable": true,
+        "byte_offset": 8,
+        "bit_position": 0,
+        "description": "Set field: interests",
+        "description_source": "synthesized",
+        "categorical": false,
+        "dictionary": {
+          "total_entries": 4,
+          "truncated": false,
+          "values": [
+            "travel",
+            "tech",
+            "sport",
+            "food"
+          ]
+        }
+      }
+    ],
+    "shards": [],
+    "record_count": 10
+  },
+  "errors": [],
+  "warnings": []
+}

@@ -1,0 +1,1 @@
+{"cohort":{"filename":"f.pulse"},"filterers":[{"type":"FILTER_EXPRESSION","expression":"age >= 30 and \"travel\" in interests"}],"groups":[{"type":"GROUP_CATEGORY","field":"id"}],"aggregations":[{"type":"AGG_COUNT","field":"id","label":"n"}]}

@@ -1,0 +1,96 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "id": "2",
+        "n": 1
+      },
+      {
+        "id": "6",
+        "n": 1
+      },
+      {
+        "id": "9",
+        "n": 1
+      }
+    ],
+    "metadata": {
+      "total_rows": 10,
+      "filtered_rows": 3,
+      "cohort_file": "f.pulse"
+    },
+    "components": {
+      "aggregations": [
+        {
+          "label": "n",
+          "n": 3,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "2"
+              ],
+              "n": 1,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "6"
+              ],
+              "n": 1,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "9"
+              ],
+              "n": 1,
+              "n_null": 0
+            }
+          ]
+        }
+      ],
+      "groupers": [
+        {
+          "field": "id",
+          "total_n": 3,
+          "operator": {
+            "buckets": [
+              {
+                "count": 1,
+                "key": "2",
+                "label": "2"
+              },
+              {
+                "count": 1,
+                "key": "6",
+                "label": "6"
+              },
+              {
+                "count": 1,
+                "key": "9",
+                "label": "9"
+              }
+            ],
+            "dict_size": 0
+          }
+        }
+      ],
+      "filterers": [
+        {
+          "n_in": 10,
+          "n_out": 3,
+          "n_null_input": 1
+        }
+      ],
+      "run": {
+        "total_records": 10,
+        "filtered_records": 3,
+        "null_records": 0
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

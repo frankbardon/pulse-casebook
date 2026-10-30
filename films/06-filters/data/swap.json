@@ -1,0 +1,1 @@
+{"cohort":{"filename":"k.pulse"},"filterers":[{"type":"FILTER_RANGE","field":"age","values":["18","65"]},{"type":"FILTER_NULL","field":"age","values":["is_not_null"]},{"type":"FILTER_INCLUDE","field":"region","values":["North","South"]}],"aggregations":[{"type":"AGG_COUNT","field":"id","label":"n"}]}

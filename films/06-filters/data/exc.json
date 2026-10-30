@@ -1,0 +1,1 @@
+{"cohort":{"filename":"f.pulse"},"filterers":[{"type":"FILTER_EXCLUDE","field":"region","values":["North","South"]}],"groups":[{"type":"GROUP_CATEGORY","field":"id"}],"aggregations":[{"type":"AGG_COUNT","field":"id","label":"n"}]}
