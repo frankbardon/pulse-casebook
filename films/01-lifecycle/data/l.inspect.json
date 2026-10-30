@@ -1,0 +1,82 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "field_count": 6,
+    "fields": [
+      {
+        "name": "region",
+        "type": "categorical_u8",
+        "nullable": false,
+        "byte_offset": 0,
+        "bit_position": 0,
+        "description": "Categorical field: region",
+        "description_source": "synthesized",
+        "categorical": true,
+        "dictionary": {
+          "total_entries": 4,
+          "truncated": false,
+          "values": [
+            "South",
+            "West",
+            "East",
+            "North"
+          ]
+        }
+      },
+      {
+        "name": "age",
+        "type": "u8",
+        "nullable": true,
+        "byte_offset": 1,
+        "bit_position": 0,
+        "description": "Numeric field: age",
+        "description_source": "synthesized",
+        "categorical": false
+      },
+      {
+        "name": "signup",
+        "type": "date",
+        "nullable": false,
+        "byte_offset": 2,
+        "bit_position": 0,
+        "description": "Numeric field: signup",
+        "description_source": "synthesized",
+        "categorical": false
+      },
+      {
+        "name": "income",
+        "type": "f64",
+        "nullable": true,
+        "byte_offset": 6,
+        "bit_position": 0,
+        "description": "Numeric field: income",
+        "description_source": "synthesized",
+        "categorical": false
+      },
+      {
+        "name": "opted_in",
+        "type": "packed_bool",
+        "nullable": false,
+        "byte_offset": 14,
+        "bit_position": 0,
+        "description": "Numeric field: opted_in",
+        "description_source": "synthesized",
+        "categorical": false
+      },
+      {
+        "name": "tier",
+        "type": "u4",
+        "nullable": true,
+        "byte_offset": 15,
+        "bit_position": 0,
+        "description": "Numeric field: tier",
+        "description_source": "synthesized",
+        "categorical": false
+      }
+    ],
+    "shards": [],
+    "record_count": 140
+  },
+  "errors": [],
+  "warnings": []
+}

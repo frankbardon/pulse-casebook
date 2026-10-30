@@ -1,0 +1,307 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "AGG_AVERAGE_income_k": 62.60740740740741,
+        "region": "East"
+      },
+      {
+        "AGG_AVERAGE_income_k": 72.7,
+        "region": "North"
+      },
+      {
+        "AGG_AVERAGE_income_k": 61.96285714285714,
+        "region": "South"
+      },
+      {
+        "AGG_AVERAGE_income_k": 78.38461538461539,
+        "region": "West"
+      }
+    ],
+    "metadata": {
+      "total_rows": 140,
+      "filtered_rows": 105,
+      "cohort_file": "members.pulse"
+    },
+    "tests": [
+      {
+        "label": "opted_vs_not",
+        "type": "TEST_T",
+        "group_key": [
+          "East"
+        ],
+        "variant": "welch_two_sample",
+        "statistic": 2.1298707043533827,
+        "df": 19.242130309641727,
+        "p_value": 0.046301718481272916,
+        "alpha": 0.05,
+        "reject_null": true,
+        "p_adjusted": 0.18520687392509166,
+        "significant_adjusted": false,
+        "multiplicity": {
+          "method": "bonferroni",
+          "family": "request",
+          "alpha": 0.05,
+          "m": 4
+        },
+        "details": {
+          "ci_high": 16.130169106143576,
+          "ci_low": 0.1476086716341936,
+          "diff": 8.138888888888886,
+          "effect_size": {
+            "cohens_d": 0.8134027097436723
+          },
+          "groups": [
+            "0",
+            "1"
+          ],
+          "mean": [
+            68.03333333333333,
+            59.894444444444446
+          ],
+          "n": [
+            9,
+            18
+          ],
+          "variance": [
+            75.58999999999997,
+            111.66290849673207
+          ]
+        }
+      },
+      {
+        "label": "opted_vs_not",
+        "type": "TEST_T",
+        "group_key": [
+          "North"
+        ],
+        "variant": "welch_two_sample",
+        "statistic": -0.7758532682167447,
+        "df": 15.921191828221078,
+        "p_value": 0.4492078065751993,
+        "alpha": 0.05,
+        "reject_null": false,
+        "p_adjusted": 1,
+        "significant_adjusted": false,
+        "multiplicity": {
+          "method": "bonferroni",
+          "family": "request",
+          "alpha": 0.05,
+          "m": 4
+        },
+        "details": {
+          "ci_high": 6.593756599226455,
+          "ci_low": -14.201412101618788,
+          "diff": -3.8038277511961667,
+          "effect_size": {
+            "cohens_d": -0.32223769370579447
+          },
+          "groups": [
+            "0",
+            "1"
+          ],
+          "mean": [
+            70.2909090909091,
+            74.09473684210526
+          ],
+          "n": [
+            11,
+            19
+          ],
+          "variance": [
+            204.78290909090907,
+            102.98941520467838
+          ]
+        }
+      },
+      {
+        "label": "opted_vs_not",
+        "type": "TEST_T",
+        "group_key": [
+          "South"
+        ],
+        "variant": "welch_two_sample",
+        "statistic": -1.6691255605652957,
+        "df": 21.17321587136759,
+        "p_value": 0.10981326067779887,
+        "alpha": 0.05,
+        "reject_null": false,
+        "p_adjusted": 0.4392530427111955,
+        "significant_adjusted": false,
+        "multiplicity": {
+          "method": "bonferroni",
+          "family": "request",
+          "alpha": 0.05,
+          "m": 4
+        },
+        "details": {
+          "ci_high": 1.8526222216845074,
+          "ci_low": -16.956970047771502,
+          "diff": -7.552173913043497,
+          "effect_size": {
+            "cohens_d": -0.606949574770479
+          },
+          "groups": [
+            "0",
+            "1"
+          ],
+          "mean": [
+            56.99999999999999,
+            64.55217391304349
+          ],
+          "n": [
+            12,
+            23
+          ],
+          "variance": [
+            168.4418181818182,
+            148.01533596837942
+          ]
+        }
+      },
+      {
+        "label": "opted_vs_not",
+        "type": "TEST_T",
+        "group_key": [
+          "West"
+        ],
+        "variant": "welch_two_sample",
+        "statistic": 0.317603541114985,
+        "df": 9.433131241061412,
+        "p_value": 0.7577038208664257,
+        "alpha": 0.05,
+        "reject_null": false,
+        "p_adjusted": 1,
+        "significant_adjusted": false,
+        "multiplicity": {
+          "method": "bonferroni",
+          "family": "request",
+          "alpha": 0.05,
+          "m": 4
+        },
+        "details": {
+          "ci_high": 12.423510720457086,
+          "ci_low": -9.345732942679303,
+          "diff": 1.5388888888888914,
+          "effect_size": {
+            "cohens_d": 0.15747289360910383
+          },
+          "groups": [
+            "0",
+            "1"
+          ],
+          "mean": [
+            79.45,
+            77.91111111111111
+          ],
+          "n": [
+            4,
+            9
+          ],
+          "variance": [
+            42.65666666666668,
+            115.31611111111101
+          ]
+        }
+      }
+    ],
+    "regressions": [
+      {
+        "name": "fit",
+        "type": "REG_OLS",
+        "error": {
+          "code": "PROCESSING_REGRESSION_RANK_DEFICIENT",
+          "message": "Cholesky solve failed for the centered Gram matrix",
+          "details": {
+            "gonum_error": "matrix singular or near-singular with condition number 1.0641e+18",
+            "n": 105,
+            "p": 2
+          }
+        }
+      }
+    ],
+    "warnings": [
+      {
+        "code": "PULSE_SLOT_FAILED",
+        "message": "regressions[0] \"fit\" failed with PROCESSING_REGRESSION_RANK_DEFICIENT: Cholesky solve failed for the centered Gram matrix; its result carries the error and the other slots proceed",
+        "details": {
+          "code": "PROCESSING_REGRESSION_RANK_DEFICIENT",
+          "index": 0,
+          "label": "fit",
+          "slot_kind": "regressions"
+        }
+      }
+    ],
+    "overlays": [
+      {
+        "name": "index_vs_total",
+        "kind": "OVERLAY_INDEX_VS_TOTAL",
+        "scope": "group",
+        "ref": {},
+        "payload": {
+          "shape": "series",
+          "series": {
+            "entries": [
+              {
+                "key": [
+                  "East"
+                ],
+                "summary": {
+                  "statistic": 22.71224344811078
+                }
+              },
+              {
+                "key": [
+                  "North"
+                ],
+                "summary": {
+                  "statistic": 26.373558130795466
+                }
+              },
+              {
+                "key": [
+                  "South"
+                ],
+                "summary": {
+                  "statistic": 22.4784183604858
+                }
+              },
+              {
+                "key": [
+                  "West"
+                ],
+                "summary": {
+                  "statistic": 28.43578006060795
+                }
+              }
+            ]
+          }
+        },
+        "summary": {
+          "min": 22.4784183604858,
+          "max": 28.43578006060795,
+          "count": 4,
+          "baseline": 100
+        }
+      }
+    ],
+    "returned": {
+      "preset": "custom",
+      "digest": "rp1:c766500917eed2a6461dc81adb10c73e5e46ea150069bceda980e1a1222ed59a"
+    }
+  },
+  "errors": [],
+  "warnings": [
+    {
+      "code": "PULSE_SLOT_FAILED",
+      "message": "regressions[0] \"fit\" failed with PROCESSING_REGRESSION_RANK_DEFICIENT: Cholesky solve failed for the centered Gram matrix; its result carries the error and the other slots proceed",
+      "details": {
+        "code": "PROCESSING_REGRESSION_RANK_DEFICIENT",
+        "index": 0,
+        "label": "fit",
+        "slot_kind": "regressions"
+      }
+    }
+  ]
+}

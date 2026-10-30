@@ -1,0 +1,71 @@
+{
+ "cohort": {
+  "filename": "members.pulse"
+ },
+ "filterers": [
+  {
+   "type": "FILTER_RANGE",
+   "field": "age",
+   "values": [
+    "18",
+    "65"
+   ]
+  }
+ ],
+ "attributes": [
+  {
+   "type": "ATTR_FORMULA",
+   "label": "income_k",
+   "expression": "income / 1000"
+  },
+  {
+   "type": "ATTR_FORMULA",
+   "label": "age_months",
+   "expression": "age * 12"
+  }
+ ],
+ "groups": [
+  {
+   "field": "region"
+  }
+ ],
+ "aggregations": [
+  {
+   "type": "AGG_AVERAGE",
+   "field": "income_k"
+  }
+ ],
+ "tests": [
+  {
+   "type": "TEST_T",
+   "field": "income_k",
+   "split_by": "opted_in",
+   "label": "opted_vs_not"
+  }
+ ],
+ "regressions": [
+  {
+   "type": "REG_OLS",
+   "name": "fit",
+   "target": "income_k",
+   "predictors": [
+    "age",
+    "age_months"
+   ]
+  }
+ ],
+ "multiplicity": {
+  "method": "bonferroni"
+ },
+ "overlays": [
+  {
+   "kind": "OVERLAY_INDEX_VS_TOTAL",
+   "scope": "group"
+  }
+ ],
+ "return": {
+  "exclude": [
+   "components"
+  ]
+ }
+}

@@ -1,0 +1,5 @@
+{"cohort": {"filename": "l3.pulse"},
+ "filterers": [{"type": "FILTER_RANGE", "field": "age", "values": ["18", "65"]}],
+ "attributes": [{"type": "ATTR_FORMULA", "label": "income_k", "expression": "income / 1000"}],
+ "groups": [{"field": "region"}],
+ "aggregations": [{"type": "AGG_AVERAGE", "field": "income_k"}]}

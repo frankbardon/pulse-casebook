@@ -1,107 +1,131 @@
 1
-00:00:00,250 --> 00:00:06,167
+00:00:04,250 --> 00:00:10,167
 Pulse anatomy. The lifecycle of one request, from bytes on disk, to the JSON envelope.
 
 2
-00:00:06,967 --> 00:00:14,911
+00:00:10,967 --> 00:00:18,911
 Every cohort is one self-describing file. It opens with a nine-byte header: eight magic bytes, then a format version.
 
 3
-00:00:15,711 --> 00:00:23,271
+00:00:19,711 --> 00:00:27,314
 Next comes the schema block. It names every field with its type, whether it can be null, its byte offset and its bit position.
 
 4
-00:00:24,071 --> 00:00:30,820
-Dictionaries for categorical and set fields sit inline, so every stored code can be read back as its label.
+00:00:28,114 --> 00:00:35,546
+Only a newer, format-two file adds an extension block, for parent groups and vector fields. This one is format one.
 
 5
-00:00:31,620 --> 00:00:40,545
-Then come the records, each one exactly the same width. So Pulse counts records with simple arithmetic: payload length, divided by stride.
+00:00:36,346 --> 00:00:43,053
+Dictionaries for categorical and set fields sit inline, so every stored code can be read back as its label.
 
 6
-00:00:41,345 --> 00:00:48,692
-A request is admitted gate by gate. The feature-profile check and item fan-out need nothing but the request itself.
+00:00:43,853 --> 00:00:53,482
+Then come the records, each one exactly seventeen bytes wide. So Pulse counts records with simple arithmetic: payload length, divided by stride.
 
 7
-00:00:49,492 --> 00:00:58,097
-Opening the cohort reads only the header and the schema. With the schema in hand, smart defaults infer the grouper type the request left out.
+00:00:54,282 --> 00:01:03,826
+A request is admitted gate by gate. Decoding is strict, then the profile gate and item fan-out run. All three need nothing but the request itself.
 
 8
-00:00:58,897 --> 00:01:07,332
-Field references, weights and resource limits are all checked against the schema alone. Watch the counter: not one record has been read.
+00:01:04,626 --> 00:01:13,231
+Opening the cohort reads only the header and the schema. With the schema in hand, smart defaults infer the grouper type the request left out.
 
 9
-00:01:08,132 --> 00:01:16,524
-Now a second request asks for more memory than this instance allows. The limits preflight refuses it, with zero records decoded.
+00:01:14,031 --> 00:01:22,423
+Field references, weights and resource limits are all checked against the schema alone. Watch the counter: not one record has been read.
 
 10
-00:01:17,324 --> 00:01:25,759
-This cohort turns out to be a shard archive: four pulse shards, under one canonical schema. Now the engine chooses how to run.
+00:01:23,223 --> 00:01:32,468
+A misspelt key is never ignored. This request says filters, not filterers, so the very first gate refuses it, and suggests the right key.
 
 11
-00:01:26,559 --> 00:01:32,540
-Every operator in this request can merge its state, so the work fans out, with one worker per shard.
+00:01:33,268 --> 00:01:40,871
+Request B asks for more memory than this instance allows. The limits preflight refuses it, with zero records decoded.
 
 12
-00:01:33,340 --> 00:01:41,945
-Inside each worker, records stream through the loop one at a time. The decoder reads only the three columns the request actually names.
+00:01:41,671 --> 00:01:50,148
+This cohort turns out to be a shard archive: four pulse shards, under one canonical schema. Now the engine chooses how to run.
 
 13
-00:01:42,745 --> 00:01:52,033
-A range filter drops anyone outside eighteen to sixty-five, and counts what passed, and what didn't. Those counts become components of the response.
+00:01:50,948 --> 00:01:56,823
+Every operator in request A can merge its state, so the work fans out, with one worker per shard.
 
 14
-00:01:52,833 --> 00:02:02,526
-A formula attribute adds income in thousands. The category grouper routes each record by region, and the average aggregator updates its running state.
+00:01:57,623 --> 00:02:06,228
+Inside each worker, records stream through the loop one at a time. The decoder reads only the three columns the request actually names.
 
 15
-00:02:03,326 --> 00:02:09,265
-The streaming arm keeps no rows at all, just state: four buckets, each holding a count and a mean.
+00:02:07,028 --> 00:02:16,316
+A range filter drops anyone outside eighteen to sixty-five, and counts what passed, and what didn't. Those counts become components of the response.
 
 16
-00:02:10,065 --> 00:02:14,702
-Each shard runs that same loop over its own records, with fresh operator state.
+00:02:17,116 --> 00:02:26,809
+A formula attribute adds income in thousands. The category grouper routes each record by region, and the average aggregator updates its running state.
 
 17
-00:02:15,502 --> 00:02:20,971
-The workers finish whenever they finish. Here, shard three is first, then one, four, and two.
+00:02:27,609 --> 00:02:34,038
+The streaming arm keeps no rows at all, just state: four buckets, each holding a count and a running sum.
 
 18
-00:02:21,771 --> 00:02:28,456
-But partials always merge in shard order, never finish order, so the result matches a serial run exactly.
+00:02:34,838 --> 00:02:39,475
+Each shard runs that same loop over its own records, with fresh operator state.
 
 19
-00:02:29,256 --> 00:02:34,512
-In a crosstab, each record lands in the cell where its row key and its column key meet.
+00:02:40,275 --> 00:02:45,830
+The workers finish whenever they finish. Here, shard three is first, then one, four, and two.
 
 20
-00:02:35,312 --> 00:02:43,064
-Record two has a region, but no plan, so it never reaches a cell. Yet the East margin, and the grand total, still count it.
+00:02:46,630 --> 00:02:54,467
+Partials merge in shard order, never finish order. Shard one merged as soon as it was done. The rest waited for shard two.
 
 21
-00:02:43,864 --> 00:02:50,549
-Margins are recomputed from raw rows. Auxiliary margins admit only the records that reached a cell.
+00:02:55,267 --> 00:03:01,312
+Sums are bit-identical on any number of workers, so the answer matches a serial run byte for byte.
 
 22
-00:02:51,349 --> 00:02:58,461
-Now the response assembles: result rows first, then components, which count exactly what each figure stands on.
+00:03:02,112 --> 00:03:07,389
+In a crosstab, each record lands in the cell where its row key and its column key meet.
 
 23
-00:02:59,261 --> 00:03:07,397
-Tests report a raw p-value. The multiplicity fold adds an adjusted p-value beside it and never overwrites the original.
+00:03:08,189 --> 00:03:18,522
+Record two has a region, but no plan, so it never reaches a cell. And so it reaches no margin either. East stays at eighteen, and the grand total at sixty-eight.
 
 24
-00:03:08,197 --> 00:03:15,416
-An overlay attaches as a read-only sibling, keyed to the rows it describes. The data itself is untouched.
+00:03:19,322 --> 00:03:22,551
+A record counts in a margin only if it reached a cell.
 
 25
-00:03:16,216 --> 00:03:23,157
-Return shaping removes whatever the caller excluded. An excluded part is absent from the output, not null.
+00:03:23,351 --> 00:03:29,418
+So a column percent is a share of those asked. Half of the sixteen on the pro plan are in the East.
 
 26
-00:03:23,957 --> 00:03:31,730
-Finally, the envelope wraps it all: format version one point one, the data, and errors and warnings that are always lists.
+00:03:30,218 --> 00:03:39,506
+Now add tests, a regression and an overlay to request A. Result rows come first, then components, which count what each figure stands on.
 
 27
-00:03:32,530 --> 00:03:39,535
-That is the life of a Pulse request. Open, admit, check, choose an arm, loop, merge, fold, shape, and wrap.
+00:03:40,306 --> 00:03:47,866
+This regression's two predictors are collinear, so its slot fails alone. It carries its own error, and everything else survives.
+
+28
+00:03:48,666 --> 00:03:57,250
+A slot-failed warning is lifted into the envelope, beside every other runtime warning. Under strict mode, the run would fail instead.
+
+29
+00:03:58,050 --> 00:04:07,573
+Tests report a raw p-value. The multiplicity fold adds an adjusted one beside it. East passes raw, but not once four tests are corrected.
+
+30
+00:04:08,373 --> 00:04:18,045
+An overlay attaches as a read-only sibling: each region's average over the sum of all four, times 100. The data itself is untouched.
+
+31
+00:04:18,845 --> 00:04:25,786
+Return shaping removes whatever the caller excluded. An excluded part is absent from the output, not null.
+
+32
+00:04:26,586 --> 00:04:34,359
+Finally, the envelope wraps it all: format version one point one, the data, and errors and warnings that are always lists.
+
+33
+00:04:35,159 --> 00:04:42,868
+That is the life of a Pulse request. Decode, admit, open, check, choose an arm, loop, merge, fold, shape, and wrap.

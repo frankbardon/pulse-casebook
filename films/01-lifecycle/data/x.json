@@ -1,0 +1,5 @@
+{"cohort": {"filename": "x.pulse"},
+ "crosstab": {"rows": [{"type": "GROUP_CATEGORY", "field": "region"}],
+              "columns": [{"type": "GROUP_CATEGORY", "field": "plan"}],
+              "cell": {"type": "AGG_COUNT", "field": "id", "label": "n"},
+              "margins": {"rows": true, "columns": true, "grand": true}}}

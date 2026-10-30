@@ -1,0 +1,123 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "AGG_AVERAGE_income_k": 62.60740740740741,
+        "region": "East"
+      },
+      {
+        "AGG_AVERAGE_income_k": 72.7,
+        "region": "North"
+      },
+      {
+        "AGG_AVERAGE_income_k": 61.96285714285714,
+        "region": "South"
+      },
+      {
+        "AGG_AVERAGE_income_k": 78.38461538461539,
+        "region": "West"
+      }
+    ],
+    "metadata": {
+      "total_rows": 140,
+      "filtered_rows": 105,
+      "cohort_file": "l.pulse"
+    },
+    "components": {
+      "aggregations": [
+        {
+          "n": 105,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "East"
+              ],
+              "n": 27,
+              "n_null": 0,
+              "operator": {
+                "sum": 1690.4
+              }
+            },
+            {
+              "group_key": [
+                "North"
+              ],
+              "n": 30,
+              "n_null": 0,
+              "operator": {
+                "sum": 2181
+              }
+            },
+            {
+              "group_key": [
+                "South"
+              ],
+              "n": 35,
+              "n_null": 0,
+              "operator": {
+                "sum": 2168.7
+              }
+            },
+            {
+              "group_key": [
+                "West"
+              ],
+              "n": 13,
+              "n_null": 0,
+              "operator": {
+                "sum": 1019
+              }
+            }
+          ]
+        }
+      ],
+      "groupers": [
+        {
+          "field": "region",
+          "total_n": 105,
+          "operator": {
+            "buckets": [
+              {
+                "count": 27,
+                "key": "East",
+                "label": "East"
+              },
+              {
+                "count": 30,
+                "key": "North",
+                "label": "North"
+              },
+              {
+                "count": 35,
+                "key": "South",
+                "label": "South"
+              },
+              {
+                "count": 13,
+                "key": "West",
+                "label": "West"
+              }
+            ],
+            "dict_size": 4
+          }
+        }
+      ],
+      "filterers": [
+        {
+          "n_in": 140,
+          "n_out": 105,
+          "n_null_input": 0
+        }
+      ],
+      "run": {
+        "total_records": 140,
+        "filtered_records": 105,
+        "null_records": 0
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

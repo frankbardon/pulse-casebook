@@ -1,0 +1,50 @@
+{
+  "format_version": "1.1",
+  "data": null,
+  "errors": [
+    {
+      "code": "PULSE_REQUEST_UNKNOWN_FIELD",
+      "message": "request contains unrecognized top-level key(s): \"filters\" (did you mean \"filterers\"?). An unknown key is refused, never ignored, so a misspelled or misplaced key cannot silently drop the intended operation. Valid request keys: aggregations, attributes, cohort, crosstab, disable_components, features, filterers, groups, joins, label, labels, matrices, models, multiplicity, output, outputs, overlays, params, populations, post_tests, regressions, return, sort, tests, time_zone, time_zone_field, vectors, weight, windows.",
+      "details": {
+        "suggestions": {
+          "filters": "filterers"
+        },
+        "unknown_keys": [
+          "filters"
+        ],
+        "valid_keys": [
+          "aggregations",
+          "attributes",
+          "cohort",
+          "crosstab",
+          "disable_components",
+          "features",
+          "filterers",
+          "groups",
+          "joins",
+          "label",
+          "labels",
+          "matrices",
+          "models",
+          "multiplicity",
+          "output",
+          "outputs",
+          "overlays",
+          "params",
+          "populations",
+          "post_tests",
+          "regressions",
+          "return",
+          "sort",
+          "tests",
+          "time_zone",
+          "time_zone_field",
+          "vectors",
+          "weight",
+          "windows"
+        ]
+      }
+    }
+  ],
+  "warnings": []
+}
