@@ -85,7 +85,7 @@ Commit the changed `scenes.js` or `index.html` and the MP3 together, because the
 | `<film>/index.html`, `<film>/scenes.js`, `kit/film-kit.js` | yes | the film itself |
 | `<film>/narration.mp3` | yes | narration the page and the render both use |
 | `<film>/subtitles.srt` | yes | reference subtitles; `--narrate` writes fresh ones to `<film>/render/` |
-| `<film>/data/` | yes | cohort, requests and captured outputs (films 6 to 10; see `DATA.md`) |
+| `<film>/data/` | yes | cohort, requests and captured outputs (see `DATA.md`) |
 | `<film>/render/` | no (gitignored) | rendered MP4s and fresh `.srt` files |
 | `build/work/<film>/` | no | per-film scratch space. Every run gets its own, so films can render in parallel. |
 | `build/node_modules`, `build/models` | no | installed by `setup.sh` |

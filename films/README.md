@@ -25,7 +25,7 @@ Pulse Anatomy: infographics and a series of narrated films that explain how Puls
   ./render.sh filters
   ```
 
-- **Film data:** films 6 to 10 keep the cohorts, requests and captured outputs behind their result cards in their own `data/` folder. `build/data.sh` rebuilds them; see **[DATA.md](DATA.md)**.
+- **Film data:** each film keeps the cohorts, requests and captured outputs behind their result cards in their own `data/` folder. `build/data.sh` rebuilds them; see **[DATA.md](DATA.md)**.
 - **Series rules:** **[SERIES-RULES.md](SERIES-RULES.md)** holds the rules every film follows. These include no catalog counts, always saying that more are added over time, and checking every fact against the code.
 
 ## Layout
@@ -36,7 +36,7 @@ NN-<topic>/            one film, numbered in series order
   scenes.js            scenes and script
   narration.mp3        its narration (Kokoro, voice af_heart)
   subtitles.srt        subtitles matching the committed narration
-  data/                cohort generator or CSV, requests, captured outputs (films 6 to 10)
+  data/                cohort generator or CSV, requests, captured outputs
   render/              rendered MP4s and fresh subtitles (gitignored)
 kit/film-kit.js        shared engine: drawing helpers, narration-driven timeline, subtitles, player
 plates/index.html      infographic plates (static SVG)
@@ -45,4 +45,4 @@ build/                 render.sh, setup.sh, data.sh and the pipeline scripts
 
 ## Accuracy
 
-Operator names, parameters, null rules, components, error codes and stage order follow the Pulse source and its skill pack as of October 2026. The cohorts, samples, p-values and correlations in the films are illustrative. From film 6 on, every figure on a result card comes from a real Pulse run recorded in that film's `data/` folder.
+Operator names, parameters, null rules, components, error codes and stage order follow the Pulse source and its skill pack as of Pulse `v1.0.0-alpha.33`. The cohorts, samples, p-values and correlations in the films are illustrative. Every figure on a result card comes from a real Pulse run recorded in that film's `data/` folder.
