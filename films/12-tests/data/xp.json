@@ -1,0 +1,4 @@
+{"cohort":{"filename":"t.pulse"},
+"tests":[{"type":"TEST_CHISQ","rows":"arm","params":{"expected":{"A":0.5,"B":0.5}}},
+{"type":"TEST_T","field":"spend","split_by":"arm","params":{"reference":"A"}},
+{"type":"TEST_T","field":"spend","split_by":"arm","params":{"reference":"A","covariate":"pre_spend"}}]}

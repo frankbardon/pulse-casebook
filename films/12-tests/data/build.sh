@@ -3,3 +3,7 @@
 node generate.js
 imp t
 api process tr
+api process xp
+api process grp
+api process fit
+api process sep

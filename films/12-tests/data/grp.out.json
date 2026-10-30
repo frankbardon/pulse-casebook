@@ -1,0 +1,204 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "AGG_COUNT_spend": 87,
+        "region": "East"
+      },
+      {
+        "AGG_COUNT_spend": 84,
+        "region": "North"
+      },
+      {
+        "AGG_COUNT_spend": 69,
+        "region": "South"
+      }
+    ],
+    "metadata": {
+      "total_rows": 240,
+      "filtered_rows": 240,
+      "cohort_file": "t.pulse"
+    },
+    "tests": [
+      {
+        "label": "TEST_T_spend",
+        "type": "TEST_T",
+        "group_key": [
+          "East"
+        ],
+        "variant": "welch_two_sample",
+        "statistic": 2.9315004055585563,
+        "df": 84.99130554822962,
+        "p_value": 0.00433272575663102,
+        "alpha": 0.05,
+        "reject_null": true,
+        "details": {
+          "ci_high": 14.444565760077046,
+          "ci_low": 2.7693444963331557,
+          "diff": 8.606955128205101,
+          "effect_size": {
+            "cohens_d": 0.6177935266200079
+          },
+          "groups": [
+            "B",
+            "A"
+          ],
+          "mean": [
+            54.39820512820512,
+            45.79125000000002
+          ],
+          "n": [
+            39,
+            48
+          ],
+          "reference": "A",
+          "variance": [
+            148.60575721997301,
+            230.87193882978738
+          ]
+        }
+      },
+      {
+        "label": "TEST_T_spend",
+        "type": "TEST_T",
+        "group_key": [
+          "North"
+        ],
+        "variant": "welch_two_sample",
+        "statistic": 2.2955291777800704,
+        "df": 68.8543052082106,
+        "p_value": 0.024753653168396894,
+        "alpha": 0.05,
+        "reject_null": true,
+        "details": {
+          "ci_high": 12.933734119649298,
+          "ci_low": 0.9058737234879748,
+          "diff": 6.919803921568636,
+          "effect_size": {
+            "cohens_d": 0.5119648297324781
+          },
+          "groups": [
+            "B",
+            "A"
+          ],
+          "mean": [
+            53.00980392156863,
+            46.089999999999996
+          ],
+          "n": [
+            51,
+            33
+          ],
+          "reference": "A",
+          "variance": [
+            183.8054899607843,
+            180.93901249999993
+          ]
+        }
+      },
+      {
+        "label": "TEST_T_spend",
+        "type": "TEST_T",
+        "group_key": [
+          "South"
+        ],
+        "variant": "welch_two_sample",
+        "statistic": 2.001265744680292,
+        "df": 41.60058667961125,
+        "p_value": 0.051915517553931034,
+        "alpha": 0.05,
+        "reject_null": false,
+        "details": {
+          "ci_high": 14.224976298032006,
+          "ci_low": -0.06153714459280667,
+          "diff": 7.0817195767196,
+          "effect_size": {
+            "cohens_d": 0.5349204081085656
+          },
+          "groups": [
+            "B",
+            "A"
+          ],
+          "mean": [
+            57.488148148148156,
+            50.406428571428556
+          ],
+          "n": [
+            27,
+            42
+          ],
+          "reference": "A",
+          "variance": [
+            259.9342002849004,
+            121.57492108013933
+          ]
+        }
+      }
+    ],
+    "components": {
+      "aggregations": [
+        {
+          "n": 240,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "East"
+              ],
+              "n": 87,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "North"
+              ],
+              "n": 84,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "South"
+              ],
+              "n": 69,
+              "n_null": 0
+            }
+          ]
+        }
+      ],
+      "groupers": [
+        {
+          "field": "region",
+          "total_n": 240,
+          "operator": {
+            "buckets": [
+              {
+                "count": 87,
+                "key": "East",
+                "label": "East"
+              },
+              {
+                "count": 84,
+                "key": "North",
+                "label": "North"
+              },
+              {
+                "count": 69,
+                "key": "South",
+                "label": "South"
+              }
+            ],
+            "dict_size": 3
+          }
+        }
+      ],
+      "run": {
+        "total_records": 240,
+        "filtered_records": 240,
+        "null_records": 0
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

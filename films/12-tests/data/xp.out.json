@@ -1,0 +1,126 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "metadata": {
+      "total_rows": 240,
+      "filtered_rows": 240,
+      "cohort_file": "t.pulse"
+    },
+    "tests": [
+      {
+        "label": "TEST_CHISQ",
+        "type": "TEST_CHISQ",
+        "variant": "goodness_of_fit",
+        "statistic": 0.15,
+        "df": 1,
+        "p_value": 0.6985353583033387,
+        "alpha": 0.05,
+        "reject_null": false,
+        "details": {
+          "expected": [
+            120,
+            120
+          ],
+          "expected_min": 120,
+          "expected_proportions": [
+            0.5,
+            0.5
+          ],
+          "labels": [
+            "A",
+            "B"
+          ],
+          "n": 240,
+          "observed": [
+            123,
+            117
+          ]
+        }
+      },
+      {
+        "label": "TEST_T_spend",
+        "type": "TEST_T",
+        "variant": "welch_two_sample",
+        "statistic": 4.011828778150325,
+        "df": 236.83660130648127,
+        "p_value": 0.00008082860752231373,
+        "alpha": 0.05,
+        "reject_null": true,
+        "details": {
+          "ci_high": 10.524990656095921,
+          "ci_low": 3.592511949699316,
+          "diff": 7.058751302897619,
+          "effect_size": {
+            "cohens_d": 0.5183453968431918
+          },
+          "groups": [
+            "B",
+            "A"
+          ],
+          "mean": [
+            54.50606837606837,
+            47.44731707317075
+          ],
+          "n": [
+            117,
+            123
+          ],
+          "reference": "A",
+          "variance": [
+            189.22690509873263,
+            181.85087389044398
+          ]
+        }
+      },
+      {
+        "label": "TEST_T_spend",
+        "type": "TEST_T",
+        "variant": "welch_two_sample",
+        "statistic": 9.8940568647106,
+        "df": 235.99292238215207,
+        "p_value": 1.567814931483355e-19,
+        "alpha": 0.05,
+        "reject_null": true,
+        "details": {
+          "ci_high": 7.337440325367887,
+          "ci_low": 4.900640072970254,
+          "covariate_mean": 48.400166666666664,
+          "diff": 6.119040199169071,
+          "diff_unadjusted": 7.058751302897619,
+          "effect_size": {
+            "cohens_d": 1.2790662434759528
+          },
+          "groups": [
+            "B",
+            "A"
+          ],
+          "mean": [
+            54.02446643540749,
+            47.90542623623842
+          ],
+          "n": [
+            117,
+            123
+          ],
+          "n_covariate_dropped": 0,
+          "reference": "A",
+          "theta": 0.8680787708818047,
+          "variance": [
+            23.87431095894233,
+            21.947388764181866
+          ],
+          "variance_reduction": 0.8764488405296599
+        }
+      }
+    ],
+    "components": {
+      "run": {
+        "total_records": 240,
+        "filtered_records": 240,
+        "null_records": 0
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

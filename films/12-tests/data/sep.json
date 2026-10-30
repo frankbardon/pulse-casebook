@@ -1,0 +1,3 @@
+{"cohort":{"filename":"t.pulse"},
+"regressions":[{"type":"REG_OLS","target":"spend","predictors":["visits","tenure"]},
+{"type":"REG_GLM","target":"converted","predictors":["checkout_mins"],"family":"binomial"}]}

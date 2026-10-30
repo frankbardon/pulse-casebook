@@ -48,9 +48,9 @@ input[type=range] { width: 100%; accent-color: var(--teal); }
 </style>
 
 <main class="wrap">
-  <div class="eyebrow">Pulse Anatomy · film 8 · narrated</div>
+  <div class="eyebrow">film 12 of the 23-film Pulse Anatomy series · narrated</div>
   <h1><span>Tests and regressions</span>, in depth</h1>
-  <p class="intro">Tests ask whether a difference or a relationship is real; regressions ask what drives an outcome. This film covers the shared result shape, choosing a test, two and many groups, counts, correlations, post-tests and multiplicity correction, then least squares, its variations, logistic fits, Bayesian fits and which of them stream.</p>
+  <p class="intro">Tests ask whether a difference or a relationship is real; regressions ask what drives an outcome. This film covers the shared result shape, choosing a test, two and many groups, counts, experiment readouts (the sample-ratio check, a reference arm, CUPED), grouped tests, correlations, post-tests and multiplicity correction, then least squares, robust errors and holdouts, its variations, logistic fits and the slot that fails alone, Bayesian fits and which of them stream.</p>
 
   <div class="screen"><canvas id="film" width="1280" height="720" aria-label="Animated film explaining Pulse tests and regressions"></canvas>
     <button class="bigplay" id="bigplay" hidden><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2 L14 8 L4 14 Z"/></svg>Play with narration</button>
@@ -66,7 +66,7 @@ input[type=range] { width: 100%; accent-color: var(--teal); }
   </div>
 
   <ol class="chapters" id="chapters"></ol>
-  <p class="note">The cohort is illustrative: 240 generated rows. Every statistic, p-value, interval and coefficient on screen comes from running Pulse on it. Operator names, parameters, null rules and warnings follow the Pulse source and skill pack. Pulse adds tests and regressions over time; your instance's manifest lists the ones it offers.</p>
+  <p class="note">The cohort is illustrative: 240 generated rows. Every statistic, p-value, interval and coefficient on screen comes from running Pulse on it. Operator names, parameters, null rules and warnings follow the Pulse source and skill pack. Pulse adds tests and regressions over time; your instance's manifest lists the ones it offers, and embedders can register their own tests and regressions through <code>Options.Extensions</code>. Figures match Pulse v1.0.0-alpha.33.</p>
 </main>
 
 <script src="../kit/film-kit.js"></script>

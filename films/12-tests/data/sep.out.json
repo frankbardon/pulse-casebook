@@ -1,0 +1,96 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "metadata": {
+      "total_rows": 240,
+      "filtered_rows": 240,
+      "cohort_file": "t.pulse"
+    },
+    "regressions": [
+      {
+        "type": "REG_OLS",
+        "coefficients": {
+          "(intercept)": 21.32459581884211,
+          "tenure": 1.5306569958749046,
+          "visits": 3.1502934084139937
+        },
+        "std_errors": {
+          "(intercept)": 1.4677027526253155,
+          "tenure": 0.1902375283929716,
+          "visits": 0.1493624544375307
+        },
+        "p_values": {
+          "(intercept)": 1.245779959840497e-34,
+          "tenure": 4.105287167871318e-14,
+          "visits": 2.6363613047900735e-56
+        },
+        "ci_lower": {
+          "(intercept)": 18.43318615603486,
+          "tenure": 1.1558844972609241,
+          "visits": 2.8560457869192524
+        },
+        "ci_upper": {
+          "(intercept)": 24.216005481649358,
+          "tenure": 1.905429494488885,
+          "visits": 3.444541029908735
+        },
+        "df": 237,
+        "conf_level": 0.95,
+        "r2": 0.6948415756874307,
+        "adj_r2": 0.6922663991109532,
+        "n_obs": 240,
+        "residual_std_err": 7.789484918187522
+      },
+      {
+        "type": "REG_GLM",
+        "error": {
+          "code": "PROCESSING_REGRESSION_SEPARATION",
+          "message": "REG_GLM binomial fit is separated: fitted probabilities are numerically 0 or 1 while the coefficients of the named predictors keep growing, so the maximum-likelihood estimate does not exist (it lies at infinity) and no coefficient is reported",
+          "details": {
+            "family": "binomial",
+            "iters": 43,
+            "link": "logit",
+            "n": 240,
+            "n_boundary": 240,
+            "p": 1,
+            "predictors": [
+              "checkout_mins"
+            ]
+          }
+        }
+      }
+    ],
+    "warnings": [
+      {
+        "code": "PULSE_SLOT_FAILED",
+        "message": "regressions[1] \"regressions[1]\" failed with PROCESSING_REGRESSION_SEPARATION: REG_GLM binomial fit is separated: fitted probabilities are numerically 0 or 1 while the coefficients of the named predictors keep growing, so the maximum-likelihood estimate does not exist (it lies at infinity) and no coefficient is reported; its result carries the error and the other slots proceed",
+        "details": {
+          "code": "PROCESSING_REGRESSION_SEPARATION",
+          "index": 1,
+          "label": "regressions[1]",
+          "slot_kind": "regressions"
+        }
+      }
+    ],
+    "components": {
+      "run": {
+        "total_records": 240,
+        "filtered_records": 240,
+        "null_records": 0
+      }
+    }
+  },
+  "errors": [],
+  "warnings": [
+    {
+      "code": "PULSE_SLOT_FAILED",
+      "message": "regressions[1] \"regressions[1]\" failed with PROCESSING_REGRESSION_SEPARATION: REG_GLM binomial fit is separated: fitted probabilities are numerically 0 or 1 while the coefficients of the named predictors keep growing, so the maximum-likelihood estimate does not exist (it lies at infinity) and no coefficient is reported; its result carries the error and the other slots proceed",
+      "details": {
+        "code": "PROCESSING_REGRESSION_SEPARATION",
+        "index": 1,
+        "label": "regressions[1]",
+        "slot_kind": "regressions"
+      }
+    }
+  ]
+}
