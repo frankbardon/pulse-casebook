@@ -1,0 +1,92 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "channels": "app",
+        "orders": 123
+      },
+      {
+        "channels": "store",
+        "orders": 74
+      },
+      {
+        "channels": "web",
+        "orders": 196
+      }
+    ],
+    "metadata": {
+      "total_rows": 300,
+      "filtered_rows": 300,
+      "cohort_file": "g.pulse"
+    },
+    "components": {
+      "aggregations": [
+        {
+          "label": "orders",
+          "n": 300,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "app"
+              ],
+              "n": 123,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "store"
+              ],
+              "n": 74,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "web"
+              ],
+              "n": 196,
+              "n_null": 0
+            }
+          ]
+        }
+      ],
+      "groupers": [
+        {
+          "field": "channels",
+          "total_n": 393,
+          "operator": {
+            "buckets": [
+              {
+                "count": 123,
+                "dict_index": 0,
+                "key": "app",
+                "label": "app"
+              },
+              {
+                "count": 196,
+                "dict_index": 1,
+                "key": "web",
+                "label": "web"
+              },
+              {
+                "count": 74,
+                "dict_index": 2,
+                "key": "store",
+                "label": "store"
+              }
+            ],
+            "total_label_observations": 393
+          }
+        }
+      ],
+      "run": {
+        "total_records": 300,
+        "filtered_records": 300,
+        "null_records": 0
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

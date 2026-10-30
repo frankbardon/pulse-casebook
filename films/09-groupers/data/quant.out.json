@@ -1,0 +1,220 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "hi": 18.73,
+        "lo": 11.08,
+        "orders": 72,
+        "spend": "Q1"
+      },
+      {
+        "hi": 25.37,
+        "lo": 18.74,
+        "orders": 72,
+        "spend": "Q2"
+      },
+      {
+        "hi": 47.87,
+        "lo": 25.48,
+        "orders": 72,
+        "spend": "Q3"
+      },
+      {
+        "hi": 122.81,
+        "lo": 48.02,
+        "orders": 72,
+        "spend": "Q4"
+      }
+    ],
+    "metadata": {
+      "total_rows": 300,
+      "filtered_rows": 300,
+      "cohort_file": "g.pulse"
+    },
+    "components": {
+      "aggregations": [
+        {
+          "label": "orders",
+          "n": 300,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "Q1"
+              ],
+              "n": 72,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "Q2"
+              ],
+              "n": 72,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "Q3"
+              ],
+              "n": 72,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "Q4"
+              ],
+              "n": 72,
+              "n_null": 0
+            }
+          ]
+        },
+        {
+          "label": "lo",
+          "n": 288,
+          "n_null": 12,
+          "groups": [
+            {
+              "group_key": [
+                "Q1"
+              ],
+              "n": 72,
+              "n_null": 0,
+              "operator": {
+                "min": 11.08
+              }
+            },
+            {
+              "group_key": [
+                "Q2"
+              ],
+              "n": 72,
+              "n_null": 0,
+              "operator": {
+                "min": 18.74
+              }
+            },
+            {
+              "group_key": [
+                "Q3"
+              ],
+              "n": 72,
+              "n_null": 0,
+              "operator": {
+                "min": 25.48
+              }
+            },
+            {
+              "group_key": [
+                "Q4"
+              ],
+              "n": 72,
+              "n_null": 0,
+              "operator": {
+                "min": 48.02
+              }
+            }
+          ]
+        },
+        {
+          "label": "hi",
+          "n": 288,
+          "n_null": 12,
+          "groups": [
+            {
+              "group_key": [
+                "Q1"
+              ],
+              "n": 72,
+              "n_null": 0,
+              "operator": {
+                "max": 18.73
+              }
+            },
+            {
+              "group_key": [
+                "Q2"
+              ],
+              "n": 72,
+              "n_null": 0,
+              "operator": {
+                "max": 25.37
+              }
+            },
+            {
+              "group_key": [
+                "Q3"
+              ],
+              "n": 72,
+              "n_null": 0,
+              "operator": {
+                "max": 47.87
+              }
+            },
+            {
+              "group_key": [
+                "Q4"
+              ],
+              "n": 72,
+              "n_null": 0,
+              "operator": {
+                "max": 122.81
+              }
+            }
+          ]
+        }
+      ],
+      "groupers": [
+        {
+          "field": "spend",
+          "total_n": 288,
+          "n_null": 12,
+          "operator": {
+            "buckets": [
+              {
+                "count": 72,
+                "high": 18.73,
+                "key": "Q1",
+                "low": 11.08
+              },
+              {
+                "count": 72,
+                "high": 25.37,
+                "key": "Q2",
+                "low": 18.74
+              },
+              {
+                "count": 72,
+                "high": 47.87,
+                "key": "Q3",
+                "low": 25.48
+              },
+              {
+                "count": 72,
+                "high": 122.81,
+                "key": "Q4",
+                "low": 48.02
+              }
+            ],
+            "edges": [
+              11.08,
+              18.74,
+              25.48,
+              48.02,
+              122.81
+            ],
+            "method": "linear",
+            "n_quantiles": 4
+          }
+        }
+      ],
+      "run": {
+        "total_records": 300,
+        "filtered_records": 300,
+        "null_records": 0
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

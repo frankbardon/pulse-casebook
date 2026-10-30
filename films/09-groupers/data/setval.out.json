@@ -1,0 +1,197 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "channels": "",
+        "orders": 14
+      },
+      {
+        "channels": "app",
+        "orders": 43
+      },
+      {
+        "channels": "app|store",
+        "orders": 14
+      },
+      {
+        "channels": "app|store|web",
+        "orders": 20
+      },
+      {
+        "channels": "app|web",
+        "orders": 46
+      },
+      {
+        "channels": "store",
+        "orders": 22
+      },
+      {
+        "channels": "store|web",
+        "orders": 18
+      },
+      {
+        "channels": "web",
+        "orders": 112
+      }
+    ],
+    "metadata": {
+      "total_rows": 300,
+      "filtered_rows": 300,
+      "cohort_file": "g.pulse"
+    },
+    "components": {
+      "aggregations": [
+        {
+          "label": "orders",
+          "n": 300,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                ""
+              ],
+              "n": 14,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "app"
+              ],
+              "n": 43,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "app|store"
+              ],
+              "n": 14,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "app|store|web"
+              ],
+              "n": 20,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "app|web"
+              ],
+              "n": 46,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "store"
+              ],
+              "n": 22,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "store|web"
+              ],
+              "n": 18,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "web"
+              ],
+              "n": 112,
+              "n_null": 0
+            }
+          ]
+        }
+      ],
+      "groupers": [
+        {
+          "field": "channels",
+          "total_n": 289,
+          "n_null": 11,
+          "operator": {
+            "buckets": [
+              {
+                "count": 14,
+                "key": "",
+                "labels": [],
+                "mask": 0
+              },
+              {
+                "count": 43,
+                "key": "app",
+                "labels": [
+                  "app"
+                ],
+                "mask": 1
+              },
+              {
+                "count": 14,
+                "key": "app|store",
+                "labels": [
+                  "app",
+                  "store"
+                ],
+                "mask": 5
+              },
+              {
+                "count": 20,
+                "key": "app|store|web",
+                "labels": [
+                  "app",
+                  "web",
+                  "store"
+                ],
+                "mask": 7
+              },
+              {
+                "count": 46,
+                "key": "app|web",
+                "labels": [
+                  "app",
+                  "web"
+                ],
+                "mask": 3
+              },
+              {
+                "count": 22,
+                "key": "store",
+                "labels": [
+                  "store"
+                ],
+                "mask": 4
+              },
+              {
+                "count": 18,
+                "key": "store|web",
+                "labels": [
+                  "web",
+                  "store"
+                ],
+                "mask": 6
+              },
+              {
+                "count": 112,
+                "key": "web",
+                "labels": [
+                  "web"
+                ],
+                "mask": 2
+              }
+            ],
+            "n_empty_mask": 14
+          }
+        }
+      ],
+      "run": {
+        "total_records": 300,
+        "filtered_records": 300,
+        "null_records": 0
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

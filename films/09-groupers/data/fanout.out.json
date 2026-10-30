@@ -1,0 +1,201 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "channels": "app",
+        "orders": 66,
+        "plan": "Basic"
+      },
+      {
+        "channels": "store",
+        "orders": 39,
+        "plan": "Basic"
+      },
+      {
+        "channels": "web",
+        "orders": 106,
+        "plan": "Basic"
+      },
+      {
+        "channels": "app",
+        "orders": 44,
+        "plan": "Plus"
+      },
+      {
+        "channels": "store",
+        "orders": 30,
+        "plan": "Plus"
+      },
+      {
+        "channels": "web",
+        "orders": 61,
+        "plan": "Plus"
+      },
+      {
+        "channels": "app",
+        "orders": 12,
+        "plan": "Pro"
+      },
+      {
+        "channels": "store",
+        "orders": 5,
+        "plan": "Pro"
+      },
+      {
+        "channels": "web",
+        "orders": 25,
+        "plan": "Pro"
+      }
+    ],
+    "metadata": {
+      "total_rows": 300,
+      "filtered_rows": 300,
+      "cohort_file": "g.pulse"
+    },
+    "components": {
+      "aggregations": [
+        {
+          "label": "orders",
+          "n": 300,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "Basic",
+                "app"
+              ],
+              "n": 66,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "Basic",
+                "store"
+              ],
+              "n": 39,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "Basic",
+                "web"
+              ],
+              "n": 106,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "Plus",
+                "app"
+              ],
+              "n": 44,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "Plus",
+                "store"
+              ],
+              "n": 30,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "Plus",
+                "web"
+              ],
+              "n": 61,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "Pro",
+                "app"
+              ],
+              "n": 12,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "Pro",
+                "store"
+              ],
+              "n": 5,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "Pro",
+                "web"
+              ],
+              "n": 25,
+              "n_null": 0
+            }
+          ]
+        }
+      ],
+      "groupers": [
+        {
+          "field": "plan",
+          "total_n": 295,
+          "n_null": 5,
+          "operator": {
+            "buckets": [
+              {
+                "count": 162,
+                "key": "Basic",
+                "label": "Basic"
+              },
+              {
+                "count": 97,
+                "key": "Plus",
+                "label": "Plus"
+              },
+              {
+                "count": 36,
+                "key": "Pro",
+                "label": "Pro"
+              }
+            ],
+            "dict_size": 3
+          }
+        },
+        {
+          "field": "channels",
+          "total_n": 393,
+          "operator": {
+            "buckets": [
+              {
+                "count": 123,
+                "dict_index": 0,
+                "key": "app",
+                "label": "app"
+              },
+              {
+                "count": 196,
+                "dict_index": 1,
+                "key": "web",
+                "label": "web"
+              },
+              {
+                "count": 74,
+                "dict_index": 2,
+                "key": "store",
+                "label": "store"
+              }
+            ],
+            "total_label_observations": 393
+          }
+        }
+      ],
+      "run": {
+        "total_records": 300,
+        "filtered_records": 300,
+        "null_records": 0
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

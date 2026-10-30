@@ -1,0 +1,1 @@
+{"cohort":{"filename":"g.pulse"},"groups":[{"type":"GROUP_DATE","field":"ts","tz_field":"zone","params":{"component":"day_of_week"}}],"aggregations":[{"type":"AGG_COUNT","field":"id","label":"orders"}]}

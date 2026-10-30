@@ -1,0 +1,74 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "orders": 54,
+        "region": "West"
+      },
+      {
+        "orders": 95,
+        "region": "North"
+      }
+    ],
+    "metadata": {
+      "total_rows": 300,
+      "filtered_rows": 300,
+      "cohort_file": "g.pulse"
+    },
+    "components": {
+      "aggregations": [
+        {
+          "label": "orders",
+          "n": 300,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "West"
+              ],
+              "n": 54,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "North"
+              ],
+              "n": 95,
+              "n_null": 0
+            }
+          ]
+        }
+      ],
+      "groupers": [
+        {
+          "field": "region",
+          "total_n": 149,
+          "n_null": 151,
+          "operator": {
+            "buckets": [
+              {
+                "count": 54,
+                "key": "West",
+                "label": "West"
+              },
+              {
+                "count": 95,
+                "key": "North",
+                "label": "North"
+              }
+            ],
+            "dict_size": 4
+          }
+        }
+      ],
+      "run": {
+        "total_records": 300,
+        "filtered_records": 300,
+        "null_records": 0
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

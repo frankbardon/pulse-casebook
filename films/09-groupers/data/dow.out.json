@@ -1,0 +1,163 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "orders": 38,
+        "ts": "Monday"
+      },
+      {
+        "orders": 39,
+        "ts": "Tuesday"
+      },
+      {
+        "orders": 37,
+        "ts": "Wednesday"
+      },
+      {
+        "orders": 34,
+        "ts": "Thursday"
+      },
+      {
+        "orders": 41,
+        "ts": "Friday"
+      },
+      {
+        "orders": 62,
+        "ts": "Saturday"
+      },
+      {
+        "orders": 49,
+        "ts": "Sunday"
+      }
+    ],
+    "metadata": {
+      "total_rows": 300,
+      "filtered_rows": 300,
+      "cohort_file": "g.pulse"
+    },
+    "components": {
+      "aggregations": [
+        {
+          "label": "orders",
+          "n": 300,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "Monday"
+              ],
+              "n": 38,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "Tuesday"
+              ],
+              "n": 39,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "Wednesday"
+              ],
+              "n": 37,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "Thursday"
+              ],
+              "n": 34,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "Friday"
+              ],
+              "n": 41,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "Saturday"
+              ],
+              "n": 62,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "Sunday"
+              ],
+              "n": 49,
+              "n_null": 0
+            }
+          ]
+        }
+      ],
+      "groupers": [
+        {
+          "field": "ts",
+          "total_n": 300,
+          "operator": {
+            "buckets": [
+              {
+                "count": 38,
+                "key": "Monday",
+                "period_end": "",
+                "period_start": ""
+              },
+              {
+                "count": 39,
+                "key": "Tuesday",
+                "period_end": "",
+                "period_start": ""
+              },
+              {
+                "count": 37,
+                "key": "Wednesday",
+                "period_end": "",
+                "period_start": ""
+              },
+              {
+                "count": 34,
+                "key": "Thursday",
+                "period_end": "",
+                "period_start": ""
+              },
+              {
+                "count": 41,
+                "key": "Friday",
+                "period_end": "",
+                "period_start": ""
+              },
+              {
+                "count": 62,
+                "key": "Saturday",
+                "period_end": "",
+                "period_start": ""
+              },
+              {
+                "count": 49,
+                "key": "Sunday",
+                "period_end": "",
+                "period_start": ""
+              }
+            ],
+            "granularity": "day_of_week",
+            "n_buckets": 7,
+            "range_end": "",
+            "range_start": ""
+          }
+        }
+      ],
+      "run": {
+        "total_records": 300,
+        "filtered_records": 300,
+        "null_records": 0
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}
