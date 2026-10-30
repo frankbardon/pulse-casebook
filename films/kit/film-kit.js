@@ -8,6 +8,13 @@
  * that is what lets the browser player and the rendered MP4 agree frame for frame.
  * narr is null (untimed) or one narration length in seconds per cue, in order. Each cue window
  * stretches to LEAD + length + GAP and the animation inside it is time-warped to fit.
+ *
+ * The kit adds two scenes of its own around the film's scenes, with no narration and no cues:
+ * an intro (INTRO_DUR s) where the 3D Pulse ring builds, spins, glows and pulses under the film
+ * title, and an outro (OUTRO_DUR s) on the static ring. The static ring is also the loading
+ * frame. The title is cfg.title, else the first scene's name. The ring is drawn by
+ * kit/pulse-ring.js (vendored three.js through an offscreen WebGL canvas), which the kit loads
+ * from its own folder; window.__film.ready resolves once it and the fonts are in.
  */
 window.PulseFilm = (() => {
   const W = 1280, H = 720;
@@ -15,7 +22,17 @@ window.PulseFilm = (() => {
     teal: '#45C1B3', tealS: '#12352F', amber: '#E3A94B', amberS: '#3A2C12', violet: '#A893F0', violetS: '#261F44', coral: '#F0806B', coralS: '#3D1E18' };
   const SANS = '"Archivo", "Helvetica Neue", Arial, sans-serif', MONO = '"IBM Plex Mono", ui-monospace, Menlo, monospace';
   const LEAD = 0.25, GAP = 0.75;
+  const INTRO_DUR = 4, OUTRO_DUR = 2;
   let cv = null, ctx = null, scale = 1;
+
+  /* ---------- the ring (kit/pulse-ring.js, loaded next to this file) ---------- */
+  const KIT = (document.currentScript && document.currentScript.src || '').replace(/[^/]*$/, '') || '../kit/';
+  const ringReady = new Promise(done => {
+    if (window.PulseRing) return done();
+    const s = document.createElement('script'); s.src = KIT + 'pulse-ring.js';
+    s.onload = s.onerror = () => done();
+    (document.head || document.documentElement).appendChild(s);
+  });
 
   /* ---------- helpers ---------- */
   const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
@@ -58,6 +75,21 @@ window.PulseFilm = (() => {
   }
   function rng(seed) { return () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
   const fmt = n => n.toLocaleString('en-US');
+  /* The Pulse ring centred at (x, y) in a size x size box. o: { t, ti, rot, glow, signal }; the
+   * defaults are the static ring (built, 12 degree tilt, resting glow, no signal). */
+  const TILT = 12 * Math.PI / 180;
+  function pulseRing(x, y, size, o = {}) { if (window.PulseRing) window.PulseRing.draw(ctx, x, y, size, o); }
+  /* Intro and outro frames: the ring with the film title beneath it. */
+  const RX = 640, RY = 250, RS = 350, TY = 466;
+  function ident(title, ring, ta) {
+    pulseRing(RX, RY, RS, ring);
+    A(ta, () => T(title, RX, TY + 12 * (1 - ta), { size: 40, weight: 800, stretch: 'expanded', align: 'center' }));
+  }
+  /* Build, spin, glow and signal are all functions of t. The spin is the embed's rate (0.35 rad/s),
+   * phased so the intro ends on the static ring's tilt and hands over to the outro pose. */
+  const introFrame = (title, t) => ident(title, { t, ti: t, rot: TILT + (t - INTRO_DUR) * 0.35,
+    glow: 0.14 + 0.38 * (0.5 + 0.5 * Math.sin(t * 2.2)), signal: true }, eo(seg(t, 2.0, 2.9)));
+  const staticFrame = title => ident(title, {}, 1);
   /* Chips that wrap inside a width; items: [text, color?]. Returns the y after the last row. */
   function chips(items, x, y, maxW, o = {}) {
     const size = o.size ?? 12.5, h = o.h ?? 26, gap = o.gap ?? 6; let cx = x, cy = y;
@@ -74,9 +106,13 @@ window.PulseFilm = (() => {
   /* ---------- mount ---------- */
   function mount(cfg) {
     cv = document.getElementById('film'); ctx = cv.getContext('2d');
-    const SCENES = cfg.scenes, NARR = cfg.narr || null, SERIES = cfg.series || 'PULSE';
+    const FILM = cfg.scenes, NARR = cfg.narr || null, SERIES = cfg.series || 'PULSE';
+    const TITLE = cfg.title || FILM[0].name;
+    const SCENES = [{ kit: 'intro', name: TITLE, dur: INTRO_DUR, draw: t => introFrame(TITLE, t), caps: [] },
+      ...FILM, { kit: 'outro', name: TITLE, dur: OUTRO_DUR, draw: () => staticFrame(TITLE), caps: [] }];
     let ci = 0, acc = 0;
     SCENES.forEach(s => {
+      if (s.kit) { s.cues = []; s.start = acc; s.fdur = s.dur; acc += s.dur; return; }
       s.cues = s.caps.map(([a, text, say, hide]) => ({ a, text: hide ? '' : text, say: say || text, len: NARR ? NARR[ci++] : 0 }));
       let f = 0;
       s.cues.forEach((c, k) => {
@@ -85,8 +121,8 @@ window.PulseFilm = (() => {
       });
       s.start = acc; s.fdur = f; acc += f;
     });
-    const DUR = acc, NCH = SCENES.length - 1;
-    const animTime = (s, fl) => { for (const c of s.cues) if (fl < c.fs + c.fw) return c.a + clamp((fl - c.fs) / c.fw) * c.aw; return s.dur; };
+    const DUR = acc, NCH = FILM.length - 1;
+    const animTime = (s, fl) => { if (s.kit) return Math.min(fl, s.dur); for (const c of s.cues) if (fl < c.fs + c.fw) return c.a + clamp((fl - c.fs) / c.fw) * c.aw; return s.dur; };
     const sceneAt = t => { for (let i = SCENES.length - 1; i >= 0; i--) if (t >= SCENES[i].start) return i; return 0; };
     const setRes = px => { cv.width = px; cv.height = Math.round(px * 9 / 16); scale = px / W; };
 
@@ -102,8 +138,10 @@ window.PulseFilm = (() => {
     }
     function chrome(i, fl, t) {
       const sc = SCENES[i];
+      if (sc.kit) return;
+      const n = i - 1;   // the film's own scene number; SCENES[0] is the kit intro
       CAP(SERIES, 64, 46);
-      if (i > 0) { CAP(String(i).padStart(2, '0') + ' / ' + String(NCH).padStart(2, '0'), 1216, 46, { align: 'right' }); T(sc.name, 1216, 70, { size: 15, weight: 600, align: 'right' }); }
+      if (n > 0) { CAP(String(n).padStart(2, '0') + ' / ' + String(NCH).padStart(2, '0'), 1216, 46, { align: 'right' }); T(sc.name, 1216, 70, { size: 15, weight: 600, align: 'right' }); }
       let k = 0; for (let j = 0; j < sc.cues.length; j++) if (fl >= sc.cues[j].fs) k = j;
       const cue = sc.cues[k];
       if (cue.text) {
@@ -114,7 +152,7 @@ window.PulseFilm = (() => {
       }
       Ln([[64, 700], [1216, 700]], { stroke: C.rule, lw: 2 });
       Ln([[64, 700], [64 + 1152 * (t / DUR), 700]], { stroke: C.teal, lw: 2 });
-      SCENES.forEach(s => { const x = 64 + 1152 * s.start / DUR; Ln([[x, 695], [x, 705]], { stroke: C.faint, lw: 1.5 }); });
+      FILM.forEach(s => { const x = 64 + 1152 * s.start / DUR; Ln([[x, 695], [x, 705]], { stroke: C.faint, lw: 1.5 }); });
     }
     function render(t) {
       t = clamp(t, 0, DUR - 0.001);
@@ -128,26 +166,28 @@ window.PulseFilm = (() => {
 
     /* ---------- player ---------- */
     const $ = id => document.getElementById(id);
+    /* The page styles .bigplay with display, which beats the hidden attribute, so set both. */
+    const showBig = on => { big.hidden = !on; big.style.display = on ? '' : 'none'; };
     const playBtn = $('play'), icon = $('playIcon'), scrub = $('scrub'), timeEl = $('time'), list = $('chapters'), voice = $('voice'), soundBtn = $('sound'), big = $('bigplay');
     scrub.max = DUR;
     const mmss = s => Math.floor(s / 60) + ':' + String(Math.floor(s % 60)).padStart(2, '0');
-    SCENES.forEach((s, i) => {
+    FILM.forEach((s, i) => {
       const li = document.createElement('li'); const b = document.createElement('button'); b.className = 'chap'; b.type = 'button';
       b.innerHTML = `<b>${String(i).padStart(2, '0')} · ${mmss(s.start)}</b><span></span>`; b.querySelector('span').textContent = s.name;
       b.addEventListener('click', () => { seek(s.start + 0.01); if (!playing) setPlaying(true); });
       li.appendChild(b); list.appendChild(li);
     });
     const chapBtns = [...list.querySelectorAll('.chap')];
-    let now = 0, playing = false, last = null, captureMode = false, muted = false, audioOK = !!(voice && NARR);
+    let now = 0, playing = false, last = null, captureMode = false, poster = true, muted = false, audioOK = !!(voice && NARR);
     const voiceLive = () => audioOK && !muted && !voice.paused;
     function syncAudio() {
       if (!audioOK) return;
       if (playing && !muted) { try { voice.currentTime = now; } catch (e) {} const pr = voice.play(); if (pr) pr.catch(() => {}); }
       else voice.pause();
     }
-    function seek(t) { now = clamp(t, 0, DUR - 0.001); last = null; syncAudio(); }
+    function seek(t) { now = clamp(t, 0, DUR - 0.001); last = null; poster = false; syncAudio(); }
     function setPlaying(p) {
-      playing = p; last = null; big.hidden = true;
+      playing = p; last = null; showBig(false); if (p) poster = false;
       playBtn.setAttribute('aria-label', p ? 'Pause' : 'Play');
       icon.innerHTML = p ? '<rect x="3" y="2" width="3.5" height="12"/><rect x="9.5" y="2" width="3.5" height="12"/>' : '<path d="M4 2 L14 8 L4 14 Z"/>';
       syncAudio();
@@ -169,22 +209,30 @@ window.PulseFilm = (() => {
         last = ts;
         if (now >= DUR) { now = DUR - 0.001; setPlaying(false); }
       }
-      render(now);
+      if (poster) { ctx.setTransform(scale, 0, 0, scale, 0, 0); grid(); staticFrame(TITLE); } else render(now);
       scrub.value = now; timeEl.textContent = mmss(now) + ' / ' + mmss(DUR);
-      const c = sceneAt(now); if (c !== curChap) { curChap = c; chapBtns.forEach((b, k) => b.setAttribute('aria-current', k === c ? 'true' : 'false')); }
+      const c = sceneAt(now) - 1; if (c !== curChap) { curChap = c; chapBtns.forEach((b, k) => b.setAttribute('aria-current', k === c ? 'true' : 'false')); }
       requestAnimationFrame(frame);
     }
     function fitCanvas() { const w = cv.getBoundingClientRect().width || 1280; setRes(Math.round(Math.min(1920, w * (window.devicePixelRatio || 1)))); }
     window.addEventListener('resize', fitCanvas);
     fitCanvas();
-    now = SCENES[0].fdur * 0.75;
-    setPlaying(false); big.hidden = false;
-    const go = () => requestAnimationFrame(frame);
-    (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).then(go, go);
-    window.__film = { DUR, render: t => render(t), capture(px) { captureMode = true; setRes(px); }, toJPEG: q => cv.toDataURL('image/jpeg', q),
+    /* Loading state: the static ring (once pulse-ring.js is in) until the fonts, the ring and the
+     * narration are ready; only then does the play button appear. */
+    setPlaying(false);
+    const fontsReady = (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).catch(() => {});
+    const ready = Promise.all([fontsReady, ringReady]).then(() => {});
+    const audioReady = !audioOK ? Promise.resolve() : new Promise(done => {
+      if (voice.readyState >= 3) return done();
+      ['canplaythrough', 'error'].forEach(ev => voice.addEventListener(ev, done, { once: true }));
+      setTimeout(done, 8000);
+    });
+    Promise.all([ready, audioReady]).then(() => { if (!playing && poster) showBig(true); });
+    requestAnimationFrame(frame);
+    window.__film = { DUR, ready, ring: () => window.PulseRing ? window.PulseRing.mode : 'none', render: t => render(t), capture(px) { captureMode = true; setRes(px); }, toJPEG: q => cv.toDataURL('image/jpeg', q),
       cues: () => SCENES.flatMap(s => s.cues.map(c => ({ t: s.start + c.fs + LEAD, say: c.say }))) };
   }
 
   return { W, H, C, SANS, MONO, mount, get ctx() { return ctx; },
-    h: { clamp, seg, eo, eio, lerp, R, T, M, CAP, measure, Ln, A, dot, ring, arrow, keyX, rng, fmt, chips } };
+    h: { clamp, seg, eo, eio, lerp, R, T, M, CAP, measure, Ln, A, dot, ring, arrow, keyX, rng, fmt, chips, pulseRing } };
 })();
