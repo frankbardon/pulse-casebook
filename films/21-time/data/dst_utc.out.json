@@ -1,0 +1,146 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "at": "2026-03-28",
+        "n": 48
+      },
+      {
+        "at": "2026-03-29",
+        "n": 48
+      },
+      {
+        "at": "2026-03-30",
+        "n": 48
+      },
+      {
+        "at": "2026-10-24",
+        "n": 48
+      },
+      {
+        "at": "2026-10-25",
+        "n": 48
+      },
+      {
+        "at": "2026-10-26",
+        "n": 48
+      }
+    ],
+    "metadata": {
+      "total_rows": 288,
+      "filtered_rows": 288,
+      "cohort_file": "h.pulse"
+    },
+    "components": {
+      "aggregations": [
+        {
+          "label": "n",
+          "n": 288,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "2026-03-28"
+              ],
+              "n": 48,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "2026-03-29"
+              ],
+              "n": 48,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "2026-03-30"
+              ],
+              "n": 48,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "2026-10-24"
+              ],
+              "n": 48,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "2026-10-25"
+              ],
+              "n": 48,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "2026-10-26"
+              ],
+              "n": 48,
+              "n_null": 0
+            }
+          ]
+        }
+      ],
+      "groupers": [
+        {
+          "field": "at",
+          "total_n": 288,
+          "operator": {
+            "buckets": [
+              {
+                "count": 48,
+                "key": "2026-03-28",
+                "period_end": "2026-03-28",
+                "period_start": "2026-03-28"
+              },
+              {
+                "count": 48,
+                "key": "2026-03-29",
+                "period_end": "2026-03-29",
+                "period_start": "2026-03-29"
+              },
+              {
+                "count": 48,
+                "key": "2026-03-30",
+                "period_end": "2026-03-30",
+                "period_start": "2026-03-30"
+              },
+              {
+                "count": 48,
+                "key": "2026-10-24",
+                "period_end": "2026-10-24",
+                "period_start": "2026-10-24"
+              },
+              {
+                "count": 48,
+                "key": "2026-10-25",
+                "period_end": "2026-10-25",
+                "period_start": "2026-10-25"
+              },
+              {
+                "count": 48,
+                "key": "2026-10-26",
+                "period_end": "2026-10-26",
+                "period_start": "2026-10-26"
+              }
+            ],
+            "granularity": "day",
+            "n_buckets": 6,
+            "range_end": "2026-10-26",
+            "range_start": "2026-03-28"
+          }
+        }
+      ],
+      "run": {
+        "total_records": 288,
+        "filtered_records": 288,
+        "null_records": 0
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

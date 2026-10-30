@@ -1,0 +1,42 @@
+{
+ "cohort": {
+  "filename": "o.pulse"
+ },
+ "time_zone": "America/New_York",
+ "attributes": [
+  {
+   "type": "ATTR_DATE_PART",
+   "field": "at",
+   "label": "hour",
+   "params": {
+    "part": "hour"
+   }
+  },
+  {
+   "type": "ATTR_DATE_PART",
+   "field": "at",
+   "label": "store_hour",
+   "tz_field": "zone",
+   "params": {
+    "part": "hour"
+   }
+  }
+ ],
+ "groups": [
+  {
+   "type": "GROUP_DATE",
+   "field": "at",
+   "tz": "Asia/Tokyo",
+   "params": {
+    "component": "day_of_week"
+   }
+  }
+ ],
+ "aggregations": [
+  {
+   "type": "AGG_COUNT",
+   "field": "id",
+   "label": "n"
+  }
+ ]
+}

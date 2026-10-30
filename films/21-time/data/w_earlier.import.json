@@ -1,0 +1,72 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "rows_imported": 6,
+    "schema": {
+      "fields": [
+        {
+          "name": "id",
+          "type": "categorical_u8",
+          "nullable": false,
+          "byte_offset": 0,
+          "bit_position": 0,
+          "csv_column_idx": 0,
+          "description": "",
+          "dictionary_size": 6
+        },
+        {
+          "name": "site",
+          "type": "categorical_u8",
+          "nullable": false,
+          "byte_offset": 1,
+          "bit_position": 0,
+          "csv_column_idx": 1,
+          "description": "",
+          "dictionary_size": 3
+        },
+        {
+          "name": "zone",
+          "type": "categorical_u8",
+          "nullable": false,
+          "byte_offset": 2,
+          "bit_position": 0,
+          "csv_column_idx": 2,
+          "description": "",
+          "dictionary_size": 3
+        },
+        {
+          "name": "read_at",
+          "type": "datetime",
+          "nullable": false,
+          "byte_offset": 3,
+          "bit_position": 0,
+          "csv_column_idx": 3,
+          "description": ""
+        }
+      ]
+    },
+    "zone_warnings": [
+      {
+        "code": "PULSE_IMPORT_DST_RESOLVED",
+        "message": "DST policy \"earlier\" resolved 1 ambiguous and 3 nonexistent source-zone local times",
+        "details": {
+          "ambiguous_n": 1,
+          "nonexistent_n": 3,
+          "policy": "earlier"
+        }
+      }
+    ]
+  },
+  "errors": [],
+  "warnings": [
+    {
+      "code": "PULSE_IMPORT_DST_RESOLVED",
+      "message": "DST policy \"earlier\" resolved 1 ambiguous and 3 nonexistent source-zone local times",
+      "details": {
+        "ambiguous_n": 1,
+        "nonexistent_n": 3,
+        "policy": "earlier"
+      }
+    }
+  ]
+}

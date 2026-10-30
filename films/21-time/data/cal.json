@@ -1,0 +1,56 @@
+{
+ "cohort": {
+  "filename": "o.pulse"
+ },
+ "time_zone": "America/New_York",
+ "filterers": [
+  {
+   "type": "FILTER_EXPRESSION",
+   "expression": "id == 1 or id == 9 or id == 39"
+  }
+ ],
+ "attributes": [
+  {
+   "type": "ATTR_DATE_PART",
+   "field": "at",
+   "label": "store_dow",
+   "tz_field": "zone",
+   "params": {
+    "part": "iso_weekday"
+   }
+  },
+  {
+   "type": "ATTR_FORMULA",
+   "label": "formula_dow",
+   "expression": "weekday(to_day(at))"
+  },
+  {
+   "type": "ATTR_FORMULA",
+   "label": "local_day",
+   "expression": "to_day(at)"
+  }
+ ],
+ "groups": [
+  {
+   "type": "GROUP_CATEGORY",
+   "field": "id"
+  }
+ ],
+ "aggregations": [
+  {
+   "type": "AGG_MAX",
+   "field": "store_dow",
+   "label": "store_dow"
+  },
+  {
+   "type": "AGG_MAX",
+   "field": "formula_dow",
+   "label": "formula_dow"
+  },
+  {
+   "type": "AGG_MAX",
+   "field": "local_day",
+   "label": "local_day"
+  }
+ ]
+}

@@ -1,0 +1,246 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "metadata": {
+      "total_rows": 1204,
+      "filtered_rows": 1204,
+      "cohort_file": "p.pulse"
+    },
+    "crosstab": {
+      "shape": "matrix",
+      "matrix": {
+        "row_header": {
+          "fields": [
+            "prev"
+          ],
+          "types": [
+            "GROUP_CATEGORY"
+          ]
+        },
+        "column_header": {
+          "fields": [
+            "plan"
+          ],
+          "types": [
+            "GROUP_CATEGORY"
+          ]
+        },
+        "row_keys": [
+          [
+            "basic"
+          ],
+          [
+            "pro"
+          ],
+          [
+            "trial"
+          ]
+        ],
+        "column_keys": [
+          [
+            "basic"
+          ],
+          [
+            "churned"
+          ],
+          [
+            "pro"
+          ],
+          [
+            "trial"
+          ]
+        ],
+        "cells": [
+          [
+            {
+              "value": 297,
+              "present": true
+            },
+            {
+              "value": 43,
+              "present": true
+            },
+            {
+              "value": 37,
+              "present": true
+            },
+            {
+              "present": false
+            }
+          ],
+          [
+            {
+              "value": 18,
+              "present": true
+            },
+            {
+              "value": 12,
+              "present": true
+            },
+            {
+              "value": 135,
+              "present": true
+            },
+            {
+              "present": false
+            }
+          ],
+          [
+            {
+              "value": 166,
+              "present": true
+            },
+            {
+              "value": 79,
+              "present": true
+            },
+            {
+              "value": 55,
+              "present": true
+            },
+            {
+              "value": 62,
+              "present": true
+            }
+          ]
+        ],
+        "grand_total": {
+          "present": false
+        },
+        "cell_label": "n",
+        "normalize_applied": "none"
+      }
+    },
+    "components": {
+      "crosstab": {
+        "cell_counts": [
+          [
+            297,
+            43,
+            37,
+            0
+          ],
+          [
+            18,
+            12,
+            135,
+            0
+          ],
+          [
+            166,
+            79,
+            55,
+            62
+          ]
+        ],
+        "cell_components": [
+          [
+            {
+              "n": 297,
+              "n_null": 0
+            },
+            {
+              "n": 43,
+              "n_null": 0
+            },
+            {
+              "n": 37,
+              "n_null": 0
+            },
+            null
+          ],
+          [
+            {
+              "n": 18,
+              "n_null": 0
+            },
+            {
+              "n": 12,
+              "n_null": 0
+            },
+            {
+              "n": 135,
+              "n_null": 0
+            },
+            null
+          ],
+          [
+            {
+              "n": 166,
+              "n_null": 0
+            },
+            {
+              "n": 79,
+              "n_null": 0
+            },
+            {
+              "n": 55,
+              "n_null": 0
+            },
+            {
+              "n": 62,
+              "n_null": 0
+            }
+          ]
+        ],
+        "row_key_components": [
+          {
+            "count": 377,
+            "key": "basic",
+            "label": "basic"
+          },
+          {
+            "count": 165,
+            "key": "pro",
+            "label": "pro"
+          },
+          {
+            "count": 362,
+            "key": "trial",
+            "label": "trial"
+          }
+        ],
+        "column_key_components": [
+          {
+            "count": 481,
+            "key": "basic",
+            "label": "basic"
+          },
+          {
+            "count": 134,
+            "key": "churned",
+            "label": "churned"
+          },
+          {
+            "count": 227,
+            "key": "pro",
+            "label": "pro"
+          },
+          {
+            "count": 362,
+            "key": "trial",
+            "label": "trial"
+          }
+        ],
+        "included_records": 904,
+        "excluded_records": 300
+      },
+      "attributes": [
+        {
+          "label": "prev",
+          "type": "ATTR_PREVIOUS_STATE",
+          "n": 904,
+          "n_null": 300,
+          "operator": {
+            "n_ambiguous": 0,
+            "n_first": 300,
+            "n_gap": 0,
+            "n_subjects": 300
+          }
+        }
+      ]
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

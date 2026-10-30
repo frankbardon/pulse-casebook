@@ -1,0 +1,180 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "at": "2026-03-28",
+        "n": 46
+      },
+      {
+        "at": "2026-03-29",
+        "n": 46
+      },
+      {
+        "at": "2026-03-30",
+        "n": 48
+      },
+      {
+        "at": "2026-03-31",
+        "n": 4
+      },
+      {
+        "at": "2026-10-24",
+        "n": 44
+      },
+      {
+        "at": "2026-10-25",
+        "n": 50
+      },
+      {
+        "at": "2026-10-26",
+        "n": 48
+      },
+      {
+        "at": "2026-10-27",
+        "n": 2
+      }
+    ],
+    "metadata": {
+      "total_rows": 288,
+      "filtered_rows": 288,
+      "cohort_file": "h.pulse"
+    },
+    "components": {
+      "aggregations": [
+        {
+          "label": "n",
+          "n": 288,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "2026-03-28"
+              ],
+              "n": 46,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "2026-03-29"
+              ],
+              "n": 46,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "2026-03-30"
+              ],
+              "n": 48,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "2026-03-31"
+              ],
+              "n": 4,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "2026-10-24"
+              ],
+              "n": 44,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "2026-10-25"
+              ],
+              "n": 50,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "2026-10-26"
+              ],
+              "n": 48,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "2026-10-27"
+              ],
+              "n": 2,
+              "n_null": 0
+            }
+          ]
+        }
+      ],
+      "groupers": [
+        {
+          "field": "at",
+          "total_n": 288,
+          "operator": {
+            "buckets": [
+              {
+                "count": 46,
+                "key": "2026-03-28",
+                "period_end": "2026-03-28",
+                "period_start": "2026-03-28"
+              },
+              {
+                "count": 46,
+                "key": "2026-03-29",
+                "period_end": "2026-03-29",
+                "period_start": "2026-03-29"
+              },
+              {
+                "count": 48,
+                "key": "2026-03-30",
+                "period_end": "2026-03-30",
+                "period_start": "2026-03-30"
+              },
+              {
+                "count": 4,
+                "key": "2026-03-31",
+                "period_end": "2026-03-31",
+                "period_start": "2026-03-31"
+              },
+              {
+                "count": 44,
+                "key": "2026-10-24",
+                "period_end": "2026-10-24",
+                "period_start": "2026-10-24"
+              },
+              {
+                "count": 50,
+                "key": "2026-10-25",
+                "period_end": "2026-10-25",
+                "period_start": "2026-10-25"
+              },
+              {
+                "count": 48,
+                "key": "2026-10-26",
+                "period_end": "2026-10-26",
+                "period_start": "2026-10-26"
+              },
+              {
+                "count": 2,
+                "key": "2026-10-27",
+                "period_end": "2026-10-27",
+                "period_start": "2026-10-27"
+              }
+            ],
+            "granularity": "day",
+            "n_buckets": 8,
+            "range_end": "2026-10-27",
+            "range_start": "2026-03-28"
+          }
+        }
+      ],
+      "run": {
+        "total_records": 288,
+        "filtered_records": 288,
+        "null_records": 0
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

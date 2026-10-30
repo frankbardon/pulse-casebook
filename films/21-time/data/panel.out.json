@@ -1,0 +1,387 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "month": "2026-01",
+        "plan": 0,
+        "prev": null,
+        "subject": "s001"
+      },
+      {
+        "month": "2026-02",
+        "plan": 0,
+        "prev": 0,
+        "subject": "s001"
+      },
+      {
+        "month": "2026-03",
+        "plan": 1,
+        "prev": 0,
+        "subject": "s001"
+      },
+      {
+        "month": "2026-04",
+        "plan": 1,
+        "prev": 1,
+        "subject": "s001"
+      },
+      {
+        "month": "2026-05",
+        "plan": 1,
+        "prev": 1,
+        "subject": "s001"
+      },
+      {
+        "month": "2026-06",
+        "plan": 1,
+        "prev": 1,
+        "subject": "s001"
+      },
+      {
+        "month": "2026-01",
+        "plan": 0,
+        "prev": null,
+        "subject": "s002"
+      },
+      {
+        "month": "2026-02",
+        "plan": 2,
+        "prev": 0,
+        "subject": "s002"
+      }
+    ],
+    "metadata": {
+      "total_rows": 1204,
+      "filtered_rows": 8,
+      "cohort_file": "p.pulse"
+    },
+    "components": {
+      "aggregations": [
+        {
+          "label": "plan",
+          "n": 8,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "s001",
+                "2026-01"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "count": 1,
+                "distinct_count": 1,
+                "tie_count": 1,
+                "value": 0
+              }
+            },
+            {
+              "group_key": [
+                "s001",
+                "2026-02"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "count": 1,
+                "distinct_count": 1,
+                "tie_count": 1,
+                "value": 0
+              }
+            },
+            {
+              "group_key": [
+                "s001",
+                "2026-03"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "count": 1,
+                "distinct_count": 1,
+                "tie_count": 1,
+                "value": 1
+              }
+            },
+            {
+              "group_key": [
+                "s001",
+                "2026-04"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "count": 1,
+                "distinct_count": 1,
+                "tie_count": 1,
+                "value": 1
+              }
+            },
+            {
+              "group_key": [
+                "s001",
+                "2026-05"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "count": 1,
+                "distinct_count": 1,
+                "tie_count": 1,
+                "value": 1
+              }
+            },
+            {
+              "group_key": [
+                "s001",
+                "2026-06"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "count": 1,
+                "distinct_count": 1,
+                "tie_count": 1,
+                "value": 1
+              }
+            },
+            {
+              "group_key": [
+                "s002",
+                "2026-01"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "count": 1,
+                "distinct_count": 1,
+                "tie_count": 1,
+                "value": 0
+              }
+            },
+            {
+              "group_key": [
+                "s002",
+                "2026-02"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "count": 1,
+                "distinct_count": 1,
+                "tie_count": 1,
+                "value": 2
+              }
+            }
+          ]
+        },
+        {
+          "label": "prev",
+          "n": 6,
+          "n_null": 2,
+          "groups": [
+            {
+              "group_key": [
+                "s001",
+                "2026-01"
+              ],
+              "n": 0,
+              "n_null": 1
+            },
+            {
+              "group_key": [
+                "s001",
+                "2026-02"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "count": 1,
+                "distinct_count": 1,
+                "tie_count": 1,
+                "value": 0
+              }
+            },
+            {
+              "group_key": [
+                "s001",
+                "2026-03"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "count": 1,
+                "distinct_count": 1,
+                "tie_count": 1,
+                "value": 0
+              }
+            },
+            {
+              "group_key": [
+                "s001",
+                "2026-04"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "count": 1,
+                "distinct_count": 1,
+                "tie_count": 1,
+                "value": 1
+              }
+            },
+            {
+              "group_key": [
+                "s001",
+                "2026-05"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "count": 1,
+                "distinct_count": 1,
+                "tie_count": 1,
+                "value": 1
+              }
+            },
+            {
+              "group_key": [
+                "s001",
+                "2026-06"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "count": 1,
+                "distinct_count": 1,
+                "tie_count": 1,
+                "value": 1
+              }
+            },
+            {
+              "group_key": [
+                "s002",
+                "2026-01"
+              ],
+              "n": 0,
+              "n_null": 1
+            },
+            {
+              "group_key": [
+                "s002",
+                "2026-02"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "count": 1,
+                "distinct_count": 1,
+                "tie_count": 1,
+                "value": 0
+              }
+            }
+          ]
+        }
+      ],
+      "groupers": [
+        {
+          "field": "subject",
+          "total_n": 8,
+          "operator": {
+            "buckets": [
+              {
+                "count": 6,
+                "key": "s001",
+                "label": "s001"
+              },
+              {
+                "count": 2,
+                "key": "s002",
+                "label": "s002"
+              }
+            ],
+            "dict_size": 300
+          }
+        },
+        {
+          "field": "month",
+          "total_n": 8,
+          "operator": {
+            "buckets": [
+              {
+                "count": 2,
+                "key": "2026-01",
+                "period_end": "2026-01-31",
+                "period_start": "2026-01-01"
+              },
+              {
+                "count": 2,
+                "key": "2026-02",
+                "period_end": "2026-02-28",
+                "period_start": "2026-02-01"
+              },
+              {
+                "count": 1,
+                "key": "2026-03",
+                "period_end": "2026-03-31",
+                "period_start": "2026-03-01"
+              },
+              {
+                "count": 1,
+                "key": "2026-04",
+                "period_end": "2026-04-30",
+                "period_start": "2026-04-01"
+              },
+              {
+                "count": 1,
+                "key": "2026-05",
+                "period_end": "2026-05-31",
+                "period_start": "2026-05-01"
+              },
+              {
+                "count": 1,
+                "key": "2026-06",
+                "period_end": "2026-06-30",
+                "period_start": "2026-06-01"
+              }
+            ],
+            "granularity": "month",
+            "n_buckets": 6,
+            "range_end": "2026-06-30",
+            "range_start": "2026-01-01"
+          }
+        }
+      ],
+      "filterers": [
+        {
+          "n_in": 1204,
+          "n_out": 8,
+          "n_null_input": 0
+        }
+      ],
+      "run": {
+        "total_records": 1204,
+        "filtered_records": 8,
+        "null_records": 0
+      },
+      "attributes": [
+        {
+          "label": "prev",
+          "type": "ATTR_PREVIOUS_STATE",
+          "n": 904,
+          "n_null": 300,
+          "operator": {
+            "n_ambiguous": 0,
+            "n_first": 300,
+            "n_gap": 0,
+            "n_subjects": 300
+          }
+        }
+      ]
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

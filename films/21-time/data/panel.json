@@ -1,0 +1,5 @@
+{"cohort":{"filename":"p.pulse"},
+ "attributes":[{"type":"ATTR_PREVIOUS_STATE","field":"plan","subject_field":"subject","order_field":"month","label":"prev"}],
+ "filterers":[{"type":"FILTER_EXPRESSION","expression":"subject == \"s001\" or subject == \"s002\""}],
+ "groups":[{"type":"GROUP_CATEGORY","field":"subject"},{"type":"GROUP_DATE","field":"month","params":{"component":"month"}}],
+ "aggregations":[{"type":"AGG_MODE","field":"plan","label":"plan"},{"type":"AGG_MODE","field":"prev","label":"prev"}]}

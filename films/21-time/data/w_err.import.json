@@ -1,0 +1,17 @@
+{
+  "format_version": "1.1",
+  "data": null,
+  "errors": [
+    {
+      "code": "PULSE_IMPORT_DST_NONEXISTENT",
+      "message": "row 2, column \"read_at\": local time \"2026-03-29T02:30:00\" in Europe/Berlin does not exist: the zone skips it (a DST spring-forward); choose a DST policy (earlier or later) or give the value an offset",
+      "details": {
+        "column": "read_at",
+        "row": 2,
+        "value": "2026-03-29T02:30:00",
+        "zone": "Europe/Berlin"
+      }
+    }
+  ],
+  "warnings": []
+}

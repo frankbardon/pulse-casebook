@@ -1,0 +1,51 @@
+{
+ "cohort": {
+  "filename": "p.pulse"
+ },
+ "attributes": [
+  {
+   "type": "ATTR_PREVIOUS_STATE",
+   "field": "plan",
+   "subject_field": "subject",
+   "order_field": "month",
+   "label": "prev"
+  }
+ ],
+ "windows": [
+  {
+   "type": "WIN_DELTA",
+   "field": "spend",
+   "label": "spend_change",
+   "partition_by": [
+    "subject"
+   ],
+   "order_by": [
+    {
+     "field": "month"
+    }
+   ],
+   "params": {
+    "periods": 1
+   }
+  }
+ ],
+ "crosstab": {
+  "rows": [
+   {
+    "type": "GROUP_CATEGORY",
+    "field": "prev"
+   }
+  ],
+  "columns": [
+   {
+    "type": "GROUP_CATEGORY",
+    "field": "plan"
+   }
+  ],
+  "cell": {
+   "type": "AGG_AVERAGE",
+   "field": "spend_change",
+   "label": "avg_change"
+  }
+ }
+}

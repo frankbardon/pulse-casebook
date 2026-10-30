@@ -1,0 +1,27 @@
+{
+ "cohort": {
+  "filename": "h.pulse"
+ },
+ "filterers": [
+  {
+   "type": "FILTER_DATE_RANGES",
+   "field": "at",
+   "params": {
+    "ranges": [
+     {
+      "label": "spring",
+      "start": "2026-03-29",
+      "end": "2026-03-29"
+     }
+    ]
+   }
+  }
+ ],
+ "aggregations": [
+  {
+   "type": "AGG_COUNT",
+   "field": "kwh",
+   "label": "n"
+  }
+ ]
+}

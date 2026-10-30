@@ -1,0 +1,22 @@
+{
+ "cohort": {
+  "filename": "o.pulse"
+ },
+ "time_zone": "EST",
+ "groups": [
+  {
+   "type": "GROUP_DATE",
+   "field": "at",
+   "params": {
+    "component": "day"
+   }
+  }
+ ],
+ "aggregations": [
+  {
+   "type": "AGG_COUNT",
+   "field": "id",
+   "label": "n"
+  }
+ ]
+}

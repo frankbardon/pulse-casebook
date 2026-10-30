@@ -1,0 +1,161 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "valid": true,
+    "request": {
+      "cohort": {
+        "filename": "p.pulse"
+      },
+      "attributes": [
+        {
+          "type": "ATTR_PREVIOUS_STATE",
+          "field": "plan",
+          "label": "prev",
+          "subject_field": "subject",
+          "order_field": "month"
+        }
+      ],
+      "windows": [
+        {
+          "type": "WIN_DELTA",
+          "field": "spend",
+          "label": "spend_change",
+          "partition_by": [
+            "subject"
+          ],
+          "order_by": [
+            {
+              "field": "month"
+            }
+          ],
+          "params": {
+            "periods": 1
+          }
+        }
+      ],
+      "crosstab": {
+        "rows": [
+          {
+            "type": "GROUP_CATEGORY",
+            "field": "prev"
+          }
+        ],
+        "columns": [
+          {
+            "type": "GROUP_CATEGORY",
+            "field": "plan"
+          }
+        ],
+        "cell": {
+          "type": "AGG_AVERAGE",
+          "field": "spend_change",
+          "label": "avg_change"
+        }
+      }
+    },
+    "schema_info": {
+      "field_count": 4,
+      "fields": [
+        "subject",
+        "month",
+        "plan",
+        "spend"
+      ]
+    },
+    "record_count": 0,
+    "shards": [],
+    "streamable": false,
+    "streamable_reasons": [
+      "windows run first over every filtered record (windows-first: an aggregation, grouper or crosstab axis reads a window output), so the request runs via the buffered path",
+      "crosstab shape=matrix requires buffered reshape"
+    ],
+    "crosstab_fusable": false,
+    "crosstab_fusion_reasons": [
+      "windows force buffered",
+      "buffered attribute (ATTR_PREVIOUS_STATE)"
+    ],
+    "computed_before_filters": [
+      "prev"
+    ],
+    "suggestions": [
+      {
+        "path": [
+          "Attributes",
+          "0",
+          "Type"
+        ],
+        "reason": "operator ATTR_PREVIOUS_STATE forces the buffered path; no streamable peer is available",
+        "current": "ATTR_PREVIOUS_STATE",
+        "confidence": 0.6
+      },
+      {
+        "path": [
+          "Windows",
+          "0",
+          "Type"
+        ],
+        "reason": "operator WIN_DELTA forces the buffered path; no streamable peer is available",
+        "current": "WIN_DELTA",
+        "confidence": 0.6
+      }
+    ],
+    "defaults_applied": [],
+    "aggregations": [],
+    "groups": [],
+    "filterers": [],
+    "overlays_applied": [],
+    "overlays_schema_divergence": [],
+    "overlay_cost": {},
+    "time_zones": [],
+    "sizes": [
+      {
+        "section": "metadata",
+        "full_bytes": 116,
+        "shaped_bytes": 116,
+        "basis": "heuristic"
+      }
+    ],
+    "post_window": {
+      "windows_first": true,
+      "window_labels": [
+        "spend_change"
+      ],
+      "attributes": []
+    }
+  },
+  "errors": [],
+  "warnings": [
+    {
+      "code": "PULSE_FIELD_DESCRIPTION_LOW_QUALITY",
+      "message": "field subject has a low-quality description",
+      "details": {
+        "description": "",
+        "field": "subject"
+      }
+    },
+    {
+      "code": "PULSE_FIELD_DESCRIPTION_LOW_QUALITY",
+      "message": "field month has a low-quality description",
+      "details": {
+        "description": "",
+        "field": "month"
+      }
+    },
+    {
+      "code": "PULSE_FIELD_DESCRIPTION_LOW_QUALITY",
+      "message": "field plan has a low-quality description",
+      "details": {
+        "description": "",
+        "field": "plan"
+      }
+    },
+    {
+      "code": "PULSE_FIELD_DESCRIPTION_LOW_QUALITY",
+      "message": "field spend has a low-quality description",
+      "details": {
+        "description": "",
+        "field": "spend"
+      }
+    }
+  ]
+}

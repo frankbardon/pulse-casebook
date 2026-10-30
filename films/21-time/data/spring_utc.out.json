@@ -1,0 +1,38 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "n": 48
+      }
+    ],
+    "metadata": {
+      "total_rows": 288,
+      "filtered_rows": 48,
+      "cohort_file": "h.pulse"
+    },
+    "components": {
+      "aggregations": [
+        {
+          "label": "n",
+          "n": 48,
+          "n_null": 0
+        }
+      ],
+      "filterers": [
+        {
+          "n_in": 288,
+          "n_out": 48,
+          "n_null_input": 0
+        }
+      ],
+      "run": {
+        "total_records": 288,
+        "filtered_records": 48,
+        "null_records": 0
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

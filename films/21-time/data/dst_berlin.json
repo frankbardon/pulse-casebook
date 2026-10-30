@@ -1,0 +1,22 @@
+{
+ "cohort": {
+  "filename": "h.pulse"
+ },
+ "time_zone": "Europe/Berlin",
+ "groups": [
+  {
+   "type": "GROUP_DATE",
+   "field": "at",
+   "params": {
+    "component": "day"
+   }
+  }
+ ],
+ "aggregations": [
+  {
+   "type": "AGG_COUNT",
+   "field": "kwh",
+   "label": "n"
+  }
+ ]
+}

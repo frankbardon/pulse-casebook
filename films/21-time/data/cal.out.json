@@ -1,0 +1,185 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "formula_dow": 7,
+        "id": "1",
+        "local_day": 20527,
+        "store_dow": 1
+      },
+      {
+        "formula_dow": 1,
+        "id": "39",
+        "local_day": 20528,
+        "store_dow": 1
+      },
+      {
+        "formula_dow": 1,
+        "id": "9",
+        "local_day": 20528,
+        "store_dow": 1
+      }
+    ],
+    "metadata": {
+      "total_rows": 219,
+      "filtered_rows": 3,
+      "cohort_file": "o.pulse"
+    },
+    "components": {
+      "aggregations": [
+        {
+          "label": "store_dow",
+          "n": 3,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "1"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 1
+              }
+            },
+            {
+              "group_key": [
+                "39"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 1
+              }
+            },
+            {
+              "group_key": [
+                "9"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 1
+              }
+            }
+          ]
+        },
+        {
+          "label": "formula_dow",
+          "n": 3,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "1"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 7
+              }
+            },
+            {
+              "group_key": [
+                "39"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 1
+              }
+            },
+            {
+              "group_key": [
+                "9"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 1
+              }
+            }
+          ]
+        },
+        {
+          "label": "local_day",
+          "n": 3,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "1"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 20527
+              }
+            },
+            {
+              "group_key": [
+                "39"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 20528
+              }
+            },
+            {
+              "group_key": [
+                "9"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 20528
+              }
+            }
+          ]
+        }
+      ],
+      "groupers": [
+        {
+          "field": "id",
+          "total_n": 3,
+          "operator": {
+            "buckets": [
+              {
+                "count": 1,
+                "key": "1",
+                "label": "1"
+              },
+              {
+                "count": 1,
+                "key": "39",
+                "label": "39"
+              },
+              {
+                "count": 1,
+                "key": "9",
+                "label": "9"
+              }
+            ],
+            "dict_size": 0
+          }
+        }
+      ],
+      "filterers": [
+        {
+          "n_in": 219,
+          "n_out": 3,
+          "n_null_input": 0
+        }
+      ],
+      "run": {
+        "total_records": 219,
+        "filtered_records": 3,
+        "null_records": 0
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

@@ -1,0 +1,110 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "n": 114,
+        "prev": "basic"
+      },
+      {
+        "n": 61,
+        "prev": "pro"
+      },
+      {
+        "n": 3,
+        "prev": "trial"
+      }
+    ],
+    "metadata": {
+      "total_rows": 1204,
+      "filtered_rows": 178,
+      "cohort_file": "p.pulse"
+    },
+    "components": {
+      "aggregations": [
+        {
+          "label": "n",
+          "n": 178,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "basic"
+              ],
+              "n": 114,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "pro"
+              ],
+              "n": 61,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "trial"
+              ],
+              "n": 3,
+              "n_null": 0
+            }
+          ]
+        }
+      ],
+      "groupers": [
+        {
+          "field": "prev",
+          "total_n": 178,
+          "operator": {
+            "buckets": [
+              {
+                "count": 114,
+                "key": "basic",
+                "label": "basic"
+              },
+              {
+                "count": 61,
+                "key": "pro",
+                "label": "pro"
+              },
+              {
+                "count": 3,
+                "key": "trial",
+                "label": "trial"
+              }
+            ],
+            "dict_size": 4
+          }
+        }
+      ],
+      "filterers": [
+        {
+          "n_in": 1204,
+          "n_out": 178,
+          "n_null_input": 0
+        }
+      ],
+      "run": {
+        "total_records": 1204,
+        "filtered_records": 178,
+        "null_records": 0
+      },
+      "attributes": [
+        {
+          "label": "prev",
+          "type": "ATTR_PREVIOUS_STATE",
+          "n": 904,
+          "n_null": 300,
+          "operator": {
+            "n_ambiguous": 0,
+            "n_first": 300,
+            "n_gap": 0,
+            "n_subjects": 300
+          }
+        }
+      ]
+    }
+  },
+  "errors": [],
+  "warnings": []
+}
