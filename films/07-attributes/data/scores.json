@@ -1,0 +1,11 @@
+{"cohort":{"filename":"m.pulse"},
+ "filterers":[{"type":"FILTER_RANGE","field":"age","values":["18","65"]}],
+ "attributes":[{"type":"ATTR_ZSCORE","field":"income","label":"z"},
+               {"type":"ATTR_TSCORE","field":"income","label":"t"},
+               {"type":"ATTR_NORMALIZED","field":"income","label":"norm"},
+               {"type":"ATTR_PERCENTILE","field":"income","label":"pct"},
+               {"type":"ATTR_ZSCORE","field":"flat","label":"z_flat"}],
+ "groups":[{"type":"GROUP_CATEGORY","field":"id"}],
+ "aggregations":[{"type":"AGG_MAX","field":"z","label":"z"},{"type":"AGG_MAX","field":"t","label":"t"},
+                 {"type":"AGG_MAX","field":"norm","label":"norm"},{"type":"AGG_MAX","field":"pct","label":"pct"},
+                 {"type":"AGG_MAX","field":"z_flat","label":"z_flat"}]}

@@ -1,0 +1,15 @@
+{
+  "format_version": "1.1",
+  "data": null,
+  "errors": [
+    {
+      "code": "PULSE_ATTRIBUTE_WINDOW_ORDER",
+      "message": "attribute ATTR_ZSCORE reads window output tv_ad, but the windows run over the grouped or aggregated output rows, where no record carries a window value; rewrite it as a row-local formula and aggregate, group or cross-tabulate that label (the windows then run first over the records), or materialize the window first",
+      "details": {
+        "attribute": "ATTR_ZSCORE",
+        "field": "tv_ad"
+      }
+    }
+  ],
+  "warnings": []
+}

@@ -1,0 +1,41 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "share": 0.5
+      }
+    ],
+    "metadata": {
+      "total_rows": 12,
+      "filtered_rows": 10,
+      "cohort_file": "m.pulse"
+    },
+    "components": {
+      "aggregations": [
+        {
+          "label": "share",
+          "n": 10,
+          "n_null": 0,
+          "operator": {
+            "sum": 5
+          }
+        }
+      ],
+      "filterers": [
+        {
+          "n_in": 12,
+          "n_out": 10,
+          "n_null_input": 0
+        }
+      ],
+      "run": {
+        "total_records": 12,
+        "filtered_records": 10,
+        "null_records": 0
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

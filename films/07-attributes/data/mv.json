@@ -1,0 +1,60 @@
+{
+ "cohort": {
+  "filename": "mv.pulse"
+ },
+ "attributes": [
+  {
+   "type": "ATTR_MAHALANOBIS",
+   "fields": [
+    "height",
+    "weight"
+   ],
+   "label": "d2",
+   "params": {
+    "fit_on": [
+     {
+      "type": "FILTER_RANGE",
+      "field": "id",
+      "values": [
+       "1",
+       "70"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "type": "ATTR_ZSCORE",
+   "field": "height",
+   "label": "z_height"
+  },
+  {
+   "type": "ATTR_ZSCORE",
+   "field": "weight",
+   "label": "z_weight"
+  }
+ ],
+ "groups": [
+  {
+   "type": "GROUP_CATEGORY",
+   "field": "id"
+  }
+ ],
+ "aggregations": [
+  {
+   "type": "AGG_MAX",
+   "field": "d2",
+   "label": "d2"
+  },
+  {
+   "type": "AGG_MAX",
+   "field": "z_height",
+   "label": "z_height"
+  },
+  {
+   "type": "AGG_MAX",
+   "field": "z_weight",
+   "label": "z_weight"
+  }
+ ]
+}

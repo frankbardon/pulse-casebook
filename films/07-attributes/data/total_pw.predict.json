@@ -1,0 +1,255 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "valid": false,
+    "request": {
+      "cohort": {
+        "filename": "m.pulse"
+      },
+      "filterers": [
+        {
+          "type": "FILTER_RANGE",
+          "field": "age",
+          "values": [
+            "18",
+            "65"
+          ]
+        }
+      ],
+      "aggregations": [
+        {
+          "type": "AGG_MAX",
+          "field": "tot",
+          "label": "tot"
+        }
+      ],
+      "attributes": [
+        {
+          "type": "ATTR_FORMULA",
+          "field": "",
+          "label": "tot",
+          "expression": "total(income)",
+          "weight": {
+            "field": "wt",
+            "kind": "probability"
+          }
+        }
+      ]
+    },
+    "schema_info": {
+      "field_count": 9,
+      "fields": [
+        "id",
+        "region",
+        "age",
+        "income",
+        "rating",
+        "joined",
+        "interests",
+        "wt",
+        "flat"
+      ]
+    },
+    "record_count": 0,
+    "shards": [],
+    "streamable": true,
+    "suggestions": [
+      {
+        "path": [
+          "Aggregations",
+          "0",
+          "Field"
+        ],
+        "reason": "field tot is not in the schema; closest names by edit distance",
+        "current": "tot",
+        "proposed": [
+          "wt"
+        ],
+        "confidence": 0.7
+      }
+    ],
+    "defaults_applied": [],
+    "aggregations": [
+      {
+        "type": "AGG_MAX",
+        "field": "tot",
+        "label": "tot",
+        "component_schema": {
+          "keys": [
+            {
+              "name": "n",
+              "type": "int",
+              "description": "Number of records aggregated (non-null inputs)."
+            },
+            {
+              "name": "n_null",
+              "type": "int",
+              "description": "Number of null inputs encountered."
+            },
+            {
+              "name": "max",
+              "type": "float64",
+              "description": "Largest non-null value observed."
+            }
+          ],
+          "mergeability": "mergeable"
+        }
+      }
+    ],
+    "groups": [],
+    "filterers": [
+      {
+        "type": "FILTER_RANGE",
+        "field": "age",
+        "component_schema": {
+          "keys": [
+            {
+              "name": "n_in",
+              "type": "int",
+              "description": "Records that entered this filter pass."
+            },
+            {
+              "name": "n_out",
+              "type": "int",
+              "description": "Records that passed (entered the downstream stage)."
+            },
+            {
+              "name": "n_null_input",
+              "type": "int",
+              "description": "Records where the filter input field was null at evaluation time."
+            }
+          ],
+          "mergeability": "mergeable"
+        }
+      }
+    ],
+    "overlays_applied": [],
+    "overlays_schema_divergence": [],
+    "overlay_cost": {},
+    "time_zones": [],
+    "advisories": [
+      {
+        "code": "PULSE_ADVISORY_EXTRA_PASS",
+        "message": "ATTR_FORMULA at attributes[0] (tot) calls total() over 1 argument, so the run adds 1 pre-pass over the filtered rows to sum them before any row is evaluated; a two-pass attribute scheduled in the same pass shares it, the parallel reducers (ShardWorkers / DecodeWorkers) run it as a parallel pre-pass when the request is ungrouped and no total() argument reads another total, and with groupers or features the request runs buffered.",
+        "details": {
+          "added_scans": 1,
+          "label": "tot",
+          "operator": "ATTR_FORMULA",
+          "slot": "attributes[0]",
+          "totals": 1
+        }
+      }
+    ],
+    "sizes": [
+      {
+        "section": "data",
+        "full_bytes": 31,
+        "shaped_bytes": 31,
+        "basis": "exact"
+      },
+      {
+        "section": "metadata",
+        "full_bytes": 116,
+        "shaped_bytes": 116,
+        "basis": "heuristic"
+      },
+      {
+        "section": "components",
+        "full_bytes": 335,
+        "shaped_bytes": 335,
+        "basis": "heuristic"
+      }
+    ]
+  },
+  "errors": [
+    {
+      "code": "PULSE_WEIGHT_UNSUPPORTED",
+      "message": "attributes[0]: ATTR_FORMULA calling total() has a weighted form only under weight kind \"frequency\", and the weight in force is kind \"probability\" (total(expr) under a probability weight would scale with the arbitrary weight scale, so every share or ratio read off it would move with it); use a frequency weight (integer replication counts) or opt the slot out with \"weight\": null to run it unweighted",
+      "details": {
+        "field": "wt",
+        "function": "total",
+        "kind": "probability",
+        "operator": "ATTR_FORMULA",
+        "reason": "total(expr) under a probability weight would scale with the arbitrary weight scale, so every share or ratio read off it would move with it",
+        "slot": "attributes[0]",
+        "supported_kinds": [
+          "frequency"
+        ]
+      }
+    }
+  ],
+  "warnings": [
+    {
+      "code": "PULSE_FIELD_DESCRIPTION_LOW_QUALITY",
+      "message": "field id has a low-quality description",
+      "details": {
+        "description": "",
+        "field": "id"
+      }
+    },
+    {
+      "code": "PULSE_FIELD_DESCRIPTION_LOW_QUALITY",
+      "message": "field region has a low-quality description",
+      "details": {
+        "description": "",
+        "field": "region"
+      }
+    },
+    {
+      "code": "PULSE_FIELD_DESCRIPTION_LOW_QUALITY",
+      "message": "field age has a low-quality description",
+      "details": {
+        "description": "",
+        "field": "age"
+      }
+    },
+    {
+      "code": "PULSE_FIELD_DESCRIPTION_LOW_QUALITY",
+      "message": "field income has a low-quality description",
+      "details": {
+        "description": "",
+        "field": "income"
+      }
+    },
+    {
+      "code": "PULSE_FIELD_DESCRIPTION_LOW_QUALITY",
+      "message": "field rating has a low-quality description",
+      "details": {
+        "description": "",
+        "field": "rating"
+      }
+    },
+    {
+      "code": "PULSE_FIELD_DESCRIPTION_LOW_QUALITY",
+      "message": "field joined has a low-quality description",
+      "details": {
+        "description": "",
+        "field": "joined"
+      }
+    },
+    {
+      "code": "PULSE_FIELD_DESCRIPTION_LOW_QUALITY",
+      "message": "field interests has a low-quality description",
+      "details": {
+        "description": "",
+        "field": "interests"
+      }
+    },
+    {
+      "code": "PULSE_FIELD_DESCRIPTION_LOW_QUALITY",
+      "message": "field wt has a low-quality description",
+      "details": {
+        "description": "",
+        "field": "wt"
+      }
+    },
+    {
+      "code": "PULSE_FIELD_DESCRIPTION_LOW_QUALITY",
+      "message": "field flat has a low-quality description",
+      "details": {
+        "description": "",
+        "field": "flat"
+      }
+    }
+  ]
+}

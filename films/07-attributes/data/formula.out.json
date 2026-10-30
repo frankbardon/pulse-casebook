@@ -1,0 +1,472 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "food_sport": 0,
+        "id": "1",
+        "north": 1,
+        "per_age": 1.5294117647058822
+      },
+      {
+        "food_sport": 0,
+        "id": "10",
+        "north": 0,
+        "per_age": 0
+      },
+      {
+        "food_sport": 1,
+        "id": "11",
+        "north": 0,
+        "per_age": 2.5
+      },
+      {
+        "food_sport": 1,
+        "id": "12",
+        "north": 1,
+        "per_age": 2.413793103448276
+      },
+      {
+        "food_sport": 1,
+        "id": "3",
+        "north": 0,
+        "per_age": 1.288888888888889
+      },
+      {
+        "food_sport": 1,
+        "id": "4",
+        "north": 0,
+        "per_age": 2.103448275862069
+      },
+      {
+        "food_sport": 0,
+        "id": "6",
+        "north": 0,
+        "per_age": 1.6842105263157894
+      },
+      {
+        "food_sport": 0,
+        "id": "7",
+        "north": 0,
+        "per_age": 1.2692307692307692
+      },
+      {
+        "food_sport": 1,
+        "id": "8",
+        "north": 0,
+        "per_age": 2.9166666666666665
+      },
+      {
+        "food_sport": 0,
+        "id": "9",
+        "north": 1,
+        "per_age": 1.7560975609756098
+      }
+    ],
+    "metadata": {
+      "total_rows": 12,
+      "filtered_rows": 10,
+      "cohort_file": "m.pulse"
+    },
+    "components": {
+      "aggregations": [
+        {
+          "label": "per_age",
+          "n": 10,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "1"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 1.5294117647058822
+              }
+            },
+            {
+              "group_key": [
+                "10"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 0
+              }
+            },
+            {
+              "group_key": [
+                "11"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 2.5
+              }
+            },
+            {
+              "group_key": [
+                "12"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 2.413793103448276
+              }
+            },
+            {
+              "group_key": [
+                "3"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 1.288888888888889
+              }
+            },
+            {
+              "group_key": [
+                "4"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 2.103448275862069
+              }
+            },
+            {
+              "group_key": [
+                "6"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 1.6842105263157894
+              }
+            },
+            {
+              "group_key": [
+                "7"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 1.2692307692307692
+              }
+            },
+            {
+              "group_key": [
+                "8"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 2.9166666666666665
+              }
+            },
+            {
+              "group_key": [
+                "9"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 1.7560975609756098
+              }
+            }
+          ]
+        },
+        {
+          "label": "north",
+          "n": 10,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "1"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 1
+              }
+            },
+            {
+              "group_key": [
+                "10"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 0
+              }
+            },
+            {
+              "group_key": [
+                "11"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 0
+              }
+            },
+            {
+              "group_key": [
+                "12"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 1
+              }
+            },
+            {
+              "group_key": [
+                "3"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 0
+              }
+            },
+            {
+              "group_key": [
+                "4"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 0
+              }
+            },
+            {
+              "group_key": [
+                "6"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 0
+              }
+            },
+            {
+              "group_key": [
+                "7"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 0
+              }
+            },
+            {
+              "group_key": [
+                "8"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 0
+              }
+            },
+            {
+              "group_key": [
+                "9"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 1
+              }
+            }
+          ]
+        },
+        {
+          "label": "food_sport",
+          "n": 10,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "1"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 0
+              }
+            },
+            {
+              "group_key": [
+                "10"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 0
+              }
+            },
+            {
+              "group_key": [
+                "11"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 1
+              }
+            },
+            {
+              "group_key": [
+                "12"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 1
+              }
+            },
+            {
+              "group_key": [
+                "3"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 1
+              }
+            },
+            {
+              "group_key": [
+                "4"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 1
+              }
+            },
+            {
+              "group_key": [
+                "6"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 0
+              }
+            },
+            {
+              "group_key": [
+                "7"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 0
+              }
+            },
+            {
+              "group_key": [
+                "8"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 1
+              }
+            },
+            {
+              "group_key": [
+                "9"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 0
+              }
+            }
+          ]
+        }
+      ],
+      "groupers": [
+        {
+          "field": "id",
+          "total_n": 10,
+          "operator": {
+            "buckets": [
+              {
+                "count": 1,
+                "key": "1",
+                "label": "1"
+              },
+              {
+                "count": 1,
+                "key": "10",
+                "label": "10"
+              },
+              {
+                "count": 1,
+                "key": "11",
+                "label": "11"
+              },
+              {
+                "count": 1,
+                "key": "12",
+                "label": "12"
+              },
+              {
+                "count": 1,
+                "key": "3",
+                "label": "3"
+              },
+              {
+                "count": 1,
+                "key": "4",
+                "label": "4"
+              },
+              {
+                "count": 1,
+                "key": "6",
+                "label": "6"
+              },
+              {
+                "count": 1,
+                "key": "7",
+                "label": "7"
+              },
+              {
+                "count": 1,
+                "key": "8",
+                "label": "8"
+              },
+              {
+                "count": 1,
+                "key": "9",
+                "label": "9"
+              }
+            ],
+            "dict_size": 0
+          }
+        }
+      ],
+      "filterers": [
+        {
+          "n_in": 12,
+          "n_out": 10,
+          "n_null_input": 0
+        }
+      ],
+      "run": {
+        "total_records": 12,
+        "filtered_records": 10,
+        "null_records": 0
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

@@ -1,0 +1,5 @@
+{"cohort":{"filename":"m.pulse"},
+ "filterers":[{"type":"FILTER_RANGE","field":"age","values":["18","65"]}],
+ "attributes":[{"type":"ATTR_FORMULA","label":"per_age","expression":"income / age"}],
+ "groups":[{"type":"GROUP_CATEGORY","field":"id"}],
+ "aggregations":[{"type":"AGG_MAX","field":"per_age","label":"per_age"}]}
