@@ -1,0 +1,351 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "metadata": {
+      "total_rows": 70,
+      "filtered_rows": 70,
+      "cohort_file": "crosstab.pulse"
+    },
+    "crosstab": {
+      "shape": "matrix",
+      "matrix": {
+        "row_header": {
+          "fields": [
+            "region"
+          ],
+          "types": [
+            "GROUP_CATEGORY"
+          ]
+        },
+        "column_header": {
+          "fields": [
+            "plan"
+          ],
+          "types": [
+            "GROUP_CATEGORY"
+          ]
+        },
+        "row_keys": [
+          [
+            "North"
+          ],
+          [
+            "South"
+          ],
+          [
+            "East"
+          ]
+        ],
+        "column_keys": [
+          [
+            "Basic"
+          ],
+          [
+            "Plus"
+          ],
+          [
+            "Pro"
+          ]
+        ],
+        "cells": [
+          [
+            {
+              "value": 12,
+              "present": true
+            },
+            {
+              "value": 7,
+              "present": true
+            },
+            {
+              "value": 3,
+              "present": true
+            }
+          ],
+          [
+            {
+              "value": 9,
+              "present": true
+            },
+            {
+              "value": 14,
+              "present": true
+            },
+            {
+              "value": 5,
+              "present": true
+            }
+          ],
+          [
+            {
+              "value": 4,
+              "present": true
+            },
+            {
+              "value": 6,
+              "present": true
+            },
+            {
+              "value": 8,
+              "present": true
+            }
+          ]
+        ],
+        "row_margins": [
+          {
+            "value": 22,
+            "present": true
+          },
+          {
+            "value": 28,
+            "present": true
+          },
+          {
+            "value": 18,
+            "present": true
+          }
+        ],
+        "column_margins": [
+          {
+            "value": 25,
+            "present": true
+          },
+          {
+            "value": 27,
+            "present": true
+          },
+          {
+            "value": 16,
+            "present": true
+          }
+        ],
+        "grand_total": {
+          "value": 68,
+          "present": true
+        },
+        "cell_label": "n",
+        "normalize_applied": "none"
+      }
+    },
+    "components": {
+      "crosstab": {
+        "cell_counts": [
+          [
+            13,
+            7,
+            3
+          ],
+          [
+            9,
+            14,
+            5
+          ],
+          [
+            4,
+            6,
+            8
+          ]
+        ],
+        "cell_components": [
+          [
+            {
+              "n": 12,
+              "n_null": 1
+            },
+            {
+              "n": 7,
+              "n_null": 0
+            },
+            {
+              "n": 3,
+              "n_null": 0
+            }
+          ],
+          [
+            {
+              "n": 9,
+              "n_null": 0
+            },
+            {
+              "n": 14,
+              "n_null": 0
+            },
+            {
+              "n": 5,
+              "n_null": 0
+            }
+          ],
+          [
+            {
+              "n": 4,
+              "n_null": 0
+            },
+            {
+              "n": 6,
+              "n_null": 0
+            },
+            {
+              "n": 8,
+              "n_null": 0
+            }
+          ]
+        ],
+        "row_margin_counts": [
+          23,
+          28,
+          18
+        ],
+        "row_margin_components": [
+          {
+            "n": 22,
+            "n_null": 1
+          },
+          {
+            "n": 28,
+            "n_null": 0
+          },
+          {
+            "n": 18,
+            "n_null": 0
+          }
+        ],
+        "column_margin_counts": [
+          26,
+          27,
+          16
+        ],
+        "column_margin_components": [
+          {
+            "n": 25,
+            "n_null": 1
+          },
+          {
+            "n": 27,
+            "n_null": 0
+          },
+          {
+            "n": 16,
+            "n_null": 0
+          }
+        ],
+        "grand_total_count": 69,
+        "grand_total_components": {
+          "n": 68,
+          "n_null": 1
+        },
+        "row_margin_aggregations": [
+          {
+            "base": {
+              "value": 22,
+              "present": true,
+              "components": {
+                "n": 22,
+                "n_null": 0
+              }
+            }
+          },
+          {
+            "base": {
+              "value": 28,
+              "present": true,
+              "components": {
+                "n": 28,
+                "n_null": 0
+              }
+            }
+          },
+          {
+            "base": {
+              "value": 18,
+              "present": true,
+              "components": {
+                "n": 18,
+                "n_null": 0
+              }
+            }
+          }
+        ],
+        "column_margin_aggregations": [
+          {
+            "base": {
+              "value": 25,
+              "present": true,
+              "components": {
+                "n": 25,
+                "n_null": 0
+              }
+            }
+          },
+          {
+            "base": {
+              "value": 27,
+              "present": true,
+              "components": {
+                "n": 27,
+                "n_null": 0
+              }
+            }
+          },
+          {
+            "base": {
+              "value": 16,
+              "present": true,
+              "components": {
+                "n": 16,
+                "n_null": 0
+              }
+            }
+          }
+        ],
+        "grand_total_aggregations": {
+          "base": {
+            "value": 68,
+            "present": true,
+            "components": {
+              "n": 68,
+              "n_null": 0
+            }
+          }
+        },
+        "row_key_components": [
+          {
+            "count": 23,
+            "key": "North",
+            "label": "North"
+          },
+          {
+            "count": 28,
+            "key": "South",
+            "label": "South"
+          },
+          {
+            "count": 19,
+            "key": "East",
+            "label": "East"
+          }
+        ],
+        "column_key_components": [
+          {
+            "count": 26,
+            "key": "Basic",
+            "label": "Basic"
+          },
+          {
+            "count": 27,
+            "key": "Plus",
+            "label": "Plus"
+          },
+          {
+            "count": 16,
+            "key": "Pro",
+            "label": "Pro"
+          }
+        ],
+        "included_records": 69,
+        "excluded_records": 1
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}
