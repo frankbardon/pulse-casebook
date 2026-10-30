@@ -11,6 +11,9 @@ export default defineConfig({
 		starlight({
 			title: 'Pulse Casebook',
 			description: 'Learn Pulse through narrated films and worked case studies.',
+			// The Pulse ring, vendored (c2pa metadata stripped). The home hero's live mark
+			// is the vendored embed in public/brand/ (pulse-mark.js + pinned three 0.184.0).
+			logo: { src: './src/assets/pulse-ring.svg', alt: 'Pulse' },
 			social: [{ icon: 'github', label: 'Pulse on GitHub', href: 'https://github.com/frankbardon/pulse' }],
 			sidebar: [
 				{ label: 'Start here', items: [{ slug: 'paths/analyst' }, { slug: 'paths/developer' }, { slug: 'paths/running-examples' }] },

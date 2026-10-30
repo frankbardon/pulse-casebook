@@ -36,6 +36,8 @@ body { background: var(--bg); color: var(--ink); font-family: var(--sans); font-
 .eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
 h1 { margin: 0; font-size: clamp(40px, 8vw, 84px); line-height: .95; font-weight: 800; font-stretch: 125%; letter-spacing: -.01em; text-transform: uppercase; text-wrap: balance; }
 h1 span { color: var(--teal); }
+.lockup { display: flex; align-items: center; gap: clamp(14px, 2.4vw, 28px); }
+.lockup .ring { width: clamp(56px, 10vw, 96px); height: auto; flex: none; }
 .hero p { margin: 0; max-width: 64ch; font-size: 17px; color: var(--ink); }
 .trace { width: 100%; height: 56px; display: block; }
 .trace path { fill: none; stroke: var(--teal); stroke-width: 2; stroke-linejoin: round; }
@@ -118,7 +120,7 @@ svg .tt { fill: var(--teal); } svg .ta { fill: var(--amber); } svg .tv { fill: v
 
 <header class="hero">
   <div class="eyebrow">github.com/frankbardon/pulse · engine anatomy · eight plates</div>
-  <h1>Pulse <span>Anatomy</span></h1>
+  <div class="lockup"><img class="ring" src="pulse-ring.svg" alt="" width="96" height="96"><h1>Pulse <span>Anatomy</span></h1></div>
   <svg class="trace" viewBox="0 0 1000 60" preserveAspectRatio="none" aria-hidden="true">
     <path class="base" d="M0 30 H1000"/>
     <path d="M0 30 H300 L318 30 L330 8 L344 50 L356 30 H520 L534 30 L546 14 L560 44 L572 30 H1000"/>
