@@ -19,7 +19,7 @@ tests()       { node generate.js; imp t; api process tr; }
 matrices()    { node generate.js; imp m; api process mr; api predict mp predict; api process mp; }
 overlays() {
   node generate.js; imp o; imp o2025
-  for r in A A0 B C F G H I; do api process $r; done
+  for r in A A0 B B2 C F G H I; do api process $r; done
   api facet D; api compose E
   for r in B G; do api predict $r predict; done
 }

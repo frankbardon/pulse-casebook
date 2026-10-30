@@ -86,11 +86,11 @@
         },
         "payload": {
           "shape": "scalar",
-          "scalar": 1.836952446602361
+          "scalar": 1.8369524466023601
         },
         "summary": {
           "count": 3,
-          "statistic": 1.836952446602361,
+          "statistic": 1.8369524466023601,
           "p_value": 0.3991267580082106,
           "parameters": {
             "df": 2

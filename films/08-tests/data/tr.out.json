@@ -11,12 +11,12 @@
         "label": "TEST_T_spend",
         "type": "TEST_T",
         "variant": "welch_two_sample",
-        "statistic": -4.011828778150326,
+        "statistic": -4.011828778150325,
         "df": 236.83660130648127,
-        "p_value": 0.00008082860752231359,
+        "p_value": 0.00008082860752231373,
         "alpha": 0.05,
         "reject_null": true,
-        "p_adjusted": 0.00024248582256694077,
+        "p_adjusted": 0.00024248582256694118,
         "significant_adjusted": true,
         "multiplicity": {
           "method": "holm",
@@ -25,11 +25,11 @@
           "m": 4
         },
         "details": {
-          "ci_high": -3.5925119496993165,
+          "ci_high": -3.592511949699316,
           "ci_low": -10.524990656095921,
           "diff": -7.058751302897619,
           "effect_size": {
-            "cohens_d": -0.5183453968431918
+            "cohens_d": -0.5183453968431917
           },
           "groups": [
             "A",
@@ -45,7 +45,7 @@
           ],
           "variance": [
             181.85087389044398,
-            189.22690509873257
+            189.22690509873263
           ]
         }
       },
@@ -68,25 +68,25 @@
         },
         "details": {
           "col_labels": [
-            "B",
-            "A"
+            "A",
+            "B"
           ],
           "col_totals": [
-            117,
-            123
+            123,
+            117
           ],
           "contingency": [
             [
-              51,
-              33
+              48,
+              39
             ],
             [
-              39,
-              48
+              33,
+              51
             ],
             [
-              27,
-              42
+              42,
+              27
             ]
           ],
           "effect_size": {
@@ -95,13 +95,13 @@
           "expected_min": 33.6375,
           "n": 240,
           "row_labels": [
-            "North",
             "East",
+            "North",
             "South"
           ],
           "row_totals": [
-            84,
             87,
+            84,
             69
           ]
         }
@@ -110,12 +110,12 @@
         "label": "TEST_PEARSON_R_spend",
         "type": "TEST_PEARSON_R",
         "variant": "pearson",
-        "statistic": 0.7819749992101003,
+        "statistic": 0.7819749992101005,
         "df": 238,
-        "p_value": 9.08658597659042e-51,
+        "p_value": 9.08658597658912e-51,
         "alpha": 0.05,
         "reject_null": true,
-        "p_adjusted": 3.634634390636168e-50,
+        "p_adjusted": 3.634634390635648e-50,
         "significant_adjusted": true,
         "multiplicity": {
           "method": "holm",
@@ -124,15 +124,15 @@
           "m": 4
         },
         "details": {
-          "ci_high": 0.8267399435417155,
-          "ci_low": 0.7273703345809108,
+          "ci_high": 0.8267399435417158,
+          "ci_low": 0.727370334580911,
           "covariance": 37.15621269177128,
           "mean_x": 50.88845833333333,
           "mean_y": 6.783333333333333,
           "n": 240,
-          "t": 19.354296729470168,
-          "variance_x": 197.170783805788,
-          "variance_y": 11.450767085076711
+          "t": 19.35429672947018,
+          "variance_x": 197.17078380578795,
+          "variance_y": 11.45076708507671
         }
       },
       {
@@ -141,10 +141,10 @@
         "variant": "one_way",
         "statistic": 1.335175908513945,
         "df": 2,
-        "p_value": 0.2650836034853036,
+        "p_value": 0.26508360348530347,
         "alpha": 0.05,
         "reject_null": false,
-        "p_adjusted": 0.2650836034853036,
+        "p_adjusted": 0.26508360348530347,
         "significant_adjusted": false,
         "multiplicity": {
           "method": "holm",
@@ -184,65 +184,65 @@
       {
         "type": "REG_OLS",
         "coefficients": {
-          "(intercept)": 21.324595818842106,
-          "tenure": 1.5306569958749048,
+          "(intercept)": 21.32459581884211,
+          "tenure": 1.5306569958749046,
           "visits": 3.1502934084139937
         },
         "std_errors": {
-          "(intercept)": 1.467702752625316,
-          "tenure": 0.19023752839297167,
-          "visits": 0.1493624544375308
+          "(intercept)": 1.4677027526253155,
+          "tenure": 0.1902375283929716,
+          "visits": 0.1493624544375307
         },
         "p_values": {
-          "(intercept)": 1.2457799598405861e-34,
-          "tenure": 4.1052871678714074e-14,
-          "visits": 2.6363613047901867e-56
+          "(intercept)": 1.245779959840497e-34,
+          "tenure": 4.105287167871318e-14,
+          "visits": 2.6363613047900735e-56
         },
         "ci_lower": {
-          "(intercept)": 18.433186156034857,
+          "(intercept)": 18.43318615603486,
           "tenure": 1.1558844972609241,
           "visits": 2.8560457869192524
         },
         "ci_upper": {
-          "(intercept)": 24.216005481649354,
-          "tenure": 1.9054294944888854,
+          "(intercept)": 24.216005481649358,
+          "tenure": 1.905429494488885,
           "visits": 3.444541029908735
         },
         "df": 237,
         "conf_level": 0.95,
-        "r2": 0.6948415756874304,
-        "adj_r2": 0.692266399110953,
+        "r2": 0.6948415756874307,
+        "adj_r2": 0.6922663991109532,
         "n_obs": 240,
-        "residual_std_err": 7.789484918187526
+        "residual_std_err": 7.789484918187522
       },
       {
         "type": "REG_GLM",
         "family": "binomial",
         "link": "logit",
         "coefficients": {
-          "(intercept)": -2.5709576463585786,
-          "visits": 0.33286166628072517
+          "(intercept)": -2.57095764635856,
+          "visits": 0.33286166628072233
         },
         "std_errors": {
-          "(intercept)": 0.3789342537160614,
-          "visits": 0.04913309860103046
+          "(intercept)": 0.3789342537160609,
+          "visits": 0.049133098601030434
         },
         "p_values": {
-          "(intercept)": 1.1632284668717519e-11,
-          "visits": 1.2467058039908716e-11
+          "(intercept)": 1.1632284668720757e-11,
+          "visits": 1.2467058039913372e-11
         },
         "ci_lower": {
-          "(intercept)": -3.313655136150622,
-          "visits": 0.23656256257385017
+          "(intercept)": -3.3136551361506026,
+          "visits": 0.2365625625738474
         },
         "ci_upper": {
-          "(intercept)": -1.828260156566535,
-          "visits": 0.42916076998760017
+          "(intercept)": -1.8282601565665175,
+          "visits": 0.4291607699875973
         },
         "conf_level": 0.95,
-        "deviance": 270.4263938111363,
+        "deviance": 270.4263938111359,
         "null_deviance": 328.9508194927002,
-        "pseudo_r2": 0.17791238754722916,
+        "pseudo_r2": 0.17791238754723038,
         "n_obs": 240,
         "converged_iters": 5
       }

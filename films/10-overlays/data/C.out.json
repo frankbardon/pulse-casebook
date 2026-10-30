@@ -4,7 +4,7 @@
     "data": [
       {
         "region": "East",
-        "revenue": 18660.81999999998
+        "revenue": 18660.82
       },
       {
         "region": "North",
@@ -12,7 +12,7 @@
       },
       {
         "region": "South",
-        "revenue": 21127.50000000002
+        "revenue": 21127.5
       }
     ],
     "metadata": {
@@ -53,7 +53,7 @@
                   "East"
                 ],
                 "summary": {
-                  "statistic": -3591.530000000017
+                  "statistic": -3591.529999999999
                 }
               },
               {
@@ -69,14 +69,14 @@
                   "South"
                 ],
                 "summary": {
-                  "statistic": -1124.8499999999804
+                  "statistic": -1124.8499999999985
                 }
               }
             ]
           }
         },
         "summary": {
-          "min": -3591.530000000017,
+          "min": -3591.529999999999,
           "max": 0,
           "count": 3,
           "baseline": 0
@@ -101,7 +101,7 @@
                   "East"
                 ],
                 "summary": {
-                  "statistic": 83.85999680932568
+                  "statistic": 83.85999680932576
                 }
               },
               {
@@ -117,14 +117,14 @@
                   "South"
                 ],
                 "summary": {
-                  "statistic": 94.94502827791231
+                  "statistic": 94.94502827791223
                 }
               }
             ]
           }
         },
         "summary": {
-          "min": 83.85999680932568,
+          "min": 83.85999680932576,
           "max": 100,
           "count": 3,
           "baseline": 100
@@ -134,11 +134,7 @@
         "name": "share",
         "kind": "OVERLAY_SHARE_OF_TOTAL",
         "scope": "group",
-        "ref": {
-          "margin": {
-            "axis": "grand"
-          }
-        },
+        "ref": {},
         "payload": {
           "shape": "series",
           "series": {
@@ -148,7 +144,7 @@
                   "East"
                 ],
                 "summary": {
-                  "statistic": 0.3007836633614689
+                  "statistic": 0.30078366336146917
                 }
               },
               {
@@ -164,14 +160,14 @@
                   "South"
                 ],
                 "summary": {
-                  "statistic": 0.340542743977459
+                  "statistic": 0.34054274397745865
                 }
               }
             ]
           }
         },
         "summary": {
-          "min": 0.3007836633614689,
+          "min": 0.30078366336146917,
           "max": 0.3586735926610721,
           "count": 3,
           "baseline": 1
@@ -238,7 +234,7 @@
               "n": 324,
               "n_null": 0,
               "operator": {
-                "sum": 18660.81999999998
+                "sum": 18660.82
               }
             },
             {
@@ -258,7 +254,7 @@
               "n": 452,
               "n_null": 0,
               "operator": {
-                "sum": 21127.50000000002
+                "sum": 21127.5
               }
             }
           ]
@@ -298,5 +294,17 @@
     }
   },
   "errors": [],
-  "warnings": []
+  "warnings": [
+    {
+      "code": "PULSE_OVERLAY_REF_UNKNOWN",
+      "message": "overlay OVERLAY_DELTA_VS_SIBLING sibling reference does not resolve to a known host group",
+      "details": {
+        "field": "region",
+        "group_count": 3,
+        "host": "series",
+        "kind": "OVERLAY_DELTA_VS_SIBLING",
+        "value": "West"
+      }
+    }
+  ]
 }

@@ -156,7 +156,7 @@
             {
               "name": "granularity",
               "type": "string",
-              "description": "Calendar component used to bucket (hour, day, day_of_week, week, month, quarter, year)."
+              "description": "Calendar component used to bucket (hour, hour_of_day, day, day_of_week, week, month, quarter, year)."
             },
             {
               "name": "range_start",

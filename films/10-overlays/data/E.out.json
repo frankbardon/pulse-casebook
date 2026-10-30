@@ -3,6 +3,7 @@
   "data": {
     "responses": [
       {
+        "label": "y2024",
         "metadata": {
           "total_rows": 1282,
           "filtered_rows": 565,
@@ -274,6 +275,7 @@
         }
       },
       {
+        "label": "y2025",
         "metadata": {
           "total_rows": 1282,
           "filtered_rows": 717,

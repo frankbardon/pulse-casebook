@@ -180,11 +180,11 @@
         ],
         "missing": "pairwise",
         "encoding": "upper",
-        "accumulator_bytes": 1208,
+        "accumulator_bytes": 1552,
         "bucket_basis": "dictionary",
         "estimated_buckets": 3,
         "estimated_cells": 108,
-        "estimated_bytes": 3624,
+        "estimated_bytes": 4656,
         "streamable": true,
         "mergeable": true,
         "pairwise_psd_risk": true
@@ -206,11 +206,11 @@
         ],
         "missing": "listwise",
         "encoding": "full",
-        "accumulator_bytes": 248,
+        "accumulator_bytes": 256,
         "bucket_basis": "dictionary",
         "estimated_buckets": 3,
         "estimated_cells": 108,
-        "estimated_bytes": 17544,
+        "estimated_bytes": 17568,
         "streamable": false,
         "mergeable": false,
         "row_buffer_bytes": 16800,
@@ -232,8 +232,8 @@
       },
       {
         "section": "matrices",
-        "full_bytes": 5852,
-        "shaped_bytes": 5852,
+        "full_bytes": 8219,
+        "shaped_bytes": 8219,
         "basis": "upper_bound"
       },
       {

@@ -3,11 +3,16 @@
   "data": null,
   "errors": [
     {
-      "code": "PULSE_OVERLAY_KIND_UNKNOWN",
-      "message": "overlay kind has no runtime handler: OVERLAY_INDEX_VS_PRIOR",
+      "code": "PULSE_OVERLAY_REF_INCOMPATIBLE_WITH_SHAPE",
+      "message": "overlay OVERLAY_INDEX_VS_PRIOR does not run on a matrix-shape Request.Overlays host; it runs on a series host (Request.Groups + Request.Aggregations, no Request.Crosstab)",
       "details": {
+        "host": "request",
         "index": 0,
-        "kind": "OVERLAY_INDEX_VS_PRIOR"
+        "kind": "OVERLAY_INDEX_VS_PRIOR",
+        "shape": "matrix",
+        "shapes": [
+          "series"
+        ]
       }
     }
   ],

@@ -1,0 +1,7 @@
+{"cohort":{"filename":"o.pulse"},
+ "groups":[{"type":"GROUP_DATE","field":"signup","params":{"component":"month","frequency":"monthly"}}],
+ "aggregations":[{"type":"AGG_SUM","field":"revenue","label":"revenue"}],
+ "overlays":[{"name":"mom","kind":"OVERLAY_INDEX_VS_PRIOR","scope":"group"},
+   {"name":"roll","kind":"OVERLAY_ZSCORE_VS_ROLLING","scope":"group","ref":{"rolling_mean":{}},"params":{"window":3,"min_periods":2}},
+   {"name":"yoy","kind":"OVERLAY_YOY","scope":"group","ref":{"yoy":{}},"params":{"frequency":"monthly"}},
+   {"name":"base","kind":"OVERLAY_INDEX_VS_BASELINE","scope":"group","ref":{"baseline_index":{"position":0}}}]}

@@ -4,7 +4,7 @@
     "data": [
       {
         "AGG_AVERAGE_spend": 5.125,
-        "AGG_CI_LOWER_spend": 1.8655468938820134,
+        "AGG_CI_LOWER_spend": 1.8655468938820137,
         "AGG_COUNT_spend": 4,
         "AGG_DISTINCT_COUNT_tier": 3,
         "AGG_MEDIAN_spend": 4,
@@ -19,7 +19,7 @@
           "variance": 11.0625,
           "n": 4
         },
-        "avg_empty": 0,
+        "avg_empty": null,
         "n_empty": 0
       }
     ],
@@ -104,7 +104,7 @@
           "n_null": 1,
           "operator": {
             "alpha": 0.050000000000000044,
-            "lower": 1.8655468938820134,
+            "lower": 1.8655468938820137,
             "mean": 5.125,
             "stderr": 1.6630168369562588,
             "t_critical": 1.959963984540054
