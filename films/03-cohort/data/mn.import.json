@@ -1,0 +1,184 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "rows_imported": 1200,
+    "schema": {
+      "fields": [
+        {
+          "name": "id",
+          "type": "u16",
+          "nullable": false,
+          "byte_offset": 0,
+          "bit_position": 0,
+          "csv_column_idx": 0,
+          "description": ""
+        },
+        {
+          "name": "store",
+          "type": "categorical_u8",
+          "nullable": false,
+          "byte_offset": 2,
+          "bit_position": 0,
+          "csv_column_idx": 1,
+          "description": "",
+          "dictionary_size": 12
+        },
+        {
+          "name": "region",
+          "type": "categorical_u8",
+          "nullable": false,
+          "byte_offset": 3,
+          "bit_position": 0,
+          "csv_column_idx": 2,
+          "description": "",
+          "dictionary_size": 4
+        },
+        {
+          "name": "format",
+          "type": "categorical_u8",
+          "nullable": false,
+          "byte_offset": 4,
+          "bit_position": 0,
+          "csv_column_idx": 3,
+          "description": "",
+          "dictionary_size": 3
+        },
+        {
+          "name": "sqft",
+          "type": "u16",
+          "nullable": false,
+          "byte_offset": 5,
+          "bit_position": 0,
+          "csv_column_idx": 4,
+          "description": ""
+        },
+        {
+          "name": "opened",
+          "type": "date",
+          "nullable": false,
+          "byte_offset": 7,
+          "bit_position": 0,
+          "csv_column_idx": 5,
+          "description": ""
+        },
+        {
+          "name": "age",
+          "type": "u8",
+          "nullable": true,
+          "byte_offset": 11,
+          "bit_position": 0,
+          "csv_column_idx": 6,
+          "description": ""
+        },
+        {
+          "name": "spend",
+          "type": "f64",
+          "nullable": false,
+          "byte_offset": 12,
+          "bit_position": 0,
+          "csv_column_idx": 7,
+          "description": ""
+        },
+        {
+          "name": "interests",
+          "type": "set_u8",
+          "nullable": true,
+          "byte_offset": 20,
+          "bit_position": 0,
+          "csv_column_idx": 8,
+          "description": "",
+          "dictionary_size": 4
+        },
+        {
+          "name": "q1",
+          "type": "u4",
+          "nullable": false,
+          "byte_offset": 21,
+          "bit_position": 0,
+          "csv_column_idx": 9,
+          "description": ""
+        },
+        {
+          "name": "q2",
+          "type": "u4",
+          "nullable": false,
+          "byte_offset": 22,
+          "bit_position": 0,
+          "csv_column_idx": 10,
+          "description": ""
+        },
+        {
+          "name": "q3",
+          "type": "u4",
+          "nullable": true,
+          "byte_offset": 23,
+          "bit_position": 0,
+          "csv_column_idx": 11,
+          "description": ""
+        },
+        {
+          "name": "q4",
+          "type": "u4",
+          "nullable": false,
+          "byte_offset": 24,
+          "bit_position": 0,
+          "csv_column_idx": 12,
+          "description": ""
+        }
+      ]
+    },
+    "groups": [
+      {
+        "label": "group 1 [key: store]",
+        "key": [
+          "store"
+        ],
+        "members": [
+          "format"
+        ],
+        "fields": [
+          "store",
+          "format"
+        ],
+        "verdict": "dropped_too_narrow",
+        "reason": "PULSE_GROUP_TOO_NARROW",
+        "entry_count": 0,
+        "entry_width": 2,
+        "member_row_bytes": 2,
+        "index_width": 4,
+        "dictionary_bytes": 0,
+        "ratio": 0,
+        "break_even_ratio": 0,
+        "ratio_floor": 2,
+        "byte_delta": 0
+      }
+    ],
+    "group_warnings": [
+      {
+        "code": "PULSE_GROUP_TOO_NARROW",
+        "message": "parent group: group 1 [key: store] dropped: its members are 2 bytes per row, no wider than the 4-byte index that would replace them, so grouping could only grow the file; its members stay in the row",
+        "details": {
+          "entry_width": 2,
+          "group": 0,
+          "group_label": "group 1 [key: store]",
+          "index_width": 4,
+          "member_row_bytes": 2
+        }
+      }
+    ]
+  },
+  "errors": [],
+  "warnings": [
+    {
+      "code": "PULSE_GROUP_TOO_NARROW",
+      "message": "parent group: group 1 [key: store] dropped: its members are 2 bytes per row, no wider than the 4-byte index that would replace them, so grouping could only grow the file; its members stay in the row",
+      "details": {
+        "entry_width": 2,
+        "group": 0,
+        "group_label": "group 1 [key: store]",
+        "index_width": 4,
+        "member_row_bytes": 2
+      }
+    }
+  ]
+}

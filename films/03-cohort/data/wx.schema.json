@@ -1,0 +1,1 @@
+[{"name":"id","type":"u16","nullable":false,"description":"Member number, unique per row"},{"name":"visits","type":"u8","nullable":false,"description":"Store visits in the last year"}]

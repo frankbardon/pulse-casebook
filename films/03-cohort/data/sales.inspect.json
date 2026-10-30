@@ -1,0 +1,69 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "field_count": 3,
+    "fields": [
+      {
+        "name": "id",
+        "type": "u32",
+        "nullable": false,
+        "byte_offset": 0,
+        "bit_position": 0,
+        "description": "Purchase number, unique across every quarter",
+        "description_source": "schema",
+        "categorical": false
+      },
+      {
+        "name": "region",
+        "type": "categorical_u8",
+        "nullable": false,
+        "byte_offset": 4,
+        "bit_position": 0,
+        "description": "Sales region of the store that took the purchase",
+        "description_source": "schema",
+        "categorical": true,
+        "dictionary": {
+          "total_entries": 4,
+          "truncated": false,
+          "values": [
+            "East",
+            "South",
+            "West",
+            "North"
+          ]
+        }
+      },
+      {
+        "name": "spend",
+        "type": "f64",
+        "nullable": false,
+        "byte_offset": 5,
+        "bit_position": 0,
+        "description": "Purchase amount in dollars, to the micro-dollar",
+        "description_source": "schema",
+        "categorical": false
+      }
+    ],
+    "shards": [
+      {
+        "filename": "q1.pulse",
+        "record_count": 30000
+      },
+      {
+        "filename": "q2.pulse",
+        "record_count": 30000
+      },
+      {
+        "filename": "q3.pulse",
+        "record_count": 30000
+      },
+      {
+        "filename": "q4.pulse",
+        "record_count": 30000
+      }
+    ],
+    "record_count": 120000
+  },
+  "errors": [],
+  "warnings": []
+}

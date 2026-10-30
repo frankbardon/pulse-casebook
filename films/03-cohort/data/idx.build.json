@@ -1,0 +1,21 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "cohort": "sales.pulse",
+    "index_path": "sales.pulse.08b72e07b55c3ac0.idx",
+    "manifest_path": "sales.pulse.indexes.json",
+    "keys": [
+      "id"
+    ],
+    "distinct_keys": 120000,
+    "indexed_records": 120000,
+    "shard_index_paths": [
+      "sales.pulse#q1.pulse.08b72e07b55c3ac0.idx",
+      "sales.pulse#q2.pulse.08b72e07b55c3ac0.idx",
+      "sales.pulse#q3.pulse.08b72e07b55c3ac0.idx",
+      "sales.pulse#q4.pulse.08b72e07b55c3ac0.idx"
+    ]
+  },
+  "errors": [],
+  "warnings": []
+}

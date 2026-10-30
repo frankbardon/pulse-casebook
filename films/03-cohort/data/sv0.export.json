@@ -1,0 +1,27 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "rows_exported": 40,
+    "target_warnings": [
+      {
+        "code": "PULSE_SPSS_SIDECAR_ABSENT",
+        "message": "spss: no metadata sidecar found at sv.pulse.spss.json; the export will synthesise a default SPSS dictionary from the .pulse schema alone, so value labels, measure levels, print formats and missing-value specifications will not be restated. This is the normal state for a cohort that was never SPSS-derived",
+        "details": {
+          "cohort": "sv.pulse",
+          "sidecar": "sv.pulse.spss.json"
+        }
+      }
+    ]
+  },
+  "errors": [],
+  "warnings": [
+    {
+      "code": "PULSE_SPSS_SIDECAR_ABSENT",
+      "message": "spss: no metadata sidecar found at sv.pulse.spss.json; the export will synthesise a default SPSS dictionary from the .pulse schema alone, so value labels, measure levels, print formats and missing-value specifications will not be restated. This is the normal state for a cohort that was never SPSS-derived",
+      "details": {
+        "cohort": "sv.pulse",
+        "sidecar": "sv.pulse.spss.json"
+      }
+    }
+  ]
+}

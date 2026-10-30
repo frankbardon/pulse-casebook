@@ -1,0 +1,38 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "selections": 1049
+      }
+    ],
+    "metadata": {
+      "total_rows": 1200,
+      "filtered_rows": 1049,
+      "cohort_file": "m.pulse"
+    },
+    "components": {
+      "aggregations": [
+        {
+          "label": "selections",
+          "n": 1049,
+          "n_null": 0
+        }
+      ],
+      "filterers": [
+        {
+          "n_in": 1200,
+          "n_out": 1049,
+          "n_null_input": 0
+        }
+      ],
+      "run": {
+        "total_records": 1200,
+        "filtered_records": 1049,
+        "null_records": 0
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

@@ -1,0 +1,23 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "archive": "sales.pulse",
+    "shards": [
+      {
+        "filename": "q1.pulse",
+        "record_count": 30000
+      },
+      {
+        "filename": "q2.pulse",
+        "record_count": 30000
+      },
+      {
+        "filename": "q3.pulse",
+        "record_count": 30000
+      }
+    ],
+    "widened": null
+  },
+  "errors": [],
+  "warnings": []
+}

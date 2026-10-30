@@ -1,0 +1,85 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "metadata": {
+      "total_rows": 1200,
+      "filtered_rows": 1200,
+      "cohort_file": "mv.pulse"
+    },
+    "matrices": [
+      {
+        "name": "r",
+        "type": "MAT_CORRELATION",
+        "primary": {
+          "kind": "square_symmetric",
+          "encoding": "full",
+          "row_keys": [
+            "sat[1]",
+            "sat[2]",
+            "sat[3]",
+            "sat[4]"
+          ],
+          "column_keys": [
+            "sat[1]",
+            "sat[2]",
+            "sat[3]",
+            "sat[4]"
+          ],
+          "labels": [
+            "q1",
+            "q2",
+            "q3",
+            "q4"
+          ],
+          "values": [
+            [
+              1,
+              0.6404161783445464,
+              0.6194440741009437,
+              0.6294671838316488
+            ],
+            [
+              0.6404161783445464,
+              1,
+              0.629210412357435,
+              0.6336581285513118
+            ],
+            [
+              0.6194440741009437,
+              0.629210412357435,
+              1,
+              0.6192794990287184
+            ],
+            [
+              0.6294671838316488,
+              0.6336581285513118,
+              0.6192794990287184,
+              1
+            ]
+          ]
+        },
+        "scalars": {
+          "determinant": 0.14765167563915313
+        }
+      }
+    ],
+    "components": {
+      "run": {
+        "total_records": 1200,
+        "filtered_records": 1200,
+        "null_records": 0
+      },
+      "matrices": [
+        {
+          "name": "r",
+          "type": "MAT_CORRELATION",
+          "n": 1152,
+          "n_null": 48,
+          "n_listwise_dropped": 48
+        }
+      ]
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

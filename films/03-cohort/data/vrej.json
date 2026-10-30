@@ -1,0 +1,1 @@
+{"cohort":{"filename":"mv.pulse"},"aggregations":[{"type":"AGG_AVERAGE","field":"sat","label":"sat_mean"}]}

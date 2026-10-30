@@ -1,0 +1,253 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "field_count": 13,
+    "fields": [
+      {
+        "name": "id",
+        "type": "u16",
+        "nullable": false,
+        "byte_offset": 0,
+        "bit_position": 0,
+        "description": "Numeric field: id",
+        "description_source": "synthesized",
+        "categorical": false
+      },
+      {
+        "name": "store",
+        "type": "categorical_u8",
+        "nullable": false,
+        "byte_offset": 2,
+        "bit_position": 0,
+        "description": "Categorical field: store",
+        "description_source": "synthesized",
+        "categorical": true,
+        "dictionary": {
+          "total_entries": 12,
+          "truncated": false,
+          "values": [
+            "S10",
+            "S04",
+            "S05",
+            "S09",
+            "S01",
+            "S06",
+            "S03",
+            "S11",
+            "S07",
+            "S02",
+            "S12",
+            "S08"
+          ]
+        },
+        "group": {
+          "group": 0,
+          "key": true,
+          "kind": "indexed"
+        }
+      },
+      {
+        "name": "region",
+        "type": "categorical_u8",
+        "nullable": false,
+        "byte_offset": 3,
+        "bit_position": 0,
+        "description": "Categorical field: region",
+        "description_source": "synthesized",
+        "categorical": true,
+        "dictionary": {
+          "total_entries": 4,
+          "truncated": false,
+          "values": [
+            "South",
+            "West",
+            "North",
+            "East"
+          ]
+        },
+        "group": {
+          "group": 0,
+          "key": false,
+          "kind": "indexed"
+        }
+      },
+      {
+        "name": "format",
+        "type": "categorical_u8",
+        "nullable": false,
+        "byte_offset": 4,
+        "bit_position": 0,
+        "description": "Categorical field: format",
+        "description_source": "synthesized",
+        "categorical": true,
+        "dictionary": {
+          "total_entries": 3,
+          "truncated": false,
+          "values": [
+            "mall",
+            "street",
+            "outlet"
+          ]
+        },
+        "group": {
+          "group": 0,
+          "key": false,
+          "kind": "indexed"
+        }
+      },
+      {
+        "name": "sqft",
+        "type": "u16",
+        "nullable": false,
+        "byte_offset": 5,
+        "bit_position": 0,
+        "description": "Numeric field: sqft",
+        "description_source": "synthesized",
+        "categorical": false,
+        "group": {
+          "group": 0,
+          "key": false,
+          "kind": "indexed"
+        }
+      },
+      {
+        "name": "opened",
+        "type": "date",
+        "nullable": false,
+        "byte_offset": 7,
+        "bit_position": 0,
+        "description": "Numeric field: opened",
+        "description_source": "synthesized",
+        "categorical": false,
+        "group": {
+          "group": 0,
+          "key": false,
+          "kind": "indexed"
+        }
+      },
+      {
+        "name": "age",
+        "type": "u8",
+        "nullable": true,
+        "byte_offset": 11,
+        "bit_position": 0,
+        "description": "Numeric field: age",
+        "description_source": "synthesized",
+        "categorical": false
+      },
+      {
+        "name": "spend",
+        "type": "f64",
+        "nullable": false,
+        "byte_offset": 12,
+        "bit_position": 0,
+        "description": "Numeric field: spend",
+        "description_source": "synthesized",
+        "categorical": false
+      },
+      {
+        "name": "interests",
+        "type": "set_u8",
+        "nullable": true,
+        "byte_offset": 20,
+        "bit_position": 0,
+        "description": "Set field: interests",
+        "description_source": "synthesized",
+        "categorical": false,
+        "dictionary": {
+          "total_entries": 4,
+          "truncated": false,
+          "values": [
+            "food",
+            "sport",
+            "tech",
+            "travel"
+          ]
+        }
+      },
+      {
+        "name": "q1",
+        "type": "u4",
+        "nullable": false,
+        "byte_offset": 21,
+        "bit_position": 0,
+        "description": "Numeric field: q1",
+        "description_source": "synthesized",
+        "categorical": false
+      },
+      {
+        "name": "q2",
+        "type": "u4",
+        "nullable": false,
+        "byte_offset": 22,
+        "bit_position": 0,
+        "description": "Numeric field: q2",
+        "description_source": "synthesized",
+        "categorical": false
+      },
+      {
+        "name": "q3",
+        "type": "u4",
+        "nullable": true,
+        "byte_offset": 23,
+        "bit_position": 0,
+        "description": "Numeric field: q3",
+        "description_source": "synthesized",
+        "categorical": false
+      },
+      {
+        "name": "q4",
+        "type": "u4",
+        "nullable": false,
+        "byte_offset": 24,
+        "bit_position": 0,
+        "description": "Numeric field: q4",
+        "description_source": "synthesized",
+        "categorical": false
+      }
+    ],
+    "shards": [],
+    "record_count": 1200,
+    "layout": {
+      "pulse_format_version": 2,
+      "physical_record_stride": 21,
+      "logical_record_stride": 27
+    },
+    "groups": [
+      {
+        "group": 0,
+        "label": "group 1 [key: store]",
+        "kind": "indexed",
+        "key": [
+          "store"
+        ],
+        "members": [
+          "region",
+          "format",
+          "sqft",
+          "opened"
+        ],
+        "fields": [
+          "store",
+          "region",
+          "format",
+          "sqft",
+          "opened"
+        ],
+        "entry_count": 12,
+        "entry_width": 9,
+        "dictionary_bytes": 108,
+        "member_row_bytes": 9,
+        "index_width": 4,
+        "ratio": 100,
+        "break_even_ratio": 1.8,
+        "ratio_floor": 2,
+        "byte_delta": -5864,
+        "grows_file": false,
+        "verdict": "admitted"
+      }
+    ]
+  },
+  "errors": [],
+  "warnings": []
+}

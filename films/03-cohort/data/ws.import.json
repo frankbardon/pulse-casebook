@@ -1,0 +1,90 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "rows_imported": 78,
+    "schema": {
+      "fields": [
+        {
+          "name": "id",
+          "type": "u16",
+          "nullable": false,
+          "byte_offset": 0,
+          "bit_position": 0,
+          "csv_column_idx": 0,
+          "description": "Member number, unique per row"
+        },
+        {
+          "name": "visits",
+          "type": "u8",
+          "nullable": false,
+          "byte_offset": 2,
+          "bit_position": 0,
+          "csv_column_idx": 1,
+          "description": "Store visits in the last year"
+        },
+        {
+          "name": "age",
+          "type": "u8",
+          "nullable": false,
+          "byte_offset": 3,
+          "bit_position": 0,
+          "csv_column_idx": 2,
+          "description": "Age in whole years at signup"
+        }
+      ]
+    },
+    "row_errors": [
+      {
+        "row": 64,
+        "code": "PULSE_IMPORT_ROW_ERROR",
+        "message": "row 64, column \"visits\": strconv.ParseUint: parsing \"300\": value out of range",
+        "details": {
+          "column": "visits",
+          "reason": "strconv.ParseUint: parsing \"300\": value out of range",
+          "row": 64
+        }
+      },
+      {
+        "row": 71,
+        "code": "PULSE_IMPORT_ROW_ERROR",
+        "message": "row 71, column \"age\": null value in non-nullable field",
+        "details": {
+          "column": "age",
+          "reason": "null value in non-nullable field",
+          "row": 71
+        }
+      }
+    ],
+    "dropped_warnings": [
+      {
+        "code": "PULSE_IMPORT_ROWS_DROPPED",
+        "message": "import dropped 2 of 80 rows; first failure at row 64, column \"visits\": strconv.ParseUint: parsing \"300\": value out of range",
+        "details": {
+          "dropped": 2,
+          "first_failure": {
+            "column": "visits",
+            "reason": "strconv.ParseUint: parsing \"300\": value out of range",
+            "row": 64
+          },
+          "imported": 78
+        }
+      }
+    ]
+  },
+  "errors": [],
+  "warnings": [
+    {
+      "code": "PULSE_IMPORT_ROWS_DROPPED",
+      "message": "import dropped 2 of 80 rows; first failure at row 64, column \"visits\": strconv.ParseUint: parsing \"300\": value out of range",
+      "details": {
+        "dropped": 2,
+        "first_failure": {
+          "column": "visits",
+          "reason": "strconv.ParseUint: parsing \"300\": value out of range",
+          "row": 64
+        },
+        "imported": 78
+      }
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "null_sets": 5,
+        "records": 40
+      }
+    ],
+    "metadata": {
+      "total_rows": 40,
+      "filtered_rows": 40,
+      "cohort_file": "svi.pulse"
+    },
+    "components": {
+      "aggregations": [
+        {
+          "label": "records",
+          "n": 40,
+          "n_null": 0
+        },
+        {
+          "label": "null_sets",
+          "n": 35,
+          "n_null": 5
+        }
+      ],
+      "run": {
+        "total_records": 40,
+        "filtered_records": 40,
+        "null_records": 0
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

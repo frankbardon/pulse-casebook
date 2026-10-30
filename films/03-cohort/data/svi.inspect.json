@@ -1,0 +1,120 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "field_count": 8,
+    "fields": [
+      {
+        "name": "id",
+        "type": "u8",
+        "nullable": false,
+        "byte_offset": 0,
+        "bit_position": 0,
+        "description": "Numeric field: id",
+        "description_source": "synthesized",
+        "categorical": false
+      },
+      {
+        "name": "region",
+        "type": "categorical_u8",
+        "nullable": false,
+        "byte_offset": 1,
+        "bit_position": 0,
+        "description": "Categorical field: region",
+        "description_source": "synthesized",
+        "categorical": true,
+        "dictionary": {
+          "total_entries": 4,
+          "truncated": false,
+          "values": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ]
+        }
+      },
+      {
+        "name": "income",
+        "type": "f64",
+        "nullable": true,
+        "byte_offset": 2,
+        "bit_position": 0,
+        "description": "Numeric field: income",
+        "description_source": "synthesized",
+        "categorical": false
+      },
+      {
+        "name": "income_missing",
+        "type": "categorical_u8",
+        "nullable": true,
+        "byte_offset": 10,
+        "bit_position": 0,
+        "description": "Why \"income\" is missing, or null where it is present",
+        "description_source": "schema",
+        "categorical": true,
+        "dictionary": {
+          "total_entries": 3,
+          "truncated": false,
+          "values": [
+            "sysmis",
+            "Don't know",
+            "Refused"
+          ]
+        }
+      },
+      {
+        "name": "web",
+        "type": "f64",
+        "nullable": true,
+        "byte_offset": 11,
+        "bit_position": 0,
+        "description": "media: web",
+        "description_source": "schema",
+        "categorical": false
+      },
+      {
+        "name": "radio",
+        "type": "f64",
+        "nullable": true,
+        "byte_offset": 19,
+        "bit_position": 0,
+        "description": "media: radio",
+        "description_source": "schema",
+        "categorical": false
+      },
+      {
+        "name": "tv",
+        "type": "f64",
+        "nullable": true,
+        "byte_offset": 27,
+        "bit_position": 0,
+        "description": "media: tv",
+        "description_source": "schema",
+        "categorical": false
+      },
+      {
+        "name": "media",
+        "type": "set_u8",
+        "nullable": true,
+        "byte_offset": 35,
+        "bit_position": 0,
+        "description": "Multiple-dichotomy set \"$media\" (media): one element per constituent variable, set where that variable holds the counted value \"1\". Derived and additive — the 3 constituent columns are all retained and remain authoritative, because a bit cannot tell \"not selected\" from \"not asked\"",
+        "description_source": "schema",
+        "categorical": false,
+        "dictionary": {
+          "total_entries": 3,
+          "truncated": false,
+          "values": [
+            "web",
+            "radio",
+            "tv"
+          ]
+        }
+      }
+    ],
+    "shards": [],
+    "record_count": 40
+  },
+  "errors": [],
+  "warnings": []
+}

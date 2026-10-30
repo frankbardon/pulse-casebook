@@ -1,0 +1,87 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "rows_imported": 40,
+    "schema": {
+      "fields": [
+        {
+          "name": "id",
+          "type": "u8",
+          "nullable": false,
+          "byte_offset": 0,
+          "bit_position": 0,
+          "csv_column_idx": 0,
+          "description": ""
+        },
+        {
+          "name": "region",
+          "type": "categorical_u8",
+          "nullable": false,
+          "byte_offset": 1,
+          "bit_position": 0,
+          "csv_column_idx": 1,
+          "description": "",
+          "dictionary_size": 4
+        },
+        {
+          "name": "income",
+          "type": "f64",
+          "nullable": true,
+          "byte_offset": 2,
+          "bit_position": 0,
+          "csv_column_idx": 2,
+          "description": ""
+        },
+        {
+          "name": "income_missing",
+          "type": "categorical_u8",
+          "nullable": true,
+          "byte_offset": 10,
+          "bit_position": 0,
+          "csv_column_idx": 3,
+          "description": "Why \"income\" is missing, or null where it is present",
+          "dictionary_size": 3
+        },
+        {
+          "name": "web",
+          "type": "f64",
+          "nullable": true,
+          "byte_offset": 11,
+          "bit_position": 0,
+          "csv_column_idx": 4,
+          "description": "media: web"
+        },
+        {
+          "name": "radio",
+          "type": "f64",
+          "nullable": true,
+          "byte_offset": 19,
+          "bit_position": 0,
+          "csv_column_idx": 5,
+          "description": "media: radio"
+        },
+        {
+          "name": "tv",
+          "type": "f64",
+          "nullable": true,
+          "byte_offset": 27,
+          "bit_position": 0,
+          "csv_column_idx": 6,
+          "description": "media: tv"
+        },
+        {
+          "name": "media",
+          "type": "set_u8",
+          "nullable": true,
+          "byte_offset": 35,
+          "bit_position": 0,
+          "csv_column_idx": 7,
+          "description": "Multiple-dichotomy set \"$media\" (media): one element per constituent variable, set where that variable holds the counted value \"1\". Derived and additive — the 3 constituent columns are all retained and remain authoritative, because a bit cannot tell \"not selected\" from \"not asked\"",
+          "dictionary_size": 3
+        }
+      ]
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

@@ -1,0 +1,122 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "rows_imported": 1200,
+    "schema": {
+      "fields": [
+        {
+          "name": "id",
+          "type": "u16",
+          "nullable": false,
+          "byte_offset": 0,
+          "bit_position": 0,
+          "csv_column_idx": 0,
+          "description": ""
+        },
+        {
+          "name": "store",
+          "type": "categorical_u8",
+          "nullable": false,
+          "byte_offset": 2,
+          "bit_position": 0,
+          "csv_column_idx": 1,
+          "description": "",
+          "dictionary_size": 12
+        },
+        {
+          "name": "region",
+          "type": "categorical_u8",
+          "nullable": false,
+          "byte_offset": 3,
+          "bit_position": 0,
+          "csv_column_idx": 2,
+          "description": "",
+          "dictionary_size": 4
+        },
+        {
+          "name": "format",
+          "type": "categorical_u8",
+          "nullable": false,
+          "byte_offset": 4,
+          "bit_position": 0,
+          "csv_column_idx": 3,
+          "description": "",
+          "dictionary_size": 3
+        },
+        {
+          "name": "sqft",
+          "type": "u16",
+          "nullable": false,
+          "byte_offset": 5,
+          "bit_position": 0,
+          "csv_column_idx": 4,
+          "description": ""
+        },
+        {
+          "name": "opened",
+          "type": "date",
+          "nullable": false,
+          "byte_offset": 7,
+          "bit_position": 0,
+          "csv_column_idx": 5,
+          "description": ""
+        },
+        {
+          "name": "age",
+          "type": "u8",
+          "nullable": true,
+          "byte_offset": 11,
+          "bit_position": 0,
+          "csv_column_idx": 6,
+          "description": ""
+        },
+        {
+          "name": "spend",
+          "type": "f64",
+          "nullable": false,
+          "byte_offset": 12,
+          "bit_position": 0,
+          "csv_column_idx": 7,
+          "description": ""
+        },
+        {
+          "name": "interests",
+          "type": "set_u8",
+          "nullable": true,
+          "byte_offset": 20,
+          "bit_position": 0,
+          "csv_column_idx": 8,
+          "description": "",
+          "dictionary_size": 4
+        },
+        {
+          "name": "sat",
+          "type": "vec_f64",
+          "nullable": false,
+          "byte_offset": 21,
+          "bit_position": 0,
+          "csv_column_idx": 9,
+          "description": ""
+        }
+      ],
+      "vectors": [
+        {
+          "field_index": 9,
+          "dim": 4,
+          "kind": "scale",
+          "scale_min": 1,
+          "scale_max": 5,
+          "has_scale": true,
+          "labels": [
+            "q1",
+            "q2",
+            "q3",
+            "q4"
+          ]
+        }
+      ]
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

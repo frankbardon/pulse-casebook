@@ -1,0 +1,171 @@
+1
+00:00:04,250 --> 00:00:09,805
+The cohort file. What every Pulse request reads, how it stores absence, and how it grows.
+
+2
+00:00:10,605 --> 00:00:19,466
+Every request reads a cohort, a dot pulse file. It comes in two shapes: a single file, or a shard archive of many single files.
+
+3
+00:00:20,266 --> 00:00:29,511
+A single file opens with a nine-byte header: PULSE, three zero bytes and a format byte. Then come the schema, the dictionaries and the records.
+
+4
+00:00:30,311 --> 00:00:36,442
+Format two adds a block for parent groups and vectors. Pulse writes it only when the schema needs it.
+
+5
+00:00:37,242 --> 00:00:48,493
+Every field has a type. Today that means integers of several widths, floats, exact decimals, dates, datetimes, booleans, categoricals, multi-select sets and vectors.
+
+6
+00:00:49,293 --> 00:00:59,797
+Import infers them. Here, ids became sixteen-bit integers, store and region categoricals, age a nullable byte, and the ratings four-bit integers.
+
+7
+00:01:00,597 --> 00:01:07,794
+Text is always categorical. More types are added over time, and the manifest lists the ones your instance supports.
+
+8
+00:01:08,594 --> 00:01:19,013
+Absence lives in one place: a null bitmap, one bit per field. Thirteen fields need two bytes. There are no sentinel values, so a zero is always a zero.
+
+9
+00:01:19,813 --> 00:01:28,653
+A multi-select cell has three states. Null is no answer. A bare pipe means answered, but nothing chosen. Anything else is a selection.
+
+10
+00:01:29,453 --> 00:01:39,082
+Here: seventy-four null, seventy-seven empty, and one thousand and forty-nine selections. Three different denominators, kept apart in every format.
+
+11
+00:01:39,882 --> 00:01:46,802
+Inference reads only the first rows: five hundred by default, fifty here. What if a later row disagrees?
+
+12
+00:01:47,602 --> 00:01:56,911
+Row sixty-four holds three hundred visits, too big for the four-bit type the sample chose. Pulse promotes the field to sixteen bits, and drops nothing.
+
+13
+00:01:57,711 --> 00:02:03,884
+Row seventy-one has no age, so the field becomes nullable, and the import names it as promoted.
+
+14
+00:02:04,684 --> 00:02:13,460
+A declared schema matches columns by name, never by position. A column it does not name is refused before a single row is read.
+
+15
+00:02:14,260 --> 00:02:23,612
+Declared widths never promote. Rows sixty-four and seventy-one break the contract, so seventy-eight rows import, with a warning that two were dropped.
+
+16
+00:02:24,412 --> 00:02:32,036
+Add strict, and a partial import fails instead. Nothing is written. Inference adapts; a declared schema is a contract.
+
+17
+00:02:32,836 --> 00:02:40,140
+Joined data repeats a parent block on every row: here, each store's region, format, size and opening date.
+
+18
+00:02:40,940 --> 00:02:49,353
+Declare a parent group keyed by store, and each distinct block is stored once, in the schema. Each row keeps a four-byte index instead.
+
+19
+00:02:50,153 --> 00:02:58,268
+The file moves to format two. Twelve stores, a hundred rows per entry: each record shrinks from twenty-seven bytes to twenty-one.
+
+20
+00:02:59,068 --> 00:03:07,417
+Requests still name the member fields, and get the same answers. A filter on group fields alone runs once per store, not once per row.
+
+21
+00:03:08,217 --> 00:03:16,950
+And Pulse checks the claim. A member that varies within its key fails the import. A group no wider than its index is dropped, with a warning.
+
+22
+00:03:17,750 --> 00:03:24,457
+A battery of columns can fold into one vector field, sat, with its kind, scale and labels in the schema.
+
+23
+00:03:25,257 --> 00:03:34,566
+An empty rating becomes a missing element, and the correlation drops those rows. A scalar slot refuses a vector, and names the operator to use.
+
+24
+00:03:35,366 --> 00:03:45,614
+An SPSS file declares its own dictionary, so nothing is inferred. Here, income codes nine nine eight and nine nine nine mean don't know, and refused.
+
+25
+00:03:46,414 --> 00:03:55,019
+A null bit cannot say why, so income gets a sibling column, income missing, holding the reason. Region holds codes, not labels.
+
+26
+00:03:55,819 --> 00:04:05,576
+The media question is a multiple-response set. Pulse keeps its answer columns and adds a set column beside them. Nulls and empty answers stay apart.
+
+27
+00:04:06,376 --> 00:04:14,533
+What the header cannot hold, like labels, missing-value rules and set definitions, goes in a metadata sidecar beside the cohort.
+
+28
+00:04:15,333 --> 00:04:22,893
+Export reads that sidecar back. The new file restates the missing codes and the set, and folds the derived columns away.
+
+29
+00:04:23,693 --> 00:04:28,266
+Import it again, and the cohort is byte-identical, down to the same hash.
+
+30
+00:04:29,066 --> 00:04:35,389
+At scale, a cohort becomes a shard archive. Here, four quarters of thirty thousand purchases.
+
+31
+00:04:36,189 --> 00:04:45,178
+Shards must agree. Imported on their own, the quarters inferred different id widths, and the archive refused them. One shared schema fixed it.
+
+32
+00:04:45,978 --> 00:04:54,370
+Shard add appends a quarter, and shard remove takes one out. Add a hash and a shard name to the path, and you read one shard on its own.
+
+33
+00:04:55,170 --> 00:05:03,946
+Archives are read by random access. Opening and inspecting read only the zip directory and the shard headers, never every record.
+
+34
+00:05:04,746 --> 00:05:12,605
+Floating-point addition depends on order. Add the same North spends front to back, then back to front, and the last digits differ.
+
+35
+00:05:13,405 --> 00:05:22,928
+Pulse uses binned, reproducible sums. Serial or parallel, archive or one flat file, all four runs give the same figures, bit for bit.
+
+36
+00:05:23,728 --> 00:05:32,248
+For point lookups, build a sidecar index: a separate file, so the cohort never changes. On an archive, each shard gets its own.
+
+37
+00:05:33,048 --> 00:05:41,163
+A lookup hashes the key and probes each shard's index, with no scan. Purchase ninety thousand and one is in the fourth quarter.
+
+38
+00:05:41,963 --> 00:05:50,696
+Remove that shard and its sidecar goes too, so the lookup finds nothing. Add it back, and the index is extended. Both changes say so.
+
+39
+00:05:51,496 --> 00:05:58,800
+If a rewrite changes the file's size, the index is stale, and Pulse refuses to use it rather than give an old answer.
+
+40
+00:05:59,600 --> 00:06:08,419
+That is the cohort file: a header, typed fields, a null bit, import rules, parent groups, vectors, SPSS, shards and sidecars.
+
+41
+00:06:09,219 --> 00:06:17,398
+Pulse adds field types and formats over time. The manifest lists what your instance supports, and inspect shows any cohort's schema.
+
+42
+00:06:18,198 --> 00:06:23,390
+Declare what you know, and let Pulse refuse the rest. Next up, asking before running.
+
+43
+00:06:24,190 --> 00:06:25,905
+Pulse. The cohort file.
