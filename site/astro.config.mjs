@@ -14,6 +14,12 @@ export default defineConfig({
 			// The Pulse ring, vendored (c2pa metadata stripped). The home hero's live mark
 			// is the vendored embed in public/brand/ (pulse-mark.js + pinned three 0.184.0).
 			logo: { src: './src/assets/pulse-ring.svg', alt: 'Pulse' },
+			// Favicons are a simplified ring (light SVG + PNG rasters); the header logo stays the full ring.
+			head: [
+				{ tag: 'link', attrs: { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' } },
+				{ tag: 'link', attrs: { rel: 'icon', type: 'image/png', sizes: '32x32', href: '/favicon-32.png' } },
+				{ tag: 'link', attrs: { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' } },
+			],
 			social: [{ icon: 'github', label: 'Pulse on GitHub', href: 'https://github.com/frankbardon/pulse' }],
 			sidebar: [
 				{ label: 'Start here', items: [{ slug: 'paths/analyst' }, { slug: 'paths/developer' }, { slug: 'paths/running-examples' }] },
