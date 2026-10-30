@@ -125,7 +125,7 @@ These names are gone, with no alias. Grep every film for them:
   - `OVERLAY_CHISQ_VS_REF`'s scalar is the p-value, while `OVERLAY_CHISQ_MATRIX`'s and `OVERLAY_CHISQ_VS_POP`'s is χ².
   - An unknown sibling gives null entries and `PULSE_OVERLAY_REF_UNKNOWN`, and the request still succeeds. YoY's first year is null with no warning.
   - `OVERLAY_INDEX_VS_TOTAL` divides each group value by the sum of the group values, so four regions index at about 25 each, not 100.
-  - `OVERLAY_SHARE_OF_ROW` with a column-axis ref is refused with `PULSE_OVERLAY_REF_INCOMPATIBLE_WITH_SHAPE`, and its `summary.baseline` is 1 [issue #405, fixed at alpha.33]. Do not show a recorded run of the refused case.
+  - `OVERLAY_SHARE_OF_ROW` with a column-axis ref is refused with `PULSE_OVERLAY_REF_INCOMPATIBLE_WITH_SHAPE`, and its `summary.baseline` is 1 [issue #405: treated as fixed per series policy; not yet fixed in alpha.33, where it still runs as a row share]. Do not show a recorded run of the refused case.
   - Index vs prior streams; rolling, baseline, YoY and sibling kinds buffer.
   - **Weighted hosts.** Inferential kinds run on each cell's N\* (Σw under frequency weights, Kish `n_eff` under probability weights), echoed in `summary.parameters` as `sum_weights` and `n_eff`. Only a few refuse a weight with `PULSE_WEIGHT_UNSUPPORTED`: the probit t and the unweighted two-means z (any weight), Fisher's exact cell test (probability weight only), and every facet overlay (any set weight). `"weight": null` opts the slot out.
 - **Extensions (`Options.Extensions`).**
