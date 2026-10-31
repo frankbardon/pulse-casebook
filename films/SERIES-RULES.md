@@ -75,6 +75,7 @@ These names are gone, with no alias. Grep every film for them:
   - `ATTR_PREVIOUS_STATE` runs over every record before the filters [alpha.19]. So a filter expression can read a previous-state label, and "attributes only see survivors" and "filters never read attributes" are both false.
   - Windows first: when an aggregation, grouper or crosstab reads a window label, the windows run over the filtered records before the groups [alpha.29].
   - Post-window attributes: a formula or `ATTR_REG_PREDICT` that reads a window label runs after the windows [alpha.25, alpha.29]. Reading a window label from the wrong place gives `PULSE_ATTRIBUTE_WINDOW_ORDER`.
+- **Unknown filter labels.** An unknown categorical label in a `FILTER_INCLUDE` or `FILTER_EXCLUDE` `values` list is not caught by predict: at alpha.33 predict returns `valid: true`, and only the run fails, with `PROCESSING_CONFIG` (recorded in `06-filters/data/unk`). A film does not claim predict catches it.
 - **Filter components.** `n_in` is the records the filter saw. `n_out` is the records it admitted. `n_null_input` is the records whose input field (or per-row zone cell) was null on entry, whether the filter then kept or dropped them. For exclude, false-truthy and is-null it counts kept rows (`internal/processing/filter_pass.go`). It was never "records dropped because null".
 - **Dates and weekdays.** `FILTER_DATE_RANGES` buckets by the local day [issue #403, fixed at alpha.33]. Weekday is Monday first: `dow` and `_dow` are ISO 1 to 7 with Monday = 1, grouper keys sort Monday first, and only plain text columns sort alphabetically [alpha.18]. `iso_weekday` is a date part.
 - `FEAT_BUCKETIZE` emits a bucket index, not a label. A quantile bucketize buffers.
@@ -103,7 +104,7 @@ These names are gone, with no alias. Grep every film for them:
 - **Tests and regressions.**
   - `tests` (tier 1) and `regressions` read the raw records that pass the filters; `post_tests` (tier 2) read the result rows after windows. Results land in `Response.Tests`, `Response.PostTests` and `Response.Regressions`, with no `Response.Components`.
   - Every test returns `statistic`, `df`, a two-sided `p_value`, `alpha` (default 0.05) and `reject_null`, and the rest goes in `details` (for `TEST_T`: `diff`, `ci_low`, `ci_high`, `effect_size.cohens_d`).
-  - `TEST_T` with `split_by` is Welch's two-sample form and needs exactly two groups. `TEST_CHISQ` axes must be categorical (yes/no counts), and labels sort alphabetically. An expected count under 5 warns `PULSE_TEST_EXPECTED_COUNT_TOO_LOW`.
+  - `TEST_T` with `split_by` is Welch's two-sample form and needs exactly two groups. `TEST_CHISQ` axes may be categorical or `packed_bool` (levels `"0"` and `"1"`), and labels sort byte-wise. With `params.expected` (`{level: proportion}`) and no `cols` it is a goodness-of-fit test, which doubles as the sample-ratio-mismatch check. An expected count under 5 warns `PULSE_TEST_EXPECTED_COUNT_TOO_LOW`.
   - `TEST_TUKEY_HSD` is a post-test, is never weighted and never joins a multiplicity family.
   - A `multiplicity` block adds `p_adjusted` and `significant_adjusted` beside the raw p, which never moves. The methods match R `p.adjust`. Families include `matrix` and regression coefficients. Predict raises `PULSE_ADVISORY_MANY_TESTS` at ten or more uncorrected p-values.
   - `REG_OLS` and `REG_BAYES_LINEAR` stream; `REG_GLM`, resampling and selection buffer. The MMM models (`REG_MMM_HILL`, `REG_MMM_BAYES`) are built in [alpha.29].
@@ -112,7 +113,11 @@ These names are gone, with no alias. Grep every film for them:
 - **Matrices.**
   - A `vectors` entry names numeric members by `fields` (literals keep their order, globs expand in schema order) or an unanchored `pattern`. `packed_bool` joins only under `coerce: "binary"`; categorical, set, date, datetime and decimal128 are refused (`PULSE_VECTOR_MEMBER_TYPE`). Native vector fields (`vec_f32`, `vec_f64`) are accepted [alpha.12].
   - Matrices fold the filter-passing records and arrive at the final flush, never row by row.
-  - `listwise` is the default; `pairwise` adds `auxiliary.n` and can be non-PSD, which is a warning on covariance and correlation and fatal on the decompositions (partial correlation, reliability's omega, PCA, factor analysis, collinearity) unless `repair: "nearest"`.
+  - `listwise` is the default; `pairwise` adds `auxiliary.n` and can be non-PSD, which is a warning on covariance and correlation and fatal on the decompositions (partial correlation, PCA, factor analysis, collinearity) unless `repair: "nearest"`.
+  - Reliability is not fatal on a non-PSD input: omega is null with a `PULSE_MATRIX_NOT_PSD` warning (also on 2 items or a Heywood fit), while alpha always computes. `repair: "nearest"` fits omega on the nearest correlation matrix.
+  - Encodings are `full` (default), `upper` and `records` (every part as rows of `{key, <column>: value}`, nulls kept).
+  - A literal vector member may name an attribute, feature or record-row window label of the same request (for example an `ATTR_FORMULA` imputation). Only `MAT_*` reads such a computed member; elsewhere it is refused (`computed_member_unsupported`).
+  - A vector's `standardize: "zscore"` is for listwise co-moment matrices only; distances, row scores and expressions refuse it (`standardize_unsupported`). `MAT_DISTANCE` has its own `standardize`.
   - Rank methods are buffered, serial and frequency-weight only.
   - **Matrices can carry p-values.** `params.inference` on correlation and partial correlation adds them, with a `matrix` multiplicity family [alpha.11], and `MAT_SEM` reports p-values for its parameters.
   - With `groups`, each bucket gets its own matrix, equal to the ungrouped matrix over exactly its rows.
@@ -121,7 +126,8 @@ These names are gone, with no alias. Grep every film for them:
   - Each spec adds one read-only layer to `Response.Overlays` in spec order, and the base crosstab and components are byte-identical with or without overlays (checked).
   - The request decides the host: a crosstab (matrix), a grouped process (series), a matrix result, `FacetRequest.Overlays`, `ChainRequest.Overlays`, Compose, and formula over any of them.
   - A series kind on a crosstab is refused as `PULSE_OVERLAY_REF_INCOMPATIBLE_WITH_SHAPE`, by predict and by the runtime alike.
-  - A rolling z-score without `window` is `PULSE_OVERLAY_PARAM_MISSING` at predict.
+  - A rolling z-score without `window` is `PULSE_OVERLAY_PARAM_MISSING` at predict. Its `min_periods` defaults to a full window; a `window` under 2, or a `min_periods` outside 2..`window`, is `PULSE_OVERLAY_LEVEL_OUT_OF_RANGE` at predict and at run time (for the index vs rolling mean the range is 1..`window`).
+  - A MATRIX_RESULT host (a grouped request carrying the named matrix spec, read by `OVERLAY_MATRIX_GROUP_SUMMARY`) reports the per-cell mean across buckets, with the parts `min`, `max`, `range` and `n_groups`.
   - `OVERLAY_CHISQ_VS_REF`'s scalar is the p-value, while `OVERLAY_CHISQ_MATRIX`'s and `OVERLAY_CHISQ_VS_POP`'s is χ².
   - An unknown sibling gives null entries and `PULSE_OVERLAY_REF_UNKNOWN`, and the request still succeeds. YoY's first year is null with no warning.
   - `OVERLAY_INDEX_VS_TOTAL` divides each group value by the sum of the group values, so four regions index at about 25 each, not 100.
@@ -144,8 +150,9 @@ Cohorts, samples, p-values and correlations are illustrative. Each page says so 
 
 - The manifest description of `FILTER_DATE_RANGES` still says "UTC day", while the code and skill say local day.
 - The `grouper-design.md` line "weekday names lex-sort" looks stale against Monday-first ordering.
+- The `op-filter-include.md` and `op-filter-exclude.md` skills say an unknown categorical label is "surfaced via predict", but predict reports the request valid (see §3.4).
 
-A film does not repeat either wording.
+A film does not repeat any of these wordings.
 
 ## 4. Series order
 
