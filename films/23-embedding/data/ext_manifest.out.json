@@ -1,0 +1,49 @@
+{
+  "extensions": {
+    "aggregators": [
+      {
+        "accepts": [
+          "f32",
+          "f64",
+          "u8",
+          "u16",
+          "u32",
+          "u64"
+        ],
+        "description": "Midpoint of the smallest and largest value: (min + max) / 2.",
+        "mergeable": true,
+        "name": "AGG_ACME_MIDRANGE",
+        "namespace": "ACME",
+        "streamable": true
+      }
+    ],
+    "attributes": [],
+    "expr_functions": [
+      {
+        "description": "An amount with a tax rate applied.",
+        "name": "with_tax",
+        "pure": true,
+        "signature": "with_tax(amount float64, rate float64) float64"
+      }
+    ],
+    "features": [],
+    "filterers": [],
+    "groupers": [],
+    "label_tables": [],
+    "lookup_tables": [
+      {
+        "description": "Illustrative sales-tax rate by region.",
+        "has_rows_data": true,
+        "name": "tax_rate"
+      }
+    ],
+    "matrix_ops": [],
+    "populations": [],
+    "range_tables": [],
+    "reference_vectors": [],
+    "regressions": [],
+    "tests": [],
+    "windows": []
+  },
+  "pulse_version": "v1.0.0-alpha.33"
+}

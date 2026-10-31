@@ -1,0 +1,45 @@
+{
+  "error": {
+    "code": "PROCESSING_PANIC",
+    "details": {
+      "op": "process",
+      "panic_type": "runtime.plainError",
+      "stack_frames": 15,
+      "stack_top": [
+        "main.brittle.UpdateRow",
+        "github.com/frankbardon/pulse.aggOnline.UpdateRow",
+        "github.com/frankbardon/pulse/internal/processing.(*Processor).processStreaming"
+      ]
+    },
+    "message": "operation process panicked (runtime.plainError) and was recovered; details.stack names the frames"
+  },
+  "next_request": {
+    "data": [
+      {
+        "hi": 78.28,
+        "lo": 48.3,
+        "mid": 63.29,
+        "region": "East"
+      },
+      {
+        "hi": 75.23,
+        "lo": 35.59,
+        "mid": 55.410000000000004,
+        "region": "North"
+      },
+      {
+        "hi": 64.56,
+        "lo": 30.35,
+        "mid": 47.455,
+        "region": "South"
+      },
+      {
+        "hi": 58.13,
+        "lo": 32.81,
+        "mid": 45.47,
+        "region": "West"
+      }
+    ],
+    "rows": 4
+  }
+}

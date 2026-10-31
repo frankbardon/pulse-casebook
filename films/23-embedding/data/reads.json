@@ -1,0 +1,6 @@
+{"cohort":{"filename":"orders.pulse"},
+ "params":{"fee":2},
+ "filterers":[{"type":"FILTER_EXPRESSION","expression":"channel == \"web\""}],
+ "attributes":[{"type":"ATTR_FORMULA","label":"gross","expression":"with_tax(amount, lookup(\"tax_rate\", region)) - params.fee"}],
+ "groups":[{"type":"GROUP_CATEGORY","field":"region"}],
+ "aggregations":[{"type":"AGG_ACME_MIDRANGE","field":"gross","label":"mid"},{"type":"AGG_COUNT","field":"order_id","label":"n"}]}

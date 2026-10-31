@@ -1,0 +1,202 @@
+{
+  "data": [
+    {
+      "hi": 78.28,
+      "lo": 48.3,
+      "mid": 63.29,
+      "region": "East"
+    },
+    {
+      "hi": 75.23,
+      "lo": 35.59,
+      "mid": 55.410000000000004,
+      "region": "North"
+    },
+    {
+      "hi": 64.56,
+      "lo": 30.35,
+      "mid": 47.455,
+      "region": "South"
+    },
+    {
+      "hi": 58.13,
+      "lo": 32.81,
+      "mid": 45.47,
+      "region": "West"
+    }
+  ],
+  "metadata": {
+    "total_rows": 24,
+    "filtered_rows": 24,
+    "cohort_file": "orders.pulse"
+  },
+  "components": {
+    "aggregations": [
+      {
+        "label": "mid",
+        "n": 24,
+        "n_null": 0,
+        "groups": [
+          {
+            "group_key": [
+              "East"
+            ],
+            "n": 6,
+            "n_null": 0
+          },
+          {
+            "group_key": [
+              "North"
+            ],
+            "n": 6,
+            "n_null": 0
+          },
+          {
+            "group_key": [
+              "South"
+            ],
+            "n": 6,
+            "n_null": 0
+          },
+          {
+            "group_key": [
+              "West"
+            ],
+            "n": 6,
+            "n_null": 0
+          }
+        ]
+      },
+      {
+        "label": "lo",
+        "n": 24,
+        "n_null": 0,
+        "groups": [
+          {
+            "group_key": [
+              "East"
+            ],
+            "n": 6,
+            "n_null": 0,
+            "operator": {
+              "min": 48.3
+            }
+          },
+          {
+            "group_key": [
+              "North"
+            ],
+            "n": 6,
+            "n_null": 0,
+            "operator": {
+              "min": 35.59
+            }
+          },
+          {
+            "group_key": [
+              "South"
+            ],
+            "n": 6,
+            "n_null": 0,
+            "operator": {
+              "min": 30.35
+            }
+          },
+          {
+            "group_key": [
+              "West"
+            ],
+            "n": 6,
+            "n_null": 0,
+            "operator": {
+              "min": 32.81
+            }
+          }
+        ]
+      },
+      {
+        "label": "hi",
+        "n": 24,
+        "n_null": 0,
+        "groups": [
+          {
+            "group_key": [
+              "East"
+            ],
+            "n": 6,
+            "n_null": 0,
+            "operator": {
+              "max": 78.28
+            }
+          },
+          {
+            "group_key": [
+              "North"
+            ],
+            "n": 6,
+            "n_null": 0,
+            "operator": {
+              "max": 75.23
+            }
+          },
+          {
+            "group_key": [
+              "South"
+            ],
+            "n": 6,
+            "n_null": 0,
+            "operator": {
+              "max": 64.56
+            }
+          },
+          {
+            "group_key": [
+              "West"
+            ],
+            "n": 6,
+            "n_null": 0,
+            "operator": {
+              "max": 58.13
+            }
+          }
+        ]
+      }
+    ],
+    "groupers": [
+      {
+        "field": "region",
+        "total_n": 24,
+        "operator": {
+          "buckets": [
+            {
+              "count": 6,
+              "key": "East",
+              "label": "East"
+            },
+            {
+              "count": 6,
+              "key": "North",
+              "label": "North"
+            },
+            {
+              "count": 6,
+              "key": "South",
+              "label": "South"
+            },
+            {
+              "count": 6,
+              "key": "West",
+              "label": "West"
+            }
+          ],
+          "dict_size": 4
+        }
+      }
+    ],
+    "run": {
+      "total_records": 24,
+      "filtered_records": 24,
+      "null_records": 0
+    }
+  }
+}

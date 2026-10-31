@@ -1,0 +1,66 @@
+{
+  "bad_request_error": {
+    "code": "SERVICE_VALIDATION",
+    "details": {
+      "aggregation": "AGG_AVERAGE",
+      "field": "amout"
+    },
+    "message": "aggregation references unknown field: amout"
+  },
+  "calls": [
+    {
+      "cohort": "orders.pulse",
+      "hook": "OnOperationStart",
+      "kind": "process",
+      "request_hash": "b62cc0c275318ea6a537f6a5a80a6fac",
+      "scope": "top"
+    },
+    {
+      "hook": "OnPhase",
+      "phase": "plan"
+    },
+    {
+      "hook": "OnPhase",
+      "phase": "open"
+    },
+    {
+      "hook": "OnPhase",
+      "phase": "scan"
+    },
+    {
+      "arm": "streaming",
+      "code": "ok",
+      "hook": "OnOperationEnd",
+      "projected": false,
+      "rows_matched": 24,
+      "rows_out": 4,
+      "rows_scanned": 24,
+      "workers": 1
+    },
+    {
+      "cohort": "orders.pulse",
+      "hook": "OnOperationStart",
+      "kind": "process",
+      "request_hash": "294ae756423957362df8eab4ed1242de",
+      "scope": "top"
+    },
+    {
+      "hook": "OnPhase",
+      "phase": "plan"
+    },
+    {
+      "hook": "OnPhase",
+      "phase": "open"
+    },
+    {
+      "arm": "",
+      "code": "SERVICE_VALIDATION",
+      "hook": "OnOperationEnd",
+      "projected": false,
+      "rows_matched": 0,
+      "rows_out": 0,
+      "rows_scanned": 0,
+      "workers": 0
+    }
+  ]
+}

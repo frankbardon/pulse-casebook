@@ -1,0 +1,1 @@
+{"cohort":{"filename":"orders.pulse"},"groups":[{"type":"GROUP_CATEGORY","field":"region"}],"aggregations":[{"type":"AGG_AVERAGE","field":"amount","label":"avg"}]}

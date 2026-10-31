@@ -1,0 +1,56 @@
+[
+  {
+    "case": "streamable_mismatch",
+    "name": "AGG_ACME_MIDRANGE",
+    "new_error": {
+      "code": "PULSE_EXTENSION_STREAMABLE_MISMATCH",
+      "details": {
+        "category": "aggregator",
+        "name": "AGG_ACME_MIDRANGE",
+        "streamable": true
+      },
+      "message": "aggregator \"AGG_ACME_MIDRANGE\" declares Streamable=true but factory does not return extend.OnlineAggregator"
+    }
+  },
+  {
+    "case": "factory_panic",
+    "name": "AGG_ACME_MIDRANGE",
+    "new_error": {
+      "code": "PULSE_EXTENSION_FACTORY_PANIC",
+      "details": {
+        "category": "aggregator",
+        "name": "AGG_ACME_MIDRANGE",
+        "panic": "runtime error: index out of range [0] with length 0"
+      },
+      "message": "aggregator factory \"AGG_ACME_MIDRANGE\" panicked during probe-validation: runtime error: index out of range [0] with length 0"
+    }
+  },
+  {
+    "case": "name_collision",
+    "name": "AGG_SUM",
+    "new_error": {
+      "code": "PULSE_EXTENSION_NAME_COLLISION",
+      "details": {
+        "category": "aggregator",
+        "index": 0,
+        "name": "AGG_SUM"
+      },
+      "message": "extension aggregator \"AGG_SUM\" collides with a built-in name"
+    }
+  },
+  {
+    "case": "name_invalid",
+    "name": "midrange",
+    "new_error": {
+      "code": "PULSE_EXTENSION_NAME_INVALID",
+      "details": {
+        "category": "aggregator",
+        "index": 0,
+        "name": "midrange",
+        "pattern": "^(AGG|ATTR|FILTER|GROUP|WIN|FEAT|TEST|MAT|REG)_([A-Z][A-Z0-9]+)_([A-Z](?:[A-Z0-9_]*[A-Z0-9])?)$",
+        "registration_name": "midrange"
+      },
+      "message": "extension aggregator name \"midrange\" does not match required pattern <CATEGORY>_<NAMESPACE>_<NAME>"
+    }
+  }
+]

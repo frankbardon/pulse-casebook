@@ -1,0 +1,93 @@
+[
+  {
+    "help": "Cohort bytes read by top-level Pulse operations.",
+    "name": "pulse_bytes_read_total",
+    "series": [
+      {
+        "labels": {
+          "op": "process"
+        },
+        "value": 466
+      }
+    ],
+    "type": "COUNTER"
+  },
+  {
+    "help": "Pulse operation wall time in seconds, by operation kind and scope.",
+    "name": "pulse_operation_duration_seconds",
+    "series": [
+      {
+        "labels": {
+          "op": "process",
+          "scope": "top"
+        },
+        "sample_count": 2
+      }
+    ],
+    "type": "HISTOGRAM"
+  },
+  {
+    "help": "Pulse operations finished, by operation kind, result code (ok or an error code) and scope (top or child).",
+    "name": "pulse_operations_total",
+    "series": [
+      {
+        "labels": {
+          "code": "SERVICE_VALIDATION",
+          "op": "process",
+          "scope": "top"
+        },
+        "value": 1
+      },
+      {
+        "labels": {
+          "code": "ok",
+          "op": "process",
+          "scope": "top"
+        },
+        "value": 1
+      }
+    ],
+    "type": "COUNTER"
+  },
+  {
+    "help": "Time spent in each execution phase of a top-level Pulse operation, in seconds.",
+    "name": "pulse_phase_duration_seconds",
+    "series": [
+      {
+        "labels": {
+          "op": "process",
+          "phase": "open"
+        },
+        "sample_count": 2
+      },
+      {
+        "labels": {
+          "op": "process",
+          "phase": "plan"
+        },
+        "sample_count": 2
+      },
+      {
+        "labels": {
+          "op": "process",
+          "phase": "scan"
+        },
+        "sample_count": 1
+      }
+    ],
+    "type": "HISTOGRAM"
+  },
+  {
+    "help": "Records scanned by top-level Pulse operations.",
+    "name": "pulse_rows_scanned_total",
+    "series": [
+      {
+        "labels": {
+          "op": "process"
+        },
+        "value": 24
+      }
+    ],
+    "type": "COUNTER"
+  }
+]

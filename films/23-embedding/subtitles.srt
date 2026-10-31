@@ -1,0 +1,239 @@
+1
+00:00:04,250 --> 00:00:07,522
+Embedding Pulse: the engine inside your own program.
+
+2
+00:00:08,322 --> 00:00:16,031
+Most films so far have used the C L I or the M C P server. Both are thin faces over one Go library.
+
+3
+00:00:16,831 --> 00:00:24,071
+In your own program, pulse dot New builds an instance, and Process runs a request on it, as many times as you like.
+
+4
+00:00:24,871 --> 00:00:31,066
+Its options set the data directory, limits and defaults, your extensions, and the observability hooks.
+
+5
+00:00:31,866 --> 00:00:37,314
+New checks all of it once, at startup. If anything is wrong, you get an error and no instance.
+
+6
+00:00:38,114 --> 00:00:47,509
+Options dot Extensions takes your own operators, of most kinds today: from aggregators and filters to tests, matrix operators and regressions.
+
+7
+00:00:48,309 --> 00:00:56,616
+It also takes expression functions, tables, populations, and skills and examples for agents. More are added over time.
+
+8
+00:00:57,416 --> 00:01:01,819
+Every name follows one pattern: category, your namespace, then the name.
+
+9
+00:01:02,619 --> 00:01:07,790
+The stock binary registers nothing, so its manifest lists empty extension slots.
+
+10
+00:01:08,590 --> 00:01:15,937
+Here's a real one: a midrange aggregator in the ACME namespace, halfway between the smallest and largest value.
+
+11
+00:01:16,737 --> 00:01:23,636
+It declares that it streams and merges, so it implements the online and mergeable interfaces from package extend.
+
+12
+00:01:24,436 --> 00:01:28,263
+The manifest now lists it, with its namespace and what it accepts.
+
+13
+00:01:29,063 --> 00:01:36,730
+And a request uses it like a built-in. By region, it sits beside min and max: East is sixty-three point two nine.
+
+14
+00:01:37,530 --> 00:01:41,783
+It declared no component schema, so its components carry the floor alone.
+
+15
+00:01:42,583 --> 00:01:50,570
+Expression functions and lookup tables extend formulas. Here, a with tax function, and a tax rate table by region.
+
+16
+00:01:51,370 --> 00:01:56,711
+A formula calls both, row by row. Filter expressions see the same environment.
+
+17
+00:01:57,511 --> 00:02:01,444
+By region, each gross sum is the net plus that region's tax.
+
+18
+00:02:02,244 --> 00:02:06,049
+The manifest lists the function, with its signature, and the table.
+
+19
+00:02:06,849 --> 00:02:13,300
+Before New returns, it builds each factory from a bare spec over an empty schema, and checks what comes back.
+
+20
+00:02:14,100 --> 00:02:19,932
+A factory that claims to stream but returns no streaming interface is a streamable mismatch.
+
+21
+00:02:20,732 --> 00:02:25,689
+A factory that assumes a schema panics, and the probe reports that panic as an error.
+
+22
+00:02:26,489 --> 00:02:30,678
+A built-in's name collides, and a name outside the pattern is invalid.
+
+23
+00:02:31,478 --> 00:02:37,054
+Either way, there is no instance. A broken extension fails at startup, not mid-request.
+
+24
+00:02:37,854 --> 00:02:45,499
+Some bugs only show up on real rows. This aggregator writes to a nil map whenever an amount is over seventy-five.
+
+25
+00:02:46,299 --> 00:02:53,155
+Process doesn't crash. It returns a processing panic error, with the operation, the panic's type and the stack.
+
+26
+00:02:53,955 --> 00:02:58,016
+The panic value itself is dropped, because it could carry row data.
+
+27
+00:02:58,816 --> 00:03:03,005
+The same instance answers the next request, four rows, as before.
+
+28
+00:03:03,805 --> 00:03:07,653
+If your host would rather crash, set disable panic recovery.
+
+29
+00:03:08,453 --> 00:03:15,074
+Process stream result hands you the result as it is produced: a header, a channel of chunks, and a terminator.
+
+30
+00:03:15,874 --> 00:03:21,087
+The header comes before any row, with the request's hash and a best-effort size estimate.
+
+31
+00:03:21,887 --> 00:03:28,423
+This grouped request sends four chunks, one per region. Only the last carries the per-group components.
+
+32
+00:03:29,223 --> 00:03:35,034
+A group exists only once every record is read, so grouped rows arrive at the final flush.
+
+33
+00:03:35,834 --> 00:03:41,837
+The terminator says completed, four rows, and the terminal components equal a buffered Process run.
+
+34
+00:03:42,637 --> 00:03:49,941
+Watch reports changes to a cohort file on a channel. WatchDir does the same for every cohort under a folder.
+
+35
+00:03:50,741 --> 00:03:56,530
+It polls: a stat, then a content hash, every two hundred and fifty milliseconds by default.
+
+36
+00:03:57,330 --> 00:04:01,114
+On the first tick, a file that's already there shows up as created.
+
+37
+00:04:01,914 --> 00:04:06,125
+Copy a bigger cohort over it, and you get modified, with a new hash.
+
+38
+00:04:06,925 --> 00:04:12,906
+Delete it, and you get removed. A host can re-run its requests whenever a file is modified.
+
+39
+00:04:13,706 --> 00:04:19,965
+Request dot hash gives a cache key. The same request with its keys in another order hashes the same.
+
+40
+00:04:20,765 --> 00:04:23,781
+Group by channel instead, and the hash changes.
+
+41
+00:04:24,581 --> 00:04:30,285
+It's canonical JSON, so it's stable across processes, and the return block is part of it.
+
+42
+00:04:31,085 --> 00:04:38,666
+Filter to file with request names its output by the source's hash and the predicate's, so the same filter again is reused.
+
+43
+00:04:39,466 --> 00:04:44,871
+A predicate that calls your own function is never reused. It re-runs on every call.
+
+44
+00:04:45,671 --> 00:04:53,551
+Expression reads parses one expression and lists the columns, params and functions it names. No instance, no cohort.
+
+45
+00:04:54,351 --> 00:04:58,647
+It scopes the way the engine does, so a let-bound name is not a column.
+
+46
+00:04:59,447 --> 00:05:03,956
+An expression that doesn't parse is a compile error, with an empty read set.
+
+47
+00:05:04,756 --> 00:05:13,148
+Request reads does it for a whole request: every slot that reads data, with its path, its key, and the columns and params it reads.
+
+48
+00:05:13,948 --> 00:05:21,999
+Options dot hooks fire around every operation. The start hook gets the kind, the scope, the cohort and the request hash.
+
+49
+00:05:22,799 --> 00:05:26,775
+The phase hook reports each phase that ran, in order, with its time.
+
+50
+00:05:27,575 --> 00:05:33,791
+The end hook gets the code, the arm the engine chose, and the row counts: twenty-four scanned, four out.
+
+51
+00:05:34,591 --> 00:05:40,274
+A refused request ends after planning and opening, with its error code, never its message.
+
+52
+00:05:41,074 --> 00:05:44,922
+Hooks must be fast. A panic inside one is recovered too.
+
+53
+00:05:45,722 --> 00:05:52,599
+Pulse ships adapters for both. Observe prom turns its metrics into Prometheus counters and histograms.
+
+54
+00:05:53,399 --> 00:06:01,044
+Observe otel turns its hooks into Open Telemetry spans, with one event per phase, and an error status on a refusal.
+
+55
+00:06:01,844 --> 00:06:09,980
+You don't need Go for either: Pulse M C P serves Prometheus metrics, and exports O T L P to the standard endpoint.
+
+56
+00:06:10,780 --> 00:06:16,335
+After one tool call, the scrape counts it, and the collector receives its traces and metrics.
+
+57
+00:06:17,135 --> 00:06:23,948
+That's embedding Pulse today: build an instance, extend it, guard it, react to it, plan against it, and watch it run.
+
+58
+00:06:24,748 --> 00:06:31,412
+More is added over time, and the manifest lists what your instance offers, your own extensions included.
+
+59
+00:06:32,212 --> 00:06:39,175
+And that's the end of Pulse Anatomy: twenty-three films, from one request to your own program. Thanks for watching.
+
+60
+00:06:39,975 --> 00:06:41,242
+Pulse Anatomy.

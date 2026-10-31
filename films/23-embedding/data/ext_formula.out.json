@@ -1,0 +1,163 @@
+{
+  "data": [
+    {
+      "gross": 419.69,
+      "net": 364.95,
+      "region": "East"
+    },
+    {
+      "gross": 433.68,
+      "net": 361.4,
+      "region": "North"
+    },
+    {
+      "gross": 310.24,
+      "net": 282.03,
+      "region": "South"
+    },
+    {
+      "gross": 276.89,
+      "net": 263.69,
+      "region": "West"
+    }
+  ],
+  "metadata": {
+    "total_rows": 24,
+    "filtered_rows": 24,
+    "cohort_file": "orders.pulse"
+  },
+  "components": {
+    "aggregations": [
+      {
+        "label": "net",
+        "n": 24,
+        "n_null": 0,
+        "groups": [
+          {
+            "group_key": [
+              "East"
+            ],
+            "n": 6,
+            "n_null": 0,
+            "operator": {
+              "sum": 364.95
+            }
+          },
+          {
+            "group_key": [
+              "North"
+            ],
+            "n": 6,
+            "n_null": 0,
+            "operator": {
+              "sum": 361.4
+            }
+          },
+          {
+            "group_key": [
+              "South"
+            ],
+            "n": 6,
+            "n_null": 0,
+            "operator": {
+              "sum": 282.03
+            }
+          },
+          {
+            "group_key": [
+              "West"
+            ],
+            "n": 6,
+            "n_null": 0,
+            "operator": {
+              "sum": 263.69
+            }
+          }
+        ]
+      },
+      {
+        "label": "gross",
+        "n": 24,
+        "n_null": 0,
+        "groups": [
+          {
+            "group_key": [
+              "East"
+            ],
+            "n": 6,
+            "n_null": 0,
+            "operator": {
+              "sum": 419.69
+            }
+          },
+          {
+            "group_key": [
+              "North"
+            ],
+            "n": 6,
+            "n_null": 0,
+            "operator": {
+              "sum": 433.68
+            }
+          },
+          {
+            "group_key": [
+              "South"
+            ],
+            "n": 6,
+            "n_null": 0,
+            "operator": {
+              "sum": 310.24
+            }
+          },
+          {
+            "group_key": [
+              "West"
+            ],
+            "n": 6,
+            "n_null": 0,
+            "operator": {
+              "sum": 276.89
+            }
+          }
+        ]
+      }
+    ],
+    "groupers": [
+      {
+        "field": "region",
+        "total_n": 24,
+        "operator": {
+          "buckets": [
+            {
+              "count": 6,
+              "key": "East",
+              "label": "East"
+            },
+            {
+              "count": 6,
+              "key": "North",
+              "label": "North"
+            },
+            {
+              "count": 6,
+              "key": "South",
+              "label": "South"
+            },
+            {
+              "count": 6,
+              "key": "West",
+              "label": "West"
+            }
+          ],
+          "dict_size": 4
+        }
+      }
+    ],
+    "run": {
+      "total_records": 24,
+      "filtered_records": 24,
+      "null_records": 0
+    }
+  }
+}

@@ -1,0 +1,68 @@
+[
+  {
+    "hash": "a19baa73d704199c0bacad113520a9c4",
+    "json": {
+      "cohort": {
+        "filename": "orders.pulse"
+      },
+      "groups": [
+        {
+          "type": "GROUP_CATEGORY",
+          "field": "region"
+        }
+      ],
+      "aggregations": [
+        {
+          "type": "AGG_AVERAGE",
+          "field": "amount",
+          "label": "avg"
+        }
+      ]
+    },
+    "request": "hash_a"
+  },
+  {
+    "hash": "a19baa73d704199c0bacad113520a9c4",
+    "json": {
+      "aggregations": [
+        {
+          "label": "avg",
+          "field": "amount",
+          "type": "AGG_AVERAGE"
+        }
+      ],
+      "groups": [
+        {
+          "field": "region",
+          "type": "GROUP_CATEGORY"
+        }
+      ],
+      "cohort": {
+        "filename": "orders.pulse"
+      }
+    },
+    "request": "hash_b"
+  },
+  {
+    "hash": "b08186f55bbfe3babe42ec7641730518",
+    "json": {
+      "cohort": {
+        "filename": "orders.pulse"
+      },
+      "groups": [
+        {
+          "type": "GROUP_CATEGORY",
+          "field": "channel"
+        }
+      ],
+      "aggregations": [
+        {
+          "type": "AGG_AVERAGE",
+          "field": "amount",
+          "label": "avg"
+        }
+      ]
+    },
+    "request": "hash_c"
+  }
+]

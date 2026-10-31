@@ -1,0 +1,4 @@
+{"cohort":{"filename":"orders.pulse"},
+ "attributes":[{"type":"ATTR_FORMULA","label":"gross","expression":"with_tax(amount, lookup(\"tax_rate\", region))"}],
+ "groups":[{"type":"GROUP_CATEGORY","field":"region"}],
+ "aggregations":[{"type":"AGG_SUM","field":"amount","label":"net"},{"type":"AGG_SUM","field":"gross","label":"gross"}]}
