@@ -23,31 +23,31 @@ cd films/build
 
 | Film | Name to pass (folder) |
 |---|---|
-| 1. Lifecycle of a request | `lifecycle` (`01-lifecycle/`) |
-| 2. Concepts overview | `concepts` (`02-concepts/`) |
-| 3. Cohort file and scale (*planned*) | `cohort` (`03-cohort/`) |
-| 4. Asking before running (*planned*) | `asking` (`04-asking/`) |
-| 5. Features in depth | `features` (`05-features/`) |
-| 6. Filters in depth | `filters` (`06-filters/`) |
-| 7. Attributes in depth | `attributes` (`07-attributes/`) |
-| 8. The expression language (*planned*) | `expressions` (`08-expressions/`) |
-| 9. Groupers (*planned*) | `groupers` (`09-groupers/`) |
-| 10. Aggregators in depth | `aggregators` (`10-aggregators/`) |
-| 11. Windows in depth | `windows` (`11-windows/`) |
-| 12. Tests and regressions in depth | `tests` (`12-tests/`) |
-| 13. Matrices in depth | `matrices` (`13-matrices/`) |
-| 14. SEM (*planned*) | `sem` (`14-sem/`) |
-| 15. Crosstabs and survey tables (*planned*) | `crosstabs` (`15-crosstabs/`) |
-| 16. Overlays in depth | `overlays` (`16-overlays/`) |
-| 17. Compose: batch and sweep (*planned*) | `compose-sweep` (`17-compose-sweep/`) |
-| 18. Compose: fit, bind and optimize (*planned*) | `compose-fit` (`18-compose-fit/`) |
-| 19. Derived cohorts (*planned*) | `derived` (`19-derived/`) |
-| 20. Weights and raking (*planned*) | `weights` (`20-weights/`) |
-| 21. Time zones and panels (*planned*) | `time` (`21-time/`) |
-| 22. Synthetic data (*planned*) | `synth` (`22-synth/`) |
-| 23. Embedding Pulse (*planned*) | `embedding` (`23-embedding/`) |
+| 1. Lifecycle of a request | `lifecycle` ([`01-lifecycle/`](01-lifecycle/)) |
+| 2. Concepts overview | `concepts` ([`02-concepts/`](02-concepts/)) |
+| 3. Cohort file and scale | `cohort` ([`03-cohort/`](03-cohort/)) |
+| 4. Asking before running | `asking` ([`04-asking/`](04-asking/)) |
+| 5. Features in depth | `features` ([`05-features/`](05-features/)) |
+| 6. Filters in depth | `filters` ([`06-filters/`](06-filters/)) |
+| 7. Attributes in depth | `attributes` ([`07-attributes/`](07-attributes/)) |
+| 8. The expression language | `expressions` ([`24-example/`](24-example/)) |
+| 9. Groupers | `groupers` ([`09-groupers/`](09-groupers/)) |
+| 10. Aggregators in depth | `aggregators` ([`10-aggregators/`](10-aggregators/)) |
+| 11. Windows in depth | `windows` ([`11-windows/`](11-windows/)) |
+| 12. Tests and regressions in depth | `tests` ([`12-tests/`](12-tests/)) |
+| 13. Matrices in depth | `matrices` ([`13-matrices/`](13-matrices/)) |
+| 14. SEM | `sem` ([`14-sem/`](14-sem/)) |
+| 15. Crosstabs and survey tables | `crosstabs` ([`15-crosstabs/`](15-crosstabs/)) |
+| 16. Overlays in depth | `overlays` ([`16-overlays/`](16-overlays/)) |
+| 17. Compose: batch and sweep | `compose-sweep` ([`17-compose-sweep/`](17-compose-sweep/)) |
+| 18. Compose: fit, bind and optimize | `compose-fit` ([`18-compose-fit/`](18-compose-fit/)) |
+| 19. Derived cohorts | `derived` ([`19-derived/`](19-derived/)) |
+| 20. Weights and raking | `weights` ([`20-weights/`](20-weights/)) |
+| 21. Time zones and panels | `time` ([`21-time/`](21-time/)) |
+| 22. Synthetic data | `synth` ([`22-synth/`](22-synth/)) |
+| 23. Embedding Pulse | `embedding` ([`23-embedding/`](23-embedding/)) |
 
-Planned films have their folder name reserved; `render.sh` finds them once the folder exists. `--all` renders every folder that exists, in series order.
+`--all` renders every film, in series order.
 
 A full 1080p render takes a few minutes per film. To check something fast, render a short preview:
 
@@ -97,7 +97,7 @@ Commit the changed `scenes.js` or `index.html` and the MP3 together, because the
 
 | Path | Committed? | What |
 |---|---|---|
-| `<film>/index.html`, `<film>/scenes.js`, `kit/film-kit.js` | yes | the film itself |
+| `<film>/index.html`, `<film>/scenes.js`, `kit/film-kit.js`, `kit/pulse-ring.js` | yes | the film itself |
 | `<film>/narration.mp3` | yes | narration the page and the render both use |
 | `<film>/subtitles.srt` | yes | reference subtitles; `--narrate` writes fresh ones to `<film>/render/` |
 | `<film>/data/` | yes | cohort, requests and captured outputs (see `DATA.md`) |
@@ -105,16 +105,28 @@ Commit the changed `scenes.js` or `index.html` and the MP3 together, because the
 | `build/work/<film>/` | no | per-film scratch space. Every run gets its own, so films can render in parallel. |
 | `build/node_modules`, `build/models` | no | installed by `setup.sh` |
 
+## The film kit
+
+- **`kit/film-kit.js`** is the shared engine. A film page loads it and its own `scenes.js`, and calls `PulseFilm.mount`. The kit adds the ring intro and outro around the film's scenes.
+- **`kit/pulse-ring.js`** draws the 3D Pulse ring (three.js on an offscreen WebGL canvas, with a flat-frame fallback; `?ring=svg` forces it). It is generated and committed: `node kit/vendor/build.mjs` rebuilds it from `kit/vendor/ring.src.js`, the vendored three.js and `pulse-marks.js`, using the rolldown in `site/node_modules`. Rebuild it only when a file under `kit/vendor/` changes.
+- **`window.__film.ready`** is a promise that resolves once the ring renderer and the fonts are in. `encode.js` and `stills.js` wait for it before they capture a frame, so anything else that drives a film headless should wait for it too.
+
+## Film data scripts
+
+- `build/data.sh` sources each film's `data/build.sh` from its `data/` folder with two helpers, `imp` and `api` (see `DATA.md`). When those lack a flag a step needs, the film's `build.sh` calls `"$PULSE"` directly; `data.sh` has already resolved it to the binary.
+- `plates/data/build.sh` is standalone. `data.sh` finds only `NN-*` folders, so run it yourself: `PULSE=/path/to/pulse films/plates/data/build.sh` (it defaults to `bin/pulse`).
+- `23-embedding/data/build.sh` needs `go` to re-record its Go harness outputs. Without Go it prints a note, skips the harness and keeps the committed outputs.
+
 ## Making a new film
 
-1. Make the film's folder under its reserved name from the table above, for example `08-expressions/`, and copy `06-filters/index.html` into it. Change the title and intro text; the `src` paths (`../kit/film-kit.js`, `scenes.js`, `narration.mp3`) stay as they are.
-2. Write `08-expressions/scenes.js`:
+1. Make the film's folder, numbered for its place in the series (`SERIES-RULES.md` §4), and copy `06-filters/index.html` into it (the examples below call it `24-example/`). Change the title and intro text; the `src` paths (`../kit/film-kit.js`, `scenes.js`, `narration.mp3`) stay as they are.
+2. Write `24-example/scenes.js`:
    - Draw with the helpers from `PulseFilm.h`, and end with `PulseFilm.mount({ series, narr: NARR, scenes })`.
    - Keep the line `const NARR = /*NARR*/null/*END*/;`.
    - `draw(t)` must depend only on `t`.
-3. Check layouts with `node stills.js ../08-expressions/index.html …` before narrating, or `./shots.sh <topic> sheet 10 40 70 100` for 2×2 contact sheets (needs ImageMagick).
-   Put the film's cohort, requests and captured outputs in `08-expressions/data/`, with a `data/build.sh` holding its data steps (`build/data.sh` finds it by itself; see `DATA.md` for the `imp` and `api` helpers) and a `data/README.md` describing them.
-4. Run `./render.sh --narrate <topic>`, then copy `08-expressions/render/pulse-<topic>.srt` to `08-expressions/subtitles.srt`.
+3. Check layouts with `node stills.js ../24-example/index.html …` before narrating, or `./shots.sh <topic> sheet 10 40 70 100` for 2×2 contact sheets (needs ImageMagick).
+   Put the film's cohort, requests and captured outputs in `24-example/data/`, with a `data/build.sh` holding its data steps (`build/data.sh` finds it by itself; see `DATA.md` for the `imp` and `api` helpers) and a `data/README.md` describing them.
+4. Run `./render.sh --narrate <topic>`, then copy `24-example/render/pulse-<topic>.srt` to `24-example/subtitles.srt`.
 5. Check it against `SERIES-RULES.md`, then commit the page, script, MP3, subtitles and `data/`.
 
 Everything a film needs lives in its own folder. The build scripts and the site find films by folder, so a new or changed film does not edit `build/data.sh`, `DATA.md` (its index is regenerated by `build/data.sh --index`) or `site/scripts/sync.mjs`.
