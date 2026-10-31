@@ -10,24 +10,24 @@
         "cardinality": 5,
         "top": [
           {
-            "value": "South",
-            "weight": 0.264675
-          },
-          {
-            "value": "West",
-            "weight": 0.2387
-          },
-          {
             "value": "North",
-            "weight": 0.21905
+            "weight": 0.221675
+          },
+          {
+            "value": "South",
+            "weight": 0.211775
           },
           {
             "value": "East",
-            "weight": 0.178275
+            "weight": 0.198275
+          },
+          {
+            "value": "West",
+            "weight": 0.189075
           },
           {
             "value": "Central",
-            "weight": 0.0993
+            "weight": 0.1792
           }
         ]
       }
@@ -40,29 +40,29 @@
       "numeric": {
         "min": 18,
         "max": 85,
-        "mean": 44.150025,
-        "std": 13.601927907853549,
+        "mean": 44.093775,
+        "std": 14.38035469362292,
         "percentiles": [
           18,
-          21,
-          35,
+          19,
+          34,
           44,
           54,
-          67,
-          76
+          69,
+          80
         ],
         "shape": {
           "means": [
-            35.7139100902814,
-            52.041154954592315
+            34.51248021855131,
+            51.925708563305236
           ],
           "stds": [
-            10.19509424329663,
-            11.373816404956322
+            10.452359108265128,
+            12.435653648227758
           ],
           "weights": [
-            0.4748538420918485,
-            0.5251461579081533
+            0.4628899595021535,
+            0.5371100404978477
           ]
         }
       }
@@ -77,19 +77,19 @@
         "top": [
           {
             "value": "Standard",
-            "weight": 0.3742
+            "weight": 0.3513
           },
           {
             "value": "Basic",
-            "weight": 0.2939
+            "weight": 0.2951
           },
           {
             "value": "Premium",
-            "weight": 0.2227
+            "weight": 0.225375
           },
           {
             "value": "Unlimited",
-            "weight": 0.1092
+            "weight": 0.128225
           }
         ]
       }
@@ -104,15 +104,15 @@
         "top": [
           {
             "value": "Monthly",
-            "weight": 0.44465
+            "weight": 0.61395
           },
           {
             "value": "One-Year",
-            "weight": 0.304825
+            "weight": 0.254375
           },
           {
             "value": "Two-Year",
-            "weight": 0.250525
+            "weight": 0.131675
           }
         ]
       }
@@ -124,30 +124,30 @@
       "null_rate": 0,
       "numeric": {
         "min": 0,
-        "max": 120,
-        "mean": 27.00515,
-        "std": 29.302957019040782,
+        "max": 142,
+        "mean": 26.477025,
+        "std": 29.808695645864443,
         "percentiles": [
           0,
           1,
           6,
           16,
-          37,
-          98,
-          120
+          35,
+          92,
+          142
         ],
         "shape": {
           "means": [
-            10.596380020363087,
-            52.97201573530769
+            11.63572189912435,
+            54.65606873402112
           ],
           "stds": [
-            7.857198565137569,
-            31.979702663565366
+            8.787515798312752,
+            34.694481545219254
           ],
           "weights": [
-            0.6087959578671215,
-            0.39120404213286614
+            0.6551938979524152,
+            0.344806102047589
           ]
         }
       }
@@ -162,28 +162,28 @@
         "options": [
           {
             "value": "mobile",
-            "count": 35205,
-            "frequency": 0.880125
+            "count": 36205,
+            "frequency": 0.905125
           },
           {
             "value": "broadband",
-            "count": 18866,
-            "frequency": 0.47165
+            "count": 18200,
+            "frequency": 0.455
           },
           {
             "value": "tv",
-            "count": 9756,
-            "frequency": 0.2439
+            "count": 9571,
+            "frequency": 0.239275
           },
           {
             "value": "landline",
-            "count": 5021,
-            "frequency": 0.125525
+            "count": 5341,
+            "frequency": 0.133525
           },
           {
             "value": "protection",
-            "count": 9973,
-            "frequency": 0.249325
+            "count": 9614,
+            "frequency": 0.24035
           }
         ]
       }
@@ -195,30 +195,30 @@
       "null_rate": 0,
       "numeric": {
         "min": 0,
-        "max": 186.78,
-        "mean": 70.66586624999972,
-        "std": 36.01439180119618,
+        "max": 165.84,
+        "mean": 70.30846275000043,
+        "std": 32.51211995683927,
         "percentiles": [
           0,
-          18.317000000000004,
-          42.1575,
-          69.035,
-          96.85,
-          133.60449999999994,
-          154.08160000000004
+          26.14,
+          44.5275,
+          67.57499999999999,
+          94.92,
+          126.15799999999989,
+          141.53060000000002
         ],
         "shape": {
           "means": [
-            42.16369546620011,
-            93.42403567076852
+            48.56013063157345,
+            98.59435021304898
           ],
           "stds": [
-            20.79840242689143,
-            28.526242230517706
+            20.434614598511292,
+            21.78210582104968
           ],
           "weights": [
-            0.43886346795575565,
-            0.5611365320442452
+            0.5656519567965289,
+            0.43434804320347065
           ]
         }
       }
@@ -230,9 +230,9 @@
       "null_rate": 0,
       "numeric": {
         "min": 0,
-        "max": 8,
-        "mean": 1.04925,
-        "std": 1.073966141264153,
+        "max": 11,
+        "mean": 1.007325,
+        "std": 1.1456239154840009,
         "percentiles": [
           0,
           0,
@@ -240,68 +240,83 @@
           1,
           2,
           3,
-          4
+          5
         ],
         "shape": {
           "means": [
-            0.4260745563127641,
-            1.9215880530717613
+            0.4008293919171621,
+            2.036195461287675
           ],
           "stds": [
-            0.5095577824093437,
-            1.0549741077663772
+            0.5029400617053806,
+            1.2198226188577466
           ],
           "weights": [
-            0.583136197006483,
-            0.41686380299355835
+            0.6307428536075356,
+            0.36925714639245755
           ]
         },
         "discrete": {
           "levels": [
             {
               "value": 0,
-              "count": 14725,
-              "frequency": 0.368125
+              "count": 16314,
+              "frequency": 0.40785
             },
             {
               "value": 1,
-              "count": 14048,
-              "frequency": 0.3512
+              "count": 13395,
+              "frequency": 0.334875
             },
             {
               "value": 2,
-              "count": 7259,
-              "frequency": 0.181475
+              "count": 6268,
+              "frequency": 0.1567
             },
             {
               "value": 3,
-              "count": 2821,
-              "frequency": 0.070525
+              "count": 2536,
+              "frequency": 0.0634
             },
             {
               "value": 4,
-              "count": 865,
-              "frequency": 0.021625
+              "count": 941,
+              "frequency": 0.023525
             },
             {
               "value": 5,
-              "count": 223,
-              "frequency": 0.005575
+              "count": 360,
+              "frequency": 0.009
             },
             {
               "value": 6,
-              "count": 49,
-              "frequency": 0.001225
+              "count": 135,
+              "frequency": 0.003375
             },
             {
               "value": 7,
-              "count": 8,
-              "frequency": 0.0002
+              "count": 39,
+              "frequency": 0.000975
             },
             {
               "value": 8,
+              "count": 6,
+              "frequency": 0.00015
+            },
+            {
+              "value": 9,
               "count": 2,
               "frequency": 0.00005
+            },
+            {
+              "value": 10,
+              "count": 3,
+              "frequency": 0.000075
+            },
+            {
+              "value": 11,
+              "count": 1,
+              "frequency": 0.000025
             }
           ]
         }
@@ -315,8 +330,8 @@
       "numeric": {
         "min": 0,
         "max": 1,
-        "mean": 0.028675,
-        "std": 0.16689350110479967,
+        "mean": 0.037175,
+        "std": 0.18919279643489487,
         "percentiles": [
           0,
           0,
@@ -336,8 +351,8 @@
       "numeric": {
         "min": 0,
         "max": 1,
-        "mean": 0.555775,
-        "std": 0.49688562241027256,
+        "mean": 0.562675,
+        "std": 0.4960624923584811,
         "percentiles": [
           0,
           0,
@@ -353,12 +368,12 @@
             1
           ],
           "stds": [
-            0.02484428112051363,
-            0.02484428112051363
+            0.024803124617924055,
+            0.024803124617924055
           ],
           "weights": [
-            0.4435,
-            0.5565
+            0.4289,
+            0.5711
           ]
         }
       }
@@ -369,16 +384,16 @@
       "description": "Date the customer's current account was opened",
       "null_rate": 0,
       "date": {
-        "start": "2014-08-11",
+        "start": "2014-08-13",
         "end": "2026-06-30",
         "weekdays": [
-          5879,
-          5509,
-          5622,
-          5678,
-          6850,
-          4425,
-          6037
+          5399,
+          5766,
+          5676,
+          5725,
+          5838,
+          4520,
+          7076
         ]
       }
     },
@@ -386,18 +401,18 @@
       "name": "end_date",
       "type": "date",
       "description": "Date the account was closed; null while the account is active",
-      "null_rate": 0.809175,
+      "null_rate": 0.8071,
       "date": {
         "start": "2024-07-01",
         "end": "2026-06-30",
         "weekdays": [
-          1065,
-          1112,
-          1127,
-          1107,
-          1072,
-          1055,
-          1095
+          1124,
+          1114,
+          1103,
+          1114,
+          1126,
+          1035,
+          1100
         ]
       }
     },
@@ -409,8 +424,8 @@
       "numeric": {
         "min": 0,
         "max": 1,
-        "mean": 0.190825,
-        "std": 0.3929563331236609,
+        "mean": 0.1929,
+        "std": 0.394580134240256,
         "percentiles": [
           0,
           0,
@@ -427,82 +442,82 @@
     {
       "a": "support_contacts",
       "b": "frequent_caller",
-      "rho": 0.5183207540004394
+      "rho": 0.6081542597407374
     },
     {
       "a": "tenure_months",
       "b": "churned",
-      "rho": -0.21821837665073204
-    },
-    {
-      "a": "autopay",
-      "b": "churned",
-      "rho": -0.19987697457537382
-    },
-    {
-      "a": "tenure_months",
-      "b": "autopay",
-      "rho": 0.14868678389026835
+      "rho": -0.18077858386828874
     },
     {
       "a": "support_contacts",
       "b": "churned",
-      "rho": 0.12839705010141805
+      "rho": 0.17021452223792458
     },
     {
-      "a": "monthly_spend",
-      "b": "support_contacts",
-      "rho": 0.1074260812775196
+      "a": "autopay",
+      "b": "churned",
+      "rho": -0.14304267780897797
     },
     {
       "a": "monthly_spend",
       "b": "churned",
-      "rho": -0.10552663499600559
+      "rho": -0.13569795070681828
+    },
+    {
+      "a": "tenure_months",
+      "b": "autopay",
+      "rho": 0.1047191337600059
     },
     {
       "a": "frequent_caller",
       "b": "churned",
-      "rho": 0.09231102657608853
+      "rho": 0.10346692224963758
     },
     {
       "a": "age",
       "b": "tenure_months",
-      "rho": 0.07833330716388365
-    },
-    {
-      "a": "age",
-      "b": "monthly_spend",
-      "rho": -0.07824217974829961
-    },
-    {
-      "a": "monthly_spend",
-      "b": "frequent_caller",
-      "rho": 0.055306493230207227
-    },
-    {
-      "a": "age",
-      "b": "autopay",
-      "rho": 0.05288672691395373
+      "rho": 0.10008486562693723
     },
     {
       "a": "age",
       "b": "churned",
-      "rho": -0.038057088563846986
+      "rho": -0.06527417613308817
     },
     {
       "a": "age",
-      "b": "support_contacts",
-      "rho": 0.023566567586536108
+      "b": "autopay",
+      "rho": 0.0502601389883228
     },
     {
-      "a": "tenure_months",
+      "a": "age",
       "b": "monthly_spend",
-      "rho": -0.016112439665082447
+      "rho": 0.030257941161005636
+    },
+    {
+      "a": "support_contacts",
+      "b": "autopay",
+      "rho": 0.014034023095898615
+    },
+    {
+      "a": "monthly_spend",
+      "b": "autopay",
+      "rho": -0.008594199083742177
+    },
+    {
+      "a": "tenure_months",
+      "b": "frequent_caller",
+      "rho": 0.006554834816122938
     },
     {
       "a": "tenure_months",
       "b": "support_contacts",
-      "rho": 0.014752017186991859
+      "rho": 0.005004460710781316
+    },
+    {
+      "a": "monthly_spend",
+      "b": "frequent_caller",
+      "rho": -0.004531600864057667
     }
   ],
   "conditional": {
@@ -510,97 +525,97 @@
       {
         "a": "support_contacts",
         "b": "frequent_caller",
-        "rho": 0.5183207540004394,
+        "rho": 0.6081542597407374,
         "n": 10000
       },
       {
         "a": "tenure_months",
         "b": "churned",
-        "rho": -0.21821837665073204,
-        "n": 10000
-      },
-      {
-        "a": "autopay",
-        "b": "churned",
-        "rho": -0.19987697457537382,
-        "n": 10000
-      },
-      {
-        "a": "tenure_months",
-        "b": "autopay",
-        "rho": 0.14868678389026835,
+        "rho": -0.18077858386828874,
         "n": 10000
       },
       {
         "a": "support_contacts",
         "b": "churned",
-        "rho": 0.12839705010141805,
+        "rho": 0.17021452223792458,
         "n": 10000
       },
       {
-        "a": "monthly_spend",
-        "b": "support_contacts",
-        "rho": 0.1074260812775196,
+        "a": "autopay",
+        "b": "churned",
+        "rho": -0.14304267780897797,
         "n": 10000
       },
       {
         "a": "monthly_spend",
         "b": "churned",
-        "rho": -0.10552663499600559,
+        "rho": -0.13569795070681828,
+        "n": 10000
+      },
+      {
+        "a": "tenure_months",
+        "b": "autopay",
+        "rho": 0.1047191337600059,
         "n": 10000
       },
       {
         "a": "frequent_caller",
         "b": "churned",
-        "rho": 0.09231102657608853,
+        "rho": 0.10346692224963758,
         "n": 10000
       },
       {
         "a": "age",
         "b": "tenure_months",
-        "rho": 0.07833330716388365,
-        "n": 10000
-      },
-      {
-        "a": "age",
-        "b": "monthly_spend",
-        "rho": -0.07824217974829961,
-        "n": 10000
-      },
-      {
-        "a": "monthly_spend",
-        "b": "frequent_caller",
-        "rho": 0.055306493230207227,
-        "n": 10000
-      },
-      {
-        "a": "age",
-        "b": "autopay",
-        "rho": 0.05288672691395373,
+        "rho": 0.10008486562693723,
         "n": 10000
       },
       {
         "a": "age",
         "b": "churned",
-        "rho": -0.038057088563846986,
+        "rho": -0.06527417613308817,
         "n": 10000
       },
       {
         "a": "age",
-        "b": "support_contacts",
-        "rho": 0.023566567586536108,
+        "b": "autopay",
+        "rho": 0.0502601389883228,
         "n": 10000
       },
       {
-        "a": "tenure_months",
+        "a": "age",
         "b": "monthly_spend",
-        "rho": -0.016112439665082447,
+        "rho": 0.030257941161005636,
+        "n": 10000
+      },
+      {
+        "a": "support_contacts",
+        "b": "autopay",
+        "rho": 0.014034023095898615,
+        "n": 10000
+      },
+      {
+        "a": "monthly_spend",
+        "b": "autopay",
+        "rho": -0.008594199083742177,
+        "n": 10000
+      },
+      {
+        "a": "tenure_months",
+        "b": "frequent_caller",
+        "rho": 0.006554834816122938,
         "n": 10000
       },
       {
         "a": "tenure_months",
         "b": "support_contacts",
-        "rho": 0.014752017186991859,
+        "rho": 0.005004460710781316,
+        "n": 10000
+      },
+      {
+        "a": "monthly_spend",
+        "b": "frequent_caller",
+        "rho": -0.004531600864057667,
         "n": 10000
       }
     ],
@@ -610,104 +625,104 @@
         "b": "plan",
         "cells": [
           {
-            "a_value": "South",
-            "b_value": "Standard",
-            "count": 971
-          },
-          {
-            "a_value": "West",
-            "b_value": "Standard",
-            "count": 899
-          },
-          {
             "a_value": "North",
             "b_value": "Standard",
-            "count": 836
-          },
-          {
-            "a_value": "West",
-            "b_value": "Basic",
-            "count": 732
+            "count": 792
           },
           {
             "a_value": "South",
-            "b_value": "Basic",
-            "count": 716
+            "b_value": "Standard",
+            "count": 722
           },
           {
             "a_value": "East",
             "b_value": "Standard",
-            "count": 694
+            "count": 699
           },
           {
             "a_value": "North",
             "b_value": "Basic",
-            "count": 669
-          },
-          {
-            "a_value": "South",
-            "b_value": "Premium",
-            "count": 579
-          },
-          {
-            "a_value": "East",
-            "b_value": "Basic",
-            "count": 541
+            "count": 676
           },
           {
             "a_value": "West",
-            "b_value": "Premium",
-            "count": 512
-          },
-          {
-            "a_value": "North",
-            "b_value": "Premium",
-            "count": 486
-          },
-          {
-            "a_value": "East",
-            "b_value": "Premium",
-            "count": 364
+            "b_value": "Standard",
+            "count": 675
           },
           {
             "a_value": "Central",
             "b_value": "Standard",
-            "count": 357
+            "count": 642
           },
           {
             "a_value": "South",
-            "b_value": "Unlimited",
-            "count": 303
+            "b_value": "Basic",
+            "count": 604
+          },
+          {
+            "a_value": "East",
+            "b_value": "Basic",
+            "count": 588
           },
           {
             "a_value": "West",
-            "b_value": "Unlimited",
-            "count": 285
+            "b_value": "Basic",
+            "count": 567
           },
           {
             "a_value": "Central",
             "b_value": "Basic",
-            "count": 272
+            "count": 522
           },
           {
             "a_value": "North",
-            "b_value": "Unlimited",
-            "count": 231
+            "b_value": "Premium",
+            "count": 499
+          },
+          {
+            "a_value": "South",
+            "b_value": "Premium",
+            "count": 461
+          },
+          {
+            "a_value": "East",
+            "b_value": "Premium",
+            "count": 459
+          },
+          {
+            "a_value": "West",
+            "b_value": "Premium",
+            "count": 432
           },
           {
             "a_value": "Central",
             "b_value": "Premium",
-            "count": 228
+            "count": 413
+          },
+          {
+            "a_value": "North",
+            "b_value": "Unlimited",
+            "count": 292
+          },
+          {
+            "a_value": "South",
+            "b_value": "Unlimited",
+            "count": 263
+          },
+          {
+            "a_value": "West",
+            "b_value": "Unlimited",
+            "count": 253
           },
           {
             "a_value": "East",
             "b_value": "Unlimited",
-            "count": 208
+            "count": 223
           },
           {
             "a_value": "Central",
             "b_value": "Unlimited",
-            "count": 117
+            "count": 218
           }
         ],
         "n": 10000
@@ -717,79 +732,79 @@
         "b": "contract",
         "cells": [
           {
-            "a_value": "South",
-            "b_value": "Monthly",
-            "count": 1174
-          },
-          {
-            "a_value": "West",
-            "b_value": "Monthly",
-            "count": 1058
-          },
-          {
             "a_value": "North",
             "b_value": "Monthly",
-            "count": 999
+            "count": 1385
+          },
+          {
+            "a_value": "South",
+            "b_value": "Monthly",
+            "count": 1237
           },
           {
             "a_value": "East",
             "b_value": "Monthly",
-            "count": 826
+            "count": 1207
           },
           {
             "a_value": "West",
-            "b_value": "One-Year",
-            "count": 758
+            "b_value": "Monthly",
+            "count": 1177
           },
           {
-            "a_value": "South",
-            "b_value": "One-Year",
-            "count": 753
+            "a_value": "Central",
+            "b_value": "Monthly",
+            "count": 1109
           },
           {
             "a_value": "North",
             "b_value": "One-Year",
-            "count": 691
+            "count": 549
           },
           {
             "a_value": "South",
-            "b_value": "Two-Year",
-            "count": 642
-          },
-          {
-            "a_value": "West",
-            "b_value": "Two-Year",
-            "count": 612
+            "b_value": "One-Year",
+            "count": 540
           },
           {
             "a_value": "East",
             "b_value": "One-Year",
-            "count": 551
+            "count": 516
           },
           {
-            "a_value": "North",
-            "b_value": "Two-Year",
-            "count": 532
+            "a_value": "West",
+            "b_value": "One-Year",
+            "count": 505
           },
           {
-            "a_value": "East",
-            "b_value": "Two-Year",
+            "a_value": "Central",
+            "b_value": "One-Year",
             "count": 430
           },
           {
-            "a_value": "Central",
-            "b_value": "Monthly",
-            "count": 417
+            "a_value": "North",
+            "b_value": "Two-Year",
+            "count": 325
           },
           {
-            "a_value": "Central",
-            "b_value": "One-Year",
-            "count": 302
+            "a_value": "South",
+            "b_value": "Two-Year",
+            "count": 273
           },
           {
             "a_value": "Central",
             "b_value": "Two-Year",
-            "count": 255
+            "count": 256
+          },
+          {
+            "a_value": "East",
+            "b_value": "Two-Year",
+            "count": 246
+          },
+          {
+            "a_value": "West",
+            "b_value": "Two-Year",
+            "count": 245
           }
         ],
         "n": 10000
@@ -801,62 +816,62 @@
           {
             "a_value": "Standard",
             "b_value": "Monthly",
-            "count": 1657
+            "count": 2177
           },
           {
             "a_value": "Basic",
             "b_value": "Monthly",
-            "count": 1258
+            "count": 1816
+          },
+          {
+            "a_value": "Premium",
+            "b_value": "Monthly",
+            "count": 1390
           },
           {
             "a_value": "Standard",
             "b_value": "One-Year",
-            "count": 1138
+            "count": 881
+          },
+          {
+            "a_value": "Basic",
+            "b_value": "One-Year",
+            "count": 754
+          },
+          {
+            "a_value": "Unlimited",
+            "b_value": "Monthly",
+            "count": 732
           },
           {
             "a_value": "Premium",
-            "b_value": "Monthly",
-            "count": 981
+            "b_value": "One-Year",
+            "count": 566
           },
           {
             "a_value": "Standard",
             "b_value": "Two-Year",
-            "count": 962
-          },
-          {
-            "a_value": "Basic",
-            "b_value": "One-Year",
-            "count": 889
+            "count": 472
           },
           {
             "a_value": "Basic",
             "b_value": "Two-Year",
-            "count": 783
-          },
-          {
-            "a_value": "Premium",
-            "b_value": "One-Year",
-            "count": 703
-          },
-          {
-            "a_value": "Unlimited",
-            "b_value": "Monthly",
-            "count": 578
-          },
-          {
-            "a_value": "Premium",
-            "b_value": "Two-Year",
-            "count": 485
+            "count": 387
           },
           {
             "a_value": "Unlimited",
             "b_value": "One-Year",
-            "count": 325
+            "count": 339
+          },
+          {
+            "a_value": "Premium",
+            "b_value": "Two-Year",
+            "count": 308
           },
           {
             "a_value": "Unlimited",
             "b_value": "Two-Year",
-            "count": 241
+            "count": 178
           }
         ],
         "n": 10000
@@ -868,34 +883,34 @@
         "b": "age",
         "categories": [
           {
-            "category": "South",
-            "mean": 44.198828752243315,
-            "std": 13.66361435400099,
-            "n": 10587
-          },
-          {
-            "category": "West",
-            "mean": 44.03393380812736,
-            "std": 13.605589941738604,
-            "n": 9548
-          },
-          {
             "category": "North",
-            "mean": 44.23156813512897,
-            "std": 13.575212696493223,
-            "n": 8762
+            "mean": 43.891282282620956,
+            "std": 14.406951523934497,
+            "n": 8867
+          },
+          {
+            "category": "South",
+            "mean": 43.84523668988313,
+            "std": 14.58716465001393,
+            "n": 8471
           },
           {
             "category": "East",
-            "mean": 44.13055672416211,
-            "std": 13.595918926545403,
-            "n": 7131
+            "mean": 44.176396419114866,
+            "std": 14.336508046845237,
+            "n": 7931
+          },
+          {
+            "category": "West",
+            "mean": 44.34867116223721,
+            "std": 14.209876739480436,
+            "n": 7563
           },
           {
             "category": "Central",
-            "mean": 44.15407854984894,
-            "std": 13.50247096712129,
-            "n": 3972
+            "mean": 44.277622767857146,
+            "std": 14.324283182661485,
+            "n": 7168
           }
         ],
         "n": 40000
@@ -905,34 +920,34 @@
         "b": "tenure_months",
         "categories": [
           {
-            "category": "South",
-            "mean": 26.914895626712006,
-            "std": 29.232674292045996,
-            "n": 10587
-          },
-          {
-            "category": "West",
-            "mean": 27.093213238374528,
-            "std": 29.604390328148224,
-            "n": 9548
-          },
-          {
             "category": "North",
-            "mean": 26.720611732481167,
-            "std": 29.11480657366346,
-            "n": 8762
+            "mean": 26.44220142099921,
+            "std": 29.518237027174404,
+            "n": 8867
+          },
+          {
+            "category": "South",
+            "mean": 26.27009798134813,
+            "std": 29.62628307528615,
+            "n": 8471
           },
           {
             "category": "East",
-            "mean": 27.628102650399665,
-            "std": 29.474960795853335,
-            "n": 7131
+            "mean": 26.169083343840626,
+            "std": 29.68295747722407,
+            "n": 7931
+          },
+          {
+            "category": "West",
+            "mean": 26.901758561417427,
+            "std": 30.15542916799815,
+            "n": 7563
           },
           {
             "category": "Central",
-            "mean": 26.543303121852972,
-            "std": 28.857806433596306,
-            "n": 3972
+            "mean": 26.6572265625,
+            "std": 30.15200504234635,
+            "n": 7168
           }
         ],
         "n": 40000
@@ -942,34 +957,34 @@
         "b": "monthly_spend",
         "categories": [
           {
-            "category": "South",
-            "mean": 71.59798526494768,
-            "std": 36.46295250390309,
-            "n": 10587
-          },
-          {
-            "category": "West",
-            "mean": 71.0180886049437,
-            "std": 35.905572194489345,
-            "n": 9548
-          },
-          {
             "category": "North",
-            "mean": 71.23937228943181,
-            "std": 35.81254600401306,
-            "n": 8762
+            "mean": 70.68306191496572,
+            "std": 32.41010321538415,
+            "n": 8867
+          },
+          {
+            "category": "South",
+            "mean": 70.05731908865516,
+            "std": 32.83764795638959,
+            "n": 8471
           },
           {
             "category": "East",
-            "mean": 71.4081769737763,
-            "std": 36.3217985412455,
-            "n": 7131
+            "mean": 70.10475349892819,
+            "std": 32.60783532124012,
+            "n": 7931
+          },
+          {
+            "category": "West",
+            "mean": 70.42634668782215,
+            "std": 32.31143525619295,
+            "n": 7563
           },
           {
             "category": "Central",
-            "mean": 64.73690332326272,
-            "std": 34.39563655654858,
-            "n": 3972
+            "mean": 70.24288364955343,
+            "std": 32.36042100024922,
+            "n": 7168
           }
         ],
         "n": 40000
@@ -979,34 +994,34 @@
         "b": "support_contacts",
         "categories": [
           {
-            "category": "South",
-            "mean": 1.0691413998299801,
-            "std": 1.0885327299567442,
-            "n": 10587
-          },
-          {
-            "category": "West",
-            "mean": 1.0490155006284039,
-            "std": 1.0650302266367526,
-            "n": 9548
-          },
-          {
             "category": "North",
-            "mean": 1.046108194476147,
-            "std": 1.0795000834883246,
-            "n": 8762
+            "mean": 1.005074997180557,
+            "std": 1.1575998462951005,
+            "n": 8867
+          },
+          {
+            "category": "South",
+            "mean": 1.0009443985361823,
+            "std": 1.1321215597584298,
+            "n": 8471
           },
           {
             "category": "East",
-            "mean": 1.0638059178235872,
-            "std": 1.0767183212207787,
-            "n": 7131
+            "mean": 1.0150044130626654,
+            "std": 1.153929329381244,
+            "n": 7931
+          },
+          {
+            "category": "West",
+            "mean": 1.0038344572259685,
+            "std": 1.1298227492351598,
+            "n": 7563
           },
           {
             "category": "Central",
-            "mean": 0.9775931520644512,
-            "std": 1.0358720586137096,
-            "n": 3972
+            "mean": 1.0128348214285714,
+            "std": 1.1541457232754986,
+            "n": 7168
           }
         ],
         "n": 40000
@@ -1016,34 +1031,34 @@
         "b": "frequent_caller",
         "categories": [
           {
-            "category": "South",
-            "mean": 0.030320204023802776,
-            "std": 0.17147497365136405,
-            "n": 10587
-          },
-          {
-            "category": "West",
-            "mean": 0.027754503560955174,
-            "std": 0.1642772581664319,
-            "n": 9548
-          },
-          {
             "category": "North",
-            "mean": 0.029787719698698926,
-            "std": 0.17001091203510388,
-            "n": 8762
+            "mean": 0.03732942370587572,
+            "std": 0.18957845621730446,
+            "n": 8867
+          },
+          {
+            "category": "South",
+            "mean": 0.03588714437492622,
+            "std": 0.18601973594688814,
+            "n": 8471
           },
           {
             "category": "East",
-            "mean": 0.02972935072219885,
-            "std": 0.1698515884009134,
-            "n": 7131
+            "mean": 0.037826251418484426,
+            "std": 0.1907878814528399,
+            "n": 7931
+          },
+          {
+            "category": "West",
+            "mean": 0.03662567764114769,
+            "std": 0.18785340926172,
+            "n": 7563
           },
           {
             "category": "Central",
-            "mean": 0.022155085599194362,
-            "std": 0.14720629536104654,
-            "n": 3972
+            "mean": 0.038364955357142856,
+            "std": 0.19208912824667065,
+            "n": 7168
           }
         ],
         "n": 40000
@@ -1053,34 +1068,34 @@
         "b": "autopay",
         "categories": [
           {
-            "category": "South",
-            "mean": 0.5588929819590063,
-            "std": 0.49654295396672726,
-            "n": 10587
-          },
-          {
-            "category": "West",
-            "mean": 0.5602220360284876,
-            "std": 0.49638605211596115,
-            "n": 9548
-          },
-          {
             "category": "North",
-            "mean": 0.5494179411093357,
-            "std": 0.4975802688022728,
-            "n": 8762
+            "mean": 0.5640013533325815,
+            "std": 0.49591487411780566,
+            "n": 8867
+          },
+          {
+            "category": "South",
+            "mean": 0.5602644315901311,
+            "std": 0.4963842115131981,
+            "n": 8471
           },
           {
             "category": "East",
-            "mean": 0.5441032113308092,
-            "std": 0.49808603379317123,
-            "n": 7131
+            "mean": 0.5710503089143866,
+            "std": 0.49495731418569794,
+            "n": 7931
+          },
+          {
+            "category": "West",
+            "mean": 0.5602274229802988,
+            "std": 0.49639222181443654,
+            "n": 7563
           },
           {
             "category": "Central",
-            "mean": 0.5717522658610272,
-            "std": 0.49488713085050234,
-            "n": 3972
+            "mean": 0.5571986607142857,
+            "std": 0.49675219055158265,
+            "n": 7168
           }
         ],
         "n": 40000
@@ -1090,34 +1105,34 @@
         "b": "churned",
         "categories": [
           {
-            "category": "South",
-            "mean": 0.1908000377821857,
-            "std": 0.392950338121417,
-            "n": 10587
-          },
-          {
-            "category": "West",
-            "mean": 0.19040636782572268,
-            "std": 0.3926422411525846,
-            "n": 9548
-          },
-          {
             "category": "North",
-            "mean": 0.18956859164574297,
-            "std": 0.39198198510111426,
-            "n": 8762
+            "mean": 0.19115822713431826,
+            "std": 0.39323555106930946,
+            "n": 8867
+          },
+          {
+            "category": "South",
+            "mean": 0.19643489552591192,
+            "std": 0.3973246323851394,
+            "n": 8471
           },
           {
             "category": "East",
-            "mean": 0.19492357313139813,
-            "std": 0.3961696396225682,
-            "n": 7131
+            "mean": 0.19392258227209683,
+            "std": 0.39539388767950706,
+            "n": 7931
+          },
+          {
+            "category": "West",
+            "mean": 0.1931773105910353,
+            "std": 0.3948169806274978,
+            "n": 7563
           },
           {
             "category": "Central",
-            "mean": 0.18731117824773413,
-            "std": 0.39021024474044674,
-            "n": 3972
+            "mean": 0.189453125,
+            "std": 0.39189547649469003,
+            "n": 7168
           }
         ],
         "n": 40000
@@ -1128,27 +1143,27 @@
         "categories": [
           {
             "category": "Standard",
-            "mean": 44.55057455905933,
-            "std": 13.303754812077399,
-            "n": 14968
+            "mean": 44.035724452035296,
+            "std": 14.366438924969867,
+            "n": 14052
           },
           {
             "category": "Basic",
-            "mean": 46.58914596801633,
-            "std": 14.0281529384282,
-            "n": 11756
+            "mean": 44.17070484581498,
+            "std": 14.42757648125869,
+            "n": 11804
           },
           {
             "category": "Premium",
-            "mean": 43.23226313426134,
-            "std": 12.488874346312965,
-            "n": 8908
+            "mean": 44.156627842484745,
+            "std": 14.279535355290534,
+            "n": 9015
           },
           {
             "category": "Unlimited",
-            "mean": 38.08447802197802,
-            "std": 13.604541224545642,
-            "n": 4368
+            "mean": 43.96529537921622,
+            "std": 14.488387830876498,
+            "n": 5129
           }
         ],
         "n": 40000
@@ -1159,27 +1174,27 @@
         "categories": [
           {
             "category": "Standard",
-            "mean": 26.948556921432388,
-            "std": 29.370765021794902,
-            "n": 14968
+            "mean": 26.558639339595786,
+            "std": 29.600072757529272,
+            "n": 14052
           },
           {
             "category": "Basic",
-            "mean": 27.756379720993536,
-            "std": 29.75529616119174,
-            "n": 11756
+            "mean": 26.199339207048457,
+            "std": 29.716637352310713,
+            "n": 11804
           },
           {
             "category": "Premium",
-            "mean": 26.91490794791199,
-            "std": 29.124536606809976,
-            "n": 8908
+            "mean": 26.43638380476983,
+            "std": 29.92529947206161,
+            "n": 9015
           },
           {
             "category": "Unlimited",
-            "mean": 25.361263736263737,
-            "std": 28.119758960870264,
-            "n": 4368
+            "mean": 26.963930590758434,
+            "std": 30.38045395769077,
+            "n": 5129
           }
         ],
         "n": 40000
@@ -1190,27 +1205,27 @@
         "categories": [
           {
             "category": "Standard",
-            "mean": 66.00106894708756,
-            "std": 30.738744294372495,
-            "n": 14968
+            "mean": 65.16434528892707,
+            "std": 26.806368566728654,
+            "n": 14052
           },
           {
             "category": "Basic",
-            "mean": 51.09056992174249,
-            "std": 29.805880031565373,
-            "n": 11756
+            "mean": 50.40295831921341,
+            "std": 24.25712914978123,
+            "n": 11804
           },
           {
             "category": "Premium",
-            "mean": 86.85303659631796,
-            "std": 32.43534649709954,
-            "n": 8908
+            "mean": 84.91005768164204,
+            "std": 28.58879220683761,
+            "n": 9015
           },
           {
             "category": "Unlimited",
-            "mean": 106.32396062271074,
-            "std": 34.52742372216136,
-            "n": 4368
+            "mean": 104.54834080717465,
+            "std": 30.871713837828857,
+            "n": 5129
           }
         ],
         "n": 40000
@@ -1221,27 +1236,27 @@
         "categories": [
           {
             "category": "Standard",
-            "mean": 0.9221004810261892,
-            "std": 0.9961229432546004,
-            "n": 14968
+            "mean": 0.9692570452604612,
+            "std": 1.1255509423148382,
+            "n": 14052
           },
           {
             "category": "Basic",
-            "mean": 1.3469717591017354,
-            "std": 1.1733501206844668,
-            "n": 11756
+            "mean": 1.0864113859708573,
+            "std": 1.2114376402328697,
+            "n": 11804
           },
           {
             "category": "Premium",
-            "mean": 0.9343286933093848,
-            "std": 1.0116966267719574,
-            "n": 8908
+            "mean": 0.9707154742096505,
+            "std": 1.107504550108145,
+            "n": 9015
           },
           {
             "category": "Unlimited",
-            "mean": 0.918040293040293,
-            "std": 1.015864363065587,
-            "n": 4368
+            "mean": 0.9939559368297913,
+            "std": 1.100525742504251,
+            "n": 5129
           }
         ],
         "n": 40000
@@ -1252,27 +1267,27 @@
         "categories": [
           {
             "category": "Standard",
-            "mean": 0.01890700160342063,
-            "std": 0.13620119770218955,
-            "n": 14968
+            "mean": 0.035439795046968404,
+            "std": 0.18489523739851874,
+            "n": 14052
           },
           {
             "category": "Basic",
-            "mean": 0.04967676080299421,
-            "std": 0.2172855179612756,
-            "n": 11756
+            "mean": 0.04676380887834632,
+            "std": 0.21114149711840496,
+            "n": 11804
           },
           {
             "category": "Premium",
-            "mean": 0.021890435563538393,
-            "std": 0.14633402974527862,
-            "n": 8908
+            "mean": 0.031835829173599554,
+            "std": 0.1755725734173976,
+            "n": 9015
           },
           {
             "category": "Unlimited",
-            "mean": 0.01945970695970696,
-            "std": 0.1381499045674503,
-            "n": 4368
+            "mean": 0.029245466952622343,
+            "std": 0.16851025464307087,
+            "n": 5129
           }
         ],
         "n": 40000
@@ -1283,27 +1298,27 @@
         "categories": [
           {
             "category": "Standard",
-            "mean": 0.5596606092998396,
-            "std": 0.49644443525575116,
-            "n": 14968
+            "mean": 0.5614147452319954,
+            "std": 0.4962315517595549,
+            "n": 14052
           },
           {
             "category": "Basic",
-            "mean": 0.5588635590336849,
-            "std": 0.49654411103380897,
-            "n": 11756
+            "mean": 0.566248729244324,
+            "std": 0.4956126663873038,
+            "n": 11804
           },
           {
             "category": "Premium",
-            "mean": 0.5546699595868881,
-            "std": 0.49703010751240645,
-            "n": 8908
+            "mean": 0.5569606211869107,
+            "std": 0.4967724452176755,
+            "n": 9015
           },
           {
             "category": "Unlimited",
-            "mean": 0.5364010989010989,
-            "std": 0.498730291957522,
-            "n": 4368
+            "mean": 0.567946968219926,
+            "std": 0.49540999298524485,
+            "n": 5129
           }
         ],
         "n": 40000
@@ -1314,27 +1329,27 @@
         "categories": [
           {
             "category": "Standard",
-            "mean": 0.17878140032068413,
-            "std": 0.38318196814091904,
-            "n": 14968
+            "mean": 0.1835325932251637,
+            "std": 0.38711631979977296,
+            "n": 14052
           },
           {
             "category": "Basic",
-            "mean": 0.22099353521605988,
-            "std": 0.41493377531782655,
-            "n": 11756
+            "mean": 0.2325482887156896,
+            "std": 0.4224744996182699,
+            "n": 11804
           },
           {
             "category": "Premium",
-            "mean": 0.15806017063313876,
-            "std": 0.36481789132460474,
-            "n": 8908
+            "mean": 0.15829173599556295,
+            "std": 0.3650345781686243,
+            "n": 9015
           },
           {
             "category": "Unlimited",
-            "mean": 0.21771978021978022,
-            "std": 0.412743114585495,
-            "n": 4368
+            "mean": 0.18814583739520374,
+            "std": 0.3908666884231532,
+            "n": 5129
           }
         ],
         "n": 40000
@@ -1345,21 +1360,21 @@
         "categories": [
           {
             "category": "Monthly",
-            "mean": 42.026931294276395,
-            "std": 13.52039681965038,
-            "n": 17786
+            "mean": 41.31936639791514,
+            "std": 13.877315443436787,
+            "n": 24558
           },
           {
             "category": "One-Year",
-            "mean": 44.724760108258835,
-            "std": 13.295637416879952,
-            "n": 12193
+            "mean": 47.00687960687961,
+            "std": 14.2148331701429,
+            "n": 10175
           },
           {
             "category": "Two-Year",
-            "mean": 47.218940225526396,
-            "std": 13.460178739197225,
-            "n": 10021
+            "mean": 51.402126447693185,
+            "std": 13.288698128335536,
+            "n": 5267
           }
         ],
         "n": 40000
@@ -1370,21 +1385,21 @@
         "categories": [
           {
             "category": "Monthly",
-            "mean": 13.947149443382436,
-            "std": 13.951589703036598,
-            "n": 17786
+            "mean": 17.020400684094795,
+            "std": 17.26074770156429,
+            "n": 24558
           },
           {
             "category": "One-Year",
-            "mean": 29.627983269088823,
-            "std": 27.63751784667794,
-            "n": 12193
+            "mean": 35.39194103194103,
+            "std": 33.19727202023792,
+            "n": 10175
           },
           {
             "category": "Two-Year",
-            "mean": 46.99012074643249,
-            "std": 37.978171614192746,
-            "n": 10021
+            "mean": 53.347446364154166,
+            "std": 44.02170806633248,
+            "n": 5267
           }
         ],
         "n": 40000
@@ -1395,21 +1410,21 @@
         "categories": [
           {
             "category": "Monthly",
-            "mean": 71.61498088384141,
-            "std": 36.193393991240534,
-            "n": 17786
+            "mean": 69.92252626435422,
+            "std": 32.546459955275594,
+            "n": 24558
           },
           {
             "category": "One-Year",
-            "mean": 70.23601984745356,
-            "std": 35.944180556448906,
-            "n": 12193
+            "mean": 70.60925798525855,
+            "std": 32.32138466820633,
+            "n": 10175
           },
           {
             "category": "Two-Year",
-            "mean": 69.5043219239597,
-            "std": 35.739722530242226,
-            "n": 10021
+            "mean": 71.52684830074024,
+            "std": 32.688809279681955,
+            "n": 5267
           }
         ],
         "n": 40000
@@ -1420,21 +1435,21 @@
         "categories": [
           {
             "category": "Monthly",
-            "mean": 1.0503204767794896,
-            "std": 1.0852336038302244,
-            "n": 17786
+            "mean": 0.9989820017916768,
+            "std": 1.1383681352009911,
+            "n": 24558
           },
           {
             "category": "One-Year",
-            "mean": 1.0437136061674732,
-            "std": 1.0579385506857018,
-            "n": 12193
+            "mean": 1.0224078624078623,
+            "std": 1.1477660547306154,
+            "n": 10175
           },
           {
             "category": "Two-Year",
-            "mean": 1.0540864185211056,
-            "std": 1.0732961319888707,
-            "n": 10021
+            "mean": 1.0170875261059427,
+            "std": 1.1746840710010458,
+            "n": 5267
           }
         ],
         "n": 40000
@@ -1445,21 +1460,21 @@
         "categories": [
           {
             "category": "Monthly",
-            "mean": 0.03030473406049702,
-            "std": 0.17142931331997455,
-            "n": 17786
+            "mean": 0.03571137714797622,
+            "std": 0.18557337357974038,
+            "n": 24558
           },
           {
             "category": "One-Year",
-            "mean": 0.026736652177478882,
-            "std": 0.16131936629588156,
-            "n": 12193
+            "mean": 0.038230958230958234,
+            "std": 0.19176278605199898,
+            "n": 10175
           },
           {
             "category": "Two-Year",
-            "mean": 0.028140904101387088,
-            "std": 0.16538356344638494,
-            "n": 10021
+            "mean": 0.04195936966014809,
+            "std": 0.20051537248820644,
+            "n": 5267
           }
         ],
         "n": 40000
@@ -1470,21 +1485,21 @@
         "categories": [
           {
             "category": "Monthly",
-            "mean": 0.4035196221747442,
-            "std": 0.49061702996908985,
-            "n": 17786
+            "mean": 0.46192686700871405,
+            "std": 0.49855847993222663,
+            "n": 24558
           },
           {
             "category": "One-Year",
-            "mean": 0.6202739276634134,
-            "std": 0.48533854274409965,
-            "n": 12193
+            "mean": 0.6931695331695331,
+            "std": 0.46120108007736227,
+            "n": 10175
           },
           {
             "category": "Two-Year",
-            "mean": 0.747530186608123,
-            "std": 0.43445096608017697,
-            "n": 10021
+            "mean": 0.7803303588380482,
+            "std": 0.4140621223501843,
+            "n": 5267
           }
         ],
         "n": 40000
@@ -1495,21 +1510,21 @@
         "categories": [
           {
             "category": "Monthly",
-            "mean": 0.33723153041718207,
-            "std": 0.47277795257466687,
-            "n": 17786
+            "mean": 0.27416727746559166,
+            "std": 0.44610277404581145,
+            "n": 24558
           },
           {
             "category": "One-Year",
-            "mean": 0.10571639465266956,
-            "std": 0.307486898672729,
-            "n": 12193
+            "mean": 0.08206388206388206,
+            "std": 0.2744755097146727,
+            "n": 10175
           },
           {
             "category": "Two-Year",
-            "mean": 0.0345274922662409,
-            "std": 0.18258880421520535,
-            "n": 10021
+            "mean": 0.02809948737421682,
+            "std": 0.16527278138040097,
+            "n": 5267
           }
         ],
         "n": 40000
@@ -1523,53 +1538,53 @@
         "cells": [
           {
             "a_value": "selected",
-            "b_value": "South",
-            "count": 9279
-          },
-          {
-            "a_value": "selected",
-            "b_value": "West",
-            "count": 8370
-          },
-          {
-            "a_value": "selected",
             "b_value": "North",
-            "count": 7723
+            "count": 8026
+          },
+          {
+            "a_value": "selected",
+            "b_value": "South",
+            "count": 7721
           },
           {
             "a_value": "selected",
             "b_value": "East",
-            "count": 6277
+            "count": 7151
+          },
+          {
+            "a_value": "selected",
+            "b_value": "West",
+            "count": 6824
           },
           {
             "a_value": "selected",
             "b_value": "Central",
-            "count": 3556
-          },
-          {
-            "a_value": "not_selected",
-            "b_value": "South",
-            "count": 1308
-          },
-          {
-            "a_value": "not_selected",
-            "b_value": "West",
-            "count": 1178
+            "count": 6483
           },
           {
             "a_value": "not_selected",
             "b_value": "North",
-            "count": 1039
+            "count": 841
           },
           {
             "a_value": "not_selected",
             "b_value": "East",
-            "count": 854
+            "count": 780
+          },
+          {
+            "a_value": "not_selected",
+            "b_value": "South",
+            "count": 750
+          },
+          {
+            "a_value": "not_selected",
+            "b_value": "West",
+            "count": 739
           },
           {
             "a_value": "not_selected",
             "b_value": "Central",
-            "count": 416
+            "count": 685
           }
         ],
         "n": 40000
@@ -1582,426 +1597,426 @@
           {
             "a_value": "selected",
             "b_value": "Standard",
-            "count": 13226
+            "count": 12728
           },
           {
             "a_value": "selected",
             "b_value": "Basic",
-            "count": 10419
+            "count": 10850
           },
           {
             "a_value": "selected",
             "b_value": "Premium",
-            "count": 7785
+            "count": 8078
           },
           {
             "a_value": "selected",
             "b_value": "Unlimited",
-            "count": 3775
+            "count": 4549
           },
           {
             "a_value": "not_selected",
             "b_value": "Standard",
-            "count": 1742
+            "count": 1324
           },
           {
             "a_value": "not_selected",
             "b_value": "Basic",
-            "count": 1337
+            "count": 954
           },
           {
             "a_value": "not_selected",
             "b_value": "Premium",
+            "count": 937
+          },
+          {
+            "a_value": "not_selected",
+            "b_value": "Unlimited",
+            "count": 580
+          }
+        ],
+        "n": 40000
+      },
+      {
+        "set": "products_held",
+        "option": "mobile",
+        "categorical": "contract",
+        "cells": [
+          {
+            "a_value": "selected",
+            "b_value": "Monthly",
+            "count": 22265
+          },
+          {
+            "a_value": "selected",
+            "b_value": "One-Year",
+            "count": 9213
+          },
+          {
+            "a_value": "selected",
+            "b_value": "Two-Year",
+            "count": 4727
+          },
+          {
+            "a_value": "not_selected",
+            "b_value": "Monthly",
+            "count": 2293
+          },
+          {
+            "a_value": "not_selected",
+            "b_value": "One-Year",
+            "count": 962
+          },
+          {
+            "a_value": "not_selected",
+            "b_value": "Two-Year",
+            "count": 540
+          }
+        ],
+        "n": 40000
+      },
+      {
+        "set": "products_held",
+        "option": "broadband",
+        "categorical": "region",
+        "cells": [
+          {
+            "a_value": "not_selected",
+            "b_value": "North",
+            "count": 4767
+          },
+          {
+            "a_value": "not_selected",
+            "b_value": "South",
+            "count": 4677
+          },
+          {
+            "a_value": "not_selected",
+            "b_value": "East",
+            "count": 4331
+          },
+          {
+            "a_value": "not_selected",
+            "b_value": "West",
+            "count": 4132
+          },
+          {
+            "a_value": "selected",
+            "b_value": "North",
+            "count": 4100
+          },
+          {
+            "a_value": "not_selected",
+            "b_value": "Central",
+            "count": 3893
+          },
+          {
+            "a_value": "selected",
+            "b_value": "South",
+            "count": 3794
+          },
+          {
+            "a_value": "selected",
+            "b_value": "East",
+            "count": 3600
+          },
+          {
+            "a_value": "selected",
+            "b_value": "West",
+            "count": 3431
+          },
+          {
+            "a_value": "selected",
+            "b_value": "Central",
+            "count": 3275
+          }
+        ],
+        "n": 40000
+      },
+      {
+        "set": "products_held",
+        "option": "broadband",
+        "categorical": "plan",
+        "cells": [
+          {
+            "a_value": "not_selected",
+            "b_value": "Standard",
+            "count": 7831
+          },
+          {
+            "a_value": "not_selected",
+            "b_value": "Basic",
+            "count": 7802
+          },
+          {
+            "a_value": "selected",
+            "b_value": "Standard",
+            "count": 6221
+          },
+          {
+            "a_value": "selected",
+            "b_value": "Premium",
+            "count": 4801
+          },
+          {
+            "a_value": "not_selected",
+            "b_value": "Premium",
+            "count": 4214
+          },
+          {
+            "a_value": "selected",
+            "b_value": "Basic",
+            "count": 4002
+          },
+          {
+            "a_value": "selected",
+            "b_value": "Unlimited",
+            "count": 3176
+          },
+          {
+            "a_value": "not_selected",
+            "b_value": "Unlimited",
+            "count": 1953
+          }
+        ],
+        "n": 40000
+      },
+      {
+        "set": "products_held",
+        "option": "broadband",
+        "categorical": "contract",
+        "cells": [
+          {
+            "a_value": "not_selected",
+            "b_value": "Monthly",
+            "count": 13433
+          },
+          {
+            "a_value": "selected",
+            "b_value": "Monthly",
+            "count": 11125
+          },
+          {
+            "a_value": "not_selected",
+            "b_value": "One-Year",
+            "count": 5556
+          },
+          {
+            "a_value": "selected",
+            "b_value": "One-Year",
+            "count": 4619
+          },
+          {
+            "a_value": "not_selected",
+            "b_value": "Two-Year",
+            "count": 2811
+          },
+          {
+            "a_value": "selected",
+            "b_value": "Two-Year",
+            "count": 2456
+          }
+        ],
+        "n": 40000
+      },
+      {
+        "set": "products_held",
+        "option": "tv",
+        "categorical": "region",
+        "cells": [
+          {
+            "a_value": "not_selected",
+            "b_value": "North",
+            "count": 6754
+          },
+          {
+            "a_value": "not_selected",
+            "b_value": "South",
+            "count": 6402
+          },
+          {
+            "a_value": "not_selected",
+            "b_value": "East",
+            "count": 6087
+          },
+          {
+            "a_value": "not_selected",
+            "b_value": "West",
+            "count": 5742
+          },
+          {
+            "a_value": "not_selected",
+            "b_value": "Central",
+            "count": 5444
+          },
+          {
+            "a_value": "selected",
+            "b_value": "North",
+            "count": 2113
+          },
+          {
+            "a_value": "selected",
+            "b_value": "South",
+            "count": 2069
+          },
+          {
+            "a_value": "selected",
+            "b_value": "East",
+            "count": 1844
+          },
+          {
+            "a_value": "selected",
+            "b_value": "West",
+            "count": 1821
+          },
+          {
+            "a_value": "selected",
+            "b_value": "Central",
+            "count": 1724
+          }
+        ],
+        "n": 40000
+      },
+      {
+        "set": "products_held",
+        "option": "tv",
+        "categorical": "plan",
+        "cells": [
+          {
+            "a_value": "not_selected",
+            "b_value": "Standard",
+            "count": 10726
+          },
+          {
+            "a_value": "not_selected",
+            "b_value": "Basic",
+            "count": 9767
+          },
+          {
+            "a_value": "not_selected",
+            "b_value": "Premium",
+            "count": 6496
+          },
+          {
+            "a_value": "not_selected",
+            "b_value": "Unlimited",
+            "count": 3440
+          },
+          {
+            "a_value": "selected",
+            "b_value": "Standard",
+            "count": 3326
+          },
+          {
+            "a_value": "selected",
+            "b_value": "Premium",
+            "count": 2519
+          },
+          {
+            "a_value": "selected",
+            "b_value": "Basic",
+            "count": 2037
+          },
+          {
+            "a_value": "selected",
+            "b_value": "Unlimited",
+            "count": 1689
+          }
+        ],
+        "n": 40000
+      },
+      {
+        "set": "products_held",
+        "option": "tv",
+        "categorical": "contract",
+        "cells": [
+          {
+            "a_value": "not_selected",
+            "b_value": "Monthly",
+            "count": 18708
+          },
+          {
+            "a_value": "not_selected",
+            "b_value": "One-Year",
+            "count": 7769
+          },
+          {
+            "a_value": "selected",
+            "b_value": "Monthly",
+            "count": 5850
+          },
+          {
+            "a_value": "not_selected",
+            "b_value": "Two-Year",
+            "count": 3952
+          },
+          {
+            "a_value": "selected",
+            "b_value": "One-Year",
+            "count": 2406
+          },
+          {
+            "a_value": "selected",
+            "b_value": "Two-Year",
+            "count": 1315
+          }
+        ],
+        "n": 40000
+      },
+      {
+        "set": "products_held",
+        "option": "landline",
+        "categorical": "region",
+        "cells": [
+          {
+            "a_value": "not_selected",
+            "b_value": "North",
+            "count": 7679
+          },
+          {
+            "a_value": "not_selected",
+            "b_value": "South",
+            "count": 7348
+          },
+          {
+            "a_value": "not_selected",
+            "b_value": "East",
+            "count": 6865
+          },
+          {
+            "a_value": "not_selected",
+            "b_value": "West",
+            "count": 6543
+          },
+          {
+            "a_value": "not_selected",
+            "b_value": "Central",
+            "count": 6224
+          },
+          {
+            "a_value": "selected",
+            "b_value": "North",
+            "count": 1188
+          },
+          {
+            "a_value": "selected",
+            "b_value": "South",
             "count": 1123
           },
           {
-            "a_value": "not_selected",
-            "b_value": "Unlimited",
-            "count": 593
-          }
-        ],
-        "n": 40000
-      },
-      {
-        "set": "products_held",
-        "option": "mobile",
-        "categorical": "contract",
-        "cells": [
-          {
             "a_value": "selected",
-            "b_value": "Monthly",
-            "count": 15679
-          },
-          {
-            "a_value": "selected",
-            "b_value": "One-Year",
-            "count": 10703
-          },
-          {
-            "a_value": "selected",
-            "b_value": "Two-Year",
-            "count": 8823
-          },
-          {
-            "a_value": "not_selected",
-            "b_value": "Monthly",
-            "count": 2107
-          },
-          {
-            "a_value": "not_selected",
-            "b_value": "One-Year",
-            "count": 1490
-          },
-          {
-            "a_value": "not_selected",
-            "b_value": "Two-Year",
-            "count": 1198
-          }
-        ],
-        "n": 40000
-      },
-      {
-        "set": "products_held",
-        "option": "broadband",
-        "categorical": "region",
-        "cells": [
-          {
-            "a_value": "not_selected",
-            "b_value": "South",
-            "count": 5417
-          },
-          {
-            "a_value": "selected",
-            "b_value": "South",
-            "count": 5170
-          },
-          {
-            "a_value": "not_selected",
-            "b_value": "West",
-            "count": 4916
+            "b_value": "East",
+            "count": 1066
           },
           {
             "a_value": "selected",
             "b_value": "West",
-            "count": 4632
-          },
-          {
-            "a_value": "not_selected",
-            "b_value": "North",
-            "count": 4511
-          },
-          {
-            "a_value": "selected",
-            "b_value": "North",
-            "count": 4251
-          },
-          {
-            "a_value": "not_selected",
-            "b_value": "East",
-            "count": 3665
-          },
-          {
-            "a_value": "selected",
-            "b_value": "East",
-            "count": 3466
-          },
-          {
-            "a_value": "not_selected",
-            "b_value": "Central",
-            "count": 2625
+            "count": 1020
           },
           {
             "a_value": "selected",
             "b_value": "Central",
-            "count": 1347
-          }
-        ],
-        "n": 40000
-      },
-      {
-        "set": "products_held",
-        "option": "broadband",
-        "categorical": "plan",
-        "cells": [
-          {
-            "a_value": "not_selected",
-            "b_value": "Standard",
-            "count": 7954
-          },
-          {
-            "a_value": "selected",
-            "b_value": "Standard",
-            "count": 7014
-          },
-          {
-            "a_value": "not_selected",
-            "b_value": "Basic",
-            "count": 6143
-          },
-          {
-            "a_value": "selected",
-            "b_value": "Basic",
-            "count": 5613
-          },
-          {
-            "a_value": "not_selected",
-            "b_value": "Premium",
-            "count": 4707
-          },
-          {
-            "a_value": "selected",
-            "b_value": "Premium",
-            "count": 4201
-          },
-          {
-            "a_value": "not_selected",
-            "b_value": "Unlimited",
-            "count": 2330
-          },
-          {
-            "a_value": "selected",
-            "b_value": "Unlimited",
-            "count": 2038
-          }
-        ],
-        "n": 40000
-      },
-      {
-        "set": "products_held",
-        "option": "broadband",
-        "categorical": "contract",
-        "cells": [
-          {
-            "a_value": "not_selected",
-            "b_value": "Monthly",
-            "count": 9319
-          },
-          {
-            "a_value": "selected",
-            "b_value": "Monthly",
-            "count": 8467
-          },
-          {
-            "a_value": "not_selected",
-            "b_value": "One-Year",
-            "count": 6499
-          },
-          {
-            "a_value": "selected",
-            "b_value": "One-Year",
-            "count": 5694
-          },
-          {
-            "a_value": "not_selected",
-            "b_value": "Two-Year",
-            "count": 5316
-          },
-          {
-            "a_value": "selected",
-            "b_value": "Two-Year",
-            "count": 4705
-          }
-        ],
-        "n": 40000
-      },
-      {
-        "set": "products_held",
-        "option": "tv",
-        "categorical": "region",
-        "cells": [
-          {
-            "a_value": "not_selected",
-            "b_value": "South",
-            "count": 7881
-          },
-          {
-            "a_value": "not_selected",
-            "b_value": "West",
-            "count": 7218
-          },
-          {
-            "a_value": "not_selected",
-            "b_value": "North",
-            "count": 6572
-          },
-          {
-            "a_value": "not_selected",
-            "b_value": "East",
-            "count": 5305
-          },
-          {
-            "a_value": "not_selected",
-            "b_value": "Central",
-            "count": 3268
-          },
-          {
-            "a_value": "selected",
-            "b_value": "South",
-            "count": 2706
-          },
-          {
-            "a_value": "selected",
-            "b_value": "West",
-            "count": 2330
-          },
-          {
-            "a_value": "selected",
-            "b_value": "North",
-            "count": 2190
-          },
-          {
-            "a_value": "selected",
-            "b_value": "East",
-            "count": 1826
-          },
-          {
-            "a_value": "selected",
-            "b_value": "Central",
-            "count": 704
-          }
-        ],
-        "n": 40000
-      },
-      {
-        "set": "products_held",
-        "option": "tv",
-        "categorical": "plan",
-        "cells": [
-          {
-            "a_value": "not_selected",
-            "b_value": "Standard",
-            "count": 11289
-          },
-          {
-            "a_value": "not_selected",
-            "b_value": "Basic",
-            "count": 8907
-          },
-          {
-            "a_value": "not_selected",
-            "b_value": "Premium",
-            "count": 6730
-          },
-          {
-            "a_value": "selected",
-            "b_value": "Standard",
-            "count": 3679
-          },
-          {
-            "a_value": "not_selected",
-            "b_value": "Unlimited",
-            "count": 3318
-          },
-          {
-            "a_value": "selected",
-            "b_value": "Basic",
-            "count": 2849
-          },
-          {
-            "a_value": "selected",
-            "b_value": "Premium",
-            "count": 2178
-          },
-          {
-            "a_value": "selected",
-            "b_value": "Unlimited",
-            "count": 1050
-          }
-        ],
-        "n": 40000
-      },
-      {
-        "set": "products_held",
-        "option": "tv",
-        "categorical": "contract",
-        "cells": [
-          {
-            "a_value": "not_selected",
-            "b_value": "Monthly",
-            "count": 13370
-          },
-          {
-            "a_value": "not_selected",
-            "b_value": "One-Year",
-            "count": 9270
-          },
-          {
-            "a_value": "not_selected",
-            "b_value": "Two-Year",
-            "count": 7604
-          },
-          {
-            "a_value": "selected",
-            "b_value": "Monthly",
-            "count": 4416
-          },
-          {
-            "a_value": "selected",
-            "b_value": "One-Year",
-            "count": 2923
-          },
-          {
-            "a_value": "selected",
-            "b_value": "Two-Year",
-            "count": 2417
-          }
-        ],
-        "n": 40000
-      },
-      {
-        "set": "products_held",
-        "option": "landline",
-        "categorical": "region",
-        "cells": [
-          {
-            "a_value": "not_selected",
-            "b_value": "South",
-            "count": 9285
-          },
-          {
-            "a_value": "not_selected",
-            "b_value": "West",
-            "count": 8343
-          },
-          {
-            "a_value": "not_selected",
-            "b_value": "North",
-            "count": 7622
-          },
-          {
-            "a_value": "not_selected",
-            "b_value": "East",
-            "count": 6241
-          },
-          {
-            "a_value": "not_selected",
-            "b_value": "Central",
-            "count": 3488
-          },
-          {
-            "a_value": "selected",
-            "b_value": "South",
-            "count": 1302
-          },
-          {
-            "a_value": "selected",
-            "b_value": "West",
-            "count": 1205
-          },
-          {
-            "a_value": "selected",
-            "b_value": "North",
-            "count": 1140
-          },
-          {
-            "a_value": "selected",
-            "b_value": "East",
-            "count": 890
-          },
-          {
-            "a_value": "selected",
-            "b_value": "Central",
-            "count": 484
+            "count": 944
           }
         ],
         "n": 40000
@@ -2014,22 +2029,22 @@
           {
             "a_value": "not_selected",
             "b_value": "Standard",
-            "count": 13103
+            "count": 12187
           },
           {
             "a_value": "not_selected",
             "b_value": "Basic",
-            "count": 10043
+            "count": 10201
           },
           {
             "a_value": "not_selected",
             "b_value": "Premium",
-            "count": 7911
+            "count": 7801
           },
           {
             "a_value": "not_selected",
             "b_value": "Unlimited",
-            "count": 3922
+            "count": 4470
           },
           {
             "a_value": "selected",
@@ -2039,17 +2054,17 @@
           {
             "a_value": "selected",
             "b_value": "Basic",
-            "count": 1713
+            "count": 1603
           },
           {
             "a_value": "selected",
             "b_value": "Premium",
-            "count": 997
+            "count": 1214
           },
           {
             "a_value": "selected",
             "b_value": "Unlimited",
-            "count": 446
+            "count": 659
           }
         ],
         "n": 40000
@@ -2062,32 +2077,32 @@
           {
             "a_value": "not_selected",
             "b_value": "Monthly",
-            "count": 15714
+            "count": 21589
           },
           {
             "a_value": "not_selected",
             "b_value": "One-Year",
-            "count": 10656
+            "count": 8671
           },
           {
             "a_value": "not_selected",
             "b_value": "Two-Year",
-            "count": 8609
+            "count": 4399
           },
           {
             "a_value": "selected",
             "b_value": "Monthly",
-            "count": 2072
+            "count": 2969
           },
           {
             "a_value": "selected",
             "b_value": "One-Year",
-            "count": 1537
+            "count": 1504
           },
           {
             "a_value": "selected",
             "b_value": "Two-Year",
-            "count": 1412
+            "count": 868
           }
         ],
         "n": 40000
@@ -2099,53 +2114,53 @@
         "cells": [
           {
             "a_value": "not_selected",
-            "b_value": "South",
-            "count": 7934
-          },
-          {
-            "a_value": "not_selected",
-            "b_value": "West",
-            "count": 7180
-          },
-          {
-            "a_value": "not_selected",
             "b_value": "North",
-            "count": 6555
+            "count": 6695
+          },
+          {
+            "a_value": "not_selected",
+            "b_value": "South",
+            "count": 6429
           },
           {
             "a_value": "not_selected",
             "b_value": "East",
-            "count": 5424
+            "count": 6019
+          },
+          {
+            "a_value": "not_selected",
+            "b_value": "West",
+            "count": 5698
           },
           {
             "a_value": "not_selected",
             "b_value": "Central",
-            "count": 2934
-          },
-          {
-            "a_value": "selected",
-            "b_value": "South",
-            "count": 2653
-          },
-          {
-            "a_value": "selected",
-            "b_value": "West",
-            "count": 2368
+            "count": 5545
           },
           {
             "a_value": "selected",
             "b_value": "North",
-            "count": 2207
+            "count": 2172
+          },
+          {
+            "a_value": "selected",
+            "b_value": "South",
+            "count": 2042
           },
           {
             "a_value": "selected",
             "b_value": "East",
-            "count": 1707
+            "count": 1912
+          },
+          {
+            "a_value": "selected",
+            "b_value": "West",
+            "count": 1865
           },
           {
             "a_value": "selected",
             "b_value": "Central",
-            "count": 1038
+            "count": 1623
           }
         ],
         "n": 40000
@@ -2158,42 +2173,42 @@
           {
             "a_value": "not_selected",
             "b_value": "Standard",
-            "count": 11722
+            "count": 10791
           },
           {
             "a_value": "not_selected",
             "b_value": "Basic",
-            "count": 10364
+            "count": 9798
           },
           {
             "a_value": "not_selected",
             "b_value": "Premium",
-            "count": 5503
+            "count": 6397
           },
           {
-            "a_value": "selected",
-            "b_value": "Premium",
-            "count": 3405
+            "a_value": "not_selected",
+            "b_value": "Unlimited",
+            "count": 3400
           },
           {
             "a_value": "selected",
             "b_value": "Standard",
-            "count": 3246
-          },
-          {
-            "a_value": "not_selected",
-            "b_value": "Unlimited",
-            "count": 2438
+            "count": 3261
           },
           {
             "a_value": "selected",
-            "b_value": "Unlimited",
-            "count": 1930
+            "b_value": "Premium",
+            "count": 2618
           },
           {
             "a_value": "selected",
             "b_value": "Basic",
-            "count": 1392
+            "count": 2006
+          },
+          {
+            "a_value": "selected",
+            "b_value": "Unlimited",
+            "count": 1729
           }
         ],
         "n": 40000
@@ -2206,32 +2221,32 @@
           {
             "a_value": "not_selected",
             "b_value": "Monthly",
-            "count": 13263
+            "count": 18760
           },
           {
             "a_value": "not_selected",
             "b_value": "One-Year",
-            "count": 9163
-          },
-          {
-            "a_value": "not_selected",
-            "b_value": "Two-Year",
-            "count": 7601
+            "count": 7657
           },
           {
             "a_value": "selected",
             "b_value": "Monthly",
-            "count": 4523
+            "count": 5798
+          },
+          {
+            "a_value": "not_selected",
+            "b_value": "Two-Year",
+            "count": 3969
           },
           {
             "a_value": "selected",
             "b_value": "One-Year",
-            "count": 3030
+            "count": 2518
           },
           {
             "a_value": "selected",
             "b_value": "Two-Year",
-            "count": 2420
+            "count": 1298
           }
         ],
         "n": 40000
@@ -2245,15 +2260,15 @@
         "categories": [
           {
             "category": "selected",
-            "mean": 44.16219287033092,
-            "std": 13.579994700684844,
-            "n": 35205
+            "mean": 44.081121392072916,
+            "std": 14.397175551555982,
+            "n": 36205
           },
           {
             "category": "not_selected",
-            "mean": 44.06068821689259,
-            "std": 13.76299279736338,
-            "n": 4795
+            "mean": 44.21449275362319,
+            "std": 14.220192149185799,
+            "n": 3795
           }
         ],
         "n": 40000
@@ -2265,15 +2280,15 @@
         "categories": [
           {
             "category": "selected",
-            "mean": 27.044425507740378,
-            "std": 29.350618838915487,
-            "n": 35205
+            "mean": 26.413534042259357,
+            "std": 29.739337592297886,
+            "n": 36205
           },
           {
             "category": "not_selected",
-            "mean": 26.716788321167883,
-            "std": 28.9520174686828,
-            "n": 4795
+            "mean": 27.08274044795784,
+            "std": 30.459787171849808,
+            "n": 3795
           }
         ],
         "n": 40000
@@ -2285,15 +2300,15 @@
         "categories": [
           {
             "category": "selected",
-            "mean": 71.19243516545917,
-            "std": 34.41636498951361,
-            "n": 35205
+            "mean": 71.8352246927226,
+            "std": 30.627591988961157,
+            "n": 36205
           },
           {
             "category": "not_selected",
-            "mean": 66.7997851929093,
-            "std": 45.900069810518794,
-            "n": 4795
+            "mean": 55.74287220026356,
+            "std": 44.25269187090238,
+            "n": 3795
           }
         ],
         "n": 40000
@@ -2305,15 +2320,15 @@
         "categories": [
           {
             "category": "selected",
-            "mean": 1.0476068740235762,
-            "std": 1.0707583440738242,
-            "n": 35205
+            "mean": 1.0114901256732496,
+            "std": 1.1500892265025549,
+            "n": 36205
           },
           {
             "category": "not_selected",
-            "mean": 1.0613138686131387,
-            "std": 1.0972691214800667,
-            "n": 4795
+            "mean": 0.9675889328063241,
+            "std": 1.1014694549239739,
+            "n": 3795
           }
         ],
         "n": 40000
@@ -2325,15 +2340,15 @@
         "categories": [
           {
             "category": "selected",
-            "mean": 0.028547081380485728,
-            "std": 0.1665320788336809,
-            "n": 35205
+            "mean": 0.03808866178704599,
+            "std": 0.1914129766123846,
+            "n": 36205
           },
           {
             "category": "not_selected",
-            "mean": 0.02961418143899896,
-            "std": 0.16953812580820224,
-            "n": 4795
+            "mean": 0.028458498023715414,
+            "std": 0.16630062949659677,
+            "n": 3795
           }
         ],
         "n": 40000
@@ -2345,15 +2360,15 @@
         "categories": [
           {
             "category": "selected",
-            "mean": 0.5562562136060218,
-            "std": 0.4968322151377391,
-            "n": 35205
+            "mean": 0.562104681673802,
+            "std": 0.4961348680485693,
+            "n": 36205
           },
           {
             "category": "not_selected",
-            "mean": 0.5522419186652763,
-            "std": 0.49731515274967475,
-            "n": 4795
+            "mean": 0.5681159420289855,
+            "std": 0.4954037636428482,
+            "n": 3795
           }
         ],
         "n": 40000
@@ -2365,15 +2380,15 @@
         "categories": [
           {
             "category": "selected",
-            "mean": 0.18170714387160913,
-            "std": 0.3856084560738707,
-            "n": 35205
+            "mean": 0.188040325921834,
+            "std": 0.3907497651882864,
+            "n": 36205
           },
           {
             "category": "not_selected",
-            "mean": 0.25776850886339936,
-            "std": 0.4374514987228221,
-            "n": 4795
+            "mean": 0.23926218708827404,
+            "std": 0.4266893103422187,
+            "n": 3795
           }
         ],
         "n": 40000
@@ -2385,15 +2400,15 @@
         "categories": [
           {
             "category": "selected",
-            "mean": 44.1787872362981,
-            "std": 13.591636065354635,
-            "n": 18866
+            "mean": 44.261208791208794,
+            "std": 14.331111154809745,
+            "n": 18200
           },
           {
             "category": "not_selected",
-            "mean": 44.12434938960916,
-            "std": 13.61137890265609,
-            "n": 21134
+            "mean": 43.953990825688074,
+            "std": 14.420176986632386,
+            "n": 21800
           }
         ],
         "n": 40000
@@ -2405,15 +2420,15 @@
         "categories": [
           {
             "category": "selected",
-            "mean": 26.95229513410368,
-            "std": 29.197577737759143,
-            "n": 18866
+            "mean": 26.35521978021978,
+            "std": 29.62233711960156,
+            "n": 18200
           },
           {
             "category": "not_selected",
-            "mean": 27.052332733983157,
-            "std": 29.397318640557103,
-            "n": 21134
+            "mean": 26.578715596330277,
+            "std": 29.963691136966506,
+            "n": 21800
           }
         ],
         "n": 40000
@@ -2425,15 +2440,15 @@
         "categories": [
           {
             "category": "selected",
-            "mean": 98.6875946146511,
-            "std": 25.787304999311544,
-            "n": 18866
+            "mean": 97.95110989011035,
+            "std": 21.527274623638167,
+            "n": 18200
           },
           {
             "category": "not_selected",
-            "mean": 45.651296015898836,
-            "std": 23.120860180553116,
-            "n": 21134
+            "mean": 47.23065642201841,
+            "std": 19.547321203262765,
+            "n": 21800
           }
         ],
         "n": 40000
@@ -2445,15 +2460,15 @@
         "categories": [
           {
             "category": "selected",
-            "mean": 1.3169193257712286,
-            "std": 1.1695432439552,
-            "n": 18866
+            "mean": 1.0346703296703297,
+            "std": 1.1690723699429246,
+            "n": 18200
           },
           {
             "category": "not_selected",
-            "mean": 0.8103056685908961,
-            "std": 0.9170518121598306,
-            "n": 21134
+            "mean": 0.9844954128440367,
+            "std": 1.1251916351717246,
+            "n": 21800
           }
         ],
         "n": 40000
@@ -2465,15 +2480,15 @@
         "categories": [
           {
             "category": "selected",
-            "mean": 0.04839393618149051,
-            "std": 0.2146028989896766,
-            "n": 18866
+            "mean": 0.03873626373626374,
+            "std": 0.19297101243872106,
+            "n": 18200
           },
           {
             "category": "not_selected",
-            "mean": 0.01107220592410334,
-            "std": 0.10464287031948297,
-            "n": 21134
+            "mean": 0.035871559633027524,
+            "std": 0.18597413092576576,
+            "n": 21800
           }
         ],
         "n": 40000
@@ -2485,15 +2500,15 @@
         "categories": [
           {
             "category": "selected",
-            "mean": 0.5596310823704018,
-            "std": 0.4964445564000975,
-            "n": 18866
+            "mean": 0.5613186813186813,
+            "std": 0.49623940768157326,
+            "n": 18200
           },
           {
             "category": "not_selected",
-            "mean": 0.5523327339831551,
-            "std": 0.49726550775133904,
-            "n": 21134
+            "mean": 0.5638073394495413,
+            "std": 0.4959232854780999,
+            "n": 21800
           }
         ],
         "n": 40000
@@ -2505,15 +2520,15 @@
         "categories": [
           {
             "category": "selected",
-            "mean": 0.16659599279126472,
-            "std": 0.3726246472411914,
-            "n": 18866
+            "mean": 0.1443956043956044,
+            "std": 0.35150007455885024,
+            "n": 18200
           },
           {
             "category": "not_selected",
-            "mean": 0.21245386580864956,
-            "std": 0.40905395494376384,
-            "n": 21134
+            "mean": 0.23339449541284404,
+            "std": 0.4230008424445684,
+            "n": 21800
           }
         ],
         "n": 40000
@@ -2525,15 +2540,15 @@
         "categories": [
           {
             "category": "selected",
-            "mean": 43.9739647396474,
-            "std": 13.486684539620251,
-            "n": 9756
+            "mean": 44.39745063211786,
+            "std": 14.353326549992634,
+            "n": 9571
           },
           {
             "category": "not_selected",
-            "mean": 44.20681788123264,
-            "std": 13.638631859969236,
-            "n": 30244
+            "mean": 43.998258240494266,
+            "std": 14.387756007421833,
+            "n": 30429
           }
         ],
         "n": 40000
@@ -2545,15 +2560,15 @@
         "categories": [
           {
             "category": "selected",
-            "mean": 26.98441984419844,
-            "std": 29.33902929304507,
-            "n": 9756
+            "mean": 26.289102497126738,
+            "std": 29.601097605589516,
+            "n": 9571
           },
           {
             "category": "not_selected",
-            "mean": 27.011837058590135,
-            "std": 29.29179380562395,
-            "n": 30244
+            "mean": 26.53613329389727,
+            "std": 29.873934063357428,
+            "n": 30429
           }
         ],
         "n": 40000
@@ -2565,15 +2580,15 @@
         "categories": [
           {
             "category": "selected",
-            "mean": 113.22001230012364,
-            "std": 20.790242321001063,
-            "n": 9756
+            "mean": 109.49864381987297,
+            "std": 17.718553706023954,
+            "n": 9571
           },
           {
             "category": "not_selected",
-            "mean": 56.93890391482578,
-            "std": 28.344849759435927,
-            "n": 30244
+            "mean": 57.98176049163645,
+            "std": 25.60722962646661,
+            "n": 30429
           }
         ],
         "n": 40000
@@ -2585,15 +2600,15 @@
         "categories": [
           {
             "category": "selected",
-            "mean": 1.3257482574825747,
-            "std": 1.1766902316902443,
-            "n": 9756
+            "mean": 1.0455542785497858,
+            "std": 1.182515354527828,
+            "n": 9571
           },
           {
             "category": "not_selected",
-            "mean": 0.9600581933606666,
-            "std": 1.0228638139197848,
-            "n": 30244
+            "mean": 0.9953005356732065,
+            "std": 1.1335254642917179,
+            "n": 30429
           }
         ],
         "n": 40000
@@ -2605,15 +2620,15 @@
         "categories": [
           {
             "category": "selected",
-            "mean": 0.05002050020500205,
-            "std": 0.2179984425479986,
-            "n": 9756
+            "mean": 0.04137498693971372,
+            "std": 0.19916636744123237,
+            "n": 9571
           },
           {
             "category": "not_selected",
-            "mean": 0.021789445840497287,
-            "std": 0.14599784474643854,
-            "n": 30244
+            "mean": 0.03585395510861349,
+            "std": 0.18592897860562962,
+            "n": 30429
           }
         ],
         "n": 40000
@@ -2625,15 +2640,15 @@
         "categories": [
           {
             "category": "selected",
-            "mean": 0.5572980729807298,
-            "std": 0.49673153932821706,
-            "n": 9756
+            "mean": 0.5665029777452721,
+            "std": 0.4955835097302209,
+            "n": 9571
           },
           {
             "category": "not_selected",
-            "mean": 0.5552836926332496,
-            "std": 0.49694253052729065,
-            "n": 30244
+            "mean": 0.5614709651976733,
+            "std": 0.4962150868021966,
+            "n": 30429
           }
         ],
         "n": 40000
@@ -2645,15 +2660,15 @@
         "categories": [
           {
             "category": "selected",
-            "mean": 0.1454489544895449,
-            "std": 0.35257098242817375,
-            "n": 9756
+            "mean": 0.12255772646536411,
+            "std": 0.3279459819384983,
+            "n": 9571
           },
           {
             "category": "not_selected",
-            "mean": 0.20546224044438566,
-            "std": 0.40404567323124757,
-            "n": 30244
+            "mean": 0.215025140490979,
+            "std": 0.41084653657923287,
+            "n": 30429
           }
         ],
         "n": 40000
@@ -2665,15 +2680,15 @@
         "categories": [
           {
             "category": "selected",
-            "mean": 49.069308902609045,
-            "std": 15.379617859956888,
-            "n": 5021
+            "mean": 50.748174499157464,
+            "std": 13.2931813129789,
+            "n": 5341
           },
           {
             "category": "not_selected",
-            "mean": 43.44389490837359,
-            "std": 13.177679148325977,
-            "n": 34979
+            "mean": 43.06832280215817,
+            "std": 14.267465413423274,
+            "n": 34659
           }
         ],
         "n": 40000
@@ -2685,15 +2700,15 @@
         "categories": [
           {
             "category": "selected",
-            "mean": 28.004182433778134,
-            "std": 29.860788930828537,
-            "n": 5021
+            "mean": 27.97079198651938,
+            "std": 31.41466487492904,
+            "n": 5341
           },
           {
             "category": "not_selected",
-            "mean": 26.86174561879985,
-            "std": 29.21964052015078,
-            "n": 34979
+            "mean": 26.246833434317203,
+            "std": 29.547213685450036,
+            "n": 34659
           }
         ],
         "n": 40000
@@ -2705,15 +2720,15 @@
         "categories": [
           {
             "category": "selected",
-            "mean": 80.58441346345359,
-            "std": 33.62780361746771,
-            "n": 5021
+            "mean": 82.8747294514132,
+            "std": 30.451141030552705,
+            "n": 5341
           },
           {
             "category": "not_selected",
-            "mean": 69.24212556105071,
-            "std": 36.12171674741717,
-            "n": 34979
+            "mean": 68.37198361176065,
+            "std": 32.3879192679202,
+            "n": 34659
           }
         ],
         "n": 40000
@@ -2725,15 +2740,15 @@
         "categories": [
           {
             "category": "selected",
-            "mean": 1.0812587134037044,
-            "std": 1.0931556758575693,
-            "n": 5021
+            "mean": 1.0438120202209324,
+            "std": 1.1627608230836572,
+            "n": 5341
           },
           {
             "category": "not_selected",
-            "mean": 1.0446553646473598,
-            "std": 1.071120760344738,
-            "n": 34979
+            "mean": 1.0017022995470153,
+            "std": 1.1428736506385937,
+            "n": 34659
           }
         ],
         "n": 40000
@@ -2745,15 +2760,15 @@
         "categories": [
           {
             "category": "selected",
-            "mean": 0.03186616211909978,
-            "std": 0.17566119489126306,
-            "n": 5021
+            "mean": 0.042688635087062346,
+            "std": 0.20217311490289988,
+            "n": 5341
           },
           {
             "category": "not_selected",
-            "mean": 0.028216930158094858,
-            "std": 0.1655944411895627,
-            "n": 34979
+            "mean": 0.03632534118122277,
+            "std": 0.18710109781827142,
+            "n": 34659
           }
         ],
         "n": 40000
@@ -2765,15 +2780,15 @@
         "categories": [
           {
             "category": "selected",
-            "mean": 0.5664210316669986,
-            "std": 0.4956179662943588,
-            "n": 5021
+            "mean": 0.5721774948511514,
+            "std": 0.49480930684215935,
+            "n": 5341
           },
           {
             "category": "not_selected",
-            "mean": 0.5542468338145745,
-            "std": 0.49705567519171273,
-            "n": 34979
+            "mean": 0.5612106523558095,
+            "std": 0.49624627079081807,
+            "n": 34659
           }
         ],
         "n": 40000
@@ -2785,15 +2800,15 @@
         "categories": [
           {
             "category": "selected",
-            "mean": 0.14080860386377217,
-            "std": 0.3478586506761928,
-            "n": 5021
+            "mean": 0.13686575547650254,
+            "std": 0.34373775299849785,
+            "n": 5341
           },
           {
             "category": "not_selected",
-            "mean": 0.19800451699591184,
-            "std": 0.39850127754542775,
-            "n": 34979
+            "mean": 0.2015349548457832,
+            "std": 0.40115241475657337,
+            "n": 34659
           }
         ],
         "n": 40000
@@ -2805,15 +2820,15 @@
         "categories": [
           {
             "category": "selected",
-            "mean": 43.27915371503058,
-            "std": 13.425242925886621,
-            "n": 9973
+            "mean": 44.07582691907635,
+            "std": 14.341496831993725,
+            "n": 9614
           },
           {
             "category": "not_selected",
-            "mean": 44.439271322476436,
-            "std": 13.648038953280079,
-            "n": 30027
+            "mean": 44.09945369578095,
+            "std": 14.392858205274642,
+            "n": 30386
           }
         ],
         "n": 40000
@@ -2825,15 +2840,15 @@
         "categories": [
           {
             "category": "selected",
-            "mean": 26.53494434974431,
-            "std": 29.003276354568115,
-            "n": 9973
+            "mean": 26.783752860411898,
+            "std": 30.07080209583478,
+            "n": 9614
           },
           {
             "category": "not_selected",
-            "mean": 27.161321477337065,
-            "std": 29.400631644629165,
-            "n": 30027
+            "mean": 26.379977621272953,
+            "std": 29.725123679001452,
+            "n": 30386
           }
         ],
         "n": 40000
@@ -2845,15 +2860,15 @@
         "categories": [
           {
             "category": "selected",
-            "mean": 87.25064173267832,
-            "std": 33.58193317469052,
-            "n": 9973
+            "mean": 84.10269710838371,
+            "std": 30.584761769686615,
+            "n": 9614
           },
           {
             "category": "not_selected",
-            "mean": 65.15749159090159,
-            "std": 35.094181024389876,
-            "n": 30027
+            "mean": 65.94402619627475,
+            "std": 31.87933492471628,
+            "n": 30386
           }
         ],
         "n": 40000
@@ -2865,15 +2880,15 @@
         "categories": [
           {
             "category": "selected",
-            "mean": 0.9982953975734483,
-            "std": 1.0459255187200773,
-            "n": 9973
+            "mean": 1.0219471603910963,
+            "std": 1.1744873297713136,
+            "n": 9614
           },
           {
             "category": "not_selected",
-            "mean": 1.0661737769340927,
-            "std": 1.082605496076763,
-            "n": 30027
+            "mean": 1.0026986112025276,
+            "std": 1.136319471893544,
+            "n": 30386
           }
         ],
         "n": 40000
@@ -2885,15 +2900,15 @@
         "categories": [
           {
             "category": "selected",
-            "mean": 0.024666599819512684,
-            "std": 0.15511470350654374,
-            "n": 9973
+            "mean": 0.043166215935094655,
+            "std": 0.20324170414419518,
+            "n": 9614
           },
           {
             "category": "not_selected",
-            "mean": 0.03000632763845872,
-            "std": 0.17060749484787138,
-            "n": 30027
+            "mean": 0.035279404989139736,
+            "std": 0.18448818035364004,
+            "n": 30386
           }
         ],
         "n": 40000
@@ -2905,15 +2920,15 @@
         "categories": [
           {
             "category": "selected",
-            "mean": 0.5554998495939035,
-            "std": 0.4969351346034882,
-            "n": 9973
+            "mean": 0.5618889120033285,
+            "std": 0.4961807841675624,
+            "n": 9614
           },
           {
             "category": "not_selected",
-            "mean": 0.55586638691844,
-            "std": 0.49687741846960964,
-            "n": 30027
+            "mean": 0.5629237148686895,
+            "std": 0.4960329661862807,
+            "n": 30386
           }
         ],
         "n": 40000
@@ -2925,15 +2940,41 @@
         "categories": [
           {
             "category": "selected",
-            "mean": 0.1490023062268124,
-            "std": 0.35610859949131296,
-            "n": 9973
+            "mean": 0.139484085708342,
+            "std": 0.3464689907908694,
+            "n": 9614
           },
           {
             "category": "not_selected",
-            "mean": 0.2047157558197622,
-            "std": 0.403500479983395,
-            "n": 30027
+            "mean": 0.20980056605015468,
+            "std": 0.40717286827329136,
+            "n": 30386
+          }
+        ],
+        "n": 40000
+      }
+    ],
+    "set_set_pairs": [
+      {
+        "set_a": "products_held",
+        "option_a": "broadband",
+        "set_b": "products_held",
+        "option_b": "tv",
+        "cells": [
+          {
+            "a_value": "not_selected",
+            "b_value": "not_selected",
+            "count": 21800
+          },
+          {
+            "a_value": "selected",
+            "b_value": "selected",
+            "count": 9571
+          },
+          {
+            "a_value": "selected",
+            "b_value": "not_selected",
+            "count": 8629
           }
         ],
         "n": 40000
@@ -2943,328 +2984,295 @@
   "models": [
     {
       "field": "age",
-      "intercept": 41.56034070206134,
+      "intercept": 50.83254978475652,
       "predictors": [
-        {
-          "kind": "categorical_level",
-          "field": "plan",
-          "level": "Premium",
-          "coefficient": -1.06104081132134
-        },
-        {
-          "kind": "categorical_level",
-          "field": "plan",
-          "level": "Basic",
-          "coefficient": 2.349611908082837
-        },
-        {
-          "kind": "categorical_level",
-          "field": "plan",
-          "level": "Unlimited",
-          "coefficient": -6.492572439153774
-        },
-        {
-          "kind": "categorical_level",
-          "field": "contract",
-          "level": "Two-Year",
-          "coefficient": 4.034508654464139
-        },
         {
           "kind": "categorical_level",
           "field": "contract",
           "level": "One-Year",
-          "coefficient": 2.644236670730835
+          "coefficient": -4.924000489340061
+        },
+        {
+          "kind": "categorical_level",
+          "field": "contract",
+          "level": "Monthly",
+          "coefficient": -10.149769488886713
         },
         {
           "kind": "set_option",
           "field": "products_held",
           "level": "mobile",
-          "coefficient": 0.3652130695809347
+          "coefficient": -0.26234190420216447
         },
         {
           "kind": "set_option",
           "field": "products_held",
           "level": "broadband",
-          "coefficient": -0.20022960173236068
+          "coefficient": 0.015894249715455697
         },
         {
           "kind": "set_option",
           "field": "products_held",
           "level": "tv",
-          "coefficient": -0.4575037730655325
+          "coefficient": 0.18285814634795144
         },
         {
           "kind": "set_option",
           "field": "products_held",
           "level": "landline",
-          "coefficient": 5.349914182327851
+          "coefficient": 6.841435869418624
         },
         {
           "kind": "set_option",
           "field": "products_held",
           "level": "protection",
-          "coefficient": 0.47466940651552525
+          "coefficient": -0.4022377243668392
         }
       ],
       "references": [
         {
-          "field": "plan",
-          "level": "Standard"
-        },
-        {
           "field": "contract",
-          "level": "Monthly"
+          "level": "Two-Year"
         }
       ],
       "n_obs": 10000,
-      "r2": 0.07252228042753117,
-      "residual_std": 13.111805771055332
+      "r2": 0.0938747891114744,
+      "residual_std": 13.71885422497773
     },
     {
       "field": "tenure_months",
-      "intercept": 14.082700044702737,
+      "intercept": 52.899385702444874,
       "predictors": [
         {
-          "kind": "categorical_level",
-          "field": "contract",
-          "level": "Two-Year",
-          "coefficient": 33.92620323332234
+          "kind": "numeric",
+          "field": "age",
+          "level": "",
+          "coefficient": 0.0011156415318086435
         },
         {
           "kind": "categorical_level",
           "field": "contract",
           "level": "One-Year",
-          "coefficient": 15.07572876053461
+          "coefficient": -17.80812153637395
+        },
+        {
+          "kind": "categorical_level",
+          "field": "contract",
+          "level": "Monthly",
+          "coefficient": -36.471134931606066
         }
       ],
       "references": [
         {
           "field": "contract",
-          "level": "Monthly"
+          "level": "Two-Year"
         }
       ],
       "n_obs": 10000,
-      "r2": 0.2141126747097154,
-      "residual_std": 26.071524118622623
+      "r2": 0.19805671886679277,
+      "residual_std": 26.582306327922225
     },
     {
       "field": "monthly_spend",
-      "intercept": 26.268920068989246,
+      "intercept": 37.25062916665387,
       "predictors": [
         {
           "kind": "categorical_level",
           "field": "plan",
-          "level": "Premium",
-          "coefficient": 18.808131721828286
-        },
-        {
-          "kind": "categorical_level",
-          "field": "plan",
           "level": "Basic",
-          "coefficient": -14.406070860561611
+          "coefficient": -24.59405558530275
         },
         {
           "kind": "categorical_level",
           "field": "plan",
           "level": "Unlimited",
-          "coefficient": 38.71337938117376
+          "coefficient": 15.175051254123343
+        },
+        {
+          "kind": "categorical_level",
+          "field": "plan",
+          "level": "Standard",
+          "coefficient": -15.32625052530075
         },
         {
           "kind": "set_option",
           "field": "products_held",
           "level": "mobile",
-          "coefficient": 11.674562917644288
+          "coefficient": 20.24597862579211
         },
         {
           "kind": "set_option",
           "field": "products_held",
           "level": "broadband",
-          "coefficient": 37.82545970298747
+          "coefficient": 32.897215276564964
         },
         {
           "kind": "set_option",
           "field": "products_held",
           "level": "tv",
-          "coefficient": 30.680751535121477
+          "coefficient": 24.167489749237525
         },
         {
           "kind": "set_option",
           "field": "products_held",
           "level": "landline",
-          "coefficient": 13.584933356356258
+          "coefficient": 13.679344420839564
         },
         {
           "kind": "set_option",
           "field": "products_held",
           "level": "protection",
-          "coefficient": 11.537691099376461
+          "coefficient": 11.694737777062262
         }
       ],
       "references": [
         {
           "field": "plan",
-          "level": "Standard"
+          "level": "Premium"
         }
       ],
       "n_obs": 10000,
-      "r2": 0.9150093734790654,
-      "residual_std": 10.637528414425278
+      "r2": 0.9109467445421793,
+      "residual_std": 9.67833453097715
     },
     {
       "field": "support_contacts",
-      "intercept": 0.7093157548403594,
-      "predictors": [
-        {
-          "kind": "categorical_level",
-          "field": "plan",
-          "level": "Premium",
-          "coefficient": -0.027083743601329632
-        },
-        {
-          "kind": "categorical_level",
-          "field": "plan",
-          "level": "Basic",
-          "coefficient": 0.40471887719243443
-        },
-        {
-          "kind": "categorical_level",
-          "field": "plan",
-          "level": "Unlimited",
-          "coefficient": 0.003626430536218924
-        },
-        {
-          "kind": "set_option",
-          "field": "products_held",
-          "level": "mobile",
-          "coefficient": -0.014731411577544717
-        },
-        {
-          "kind": "set_option",
-          "field": "products_held",
-          "level": "broadband",
-          "coefficient": 0.5084462904068966
-        },
-        {
-          "kind": "set_option",
-          "field": "products_held",
-          "level": "tv",
-          "coefficient": -0.018941417086478146
-        },
-        {
-          "kind": "set_option",
-          "field": "products_held",
-          "level": "landline",
-          "coefficient": -0.04760401829978573
-        },
-        {
-          "kind": "set_option",
-          "field": "products_held",
-          "level": "protection",
-          "coefficient": 0.044205523989225906
-        }
-      ],
-      "references": [
-        {
-          "field": "plan",
-          "level": "Standard"
-        }
-      ],
+      "intercept": 0.9969000000000011,
+      "predictors": [],
       "n_obs": 10000,
-      "r2": 0.08432820872446956,
-      "residual_std": 1.0228650509907067
+      "r2": 0,
+      "residual_std": 1.1289011612108408
     },
     {
       "field": "frequent_caller",
-      "intercept": 0.001323342410992732,
+      "intercept": -0.060427890380621525,
       "predictors": [
+        {
+          "kind": "numeric",
+          "field": "support_contacts",
+          "level": "",
+          "coefficient": 0.09582494771854898
+        }
+      ],
+      "n_obs": 10000,
+      "r2": 0.34549054532684753,
+      "residual_std": 0.14890048333220116
+    },
+    {
+      "field": "autopay",
+      "intercept": 0.7822844948998862,
+      "predictors": [
+        {
+          "kind": "categorical_level",
+          "field": "contract",
+          "level": "One-Year",
+          "coefficient": -0.2731448293581016
+        },
+        {
+          "kind": "categorical_level",
+          "field": "contract",
+          "level": "Monthly",
+          "coefficient": -0.8756234733236766
+        },
+        {
+          "kind": "numeric",
+          "field": "tenure_months",
+          "level": "",
+          "coefficient": -0.00042848333618881047
+        }
+      ],
+      "references": [
+        {
+          "field": "contract",
+          "level": "Two-Year"
+        }
+      ],
+      "n_obs": 10000,
+      "r2": 0.051013979390462594,
+      "residual_std": 1,
+      "link": "probit"
+    },
+    {
+      "field": "churned",
+      "intercept": -1.0187580721340257,
+      "predictors": [
+        {
+          "kind": "categorical_level",
+          "field": "contract",
+          "level": "One-Year",
+          "coefficient": 0.3457564426188566
+        },
+        {
+          "kind": "categorical_level",
+          "field": "contract",
+          "level": "Monthly",
+          "coefficient": 1.0158357395406967
+        },
+        {
+          "kind": "numeric",
+          "field": "tenure_months",
+          "level": "",
+          "coefficient": -0.010961833667383574
+        },
         {
           "kind": "set_option",
           "field": "products_held",
           "level": "mobile",
-          "coefficient": 0.012895198844629774
+          "coefficient": -0.2445504157149469
         },
         {
           "kind": "set_option",
           "field": "products_held",
           "level": "broadband",
-          "coefficient": 0.040523024062973693
+          "coefficient": -0.24728270990916454
         },
         {
           "kind": "set_option",
           "field": "products_held",
           "level": "tv",
-          "coefficient": -0.006965293601983387
+          "coefficient": -0.17363380863660866
         },
         {
           "kind": "set_option",
           "field": "products_held",
           "level": "landline",
-          "coefficient": -0.0009026010497168062
+          "coefficient": -0.24066742973664731
         },
         {
           "kind": "set_option",
           "field": "products_held",
           "level": "protection",
-          "coefficient": -0.009322965336262281
-        }
-      ],
-      "n_obs": 10000,
-      "r2": 0.013719620797300713,
-      "residual_std": 0.16303113482494586
-    },
-    {
-      "field": "autopay",
-      "intercept": 0.3864550737595014,
-      "predictors": [
-        {
-          "kind": "categorical_level",
-          "field": "contract",
-          "level": "Two-Year",
-          "coefficient": 0.3646578359936369
+          "coefficient": -0.3403205955112567
         },
         {
-          "kind": "categorical_level",
-          "field": "contract",
-          "level": "One-Year",
-          "coefficient": 0.23744017992298905
+          "kind": "numeric",
+          "field": "monthly_spend",
+          "level": "",
+          "coefficient": -0.0015536565639083233
+        },
+        {
+          "kind": "numeric",
+          "field": "support_contacts",
+          "level": "",
+          "coefficient": 0.23727221104799506
+        },
+        {
+          "kind": "numeric",
+          "field": "autopay",
+          "level": "",
+          "coefficient": -0.29134525727796134
         }
       ],
       "references": [
         {
           "field": "contract",
-          "level": "Monthly"
+          "level": "Two-Year"
         }
       ],
       "n_obs": 10000,
-      "r2": 0.09543334123384717,
-      "residual_std": 0.47331610450665307
-    },
-    {
-      "field": "churned",
-      "intercept": 0.3357174787662056,
-      "predictors": [
-        {
-          "kind": "categorical_level",
-          "field": "contract",
-          "level": "Two-Year",
-          "coefficient": -0.30172314448858417
-        },
-        {
-          "kind": "categorical_level",
-          "field": "contract",
-          "level": "One-Year",
-          "coefficient": -0.2296618322850268
-        }
-      ],
-      "references": [
-        {
-          "field": "contract",
-          "level": "Monthly"
-        }
-      ],
-      "n_obs": 10000,
-      "r2": 0.11432588008339517,
-      "residual_std": 0.3699926319532643
+      "r2": 0.17138697735987962,
+      "residual_std": 1,
+      "link": "probit"
     }
   ],
   "residual_correlations": {
@@ -3281,132 +3289,134 @@
       {
         "a": "age",
         "b": "autopay",
-        "rho": 0.011458073286286898,
+        "rho": 0.0010720681611436581,
         "n": 10000
       },
       {
         "a": "age",
         "b": "churned",
-        "rho": -0.014565493207252759,
+        "rho": 0.012372723601100059,
         "n": 10000
       },
       {
         "a": "age",
         "b": "frequent_caller",
-        "rho": 0.021141010839659368,
+        "rho": 0.0010705559548292599,
         "n": 10000
       },
       {
         "a": "age",
         "b": "monthly_spend",
-        "rho": -0.015283653611728105,
+        "rho": 0.012286159526425665,
         "n": 10000
       },
       {
         "a": "age",
         "b": "support_contacts",
-        "rho": 0.01362475181272609,
+        "rho": 0.015169783069317455,
         "n": 10000
       },
       {
         "a": "age",
         "b": "tenure_months",
-        "rho": 0.012556881153420345,
+        "rho": -0.000016184314064052938,
         "n": 10000
       },
       {
         "a": "autopay",
         "b": "churned",
-        "rho": -0.07522154833566819,
+        "rho": -0.0013770987876334058,
         "n": 10000
       },
       {
         "a": "autopay",
         "b": "frequent_caller",
-        "rho": 0.01687971746329949,
+        "rho": -0.001874911827084683,
         "n": 10000
       },
       {
         "a": "autopay",
         "b": "monthly_spend",
-        "rho": -0.013582377999149969,
+        "rho": -0.009468539186698793,
         "n": 10000
       },
       {
         "a": "autopay",
         "b": "support_contacts",
-        "rho": 0.01690758741296979,
+        "rho": 0.008942172399881012,
         "n": 10000
       },
       {
         "a": "autopay",
         "b": "tenure_months",
-        "rho": 0.0013984813436806718,
+        "rho": -0.00009356817831599745,
         "n": 10000
       },
       {
         "a": "churned",
         "b": "frequent_caller",
-        "rho": 0.08246659124292252,
+        "rho": -0.013480418901922565,
         "n": 10000
       },
       {
         "a": "churned",
         "b": "monthly_spend",
-        "rho": -0.05008573794444254,
+        "rho": 0.005930632824615105,
         "n": 10000
       },
       {
         "a": "churned",
         "b": "support_contacts",
-        "rho": 0.15592149868271235,
+        "rho": -0.0000016712075698056753,
         "n": 10000
       },
       {
         "a": "churned",
         "b": "tenure_months",
-        "rho": -0.08548139792342789,
+        "rho": -0.0025309909256282376,
         "n": 10000
       },
       {
         "a": "frequent_caller",
         "b": "monthly_spend",
-        "rho": -0.0019489137342159953,
+        "rho": -0.006461960833135856,
         "n": 10000
       },
       {
         "a": "frequent_caller",
         "b": "support_contacts",
-        "rho": 0.49900403448602354,
+        "rho": 4.392307615820468e-15,
         "n": 10000
       },
       {
         "a": "frequent_caller",
         "b": "tenure_months",
-        "rho": 0.014587587995022643,
+        "rho": 0.0049751563013382145,
         "n": 10000
       },
       {
         "a": "monthly_spend",
         "b": "support_contacts",
-        "rho": -0.010552302986108698,
+        "rho": -0.009515500055251994,
         "n": 10000
       },
       {
         "a": "monthly_spend",
         "b": "tenure_months",
-        "rho": -0.014495537809715865,
+        "rho": -0.0007828207878693954,
         "n": 10000
       },
       {
         "a": "support_contacts",
         "b": "tenure_months",
-        "rho": 0.005204065686484066,
+        "rho": 0.004005916082413712,
         "n": 10000
       }
     ]
   },
   "warnings": [
-    "thin dependency level support_contacts x 1 target(s): only 2 supporting observation(s) (below 30) — the candidate still ships and carries its support; judge it on the mapping in its `_evidence`"
+    "model for numeric field \"support_contacts\" carries no predictors: no candidate explained at least 1.0% of its variance",
+    "model for numeric field \"frequent_caller\" kept its linear fit: the probit fit did not converge (a predictor separates the target, or the design is singular)",
+    "thin dependency level support_contacts x 1 target(s): only 1 supporting observation(s) (below 30) — the candidate still ships and carries its support; judge it on the mapping in its `_evidence`"
   ]
 }
