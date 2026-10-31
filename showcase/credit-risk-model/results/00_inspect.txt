@@ -1,5 +1,5 @@
 Records: 60000
-Fields: 22
+Fields: 20
   loan_id                        u32                  Application identifier.
   application_date               date                 Date the application was booked.
   state                          categorical_u8       Borrower state of residence (two-letter code; OTHER pools the long tail).
@@ -23,8 +23,6 @@ Fields: 22
   home_ownership                 categorical_u8       Housing status.
     dictionary: 4 entries
   delinq_2yrs                    u8                   30+ day delinquencies on the bureau file in the prior 24 months.
-  gt_true_pd                     f64                  GROUND TRUTH (simulation only): the true 12-month default probability used to draw the outcome. Never a model input.
-  gt_uniform_draw                f64                  GROUND TRUTH (simulation only): the uniform draw compared against gt_true_pd. Never a model input.
   default_12m                    packed_bool          Outcome: 1 if the loan went 90+ days past due or charged off within 12 months of booking.
   outcome                        categorical_u8       Outcome as a label (performing / defaulted); mirrors default_12m so it can stratify a split and split a two-sample test.
     dictionary: 2 entries

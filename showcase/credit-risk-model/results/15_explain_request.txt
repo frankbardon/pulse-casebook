@@ -1,4 +1,4 @@
-This request batch runs 3 requests side by side and in all runs 3 filters, 21 feature columns, 23 attribute columns, 10 window columns, 2 groupings, 21 aggregations and 4 tests.
+This request batch runs 3 requests side by side and in all runs 3 filters, 21 feature columns, 26 attribute columns, 10 window columns, 2 groupings, 21 aggregations and 4 tests.
 valid: true
 
 - requests[0].filterers[0]: Filter 1 runs FILTER_INCLUDE on `split` with 1 listed value. Keeps only the rows whose field holds one of the listed values, such as two regions or three product codes.
@@ -15,7 +15,8 @@ valid: true
 - requests[0].attributes[3]: Attribute 4 runs ATTR_FORMULA. Adds a number to every row computed from the row's own fields with an expression, such as price * qty.
 - requests[0].attributes[4]: Attribute 5 runs ATTR_FORMULA. Adds a number to every row computed from the row's own fields with an expression, such as price * qty.
 - requests[0].attributes[5]: Attribute 6 runs ATTR_FORMULA. Adds a number to every row computed from the row's own fields with an expression, such as price * qty.
-- requests[0].attributes[6]: Attribute 7 runs ATTR_REG_PREDICT. Adds to every row the value a model fitted once, elsewhere in the request, predicts for it from the row's own predictor values.
+- requests[0].attributes[6]: Attribute 7 runs ATTR_FORMULA. Adds a number to every row computed from the row's own fields with an expression, such as price * qty.
+- requests[0].attributes[7]: Attribute 8 runs ATTR_REG_PREDICT. Adds to every row the value a model fitted once, elsewhere in the request, predicts for it from the row's own predictor values.
 - requests[0].windows[0]: Window 1 runs WIN_SHARE on `defaults`. Adds each row's share of its partition's total, or the running share down the ordered rows, such as the share of defaults caught so far.
 - requests[0].windows[1]: Window 2 runs WIN_LIFT on `defaults`. Adds how many times its share of one column a row holds of another, such as a decile's share of defaults over its share of loans.
 - requests[0].windows[2]: Window 3 runs WIN_RUNNING_SUM on `defaults`, ordered by `mean_pd`. Adds a running total of a field down the ordered rows, such as revenue for the year to date.
@@ -26,7 +27,7 @@ valid: true
 - requests[0].aggregations[1]: Aggregation 2 runs AGG_SUM on `default_12m`. Total of a numeric field, over all rows or per group.
 - requests[0].aggregations[2]: Aggregation 3 runs AGG_AVERAGE on `default_12m`. Average of a numeric field, over all rows or per group.
 - requests[0].aggregations[3]: Aggregation 4 runs AGG_AVERAGE on `pd_score`. Average of a numeric field, over all rows or per group.
-- requests[0].aggregations[4]: Aggregation 5 runs AGG_AVERAGE on `gt_true_pd`. Average of a numeric field, over all rows or per group.
+- requests[0].aggregations[4]: Aggregation 5 runs AGG_AVERAGE on `true_pd`. Average of a numeric field, over all rows or per group.
 - requests[0].aggregations[5]: Aggregation 6 runs AGG_SUM on `loan_amount`. Total of a numeric field, over all rows or per group.
 - requests[1].filterers[0]: Filter 1 runs FILTER_INCLUDE on `split` with 1 listed value. Keeps only the rows whose field holds one of the listed values, such as two regions or three product codes.
 - requests[1].features[0]: Feature 1 runs FEAT_TRAIN_TEST_SPLIT. Labels every record train (0), validation (1) or test (2) by a seeded shuffle, so a model can be checked on records it never learned from.
@@ -42,7 +43,8 @@ valid: true
 - requests[1].attributes[3]: Attribute 4 runs ATTR_FORMULA. Adds a number to every row computed from the row's own fields with an expression, such as price * qty.
 - requests[1].attributes[4]: Attribute 5 runs ATTR_FORMULA. Adds a number to every row computed from the row's own fields with an expression, such as price * qty.
 - requests[1].attributes[5]: Attribute 6 runs ATTR_FORMULA. Adds a number to every row computed from the row's own fields with an expression, such as price * qty.
-- requests[1].attributes[6]: Attribute 7 runs ATTR_REG_PREDICT. Adds to every row the value a model fitted once, elsewhere in the request, predicts for it from the row's own predictor values.
+- requests[1].attributes[6]: Attribute 7 runs ATTR_FORMULA. Adds a number to every row computed from the row's own fields with an expression, such as price * qty.
+- requests[1].attributes[7]: Attribute 8 runs ATTR_REG_PREDICT. Adds to every row the value a model fitted once, elsewhere in the request, predicts for it from the row's own predictor values.
 - requests[1].windows[0]: Window 1 runs WIN_SHARE on `defaults`. Adds each row's share of its partition's total, or the running share down the ordered rows, such as the share of defaults caught so far.
 - requests[1].windows[1]: Window 2 runs WIN_LIFT on `defaults`. Adds how many times its share of one column a row holds of another, such as a decile's share of defaults over its share of loans.
 - requests[1].windows[2]: Window 3 runs WIN_RUNNING_SUM on `defaults`, ordered by `mean_pd`. Adds a running total of a field down the ordered rows, such as revenue for the year to date.
@@ -53,7 +55,7 @@ valid: true
 - requests[1].aggregations[1]: Aggregation 2 runs AGG_SUM on `default_12m`. Total of a numeric field, over all rows or per group.
 - requests[1].aggregations[2]: Aggregation 3 runs AGG_AVERAGE on `default_12m`. Average of a numeric field, over all rows or per group.
 - requests[1].aggregations[3]: Aggregation 4 runs AGG_AVERAGE on `pd_leaky`. Average of a numeric field, over all rows or per group.
-- requests[1].aggregations[4]: Aggregation 5 runs AGG_AVERAGE on `gt_true_pd`. Average of a numeric field, over all rows or per group.
+- requests[1].aggregations[4]: Aggregation 5 runs AGG_AVERAGE on `true_pd`. Average of a numeric field, over all rows or per group.
 - requests[1].aggregations[5]: Aggregation 6 runs AGG_SUM on `loan_amount`. Total of a numeric field, over all rows or per group.
 - requests[2].filterers[0]: Filter 1 runs FILTER_INCLUDE on `split` with 1 listed value. Keeps only the rows whose field holds one of the listed values, such as two regions or three product codes.
 - requests[2].features[0]: Feature 1 runs FEAT_TRAIN_TEST_SPLIT. Labels every record train (0), validation (1) or test (2) by a seeded shuffle, so a model can be checked on records it never learned from.
@@ -69,19 +71,20 @@ valid: true
 - requests[2].attributes[3]: Attribute 4 runs ATTR_FORMULA. Adds a number to every row computed from the row's own fields with an expression, such as price * qty.
 - requests[2].attributes[4]: Attribute 5 runs ATTR_FORMULA. Adds a number to every row computed from the row's own fields with an expression, such as price * qty.
 - requests[2].attributes[5]: Attribute 6 runs ATTR_FORMULA. Adds a number to every row computed from the row's own fields with an expression, such as price * qty.
-- requests[2].attributes[6]: Attribute 7 runs ATTR_REG_PREDICT. Adds to every row the value a model fitted once, elsewhere in the request, predicts for it from the row's own predictor values.
+- requests[2].attributes[6]: Attribute 7 runs ATTR_FORMULA. Adds a number to every row computed from the row's own fields with an expression, such as price * qty.
 - requests[2].attributes[7]: Attribute 8 runs ATTR_REG_PREDICT. Adds to every row the value a model fitted once, elsewhere in the request, predicts for it from the row's own predictor values.
 - requests[2].attributes[8]: Attribute 9 runs ATTR_REG_PREDICT. Adds to every row the value a model fitted once, elsewhere in the request, predicts for it from the row's own predictor values.
+- requests[2].attributes[9]: Attribute 10 runs ATTR_REG_PREDICT. Adds to every row the value a model fitted once, elsewhere in the request, predicts for it from the row's own predictor values.
 - requests[2].aggregations[0]: Aggregation 1 runs AGG_COUNT on `loan_id`. Number of rows that have a value in a field, over all rows or per group.
 - requests[2].aggregations[1]: Aggregation 2 runs AGG_AVERAGE on `default_12m`. Average of a numeric field, over all rows or per group.
 - requests[2].aggregations[2]: Aggregation 3 runs AGG_AVERAGE on `pd_score`. Average of a numeric field, over all rows or per group.
-- requests[2].aggregations[3]: Aggregation 4 runs AGG_AVERAGE on `gt_true_pd`. Average of a numeric field, over all rows or per group.
+- requests[2].aggregations[3]: Aggregation 4 runs AGG_AVERAGE on `true_pd`. Average of a numeric field, over all rows or per group.
 - requests[2].aggregations[4]: Aggregation 5 runs AGG_SUM on `loan_amount`. Total of a numeric field, over all rows or per group.
 - requests[2].aggregations[5]: Aggregation 6 runs AGG_AUC on `pd_score`. How well a score separates a yes/no outcome: the chance that a randomly picked yes row scores higher than a randomly picked no row.
 - requests[2].aggregations[6]: Aggregation 7 runs AGG_AUC on `pd_all22`. How well a score separates a yes/no outcome: the chance that a randomly picked yes row scores higher than a randomly picked no row.
-- requests[2].aggregations[7]: Aggregation 8 runs AGG_AUC on `gt_true_pd`. How well a score separates a yes/no outcome: the chance that a randomly picked yes row scores higher than a randomly picked no row.
+- requests[2].aggregations[7]: Aggregation 8 runs AGG_AUC on `true_pd`. How well a score separates a yes/no outcome: the chance that a randomly picked yes row scores higher than a randomly picked no row.
 - requests[2].aggregations[8]: Aggregation 9 runs AGG_AUC on `pd_leaky`. How well a score separates a yes/no outcome: the chance that a randomly picked yes row scores higher than a randomly picked no row.
 - requests[2].tests[0]: Test 1 runs TEST_KS on `pd_score` split by `outcome`. Checks whether a numeric field's values follow the same distribution in two groups, comparing their whole shape.
 - requests[2].tests[1]: Test 2 runs TEST_KS on `pd_all22` split by `outcome`. Checks whether a numeric field's values follow the same distribution in two groups, comparing their whole shape.
-- requests[2].tests[2]: Test 3 runs TEST_KS on `gt_true_pd` split by `outcome`. Checks whether a numeric field's values follow the same distribution in two groups, comparing their whole shape.
+- requests[2].tests[2]: Test 3 runs TEST_KS on `true_pd` split by `outcome`. Checks whether a numeric field's values follow the same distribution in two groups, comparing their whole shape.
 - requests[2].tests[3]: Test 4 runs TEST_KS on `pd_leaky` split by `outcome`. Checks whether a numeric field's values follow the same distribution in two groups, comparing their whole shape.
