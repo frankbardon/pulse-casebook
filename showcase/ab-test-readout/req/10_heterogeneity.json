@@ -25,14 +25,14 @@
     {
       "type": "ATTR_FORMULA",
       "field": "region",
-      "label": "emea",
-      "expression": "region == \"EMEA\" ? 1 : 0"
+      "label": "na",
+      "expression": "region == \"NA\" ? 1 : 0"
     },
     {
       "type": "ATTR_FORMULA",
       "field": "region",
-      "label": "new_page_x_emea",
-      "expression": "(region == \"EMEA\" && arm == \"new_page\") ? 1 : 0"
+      "label": "new_page_x_na",
+      "expression": "(region == \"NA\" && arm == \"new_page\") ? 1 : 0"
     }
   ],
   "regressions": [
@@ -54,17 +54,17 @@
     },
     {
       "type": "REG_OLS",
-      "name": "trial_by_emea",
+      "name": "trial_by_na",
       "target": "trial",
       "predictors": [
         "is_variant",
-        "emea",
-        "new_page_x_emea"
+        "na",
+        "new_page_x_na"
       ],
       "multiplicity": {
         "method": "holm",
         "coefficients": [
-          "new_page_x_emea"
+          "new_page_x_na"
         ]
       }
     }

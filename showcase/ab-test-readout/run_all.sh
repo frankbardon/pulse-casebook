@@ -8,7 +8,7 @@ cd "$(dirname "$0")"
 mkdir -p out
 
 # Step 0 — data
-"$PULSE" synth from-schema -s data/ab_test.synth.json -o ab_test.pulse --seed 64 --json > out/00_synth.json
+"$PULSE" synth from-schema -s data/ab_test.synth.json -o ab_test.pulse --seed 2026 --json > out/00_synth.json
 "$PULSE" cohort inspect ab_test.pulse --json > out/00_inspect.json
 
 # Step 1 — predict (no data read beyond header + schema)
