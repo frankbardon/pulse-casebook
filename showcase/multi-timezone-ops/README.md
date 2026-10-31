@@ -68,7 +68,7 @@ Three operational decisions depend on the answer:
 {"set_expr": {"on_time": "bernoulli(min(1, max(0, p_on_time)))"}}
 ```
 
-`trend(delivered_at, 0.15 / 182)` adds 0.15 over the 182 local days from Monday 2026-02-02; `between(…)` covers the three Sydney days of the outage, which also multiplies `duration_min` by 1.8. The day-level noise is a fixed pattern of ±3 points per site and local day, a hash of the day number (`floor(trend(delivered_at, 1))`) built from `sin`, so it needs no random draw. Volumes are random draws, so a weekday carries 20 deliveries on average and typically 12–28.
+`trend(delivered_at, 0.15 / 182)` adds 0.15 over the 182 local days from Monday 2026-02-02; `between(…)` covers the three Sydney days of the outage, which also multiplies `duration_min` by 1.8. The day-level noise is a fixed pattern of ±3 points per site and local day, a hash of the day number (`floor(trend(delivered_at, 1))`) built from `sin`, so it needs no random draw. Volumes are random draws: a warehouse-weekday carries 20 deliveries on average, 13–27 on 90% of days (9–40 over the whole period).
 
 ## Methodology
 
@@ -250,7 +250,7 @@ How the pieces fit:
 **Reading.**
 
 - Over 6 × 130 warehouse-days, the planted outage gives the strongest signal in the network: z = −7.39 and an index of 46 on its first day, meaning the day ran at 46% of its own recent norm. The three outage days have the three lowest rolling indexes (30–49). The next lowest is 72.6.
-- **Six false alarms** remain, all on weekdays, at an index of 72.6–77.6. Those days ran below normal but were far from broken. Three of them are at SYD, whose high, steady on-time rate (0.93) gives it the narrowest rolling spread in the network, so an ordinary bad day scores a large z.
+- **Six false alarms** remain, all on weekdays, at an index of 72.6–77.6. Those days ran below normal but were far from broken. Three of them are at SYD.
 - Excluding Saturdays removes the Saturday noise. The same request without the `FILTER_EXCLUDE` (which is what the earlier six-slot batch ran) flags **10** warehouse-days: the three outage days, **three Saturdays** (BLR 07-04, LAX 05-30, ORD 06-27, with 9–10 deliveries each) and four weekdays. With about 10 deliveries, one or two late parcels move a Saturday's rate by 10–20 points. Removing Saturdays also shifts each 28-day baseline from Mon–Sat days to weekdays only, about 5½ weeks of history, so two weekday flags come in: LAX Tue 2026-03-17 (z −3.25) and ORD Fri 2026-04-03 (z −3.39).
 - On z alone, SYD's Wednesday (−4.00) ranks below a false alarm (SYD Tue 04-14, −4.88). The rolling index separates them cleanly. A screen that pages someone on **z ≤ −3 *and* index ≤ 60** returns exactly the three SYD outage days on this data. A minimum of 15 deliveries a day would also drop LAX 03-17 and SYD 07-09, a cheap guard against short holiday days.
 
