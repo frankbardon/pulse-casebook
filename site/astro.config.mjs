@@ -5,8 +5,16 @@ import starlight from '@astrojs/starlight';
 
 // Written by scripts/sync.mjs (runs before dev and build).
 const nav = JSON.parse(fs.readFileSync(new URL('./src/generated/sidebar.json', import.meta.url), 'utf8'));
+// Old film folders → their renumbered folders (films/slugs.json). Film pages live at
+// /films/<topic>/ and never moved; a film's own page and files moved from
+// /films/<old folder>/ to /films/<new folder>/. Each old folder page redirects here;
+// scripts/sync.mjs also writes public/_redirects for the files inside it.
+const { folders } = JSON.parse(fs.readFileSync(new URL('../films/slugs.json', import.meta.url), 'utf8'));
+const redirects = Object.fromEntries(Object.entries(folders).filter(([from, to]) => from !== to)
+	.map(([from, to]) => [`/films/${from}`, `/films/${to}/`]));
 
 export default defineConfig({
+	redirects,
 	integrations: [
 		starlight({
 			title: 'Pulse Casebook',
