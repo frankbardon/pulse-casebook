@@ -1,0 +1,41 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "mean_row_ratio": 2.187037037037037
+      }
+    ],
+    "metadata": {
+      "total_rows": 10,
+      "filtered_rows": 9,
+      "cohort_file": "p.pulse"
+    },
+    "components": {
+      "aggregations": [
+        {
+          "label": "mean_row_ratio",
+          "n": 9,
+          "n_null": 0,
+          "operator": {
+            "sum": 19.683333333333334
+          }
+        }
+      ],
+      "filterers": [
+        {
+          "n_in": 10,
+          "n_out": 9,
+          "n_null_input": 1
+        }
+      ],
+      "run": {
+        "total_records": 10,
+        "filtered_records": 9,
+        "null_records": 0
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

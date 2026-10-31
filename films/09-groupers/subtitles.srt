@@ -1,0 +1,203 @@
+1
+00:00:04,250 --> 00:00:07,778
+Pulse groupers. How records become the rows of a result.
+
+2
+00:00:08,578 --> 00:00:17,439
+By default, groupers run fourth, after the attributes, so a derived column can be a key. The aggregations then fold inside each bucket.
+
+3
+00:00:18,239 --> 00:00:24,796
+An entry names a type and a field, plus an interval, parameters or an include list where the grouper takes them.
+
+4
+00:00:25,596 --> 00:00:34,735
+Each output row carries its key under the field's name. Leave groups empty and the whole cohort is one bucket: three hundred orders in a single row.
+
+5
+00:00:35,535 --> 00:00:39,127
+Group by region instead, and you get one row per region.
+
+6
+00:00:39,927 --> 00:00:44,628
+Name a field and leave out the type, and Pulse picks the grouper from the field's type.
+
+7
+00:00:45,428 --> 00:00:55,527
+A number gets fixed-width bands of ten. A category gets one bucket per value. A date or datetime is bucketed by day, and a multi-select by option.
+
+8
+00:00:56,327 --> 00:01:04,783
+An explicit type always wins. Predict lists every slot it filled under defaults applied, with the rule it used, before anything runs.
+
+9
+00:01:05,583 --> 00:01:16,812
+Numbers can be banded several ways today. The range grouper cuts fixed-width bands, here forty wide, and keys each band low to high. The upper edge belongs to the next band.
+
+10
+00:01:17,612 --> 00:01:21,929
+The rounded grouper makes the same cut, but keys each band by its floor.
+
+11
+00:01:22,729 --> 00:01:31,697
+The numeric ranges grouper takes uneven named bands, in the order you list them. A value outside every range lands in unmatched, last.
+
+12
+00:01:32,497 --> 00:01:42,020
+The quantile grouper cuts equal-count bands: four quartiles of seventy-two orders. It buffers the whole input, and its rows come out in bucket order.
+
+13
+00:01:42,820 --> 00:01:46,967
+The date grouper buckets by a calendar component, from the hour to the year.
+
+14
+00:01:47,767 --> 00:01:53,876
+Day of week runs Monday first, in every output. In this cohort, Saturday is the busiest day.
+
+15
+00:01:54,676 --> 00:02:02,599
+The date ranges grouper takes named periods. Rows keep the order you supplied, and every other day lands in unmatched, last.
+
+16
+00:02:03,399 --> 00:02:17,380
+A multi-select can be read per option or per combination. The per-element grouper gives one bucket per option. An order that ticked web and app counts in both, so the buckets add up to more than the orders. That is correct.
+
+17
+00:02:18,180 --> 00:02:24,439
+The set value grouper gives one bucket per exact combination instead, keyed by the sorted labels.
+
+18
+00:02:25,239 --> 00:02:34,314
+Ticking nothing is a real answer. The combination grouper keeps it as an empty key, and the per-option grouper skips it. Neither counts it as null.
+
+19
+00:02:35,114 --> 00:02:39,837
+A blank is different: no answer at all. It gets no bucket and counts as null.
+
+20
+00:02:40,637 --> 00:02:45,722
+List two groupers, and each row is keyed by both: a tuple of region and plan.
+
+21
+00:02:46,522 --> 00:02:56,109
+You get one row per combination that was actually observed. No order in the West bought Pro, so there is no West Pro row: eleven rows, not twelve.
+
+22
+00:02:56,909 --> 00:03:03,253
+Rows come out in each grouper's own key order, outer to inner, and every row carries both key columns.
+
+23
+00:03:04,053 --> 00:03:07,304
+A null at any key drops the record from every row.
+
+24
+00:03:08,104 --> 00:03:15,216
+Ten orders have no region and five have no plan, so the rows hold two hundred and eighty-five of the three hundred.
+
+25
+00:03:16,016 --> 00:03:21,997
+Each grouper still counts its own nulls once, as it would alone, and each group key is the full tuple.
+
+26
+00:03:22,797 --> 00:03:30,528
+Fan-out multiplies. Group by plan, then by channel, and each order lands once per option it ticked, inside its plan.
+
+27
+00:03:31,328 --> 00:03:35,901
+Two entries on the same key column are refused, with a validation error.
+
+28
+00:03:36,701 --> 00:03:45,477
+Before a run, predict estimates the groups as the product of each grouper's estimate: four regions times three plans is twelve, an upper bound.
+
+29
+00:03:46,277 --> 00:03:53,624
+The run enforces the limit on the groups it actually meets, and refuses with a limit exceeded error once they pass it.
+
+30
+00:03:54,424 --> 00:04:04,224
+Quantiles and k-means fit once over every filtered record by default. Set fit to within, and they refit inside each bucket of the groupers before them.
+
+31
+00:04:05,024 --> 00:04:09,213
+An include list allow-lists keys, and it also fixes their order.
+
+32
+00:04:10,013 --> 00:04:14,629
+Ask for West, then North, and that is exactly what comes back, in that order.
+
+33
+00:04:15,429 --> 00:04:24,632
+Every other record is skipped on the same path as a null, so the null count reads one hundred and fifty-one. A listed key with no records still drops.
+
+34
+00:04:25,432 --> 00:04:32,949
+Today include works on the category, date, date range and multi-select groupers. For number bands, filter the values.
+
+35
+00:04:33,749 --> 00:04:42,248
+Every grouper reports the same floor in its components: total n, the records it placed in a bucket, and n null, the ones it couldn't place.
+
+36
+00:04:43,048 --> 00:04:52,059
+An aggregation counts differently. East has sixty-one orders, but only fifty-seven have a spend, so its average reads fifty-seven values.
+
+37
+00:04:52,859 --> 00:04:59,075
+A grouper counts every record after the filters. An aggregation counts only the values it used.
+
+38
+00:04:59,875 --> 00:05:08,139
+The composite rows carry through the rest of the request. Sort, return, windows, post-tests and grouped matrices all follow them.
+
+39
+00:05:08,939 --> 00:05:13,363
+Tier-one tests run once per group, and each result names its group key.
+
+40
+00:05:14,163 --> 00:05:23,195
+Series overlays run once per partition, over the leading keys, so put the date grouper last. Year over year needs exactly one date grouper.
+
+41
+00:05:23,995 --> 00:05:32,195
+A grouper can key on a window's label too. Here a row number, counted per customer in time order, numbers each customer's visits.
+
+42
+00:05:32,995 --> 00:05:37,163
+Named ranges on that number split each first visit from the repeats.
+
+43
+00:05:37,963 --> 00:05:42,238
+That gives eighty-seven first orders and two hundred and thirteen repeats.
+
+44
+00:05:43,038 --> 00:05:50,939
+Because the grouper reads a window label, the windows run first, over the filtered records. Predict reports the plan before the run.
+
+45
+00:05:51,739 --> 00:05:56,547
+Datetimes are stored as UTC instants, but their buckets read a calendar.
+
+46
+00:05:57,347 --> 00:06:06,528
+Read in UTC, Monday has thirty-eight orders. Read each order on its own store's calendar, through a zone field, and Monday has forty-seven.
+
+47
+00:06:07,328 --> 00:06:14,248
+A slot or a whole request can set the zone. A row whose zone is null gets no bucket, and counts as null.
+
+48
+00:06:15,048 --> 00:06:26,299
+Those are the groupers today: categories, number bands, quantiles, calendar parts and named periods, k-means clusters, and a multi-select read per option or per combination.
+
+49
+00:06:27,099 --> 00:06:36,600
+More groupers are added over time, and embedders can register their own through the extensions option. The manifest always shows what your instance offers.
+
+50
+00:06:37,400 --> 00:06:42,571
+Remember: check what each key dropped before you read the rows. Next up, aggregators.
+
+51
+00:06:43,371 --> 00:06:44,616
+Pulse groupers.

@@ -1,0 +1,5 @@
+{"cohort":{"filename":"p.pulse"},"aggregations":[
+{"type":"AGG_MAE","field":"spend","params":{"prediction_field":"pred"}},
+{"type":"AGG_RMSE","field":"spend","params":{"prediction_field":"pred"}},
+{"type":"AGG_MAPE","field":"spend","params":{"prediction_field":"pred"}},
+{"type":"AGG_AUC","field":"score","params":{"outcome":"renewed"}}]}

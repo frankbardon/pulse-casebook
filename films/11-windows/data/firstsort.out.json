@@ -1,0 +1,15 @@
+{
+  "format_version": "1.1",
+  "data": null,
+  "errors": [
+    {
+      "code": "SERVICE_VALIDATION",
+      "message": "sort[0]: field change is not produced by the pipeline (no schema field, aggregation, attribute, group, or window output matches)",
+      "details": {
+        "field": "change",
+        "sort_index": 0
+      }
+    }
+  ],
+  "warnings": []
+}

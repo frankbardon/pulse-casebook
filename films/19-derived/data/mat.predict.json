@@ -1,0 +1,187 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "valid": true,
+    "schema_info": {
+      "field_count": 9,
+      "fields": [
+        "store_no",
+        "store",
+        "region",
+        "format",
+        "opened",
+        "week",
+        "revenue",
+        "visits",
+        "promo"
+      ]
+    },
+    "columns": [
+      {
+        "name": "store_no",
+        "type": "u64",
+        "nullable": false,
+        "description": "Store number, the key the store table shares",
+        "from": "store_no",
+        "derived": false
+      },
+      {
+        "name": "store",
+        "type": "categorical_u8",
+        "nullable": false,
+        "description": "Store name, S1 to S6",
+        "from": "store",
+        "derived": false,
+        "dictionary": {
+          "total_entries": 6,
+          "truncated": false,
+          "values": [
+            "S1",
+            "S2",
+            "S3",
+            "S4",
+            "S5",
+            "S6"
+          ]
+        }
+      },
+      {
+        "name": "region",
+        "type": "categorical_u8",
+        "nullable": false,
+        "description": "Sales region of the store: North or South",
+        "from": "region",
+        "derived": false,
+        "dictionary": {
+          "total_entries": 2,
+          "truncated": false,
+          "values": [
+            "North",
+            "South"
+          ]
+        }
+      },
+      {
+        "name": "format",
+        "type": "categorical_u8",
+        "nullable": false,
+        "description": "Store format: Mall or Street",
+        "from": "format",
+        "derived": false,
+        "dictionary": {
+          "total_entries": 2,
+          "truncated": false,
+          "values": [
+            "Mall",
+            "Street"
+          ]
+        }
+      },
+      {
+        "name": "opened",
+        "type": "date",
+        "nullable": false,
+        "description": "Date the store opened",
+        "from": "opened",
+        "derived": false
+      },
+      {
+        "name": "week",
+        "type": "date",
+        "nullable": false,
+        "description": "Monday that starts the sales week",
+        "from": "week",
+        "derived": false
+      },
+      {
+        "name": "revenue",
+        "type": "f64",
+        "nullable": true,
+        "description": "Store revenue for the week, in thousands of dollars",
+        "from": "revenue",
+        "derived": false
+      },
+      {
+        "name": "visits",
+        "type": "u32",
+        "nullable": false,
+        "description": "Customer visits to the store that week",
+        "from": "visits",
+        "derived": false
+      },
+      {
+        "name": "promo",
+        "type": "categorical_u8",
+        "nullable": false,
+        "description": "Whether a promotion ran that week, as the stores reported it",
+        "from": "promo",
+        "derived": false,
+        "dictionary": {
+          "total_entries": 4,
+          "truncated": false,
+          "values": [
+            "No",
+            "Yes",
+            "Y",
+            "Unsure"
+          ]
+        }
+      },
+      {
+        "name": "log_rev",
+        "type": "f64",
+        "nullable": true,
+        "description": "FEAT_LOG of revenue — derived from w.pulse",
+        "from": "log_rev",
+        "derived": true
+      },
+      {
+        "name": "prev_promo",
+        "type": "categorical_u8",
+        "nullable": true,
+        "description": "ATTR_PREVIOUS_STATE of promo — derived from w.pulse",
+        "from": "prev_promo",
+        "derived": true,
+        "dictionary": {
+          "total_entries": 4,
+          "truncated": false,
+          "values": [
+            "No",
+            "Yes",
+            "Y",
+            "Unsure"
+          ]
+        }
+      },
+      {
+        "name": "rank",
+        "type": "f64",
+        "nullable": true,
+        "description": "WIN_ROW_NUMBER (partition store; order revenue desc) — derived from w.pulse",
+        "from": "rank",
+        "derived": true
+      },
+      {
+        "name": "rev_lag1",
+        "type": "f64",
+        "nullable": true,
+        "description": "WIN_LAG of revenue (partition store; order week) — derived from w.pulse",
+        "from": "rev_lag1",
+        "derived": true
+      }
+    ],
+    "derived_columns": [
+      "log_rev",
+      "prev_promo",
+      "rank",
+      "rev_lag1"
+    ],
+    "risks": [],
+    "container": {
+      "kind": "file",
+      "elide_constants": false
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

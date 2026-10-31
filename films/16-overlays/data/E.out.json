@@ -1,0 +1,676 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "responses": [
+      {
+        "label": "y2024",
+        "metadata": {
+          "total_rows": 1282,
+          "filtered_rows": 565,
+          "cohort_file": "o.pulse"
+        },
+        "crosstab": {
+          "shape": "matrix",
+          "matrix": {
+            "row_header": {
+              "fields": [
+                "region"
+              ],
+              "types": [
+                "GROUP_CATEGORY"
+              ]
+            },
+            "column_header": {
+              "fields": [
+                "plan"
+              ],
+              "types": [
+                "GROUP_CATEGORY"
+              ]
+            },
+            "row_keys": [
+              [
+                "East"
+              ],
+              [
+                "North"
+              ],
+              [
+                "South"
+              ]
+            ],
+            "column_keys": [
+              [
+                "Basic"
+              ],
+              [
+                "Plus"
+              ],
+              [
+                "Pro"
+              ]
+            ],
+            "cells": [
+              [
+                {
+                  "value": 47,
+                  "present": true
+                },
+                {
+                  "value": 41,
+                  "present": true
+                },
+                {
+                  "value": 51,
+                  "present": true
+                }
+              ],
+              [
+                {
+                  "value": 120,
+                  "present": true
+                },
+                {
+                  "value": 69,
+                  "present": true
+                },
+                {
+                  "value": 47,
+                  "present": true
+                }
+              ],
+              [
+                {
+                  "value": 70,
+                  "present": true
+                },
+                {
+                  "value": 88,
+                  "present": true
+                },
+                {
+                  "value": 32,
+                  "present": true
+                }
+              ]
+            ],
+            "row_margins": [
+              {
+                "value": 139,
+                "present": true
+              },
+              {
+                "value": 236,
+                "present": true
+              },
+              {
+                "value": 190,
+                "present": true
+              }
+            ],
+            "column_margins": [
+              {
+                "value": 237,
+                "present": true
+              },
+              {
+                "value": 198,
+                "present": true
+              },
+              {
+                "value": 130,
+                "present": true
+              }
+            ],
+            "grand_total": {
+              "value": 565,
+              "present": true
+            },
+            "cell_label": "n",
+            "normalize_applied": "none"
+          }
+        },
+        "components": {
+          "crosstab": {
+            "cell_counts": [
+              [
+                47,
+                41,
+                51
+              ],
+              [
+                120,
+                69,
+                47
+              ],
+              [
+                70,
+                88,
+                32
+              ]
+            ],
+            "cell_components": [
+              [
+                {
+                  "n": 47,
+                  "n_null": 0
+                },
+                {
+                  "n": 41,
+                  "n_null": 0
+                },
+                {
+                  "n": 51,
+                  "n_null": 0
+                }
+              ],
+              [
+                {
+                  "n": 120,
+                  "n_null": 0
+                },
+                {
+                  "n": 69,
+                  "n_null": 0
+                },
+                {
+                  "n": 47,
+                  "n_null": 0
+                }
+              ],
+              [
+                {
+                  "n": 70,
+                  "n_null": 0
+                },
+                {
+                  "n": 88,
+                  "n_null": 0
+                },
+                {
+                  "n": 32,
+                  "n_null": 0
+                }
+              ]
+            ],
+            "row_margin_counts": [
+              139,
+              236,
+              190
+            ],
+            "row_margin_components": [
+              {
+                "n": 139,
+                "n_null": 0
+              },
+              {
+                "n": 236,
+                "n_null": 0
+              },
+              {
+                "n": 190,
+                "n_null": 0
+              }
+            ],
+            "column_margin_counts": [
+              237,
+              198,
+              130
+            ],
+            "column_margin_components": [
+              {
+                "n": 237,
+                "n_null": 0
+              },
+              {
+                "n": 198,
+                "n_null": 0
+              },
+              {
+                "n": 130,
+                "n_null": 0
+              }
+            ],
+            "grand_total_count": 565,
+            "grand_total_components": {
+              "n": 565,
+              "n_null": 0
+            },
+            "row_key_components": [
+              {
+                "count": 139,
+                "key": "East",
+                "label": "East"
+              },
+              {
+                "count": 236,
+                "key": "North",
+                "label": "North"
+              },
+              {
+                "count": 190,
+                "key": "South",
+                "label": "South"
+              }
+            ],
+            "column_key_components": [
+              {
+                "count": 237,
+                "key": "Basic",
+                "label": "Basic"
+              },
+              {
+                "count": 198,
+                "key": "Plus",
+                "label": "Plus"
+              },
+              {
+                "count": 130,
+                "key": "Pro",
+                "label": "Pro"
+              }
+            ],
+            "included_records": 565
+          }
+        }
+      },
+      {
+        "label": "y2025",
+        "metadata": {
+          "total_rows": 1282,
+          "filtered_rows": 717,
+          "cohort_file": "o.pulse"
+        },
+        "crosstab": {
+          "shape": "matrix",
+          "matrix": {
+            "row_header": {
+              "fields": [
+                "region"
+              ],
+              "types": [
+                "GROUP_CATEGORY"
+              ]
+            },
+            "column_header": {
+              "fields": [
+                "plan"
+              ],
+              "types": [
+                "GROUP_CATEGORY"
+              ]
+            },
+            "row_keys": [
+              [
+                "East"
+              ],
+              [
+                "North"
+              ],
+              [
+                "South"
+              ]
+            ],
+            "column_keys": [
+              [
+                "Basic"
+              ],
+              [
+                "Plus"
+              ],
+              [
+                "Pro"
+              ]
+            ],
+            "cells": [
+              [
+                {
+                  "value": 61,
+                  "present": true
+                },
+                {
+                  "value": 42,
+                  "present": true
+                },
+                {
+                  "value": 82,
+                  "present": true
+                }
+              ],
+              [
+                {
+                  "value": 129,
+                  "present": true
+                },
+                {
+                  "value": 81,
+                  "present": true
+                },
+                {
+                  "value": 60,
+                  "present": true
+                }
+              ],
+              [
+                {
+                  "value": 92,
+                  "present": true
+                },
+                {
+                  "value": 111,
+                  "present": true
+                },
+                {
+                  "value": 59,
+                  "present": true
+                }
+              ]
+            ],
+            "row_margins": [
+              {
+                "value": 185,
+                "present": true
+              },
+              {
+                "value": 270,
+                "present": true
+              },
+              {
+                "value": 262,
+                "present": true
+              }
+            ],
+            "column_margins": [
+              {
+                "value": 282,
+                "present": true
+              },
+              {
+                "value": 234,
+                "present": true
+              },
+              {
+                "value": 201,
+                "present": true
+              }
+            ],
+            "grand_total": {
+              "value": 717,
+              "present": true
+            },
+            "cell_label": "n",
+            "normalize_applied": "none"
+          }
+        },
+        "components": {
+          "crosstab": {
+            "cell_counts": [
+              [
+                61,
+                42,
+                82
+              ],
+              [
+                129,
+                81,
+                60
+              ],
+              [
+                92,
+                111,
+                59
+              ]
+            ],
+            "cell_components": [
+              [
+                {
+                  "n": 61,
+                  "n_null": 0
+                },
+                {
+                  "n": 42,
+                  "n_null": 0
+                },
+                {
+                  "n": 82,
+                  "n_null": 0
+                }
+              ],
+              [
+                {
+                  "n": 129,
+                  "n_null": 0
+                },
+                {
+                  "n": 81,
+                  "n_null": 0
+                },
+                {
+                  "n": 60,
+                  "n_null": 0
+                }
+              ],
+              [
+                {
+                  "n": 92,
+                  "n_null": 0
+                },
+                {
+                  "n": 111,
+                  "n_null": 0
+                },
+                {
+                  "n": 59,
+                  "n_null": 0
+                }
+              ]
+            ],
+            "row_margin_counts": [
+              185,
+              270,
+              262
+            ],
+            "row_margin_components": [
+              {
+                "n": 185,
+                "n_null": 0
+              },
+              {
+                "n": 270,
+                "n_null": 0
+              },
+              {
+                "n": 262,
+                "n_null": 0
+              }
+            ],
+            "column_margin_counts": [
+              282,
+              234,
+              201
+            ],
+            "column_margin_components": [
+              {
+                "n": 282,
+                "n_null": 0
+              },
+              {
+                "n": 234,
+                "n_null": 0
+              },
+              {
+                "n": 201,
+                "n_null": 0
+              }
+            ],
+            "grand_total_count": 717,
+            "grand_total_components": {
+              "n": 717,
+              "n_null": 0
+            },
+            "row_key_components": [
+              {
+                "count": 185,
+                "key": "East",
+                "label": "East"
+              },
+              {
+                "count": 270,
+                "key": "North",
+                "label": "North"
+              },
+              {
+                "count": 262,
+                "key": "South",
+                "label": "South"
+              }
+            ],
+            "column_key_components": [
+              {
+                "count": 282,
+                "key": "Basic",
+                "label": "Basic"
+              },
+              {
+                "count": 234,
+                "key": "Plus",
+                "label": "Plus"
+              },
+              {
+                "count": 201,
+                "key": "Pro",
+                "label": "Pro"
+              }
+            ],
+            "included_records": 717
+          }
+        }
+      }
+    ],
+    "overlays": [
+      {
+        "name": "idx",
+        "kind": "OVERLAY_INDEX_VS_REF",
+        "scope": "cell",
+        "ref": {},
+        "payload": {
+          "shape": "matrix",
+          "matrix": {
+            "row_header": {
+              "fields": [
+                "region"
+              ],
+              "types": [
+                "GROUP_CATEGORY"
+              ]
+            },
+            "column_header": {
+              "fields": [
+                "plan"
+              ],
+              "types": [
+                "GROUP_CATEGORY"
+              ]
+            },
+            "row_keys": [
+              [
+                "East"
+              ],
+              [
+                "North"
+              ],
+              [
+                "South"
+              ]
+            ],
+            "column_keys": [
+              [
+                "Basic"
+              ],
+              [
+                "Plus"
+              ],
+              [
+                "Pro"
+              ]
+            ],
+            "cells": [
+              [
+                {
+                  "value": 129.7872340425532,
+                  "present": true
+                },
+                {
+                  "value": 102.4390243902439,
+                  "present": true
+                },
+                {
+                  "value": 160.7843137254902,
+                  "present": true
+                }
+              ],
+              [
+                {
+                  "value": 107.5,
+                  "present": true
+                },
+                {
+                  "value": 117.3913043478261,
+                  "present": true
+                },
+                {
+                  "value": 127.65957446808511,
+                  "present": true
+                }
+              ],
+              [
+                {
+                  "value": 131.42857142857142,
+                  "present": true
+                },
+                {
+                  "value": 126.13636363636364,
+                  "present": true
+                },
+                {
+                  "value": 184.375,
+                  "present": true
+                }
+              ]
+            ],
+            "grand_total": {
+              "present": false
+            },
+            "cell_label": "idx",
+            "normalize_applied": "none"
+          }
+        },
+        "summary": {
+          "min": 102.4390243902439,
+          "max": 184.375,
+          "count": 9,
+          "baseline": 100
+        }
+      },
+      {
+        "name": "chi",
+        "kind": "OVERLAY_CHISQ_VS_REF",
+        "scope": "matrix",
+        "ref": {},
+        "payload": {
+          "shape": "scalar",
+          "scalar": 0.014448774138571647
+        },
+        "summary": {
+          "statistic": 19.077855735245166,
+          "p_value": 0.014448774138571647,
+          "parameters": {
+            "df": 8
+          }
+        }
+      }
+    ]
+  },
+  "errors": [],
+  "warnings": []
+}

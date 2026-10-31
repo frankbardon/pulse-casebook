@@ -1,0 +1,137 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "valid": false,
+    "request": {
+      "cohort": {
+        "filename": "s.pulse"
+      },
+      "windows": [
+        {
+          "type": "WIN_MOVING_AVG",
+          "field": "sales",
+          "label": "mavg",
+          "partition_by": [
+            "region"
+          ],
+          "order_by": [
+            {
+              "field": "date"
+            }
+          ],
+          "frame": {
+            "mode": "rows",
+            "following": 0
+          }
+        }
+      ]
+    },
+    "schema_info": {
+      "field_count": 4,
+      "fields": [
+        "region",
+        "month",
+        "date",
+        "sales"
+      ]
+    },
+    "record_count": 0,
+    "shards": [],
+    "streamable": false,
+    "streamable_reasons": [
+      "no aggregations, matrices, tests or regressions: streaming path requires per-record work",
+      "windows run over the whole row set (every filtered record, or the post-aggregate rows when grouped)"
+    ],
+    "suggestions": [
+      {
+        "path": [
+          "Windows",
+          "0",
+          "Type"
+        ],
+        "reason": "operator WIN_MOVING_AVG forces the buffered path; no streamable peer is available",
+        "current": "WIN_MOVING_AVG",
+        "confidence": 0.6
+      }
+    ],
+    "defaults_applied": [],
+    "aggregations": [],
+    "groups": [],
+    "filterers": [],
+    "overlays_applied": [],
+    "overlays_schema_divergence": [],
+    "overlay_cost": {},
+    "time_zones": [],
+    "sizes": [
+      {
+        "section": "data",
+        "full_bytes": 1282,
+        "shaped_bytes": 1282,
+        "basis": "upper_bound"
+      },
+      {
+        "section": "metadata",
+        "full_bytes": 116,
+        "shaped_bytes": 116,
+        "basis": "heuristic"
+      },
+      {
+        "section": "components",
+        "full_bytes": 114,
+        "shaped_bytes": 114,
+        "basis": "heuristic"
+      }
+    ],
+    "post_window": {
+      "windows_first": false,
+      "window_labels": [
+        "mavg"
+      ],
+      "attributes": []
+    }
+  },
+  "errors": [
+    {
+      "code": "PULSE_WINDOW_INVALID",
+      "message": "window[0] (WIN_MOVING_AVG): frame must have bounded preceding AND following",
+      "details": {
+        "type": "WIN_MOVING_AVG",
+        "window_index": 0
+      }
+    }
+  ],
+  "warnings": [
+    {
+      "code": "PULSE_FIELD_DESCRIPTION_LOW_QUALITY",
+      "message": "field region has a low-quality description",
+      "details": {
+        "description": "",
+        "field": "region"
+      }
+    },
+    {
+      "code": "PULSE_FIELD_DESCRIPTION_LOW_QUALITY",
+      "message": "field month has a low-quality description",
+      "details": {
+        "description": "",
+        "field": "month"
+      }
+    },
+    {
+      "code": "PULSE_FIELD_DESCRIPTION_LOW_QUALITY",
+      "message": "field date has a low-quality description",
+      "details": {
+        "description": "",
+        "field": "date"
+      }
+    },
+    {
+      "code": "PULSE_FIELD_DESCRIPTION_LOW_QUALITY",
+      "message": "field sales has a low-quality description",
+      "details": {
+        "description": "",
+        "field": "sales"
+      }
+    }
+  ]
+}

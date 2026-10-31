@@ -1,0 +1,9 @@
+{"cohort":{"filename":"raked.pulse"},
+ "weight":{"field":"rake_weight"},
+ "aggregations":[
+  {"type":"AGG_AVERAGE","field":"satisfied","label":"raked"},
+  {"type":"AGG_CI_LOWER","field":"satisfied","label":"raked_lo"},
+  {"type":"AGG_CI_UPPER","field":"satisfied","label":"raked_hi"},
+  {"type":"AGG_AVERAGE","field":"satisfied","label":"raw","weight":null},
+  {"type":"AGG_CI_LOWER","field":"satisfied","label":"raw_lo","weight":null},
+  {"type":"AGG_CI_UPPER","field":"satisfied","label":"raw_hi","weight":null}]}

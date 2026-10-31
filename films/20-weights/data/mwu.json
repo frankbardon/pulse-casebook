@@ -1,0 +1,3 @@
+{"cohort":{"filename":"survey.pulse"},
+ "weight":{"field":"dwt"},
+ "tests":[{"type":"TEST_MANN_WHITNEY_U","field":"spend","split_by":"gender","label":"mwu"}]}

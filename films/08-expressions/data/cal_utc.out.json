@@ -1,0 +1,374 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "day": 19792,
+        "id": "1",
+        "months": 1,
+        "wd": 7,
+        "wk": 19751
+      },
+      {
+        "day": 19791,
+        "id": "2",
+        "months": 2,
+        "wd": 6,
+        "wk": 19779
+      },
+      {
+        "day": 19793,
+        "id": "3",
+        "months": 1,
+        "wd": 1,
+        "wk": 19730
+      },
+      {
+        "day": 19790,
+        "id": "4",
+        "months": 0,
+        "wd": 5,
+        "wk": 19758
+      },
+      {
+        "day": 19792,
+        "id": "5",
+        "months": 3,
+        "wd": 7,
+        "wk": 19779
+      },
+      {
+        "day": 19794,
+        "id": "6",
+        "months": 1,
+        "wd": 2,
+        "wk": 19821
+      }
+    ],
+    "metadata": {
+      "total_rows": 6,
+      "filtered_rows": 6,
+      "cohort_file": "e.pulse"
+    },
+    "components": {
+      "aggregations": [
+        {
+          "label": "wd",
+          "n": 6,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "1"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 7
+              }
+            },
+            {
+              "group_key": [
+                "2"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 6
+              }
+            },
+            {
+              "group_key": [
+                "3"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 1
+              }
+            },
+            {
+              "group_key": [
+                "4"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 5
+              }
+            },
+            {
+              "group_key": [
+                "5"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 7
+              }
+            },
+            {
+              "group_key": [
+                "6"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 2
+              }
+            }
+          ]
+        },
+        {
+          "label": "day",
+          "n": 6,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "1"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 19792
+              }
+            },
+            {
+              "group_key": [
+                "2"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 19791
+              }
+            },
+            {
+              "group_key": [
+                "3"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 19793
+              }
+            },
+            {
+              "group_key": [
+                "4"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 19790
+              }
+            },
+            {
+              "group_key": [
+                "5"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 19792
+              }
+            },
+            {
+              "group_key": [
+                "6"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 19794
+              }
+            }
+          ]
+        },
+        {
+          "label": "months",
+          "n": 6,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "1"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 1
+              }
+            },
+            {
+              "group_key": [
+                "2"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 2
+              }
+            },
+            {
+              "group_key": [
+                "3"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 1
+              }
+            },
+            {
+              "group_key": [
+                "4"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 0
+              }
+            },
+            {
+              "group_key": [
+                "5"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 3
+              }
+            },
+            {
+              "group_key": [
+                "6"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 1
+              }
+            }
+          ]
+        },
+        {
+          "label": "wk",
+          "n": 6,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "1"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 19751
+              }
+            },
+            {
+              "group_key": [
+                "2"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 19779
+              }
+            },
+            {
+              "group_key": [
+                "3"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 19730
+              }
+            },
+            {
+              "group_key": [
+                "4"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 19758
+              }
+            },
+            {
+              "group_key": [
+                "5"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 19779
+              }
+            },
+            {
+              "group_key": [
+                "6"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 19821
+              }
+            }
+          ]
+        }
+      ],
+      "groupers": [
+        {
+          "field": "id",
+          "total_n": 6,
+          "operator": {
+            "buckets": [
+              {
+                "count": 1,
+                "key": "1",
+                "label": "1"
+              },
+              {
+                "count": 1,
+                "key": "2",
+                "label": "2"
+              },
+              {
+                "count": 1,
+                "key": "3",
+                "label": "3"
+              },
+              {
+                "count": 1,
+                "key": "4",
+                "label": "4"
+              },
+              {
+                "count": 1,
+                "key": "5",
+                "label": "5"
+              },
+              {
+                "count": 1,
+                "key": "6",
+                "label": "6"
+              }
+            ],
+            "dict_size": 0
+          }
+        }
+      ],
+      "run": {
+        "total_records": 6,
+        "filtered_records": 6,
+        "null_records": 0
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

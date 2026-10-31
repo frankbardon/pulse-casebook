@@ -1,0 +1,5 @@
+[
+  {"name": "id", "type": "u32", "nullable": false, "description": "Purchase number, unique across every quarter"},
+  {"name": "region", "type": "categorical_u8", "nullable": false, "description": "Sales region of the store that took the purchase"},
+  {"name": "spend", "type": "f64", "nullable": false, "description": "Purchase amount in dollars, to the micro-dollar"}
+]

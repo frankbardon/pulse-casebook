@@ -1,0 +1,403 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "metadata": {
+      "total_rows": 600,
+      "filtered_rows": 600,
+      "cohort_file": "survey.pulse"
+    },
+    "crosstab": {
+      "shape": "matrix",
+      "matrix": {
+        "row_header": {
+          "fields": [
+            "age"
+          ],
+          "types": [
+            "GROUP_CATEGORY"
+          ]
+        },
+        "column_header": {
+          "fields": [
+            "gender"
+          ],
+          "types": [
+            "GROUP_CATEGORY"
+          ]
+        },
+        "row_keys": [
+          [
+            "18-34"
+          ],
+          [
+            "35-54"
+          ],
+          [
+            "55+"
+          ]
+        ],
+        "column_keys": [
+          [
+            "F"
+          ],
+          [
+            "M"
+          ]
+        ],
+        "cells": [
+          [
+            {
+              "value": 123,
+              "present": true
+            },
+            {
+              "value": 171,
+              "present": true
+            }
+          ],
+          [
+            {
+              "value": 68,
+              "present": true
+            },
+            {
+              "value": 111,
+              "present": true
+            }
+          ],
+          [
+            {
+              "value": 52,
+              "present": true
+            },
+            {
+              "value": 75,
+              "present": true
+            }
+          ]
+        ],
+        "row_margins": [
+          {
+            "value": 294,
+            "present": true
+          },
+          {
+            "value": 179,
+            "present": true
+          },
+          {
+            "value": 127,
+            "present": true
+          }
+        ],
+        "column_margins": [
+          {
+            "value": 243,
+            "present": true
+          },
+          {
+            "value": 357,
+            "present": true
+          }
+        ],
+        "grand_total": {
+          "value": 600,
+          "present": true
+        },
+        "cell_label": "n",
+        "normalize_applied": "none"
+      }
+    },
+    "overlays": [
+      {
+        "name": "census",
+        "kind": "OVERLAY_RAKE",
+        "scope": "matrix",
+        "ref": {},
+        "payload": {
+          "shape": "matrix",
+          "matrix": {
+            "row_header": {
+              "fields": [
+                "age"
+              ],
+              "types": [
+                "GROUP_CATEGORY"
+              ]
+            },
+            "column_header": {
+              "fields": [
+                "gender"
+              ],
+              "types": [
+                "GROUP_CATEGORY"
+              ]
+            },
+            "row_keys": [
+              [
+                "18-34"
+              ],
+              [
+                "35-54"
+              ],
+              [
+                "55+"
+              ]
+            ],
+            "column_keys": [
+              [
+                "F"
+              ],
+              [
+                "M"
+              ]
+            ],
+            "cells": [
+              [
+                {
+                  "value": 91.64947253443493,
+                  "present": true
+                },
+                {
+                  "value": 82.35052746738302,
+                  "present": true
+                }
+              ],
+              [
+                {
+                  "value": 96.3495650801541,
+                  "present": true
+                },
+                {
+                  "value": 101.65043491695265,
+                  "present": true
+                }
+              ],
+              [
+                {
+                  "value": 118.00096238541096,
+                  "present": true
+                },
+                {
+                  "value": 109.99903761566436,
+                  "present": true
+                }
+              ]
+            ],
+            "grand_total": {
+              "present": false
+            },
+            "cell_label": "fitted",
+            "normalize_applied": "none"
+          },
+          "parts": {
+            "factors": {
+              "shape": "matrix",
+              "matrix": {
+                "row_header": {
+                  "fields": [
+                    "age"
+                  ],
+                  "types": [
+                    "GROUP_CATEGORY"
+                  ]
+                },
+                "column_header": {
+                  "fields": [
+                    "gender"
+                  ],
+                  "types": [
+                    "GROUP_CATEGORY"
+                  ]
+                },
+                "row_keys": [
+                  [
+                    "18-34"
+                  ],
+                  [
+                    "35-54"
+                  ],
+                  [
+                    "55+"
+                  ]
+                ],
+                "column_keys": [
+                  [
+                    "F"
+                  ],
+                  [
+                    "M"
+                  ]
+                ],
+                "cells": [
+                  [
+                    {
+                      "value": 0.7451176628815849,
+                      "present": true
+                    },
+                    {
+                      "value": 0.4815820319730001,
+                      "present": true
+                    }
+                  ],
+                  [
+                    {
+                      "value": 1.4169053688257955,
+                      "present": true
+                    },
+                    {
+                      "value": 0.9157696839365104,
+                      "present": true
+                    }
+                  ],
+                  [
+                    {
+                      "value": 2.2692492766425185,
+                      "present": true
+                    },
+                    {
+                      "value": 1.466653834875525,
+                      "present": true
+                    }
+                  ]
+                ],
+                "grand_total": {
+                  "present": false
+                },
+                "cell_label": "factors",
+                "normalize_applied": "none"
+              }
+            }
+          }
+        },
+        "summary": {
+          "parameters": {
+            "converged": 1,
+            "iterations": 4,
+            "residual": 1.461249079089024e-11
+          }
+        }
+      }
+    ],
+    "components": {
+      "crosstab": {
+        "cell_counts": [
+          [
+            123,
+            171
+          ],
+          [
+            68,
+            111
+          ],
+          [
+            52,
+            75
+          ]
+        ],
+        "cell_components": [
+          [
+            {
+              "n": 123,
+              "n_null": 0
+            },
+            {
+              "n": 171,
+              "n_null": 0
+            }
+          ],
+          [
+            {
+              "n": 68,
+              "n_null": 0
+            },
+            {
+              "n": 111,
+              "n_null": 0
+            }
+          ],
+          [
+            {
+              "n": 52,
+              "n_null": 0
+            },
+            {
+              "n": 75,
+              "n_null": 0
+            }
+          ]
+        ],
+        "row_margin_counts": [
+          294,
+          179,
+          127
+        ],
+        "row_margin_components": [
+          {
+            "n": 294,
+            "n_null": 0
+          },
+          {
+            "n": 179,
+            "n_null": 0
+          },
+          {
+            "n": 127,
+            "n_null": 0
+          }
+        ],
+        "column_margin_counts": [
+          243,
+          357
+        ],
+        "column_margin_components": [
+          {
+            "n": 243,
+            "n_null": 0
+          },
+          {
+            "n": 357,
+            "n_null": 0
+          }
+        ],
+        "grand_total_count": 600,
+        "grand_total_components": {
+          "n": 600,
+          "n_null": 0
+        },
+        "row_key_components": [
+          {
+            "count": 294,
+            "key": "18-34",
+            "label": "18-34"
+          },
+          {
+            "count": 179,
+            "key": "35-54",
+            "label": "35-54"
+          },
+          {
+            "count": 127,
+            "key": "55+",
+            "label": "55+"
+          }
+        ],
+        "column_key_components": [
+          {
+            "count": 243,
+            "key": "F",
+            "label": "F"
+          },
+          {
+            "count": 357,
+            "key": "M",
+            "label": "M"
+          }
+        ],
+        "included_records": 600
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

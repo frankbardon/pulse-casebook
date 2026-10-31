@@ -1,0 +1,3 @@
+{"cohort":{"filename":"f.pulse"},
+"features":[{"type":"FEAT_TRAIN_TEST_SPLIT","params":{"ratios":[0.7,0.3],"seed":42}},{"type":"FEAT_TARGET_ENCODE","field":"occupation","params":{"target":"churned","smoothing":10}}],
+"aggregations":[{"type":"AGG_AVERAGE","field":"TARGET_occupation"}]}

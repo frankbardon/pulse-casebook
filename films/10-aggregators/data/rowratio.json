@@ -1,0 +1,4 @@
+{"cohort":{"filename":"p.pulse"},
+ "filterers":[{"type":"FILTER_RANGE","field":"spend","values":["0","1000"]}],
+ "attributes":[{"type":"ATTR_FORMULA","label":"row_ratio","expression":"spend / cost"}],
+ "aggregations":[{"type":"AGG_AVERAGE","field":"row_ratio","label":"mean_row_ratio"}]}

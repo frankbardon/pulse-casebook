@@ -1,0 +1,152 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "ci_hi": 46.05152091474289,
+        "ci_lo": 43.89785397994965,
+        "mean": 44.974687447346255
+      }
+    ],
+    "metadata": {
+      "total_rows": 600,
+      "filtered_rows": 600,
+      "cohort_file": "survey.pulse"
+    },
+    "tests": [
+      {
+        "label": "weighted",
+        "type": "TEST_T",
+        "variant": "welch_two_sample",
+        "statistic": -1.285606035912099,
+        "df": 517.7656402193642,
+        "p_value": 0.1991552838830164,
+        "alpha": 0.05,
+        "reject_null": false,
+        "details": {
+          "ci_high": 0.7466128577326626,
+          "ci_low": -3.574065993537422,
+          "diff": -1.4137265679023798,
+          "effect_size": {
+            "cohens_d": -0.10823131311703844
+          },
+          "groups": [
+            "F",
+            "M"
+          ],
+          "mean": [
+            44.13121553884715,
+            45.54494210674953
+          ],
+          "n": [
+            243,
+            357
+          ],
+          "n_eff": [
+            229.23110151188223,
+            336.76257620928305
+          ],
+          "sum_weights": [
+            239.40000000000106,
+            354.1000000000023
+          ],
+          "variance": [
+            152.82728285417252,
+            182.71114472371406
+          ]
+        }
+      },
+      {
+        "label": "unweighted",
+        "type": "TEST_T",
+        "variant": "welch_two_sample",
+        "statistic": -1.385056767933967,
+        "df": 545.3836535176231,
+        "p_value": 0.16660137631503025,
+        "alpha": 0.05,
+        "reject_null": false,
+        "details": {
+          "ci_high": 0.625033131538052,
+          "ci_low": -3.6140077831270134,
+          "diff": -1.4944873257944806,
+          "effect_size": {
+            "cohens_d": -0.11350308798636219
+          },
+          "groups": [
+            "F",
+            "M"
+          ],
+          "mean": [
+            44.28893004115229,
+            45.78341736694677
+          ],
+          "n": [
+            243,
+            357
+          ],
+          "variance": [
+            157.62226744549884,
+            184.07167986183248
+          ]
+        }
+      }
+    ],
+    "components": {
+      "aggregations": [
+        {
+          "label": "mean",
+          "n": 600,
+          "n_null": 0,
+          "sum_weights": 593.5,
+          "n_eff": 565.9873865188398,
+          "n_weight_invalid": 0,
+          "operator": {
+            "m2_weighted": 101218.61323952158,
+            "sum": 26692.477000000003,
+            "sum_weighted": 26692.477000000003,
+            "sum_weights_sq": 622.3500000000001,
+            "weighted_mean": 44.974687447346255,
+            "weighted_variance": 170.83310251396048
+          }
+        },
+        {
+          "label": "ci_lo",
+          "n": 600,
+          "n_null": 0,
+          "sum_weights": 593.5,
+          "n_eff": 565.9873865188398,
+          "n_weight_invalid": 0,
+          "operator": {
+            "alpha": 0.050000000000000044,
+            "lower": 43.89785397994965,
+            "mean": 44.97468744734627,
+            "stderr": 0.5494149259325889,
+            "t_critical": 1.959963984540054
+          }
+        },
+        {
+          "label": "ci_hi",
+          "n": 600,
+          "n_null": 0,
+          "sum_weights": 593.5,
+          "n_eff": 565.9873865188398,
+          "n_weight_invalid": 0,
+          "operator": {
+            "alpha": 0.050000000000000044,
+            "mean": 44.97468744734627,
+            "stderr": 0.5494149259325889,
+            "t_critical": 1.959963984540054,
+            "upper": 46.05152091474289
+          }
+        }
+      ],
+      "run": {
+        "total_records": 600,
+        "filtered_records": 600,
+        "null_records": 0
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

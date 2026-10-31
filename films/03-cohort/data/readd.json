@@ -1,0 +1,47 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "added": "q4.pulse",
+    "archive": "sales.pulse",
+    "shards": [
+      {
+        "filename": "q1.pulse",
+        "record_count": 30000
+      },
+      {
+        "filename": "q2.pulse",
+        "record_count": 30000
+      },
+      {
+        "filename": "q3.pulse",
+        "record_count": 30000
+      },
+      {
+        "filename": "q4.pulse",
+        "record_count": 30000
+      }
+    ],
+    "widened": null
+  },
+  "errors": [],
+  "warnings": [
+    {
+      "code": "PULSE_SHARD_INDEXES_UPDATED",
+      "message": "shard added q4.pulse: 1 point-lookup index(es) extended with the new shard's sidecar and the index manifest updated",
+      "details": {
+        "action": "added",
+        "archive": "sales.pulse",
+        "indexes": [
+          {
+            "index_path": "sales.pulse.08b72e07b55c3ac0.idx",
+            "keys": [
+              "id"
+            ],
+            "shard_index_path": "sales.pulse#q4.pulse.08b72e07b55c3ac0.idx"
+          }
+        ],
+        "shard": "q4.pulse"
+      }
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+{"cohort":{"filename":"f.pulse"},
+"features":[{"type":"FEAT_ONE_HOT","field":"member"},
+{"type":"FEAT_FREQUENCY_ENCODE","field":"region"},
+{"type":"FEAT_FREQUENCY_ENCODE","field":"member"}],
+"groups":[{"type":"GROUP_CATEGORY","field":"region"}],
+"aggregations":[{"type":"AGG_COUNT","field":"region","label":"n"},{"type":"AGG_AVERAGE","field":"FREQ_region","label":"FREQ_region"},{"type":"AGG_SUM","field":"member_1","label":"member_1"},{"type":"AGG_SUM","field":"member_0","label":"member_0"}]}

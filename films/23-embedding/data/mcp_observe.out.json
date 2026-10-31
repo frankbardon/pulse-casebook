@@ -1,0 +1,66 @@
+{
+  "env": {
+    "OTEL_EXPORTER_OTLP_ENDPOINT": "http://127.0.0.1:PORT"
+  },
+  "args": [
+    "mcp",
+    "--data-dir",
+    ".",
+    "--no-cohort-scan",
+    "--metrics-addr",
+    "127.0.0.1:0"
+  ],
+  "startup_notice": [
+    "pulse mcp: serving over stdio (data dir: ., bind-on-open: true, cohort-scan: false, return: standard, metrics: 127.0.0.1:PORT, otlp: traces+metrics)"
+  ],
+  "tool_call": {
+    "name": "pulse_process",
+    "rows": 4,
+    "data": [
+      {
+        "avg": 60.824999999999996,
+        "region": "East"
+      },
+      {
+        "avg": 60.23333333333333,
+        "region": "North"
+      },
+      {
+        "avg": 47.004999999999995,
+        "region": "South"
+      },
+      {
+        "avg": 43.94833333333333,
+        "region": "West"
+      }
+    ]
+  },
+  "metrics_scrape": [
+    "pulse_bytes_read_total{op=\"process\"} 466",
+    "pulse_operations_in_flight{op=\"process\"} 0",
+    "pulse_operations_total{op=\"process\",code=\"ok\",scope=\"top\"} 1",
+    "pulse_rows_scanned_total{op=\"process\"} 24"
+  ],
+  "otlp_received": [
+    {
+      "path": "/v1/metrics",
+      "content_type": "application/x-protobuf",
+      "contains": [
+        "pulse_operations_total",
+        "pulse_rows_scanned_total",
+        "service.name"
+      ]
+    },
+    {
+      "path": "/v1/traces",
+      "content_type": "application/x-protobuf",
+      "contains": [
+        "pulse.process",
+        "pulse.request_hash",
+        "pulse.rows_scanned",
+        "service.name"
+      ]
+    }
+  ],
+  "exit_code": 0
+}

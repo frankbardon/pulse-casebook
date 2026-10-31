@@ -1,0 +1,40 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "n": 30000,
+        "spend": 150844454.364459
+      }
+    ],
+    "metadata": {
+      "total_rows": 30000,
+      "filtered_rows": 30000,
+      "cohort_file": "sales.pulse#q4.pulse"
+    },
+    "components": {
+      "aggregations": [
+        {
+          "label": "n",
+          "n": 30000,
+          "n_null": 0
+        },
+        {
+          "label": "spend",
+          "n": 30000,
+          "n_null": 0,
+          "operator": {
+            "sum": 150844454.364459
+          }
+        }
+      ],
+      "run": {
+        "total_records": 30000,
+        "filtered_records": 30000,
+        "null_records": 0
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

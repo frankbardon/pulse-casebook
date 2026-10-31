@@ -1,0 +1,5 @@
+{"cohort": {"filename": "t.pulse"},
+ "weight": {"field": "wt"},
+ "crosstab": {"rows": [{"type": "GROUP_CATEGORY", "field": "region"}], "columns": [{"type": "GROUP_CATEGORY", "field": "wave"}],
+   "cell": {"type": "AGG_AVERAGE", "field": "score", "label": "wmean"}, "margins": {"rows": true, "columns": true, "grand": true},
+   "margin_aggregations": [{"type": "AGG_COUNT", "field": "id", "label": "base", "weight": null}]}}

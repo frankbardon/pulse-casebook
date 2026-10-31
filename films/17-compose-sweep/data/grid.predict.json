@@ -1,0 +1,115 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "valid": true,
+    "request": {
+      "requests": null,
+      "sweep": {
+        "axes": [
+          {
+            "name": "market",
+            "values": [
+              "north",
+              "south"
+            ]
+          },
+          {
+            "name": "year",
+            "values": [
+              "2024",
+              "2025"
+            ]
+          }
+        ],
+        "mode": "grid",
+        "label": "{{market}}_{{year}}",
+        "request": {
+          "cohort": {
+            "filename": "m.pulse"
+          },
+          "filterers": [
+            {
+              "type": "FILTER_INCLUDE",
+              "field": "market",
+              "values": [
+                {
+                  "$var": "market"
+                }
+              ]
+            },
+            {
+              "type": "FILTER_RANGE",
+              "field": "year",
+              "values": [
+                {
+                  "$var": "year"
+                },
+                {
+                  "$var": "year"
+                }
+              ]
+            }
+          ],
+          "aggregations": [
+            {
+              "type": "AGG_SUM",
+              "field": "sales",
+              "label": "sales"
+            },
+            {
+              "type": "AGG_SUM",
+              "field": "tv",
+              "label": "tv"
+            }
+          ]
+        }
+      }
+    },
+    "overlays_schema_divergence": [],
+    "overlay_cost": {},
+    "slots": [
+      {
+        "request": 0,
+        "label": "north_2024",
+        "streamable": true
+      },
+      {
+        "request": 1,
+        "label": "north_2025",
+        "streamable": true
+      },
+      {
+        "request": 2,
+        "label": "south_2024",
+        "streamable": true
+      },
+      {
+        "request": 3,
+        "label": "south_2025",
+        "streamable": true
+      }
+    ],
+    "sweep": {
+      "axes": [
+        {
+          "name": "market",
+          "count": 2
+        },
+        {
+          "name": "year",
+          "count": 2
+        }
+      ],
+      "mode": "grid",
+      "expanded_count": 4,
+      "labels": [
+        "north_2024",
+        "north_2025",
+        "south_2024",
+        "south_2025"
+      ]
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

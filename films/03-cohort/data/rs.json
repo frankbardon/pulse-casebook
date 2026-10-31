@@ -1,0 +1,1 @@
+{"cohort":{"filename":"m.pulse"},"filterers":[{"type":"FILTER_INCLUDE","field":"format","values":["mall"]}],"groups":[{"field":"region"}],"aggregations":[{"type":"AGG_COUNT","field":"id","label":"n"},{"type":"AGG_SUM","field":"spend","label":"spend"},{"type":"AGG_AVERAGE","field":"sqft","label":"sqft"}]}

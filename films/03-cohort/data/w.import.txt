@@ -1,0 +1,3 @@
+Imported 80 rows to w.pulse
+Warning [PULSE_IMPORT_WIDTH_PROMOTED]: field "visits" promoted from u4 to u16: source row 64 holds a value the width inferred from the sample cannot
+PULSE_IMPORT_NULL_PROMOTED: fields promoted to nullable (null found past the inference sample): age

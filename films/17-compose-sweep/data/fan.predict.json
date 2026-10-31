@@ -1,0 +1,276 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "valid": true,
+    "request": {
+      "cohort": {
+        "filename": "m.pulse"
+      },
+      "filterers": [
+        {
+          "type": "FILTER_INCLUDE",
+          "field": "market",
+          "values": [
+            "north"
+          ]
+        },
+        {
+          "type": "FILTER_RANGE",
+          "field": "week",
+          "values": [
+            "1",
+            "8"
+          ]
+        }
+      ],
+      "windows": [
+        {
+          "type": "WIN_DISTRIBUTED_LAG",
+          "field": "tv",
+          "label": "tv_ad{{d}}",
+          "partition_by": [
+            "market"
+          ],
+          "order_by": [
+            {
+              "field": "week"
+            }
+          ],
+          "params": {
+            "kernel": "geometric",
+            "max_lag": 8,
+            "decay": {
+              "$var": "decay"
+            },
+            "normalize": false
+          },
+          "for_each": {
+            "axes": [
+              {
+                "name": "d",
+                "values": [
+                  30,
+                  60,
+                  90
+                ]
+              },
+              {
+                "name": "decay",
+                "values": [
+                  0.3,
+                  0.6,
+                  0.9
+                ]
+              }
+            ],
+            "mode": "zip"
+          }
+        }
+      ]
+    },
+    "schema_info": {
+      "field_count": 6,
+      "fields": [
+        "market",
+        "week",
+        "year",
+        "tv",
+        "search",
+        "sales"
+      ]
+    },
+    "record_count": 0,
+    "shards": [],
+    "streamable": false,
+    "streamable_reasons": [
+      "no aggregations, matrices, tests or regressions: streaming path requires per-record work",
+      "windows run over the whole row set (every filtered record, or the post-aggregate rows when grouped)"
+    ],
+    "suggestions": [
+      {
+        "path": [
+          "Windows",
+          "0",
+          "Type"
+        ],
+        "reason": "operator WIN_DISTRIBUTED_LAG forces the buffered path; no streamable peer is available",
+        "current": "WIN_DISTRIBUTED_LAG",
+        "confidence": 0.6
+      },
+      {
+        "path": [
+          "Windows",
+          "1",
+          "Type"
+        ],
+        "reason": "operator WIN_DISTRIBUTED_LAG forces the buffered path; no streamable peer is available",
+        "current": "WIN_DISTRIBUTED_LAG",
+        "confidence": 0.6
+      },
+      {
+        "path": [
+          "Windows",
+          "2",
+          "Type"
+        ],
+        "reason": "operator WIN_DISTRIBUTED_LAG forces the buffered path; no streamable peer is available",
+        "current": "WIN_DISTRIBUTED_LAG",
+        "confidence": 0.6
+      }
+    ],
+    "defaults_applied": [],
+    "aggregations": [],
+    "groups": [],
+    "filterers": [
+      {
+        "type": "FILTER_INCLUDE",
+        "field": "market",
+        "component_schema": {
+          "keys": [
+            {
+              "name": "n_in",
+              "type": "int",
+              "description": "Records that entered this filter pass."
+            },
+            {
+              "name": "n_out",
+              "type": "int",
+              "description": "Records that passed (entered the downstream stage)."
+            },
+            {
+              "name": "n_null_input",
+              "type": "int",
+              "description": "Records where the filter input field was null at evaluation time."
+            }
+          ],
+          "mergeability": "mergeable"
+        }
+      },
+      {
+        "type": "FILTER_RANGE",
+        "field": "week",
+        "component_schema": {
+          "keys": [
+            {
+              "name": "n_in",
+              "type": "int",
+              "description": "Records that entered this filter pass."
+            },
+            {
+              "name": "n_out",
+              "type": "int",
+              "description": "Records that passed (entered the downstream stage)."
+            },
+            {
+              "name": "n_null_input",
+              "type": "int",
+              "description": "Records where the filter input field was null at evaluation time."
+            }
+          ],
+          "mergeability": "mergeable"
+        }
+      }
+    ],
+    "overlays_applied": [],
+    "overlays_schema_divergence": [],
+    "overlay_cost": {},
+    "time_zones": [],
+    "sizes": [
+      {
+        "section": "data",
+        "full_bytes": 40362,
+        "shaped_bytes": 40362,
+        "basis": "upper_bound"
+      },
+      {
+        "section": "metadata",
+        "full_bytes": 116,
+        "shaped_bytes": 116,
+        "basis": "heuristic"
+      },
+      {
+        "section": "components",
+        "full_bytes": 271,
+        "shaped_bytes": 271,
+        "basis": "heuristic"
+      }
+    ],
+    "for_each": [
+      {
+        "path": "windows[0]",
+        "axes": [
+          {
+            "name": "d",
+            "count": 3
+          },
+          {
+            "name": "decay",
+            "count": 3
+          }
+        ],
+        "mode": "zip",
+        "expanded_count": 3
+      }
+    ],
+    "post_window": {
+      "windows_first": false,
+      "window_labels": [
+        "tv_ad30",
+        "tv_ad60",
+        "tv_ad90"
+      ],
+      "attributes": []
+    }
+  },
+  "errors": [],
+  "warnings": [
+    {
+      "code": "PULSE_FIELD_DESCRIPTION_LOW_QUALITY",
+      "message": "field market has a low-quality description",
+      "details": {
+        "description": "",
+        "field": "market"
+      }
+    },
+    {
+      "code": "PULSE_FIELD_DESCRIPTION_LOW_QUALITY",
+      "message": "field week has a low-quality description",
+      "details": {
+        "description": "",
+        "field": "week"
+      }
+    },
+    {
+      "code": "PULSE_FIELD_DESCRIPTION_LOW_QUALITY",
+      "message": "field year has a low-quality description",
+      "details": {
+        "description": "",
+        "field": "year"
+      }
+    },
+    {
+      "code": "PULSE_FIELD_DESCRIPTION_LOW_QUALITY",
+      "message": "field tv has a low-quality description",
+      "details": {
+        "description": "",
+        "field": "tv"
+      }
+    },
+    {
+      "code": "PULSE_FIELD_DESCRIPTION_LOW_QUALITY",
+      "message": "field search has a low-quality description",
+      "details": {
+        "description": "",
+        "field": "search"
+      }
+    },
+    {
+      "code": "PULSE_FIELD_DESCRIPTION_LOW_QUALITY",
+      "message": "field sales has a low-quality description",
+      "details": {
+        "description": "",
+        "field": "sales"
+      }
+    }
+  ]
+}

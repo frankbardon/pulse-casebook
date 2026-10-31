@@ -1,0 +1,145 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "valid": true,
+    "schema_info": {
+      "field_count": 9,
+      "fields": [
+        "store_no",
+        "store",
+        "region",
+        "format",
+        "opened",
+        "week",
+        "revenue",
+        "visits",
+        "promo"
+      ]
+    },
+    "columns": [
+      {
+        "name": "store_no",
+        "type": "u64",
+        "nullable": false,
+        "description": "Store number, the key the store table shares",
+        "from": "store_no",
+        "derived": false
+      },
+      {
+        "name": "store",
+        "type": "categorical_u8",
+        "nullable": false,
+        "description": "Store name, S1 to S6",
+        "from": "store",
+        "derived": false,
+        "dictionary": {
+          "total_entries": 6,
+          "truncated": false,
+          "values": [
+            "S1",
+            "S2",
+            "S3",
+            "S4",
+            "S5",
+            "S6"
+          ]
+        }
+      },
+      {
+        "name": "region",
+        "type": "categorical_u8",
+        "nullable": false,
+        "description": "Sales region of the store: North or South",
+        "from": "region",
+        "derived": false,
+        "dictionary": {
+          "total_entries": 2,
+          "truncated": false,
+          "values": [
+            "North",
+            "South"
+          ]
+        }
+      },
+      {
+        "name": "format",
+        "type": "categorical_u8",
+        "nullable": false,
+        "description": "Store format: Mall or Street",
+        "from": "format",
+        "derived": false,
+        "dictionary": {
+          "total_entries": 2,
+          "truncated": false,
+          "values": [
+            "Mall",
+            "Street"
+          ]
+        }
+      },
+      {
+        "name": "opened",
+        "type": "date",
+        "nullable": false,
+        "description": "Date the store opened",
+        "from": "opened",
+        "derived": false
+      },
+      {
+        "name": "week",
+        "type": "date",
+        "nullable": false,
+        "description": "Monday that starts the sales week",
+        "from": "week",
+        "derived": false
+      },
+      {
+        "name": "revenue",
+        "type": "f64",
+        "nullable": true,
+        "description": "Store revenue for the week, in thousands of dollars",
+        "from": "revenue",
+        "derived": false
+      },
+      {
+        "name": "rank",
+        "type": "f64",
+        "nullable": true,
+        "description": "WIN_ROW_NUMBER (partition store; order revenue desc) — derived from wg.pulse",
+        "from": "rank",
+        "derived": true
+      }
+    ],
+    "derived_columns": [
+      "rank"
+    ],
+    "risks": [],
+    "container": {
+      "kind": "file",
+      "elide_constants": false,
+      "groups": [
+        {
+          "label": "group 1 [key: store]",
+          "origin": "inherited",
+          "key": [
+            "store"
+          ],
+          "members": [
+            "region",
+            "format",
+            "opened"
+          ],
+          "source_fields": [
+            "store",
+            "region",
+            "format",
+            "opened"
+          ],
+          "verdict": "planned"
+        }
+      ]
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

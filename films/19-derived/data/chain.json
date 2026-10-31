@@ -1,0 +1,8 @@
+{"cohort":{"filename":"w.pulse"},
+ "stages":[
+  {"name":"per_store","request":{
+    "groups":[{"type":"GROUP_CATEGORY","field":"region"},{"type":"GROUP_CATEGORY","field":"store"}],
+    "aggregations":[{"type":"AGG_SUM","field":"revenue","label":"store_rev"}]}},
+  {"name":"per_region","request":{
+    "groups":[{"type":"GROUP_CATEGORY","field":"region"}],
+    "aggregations":[{"type":"AGG_AVERAGE","field":"store_rev","label":"avg_store"},{"type":"AGG_MAX","field":"store_rev","label":"best_store"}]}}]}

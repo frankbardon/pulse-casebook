@@ -1,0 +1,4 @@
+{"cohort":{"filename":"w.pulse"},
+ "filterers":[{"type":"FILTER_INCLUDE","field":"region","values":["North"]},{"type":"FILTER_INCLUDE","field":"format","values":["Mall"]}],
+ "windows":[{"type":"WIN_ROW_NUMBER","label":"rank","partition_by":["store"],"order_by":[{"field":"revenue","desc":true}]}],
+ "output":{"shards":{"max_records":10},"elide_constants":true}}

@@ -1,0 +1,17 @@
+{
+  "format_version": "1.1",
+  "data": null,
+  "errors": [
+    {
+      "code": "PULSE_LIMIT_EXCEEDED",
+      "message": "limit max_groups exceeded: observed 9, configured 8 (raise Options.Limits.MaxGroups, feature profile limits.max_groups or the CLI's --limit max_groups= on any pulse command, or reduce the request)",
+      "details": {
+        "configured": 8,
+        "limit": "max_groups",
+        "observed": 9,
+        "option": "Options.Limits.MaxGroups"
+      }
+    }
+  ],
+  "warnings": []
+}

@@ -1,0 +1,317 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "valid": true,
+    "request": {
+      "cohort": {
+        "filename": "w.pulse"
+      },
+      "aggregations": [
+        {
+          "type": "AGG_SUM",
+          "field": "tv",
+          "label": "tv"
+        },
+        {
+          "type": "AGG_SUM",
+          "field": "tv_ad",
+          "label": "tv_ad"
+        },
+        {
+          "type": "AGG_SUM",
+          "field": "tv_sat",
+          "label": "tv_sat"
+        }
+      ],
+      "attributes": [
+        {
+          "type": "ATTR_FORMULA",
+          "field": "",
+          "label": "tv_sat",
+          "expression": "hill(tv_ad, 100, 1.5)"
+        }
+      ],
+      "groups": [
+        {
+          "type": "GROUP_CATEGORY",
+          "field": "wk"
+        }
+      ],
+      "windows": [
+        {
+          "type": "WIN_DISTRIBUTED_LAG",
+          "field": "tv",
+          "label": "tv_ad",
+          "partition_by": [
+            "market"
+          ],
+          "order_by": [
+            {
+              "field": "week"
+            }
+          ],
+          "params": {
+            "kernel": "geometric",
+            "decay": 0.5,
+            "max_lag": 4,
+            "normalize": false
+          }
+        }
+      ]
+    },
+    "schema_info": {
+      "field_count": 4,
+      "fields": [
+        "wk",
+        "week",
+        "market",
+        "tv"
+      ]
+    },
+    "record_count": 0,
+    "shards": [],
+    "streamable": false,
+    "streamable_reasons": [
+      "windows run first over every filtered record (windows-first: an aggregation, grouper or crosstab axis reads a window output), so the request runs via the buffered path"
+    ],
+    "suggestions": [
+      {
+        "path": [
+          "Windows",
+          "0",
+          "Type"
+        ],
+        "reason": "operator WIN_DISTRIBUTED_LAG forces the buffered path; no streamable peer is available",
+        "current": "WIN_DISTRIBUTED_LAG",
+        "confidence": 0.6
+      }
+    ],
+    "defaults_applied": [],
+    "aggregations": [
+      {
+        "type": "AGG_SUM",
+        "field": "tv",
+        "label": "tv",
+        "component_schema": {
+          "keys": [
+            {
+              "name": "n",
+              "type": "int",
+              "description": "Number of records aggregated (non-null inputs)."
+            },
+            {
+              "name": "n_null",
+              "type": "int",
+              "description": "Number of null inputs encountered."
+            },
+            {
+              "name": "sum_weights",
+              "type": "float64",
+              "description": "Weighted slots only: the sum of the valid weights of the rows whose value was present.",
+              "optional": true
+            },
+            {
+              "name": "n_eff",
+              "type": "float64",
+              "description": "Weighted slots of kind probability only: Kish effective sample size (sum of weights)^2 / sum of squared weights.",
+              "optional": true
+            },
+            {
+              "name": "n_weight_invalid",
+              "type": "int",
+              "description": "Weighted slots only: rows with a present value whose weight was invalid (null, negative, NaN/Inf, non-integer frequency) and was excluded.",
+              "optional": true
+            },
+            {
+              "name": "sum",
+              "type": "float64",
+              "description": "Running sum of non-null field values."
+            }
+          ],
+          "mergeability": "mergeable"
+        }
+      },
+      {
+        "type": "AGG_SUM",
+        "field": "tv_ad",
+        "label": "tv_ad",
+        "component_schema": {
+          "keys": [
+            {
+              "name": "n",
+              "type": "int",
+              "description": "Number of records aggregated (non-null inputs)."
+            },
+            {
+              "name": "n_null",
+              "type": "int",
+              "description": "Number of null inputs encountered."
+            },
+            {
+              "name": "sum_weights",
+              "type": "float64",
+              "description": "Weighted slots only: the sum of the valid weights of the rows whose value was present.",
+              "optional": true
+            },
+            {
+              "name": "n_eff",
+              "type": "float64",
+              "description": "Weighted slots of kind probability only: Kish effective sample size (sum of weights)^2 / sum of squared weights.",
+              "optional": true
+            },
+            {
+              "name": "n_weight_invalid",
+              "type": "int",
+              "description": "Weighted slots only: rows with a present value whose weight was invalid (null, negative, NaN/Inf, non-integer frequency) and was excluded.",
+              "optional": true
+            },
+            {
+              "name": "sum",
+              "type": "float64",
+              "description": "Running sum of non-null field values."
+            }
+          ],
+          "mergeability": "mergeable"
+        }
+      },
+      {
+        "type": "AGG_SUM",
+        "field": "tv_sat",
+        "label": "tv_sat",
+        "component_schema": {
+          "keys": [
+            {
+              "name": "n",
+              "type": "int",
+              "description": "Number of records aggregated (non-null inputs)."
+            },
+            {
+              "name": "n_null",
+              "type": "int",
+              "description": "Number of null inputs encountered."
+            },
+            {
+              "name": "sum_weights",
+              "type": "float64",
+              "description": "Weighted slots only: the sum of the valid weights of the rows whose value was present.",
+              "optional": true
+            },
+            {
+              "name": "n_eff",
+              "type": "float64",
+              "description": "Weighted slots of kind probability only: Kish effective sample size (sum of weights)^2 / sum of squared weights.",
+              "optional": true
+            },
+            {
+              "name": "n_weight_invalid",
+              "type": "int",
+              "description": "Weighted slots only: rows with a present value whose weight was invalid (null, negative, NaN/Inf, non-integer frequency) and was excluded.",
+              "optional": true
+            },
+            {
+              "name": "sum",
+              "type": "float64",
+              "description": "Running sum of non-null field values."
+            }
+          ],
+          "mergeability": "mergeable"
+        }
+      }
+    ],
+    "groups": [
+      {
+        "type": "GROUP_CATEGORY",
+        "field": "wk",
+        "component_schema": {
+          "keys": [
+            {
+              "name": "total_n",
+              "type": "int",
+              "description": "Total records partitioned across all buckets (post-filter)."
+            },
+            {
+              "name": "n_null",
+              "type": "int",
+              "description": "Records that landed in the null/skip path (no bucket assignment)."
+            },
+            {
+              "name": "dict_size",
+              "type": "int",
+              "description": "Number of distinct values observed across all buckets (cardinality of the partition key)."
+            },
+            {
+              "name": "buckets",
+              "type": "[]bucket",
+              "description": "Per-bucket records, ordered by emission; each entry carries {key, label, count}."
+            }
+          ],
+          "mergeability": "mergeable"
+        }
+      }
+    ],
+    "filterers": [],
+    "overlays_applied": [],
+    "overlays_schema_divergence": [],
+    "overlay_cost": {},
+    "time_zones": [],
+    "sizes": [
+      {
+        "section": "metadata",
+        "full_bytes": 116,
+        "shaped_bytes": 116,
+        "basis": "heuristic"
+      }
+    ],
+    "post_window": {
+      "windows_first": true,
+      "window_labels": [
+        "tv_ad"
+      ],
+      "attributes": [
+        {
+          "index": 0,
+          "label": "tv_sat",
+          "depends_on": "tv_ad",
+          "window_reads": [
+            "tv_ad"
+          ]
+        }
+      ]
+    }
+  },
+  "errors": [],
+  "warnings": [
+    {
+      "code": "PULSE_FIELD_DESCRIPTION_LOW_QUALITY",
+      "message": "field wk has a low-quality description",
+      "details": {
+        "description": "",
+        "field": "wk"
+      }
+    },
+    {
+      "code": "PULSE_FIELD_DESCRIPTION_LOW_QUALITY",
+      "message": "field week has a low-quality description",
+      "details": {
+        "description": "",
+        "field": "week"
+      }
+    },
+    {
+      "code": "PULSE_FIELD_DESCRIPTION_LOW_QUALITY",
+      "message": "field market has a low-quality description",
+      "details": {
+        "description": "",
+        "field": "market"
+      }
+    },
+    {
+      "code": "PULSE_FIELD_DESCRIPTION_LOW_QUALITY",
+      "message": "field tv has a low-quality description",
+      "details": {
+        "description": "",
+        "field": "tv"
+      }
+    }
+  ]
+}

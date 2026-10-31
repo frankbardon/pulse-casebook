@@ -1,0 +1,13 @@
+{
+  "tools": [
+    "pulse_errors_lookup",
+    "pulse_examples_get",
+    "pulse_examples_search",
+    "pulse_inspect",
+    "pulse_manifest",
+    "pulse_predict",
+    "pulse_process",
+    "pulse_skills_get",
+    "pulse_skills_list"
+  ]
+}

@@ -1,0 +1,122 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "orders": 189,
+        "spend": "0-40"
+      },
+      {
+        "orders": 78,
+        "spend": "40-80"
+      },
+      {
+        "orders": 19,
+        "spend": "80-120"
+      },
+      {
+        "orders": 2,
+        "spend": "120-160"
+      }
+    ],
+    "metadata": {
+      "total_rows": 300,
+      "filtered_rows": 300,
+      "cohort_file": "g.pulse"
+    },
+    "components": {
+      "aggregations": [
+        {
+          "label": "orders",
+          "n": 300,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "0-40"
+              ],
+              "n": 189,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "40-80"
+              ],
+              "n": 78,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "80-120"
+              ],
+              "n": 19,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "120-160"
+              ],
+              "n": 2,
+              "n_null": 0
+            }
+          ]
+        }
+      ],
+      "groupers": [
+        {
+          "field": "spend",
+          "total_n": 288,
+          "n_null": 12,
+          "operator": {
+            "buckets": [
+              {
+                "count": 189,
+                "high": 40,
+                "key": "0-40",
+                "low": 0
+              },
+              {
+                "count": 78,
+                "high": 80,
+                "key": "40-80",
+                "low": 40
+              },
+              {
+                "count": 19,
+                "high": 120,
+                "key": "80-120",
+                "low": 80
+              },
+              {
+                "count": 2,
+                "high": 160,
+                "key": "120-160",
+                "low": 120
+              }
+            ],
+            "edges": [
+              0,
+              40,
+              80,
+              120,
+              160
+            ],
+            "interval": 40,
+            "n_buckets": 4,
+            "overflow_count": 0,
+            "range_max": 122.81,
+            "range_min": 11.08,
+            "underflow_count": 0
+          }
+        }
+      ],
+      "run": {
+        "total_records": 300,
+        "filtered_records": 300,
+        "null_records": 0
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

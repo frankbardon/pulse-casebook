@@ -1,0 +1,81 @@
+{
+ "cohort": {
+  "filename": "sem.pulse"
+ },
+ "params": {
+  "from_wave": "w1",
+  "to_wave": "w3"
+ },
+ "vectors": [
+  {
+   "name": "brand",
+   "fields": [
+    "s1",
+    "s2",
+    "s3",
+    "v1",
+    "v2",
+    "v3",
+    "recommend"
+   ]
+  }
+ ],
+ "attributes": [
+  {
+   "type": "ATTR_FORMULA",
+   "label": "period",
+   "expression": "wave == params.to_wave ? 2 : (wave == params.from_wave ? 1 : 0)"
+  }
+ ],
+ "matrices": [
+  {
+   "name": "delta",
+   "type": "MAT_SEM",
+   "vector": "brand",
+   "params": {
+    "model": "service =~ s1 + s2 + s3\nvalue =~ v1 + v2 + v3 + s3\nrecommend ~ bv*value + c(bsf, bst)*service\nv1 ~ 0*1\ns1 ~ 0*1\nvalue ~ c(mvf, mvt)*1\nservice ~ c(msf, mst)*1\ndv := bv*(mvt - mvf)\nds := bst*mst - bsf*msf\ndtot := dv + ds\nshare := dv/dtot",
+    "group": "period",
+    "group_levels": [
+     {
+      "value": 1,
+      "name": "from"
+     },
+     {
+      "value": 2,
+      "name": "to"
+     }
+    ],
+    "group_equal": [
+     "loadings",
+     "intercepts"
+    ]
+   }
+  },
+  {
+   "name": "boot",
+   "type": "MAT_SEM",
+   "vector": "brand",
+   "params": {
+    "model": "service =~ s1 + s2 + s3\nvalue =~ v1 + v2 + v3 + s3\nrecommend ~ bv*value + c(bsf, bst)*service\nv1 ~ 0*1\ns1 ~ 0*1\nvalue ~ c(mvf, mvt)*1\nservice ~ c(msf, mst)*1\ndv := bv*(mvt - mvf)\nds := bst*mst - bsf*msf\ndtot := dv + ds\nshare := dv/dtot",
+    "group": "period",
+    "group_levels": [
+     {
+      "value": 1,
+      "name": "from"
+     },
+     {
+      "value": 2,
+      "name": "to"
+     }
+    ],
+    "group_equal": [
+     "loadings",
+     "intercepts"
+    ],
+    "resample": "bootstrap",
+    "bootstrap_iters": 500,
+    "rng_seed": 14
+   }
+  }
+ ]
+}

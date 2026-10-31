@@ -1,0 +1,180 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "field_count": 10,
+    "fields": [
+      {
+        "name": "id",
+        "type": "u16",
+        "nullable": false,
+        "byte_offset": 0,
+        "bit_position": 0,
+        "description": "Numeric field: id",
+        "description_source": "synthesized",
+        "categorical": false
+      },
+      {
+        "name": "store",
+        "type": "categorical_u8",
+        "nullable": false,
+        "byte_offset": 2,
+        "bit_position": 0,
+        "description": "Categorical field: store",
+        "description_source": "synthesized",
+        "categorical": true,
+        "dictionary": {
+          "total_entries": 12,
+          "truncated": false,
+          "values": [
+            "S10",
+            "S04",
+            "S05",
+            "S09",
+            "S01",
+            "S06",
+            "S03",
+            "S11",
+            "S07",
+            "S02",
+            "S12",
+            "S08"
+          ]
+        }
+      },
+      {
+        "name": "region",
+        "type": "categorical_u8",
+        "nullable": false,
+        "byte_offset": 3,
+        "bit_position": 0,
+        "description": "Categorical field: region",
+        "description_source": "synthesized",
+        "categorical": true,
+        "dictionary": {
+          "total_entries": 4,
+          "truncated": false,
+          "values": [
+            "South",
+            "West",
+            "North",
+            "East"
+          ]
+        }
+      },
+      {
+        "name": "format",
+        "type": "categorical_u8",
+        "nullable": false,
+        "byte_offset": 4,
+        "bit_position": 0,
+        "description": "Categorical field: format",
+        "description_source": "synthesized",
+        "categorical": true,
+        "dictionary": {
+          "total_entries": 3,
+          "truncated": false,
+          "values": [
+            "mall",
+            "street",
+            "outlet"
+          ]
+        }
+      },
+      {
+        "name": "sqft",
+        "type": "u16",
+        "nullable": false,
+        "byte_offset": 5,
+        "bit_position": 0,
+        "description": "Numeric field: sqft",
+        "description_source": "synthesized",
+        "categorical": false
+      },
+      {
+        "name": "opened",
+        "type": "date",
+        "nullable": false,
+        "byte_offset": 7,
+        "bit_position": 0,
+        "description": "Numeric field: opened",
+        "description_source": "synthesized",
+        "categorical": false
+      },
+      {
+        "name": "age",
+        "type": "u8",
+        "nullable": true,
+        "byte_offset": 11,
+        "bit_position": 0,
+        "description": "Numeric field: age",
+        "description_source": "synthesized",
+        "categorical": false
+      },
+      {
+        "name": "spend",
+        "type": "f64",
+        "nullable": false,
+        "byte_offset": 12,
+        "bit_position": 0,
+        "description": "Numeric field: spend",
+        "description_source": "synthesized",
+        "categorical": false
+      },
+      {
+        "name": "interests",
+        "type": "set_u8",
+        "nullable": true,
+        "byte_offset": 20,
+        "bit_position": 0,
+        "description": "Set field: interests",
+        "description_source": "synthesized",
+        "categorical": false,
+        "dictionary": {
+          "total_entries": 4,
+          "truncated": false,
+          "values": [
+            "food",
+            "sport",
+            "tech",
+            "travel"
+          ]
+        }
+      },
+      {
+        "name": "sat",
+        "type": "vec_f64",
+        "nullable": false,
+        "byte_offset": 21,
+        "bit_position": 0,
+        "description": "Vector field: sat (4 elements)",
+        "description_source": "synthesized",
+        "categorical": false,
+        "vector": {
+          "dim": 4,
+          "kind": "scale",
+          "scale_min": 1,
+          "scale_max": 5,
+          "labels": {
+            "total_entries": 4,
+            "truncated": false,
+            "values": [
+              "q1",
+              "q2",
+              "q3",
+              "q4"
+            ]
+          }
+        }
+      }
+    ],
+    "shards": [],
+    "record_count": 1200,
+    "layout": {
+      "pulse_format_version": 2,
+      "physical_record_stride": 55,
+      "logical_record_stride": 55
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

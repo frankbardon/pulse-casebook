@@ -1,0 +1,10 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "rows_generated": 104,
+    "rows_rejected": 0,
+    "output_path": "lag.pulse"
+  },
+  "errors": [],
+  "warnings": []
+}

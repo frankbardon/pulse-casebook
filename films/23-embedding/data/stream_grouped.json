@@ -1,0 +1,3 @@
+{"cohort":{"filename":"orders.pulse"},
+ "groups":[{"type":"GROUP_CATEGORY","field":"region"}],
+ "aggregations":[{"type":"AGG_ACME_MIDRANGE","field":"amount","label":"mid"},{"type":"AGG_AVERAGE","field":"amount","label":"avg"}]}

@@ -1,0 +1,18 @@
+{
+  "format_version": "1.1",
+  "data": null,
+  "errors": [
+    {
+      "code": "PULSE_PARAMS_UNDECLARED",
+      "message": "expression \"score \u003e= params.min_scor\" reads params.min_scor, which the request's params does not declare",
+      "details": {
+        "declared": [
+          "min_score"
+        ],
+        "expression": "score \u003e= params.min_scor",
+        "param": "min_scor"
+      }
+    }
+  ],
+  "warnings": []
+}

@@ -1,0 +1,22 @@
+{
+  "format_version": "1.1",
+  "data": null,
+  "errors": [
+    {
+      "code": "PULSE_WEIGHT_UNSUPPORTED",
+      "message": "attributes[0]: ATTR_FORMULA calling total() has a weighted form only under weight kind \"frequency\", and the weight in force is kind \"probability\" (total(expr) under a probability weight would scale with the arbitrary weight scale, so every share or ratio read off it would move with it); use a frequency weight (integer replication counts) or opt the slot out with \"weight\": null to run it unweighted",
+      "details": {
+        "field": "n",
+        "function": "total",
+        "kind": "probability",
+        "operator": "ATTR_FORMULA",
+        "reason": "total(expr) under a probability weight would scale with the arbitrary weight scale, so every share or ratio read off it would move with it",
+        "slot": "attributes[0]",
+        "supported_kinds": [
+          "frequency"
+        ]
+      }
+    }
+  ],
+  "warnings": []
+}

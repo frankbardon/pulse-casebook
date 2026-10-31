@@ -1,0 +1,59 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "metadata": {
+      "total_rows": 2000,
+      "filtered_rows": 2000,
+      "cohort_file": "shop.pulse"
+    },
+    "matrices": [
+      {
+        "name": "r",
+        "type": "MAT_CORRELATION",
+        "primary": {
+          "kind": "square_symmetric",
+          "encoding": "full",
+          "row_keys": [
+            "age",
+            "spend"
+          ],
+          "column_keys": [
+            "age",
+            "spend"
+          ],
+          "values": [
+            [
+              1,
+              -0.01907078177818192
+            ],
+            [
+              -0.01907078177818192,
+              1
+            ]
+          ]
+        },
+        "scalars": {
+          "determinant": 0.9996363052823691
+        }
+      }
+    ],
+    "components": {
+      "run": {
+        "total_records": 2000,
+        "filtered_records": 2000,
+        "null_records": 0
+      },
+      "matrices": [
+        {
+          "name": "r",
+          "type": "MAT_CORRELATION",
+          "n": 2000,
+          "n_null": 0,
+          "n_listwise_dropped": 0
+        }
+      ]
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

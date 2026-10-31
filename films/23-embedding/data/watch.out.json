@@ -1,0 +1,20 @@
+{
+  "events": [
+    {
+      "hash": "6aabf6867c9729e07e8512963ad12e86662b3e7ef5a7bfe9caaf3bc2e3996903",
+      "kind": "created",
+      "path": "live.pulse"
+    },
+    {
+      "hash": "27aaec8cb1f4e0a3d0194cfcf870a8cf44639ba8a065729fddbce0e82b3244b8",
+      "kind": "modified",
+      "path": "live.pulse"
+    },
+    {
+      "hash": "",
+      "kind": "removed",
+      "path": "live.pulse"
+    }
+  ],
+  "records_after_rewrite": 28
+}

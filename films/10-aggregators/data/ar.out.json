@@ -1,0 +1,152 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "AGG_AVERAGE_spend": 5.125,
+        "AGG_CI_LOWER_spend": 1.8655468938820137,
+        "AGG_COUNT_spend": 4,
+        "AGG_DISTINCT_COUNT_tier": 3,
+        "AGG_MEDIAN_spend": 4,
+        "AGG_MODE_COUNT_tier": 2,
+        "AGG_MODE_spend": 4,
+        "AGG_NULL_COUNT_spend": 1,
+        "AGG_RATIO_spend": 2.05,
+        "AGG_SUM_spend": 20.5,
+        "AGG_VARIANCE_spend": 8.296875,
+        "AGG_WELFORD_spend": {
+          "mean": 5.125,
+          "variance": 11.0625,
+          "n": 4
+        },
+        "avg_empty": null,
+        "n_empty": 0
+      }
+    ],
+    "metadata": {
+      "total_rows": 5,
+      "filtered_rows": 5,
+      "cohort_file": "a.pulse"
+    },
+    "components": {
+      "aggregations": [
+        {
+          "n": 4,
+          "n_null": 1
+        },
+        {
+          "n": 4,
+          "n_null": 1
+        },
+        {
+          "n": 4,
+          "n_null": 1,
+          "operator": {
+            "sum": 20.5
+          }
+        },
+        {
+          "n": 4,
+          "n_null": 1,
+          "operator": {
+            "sum": 20.5
+          }
+        },
+        {
+          "n": 4,
+          "n_null": 1,
+          "operator": {
+            "m2": 33.1875,
+            "mean": 5.125,
+            "variance": 8.296875
+          }
+        },
+        {
+          "n": 4,
+          "n_null": 1,
+          "operator": {
+            "m2": 33.1875,
+            "mean": 5.125,
+            "stddev": 3.3260336739125176,
+            "variance": 11.0625
+          }
+        },
+        {
+          "n": 4,
+          "n_null": 1,
+          "operator": {
+            "median": 4,
+            "position_high": 2,
+            "position_low": 1
+          }
+        },
+        {
+          "n": 4,
+          "n_null": 1,
+          "operator": {
+            "count": 2,
+            "distinct_count": 3,
+            "tie_count": 1,
+            "value": 4
+          }
+        },
+        {
+          "n": 4,
+          "n_null": 1,
+          "operator": {
+            "denominator": 10,
+            "numerator": 20.5,
+            "ratio": 2.05
+          }
+        },
+        {
+          "n": 4,
+          "n_null": 1,
+          "operator": {
+            "alpha": 0.050000000000000044,
+            "lower": 1.8655468938820137,
+            "mean": 5.125,
+            "stderr": 1.6630168369562588,
+            "t_critical": 1.959963984540054
+          }
+        },
+        {
+          "label": "avg_empty",
+          "n": 0,
+          "n_null": 5,
+          "operator": {
+            "sum": 0
+          }
+        },
+        {
+          "label": "n_empty",
+          "n": 0,
+          "n_null": 5
+        },
+        {
+          "n": 5,
+          "n_null": 0,
+          "operator": {
+            "distinct_count": 3,
+            "mode_count": 2,
+            "mode_value": 0
+          }
+        },
+        {
+          "n": 5,
+          "n_null": 0,
+          "operator": {
+            "cardinality": 3
+          }
+        }
+      ],
+      "run": {
+        "total_records": 5,
+        "filtered_records": 5,
+        "null_records": 1
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

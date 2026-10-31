@@ -1,0 +1,175 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "intent": "compare_groups",
+    "bound": true,
+    "shapes": [
+      {
+        "roles": [
+          {
+            "name": "outcome",
+            "kinds": [
+              "numeric",
+              "categorical",
+              "bool"
+            ],
+            "min": 1,
+            "max": 1
+          },
+          {
+            "name": "group",
+            "kinds": [
+              "categorical",
+              "bool"
+            ],
+            "min": 1,
+            "max": 1
+          }
+        ]
+      }
+    ],
+    "recommendations": [
+      {
+        "operator": "TEST_ANOVA_F",
+        "category": "test",
+        "level": "intermediate",
+        "why": "Checks whether the average of a numeric measure differs across three or more groups. It uses spend (f64) and arm (categorical_u8, 2 groups).",
+        "bound": true,
+        "request": {
+          "cohort": {
+            "filename": "s.pulse"
+          },
+          "tests": [
+            {
+              "field": "spend",
+              "split_by": "arm",
+              "type": "TEST_ANOVA_F"
+            }
+          ]
+        },
+        "alternatives": [
+          {
+            "when": "the groups have clearly unequal spread",
+            "use": "TEST_ANOVA_WELCH"
+          },
+          {
+            "when": "the measure is heavily skewed or only ordered",
+            "use": "TEST_KRUSKAL_WALLIS"
+          },
+          {
+            "when": "the same subjects are measured in every group",
+            "use": "TEST_ANOVA_RM"
+          },
+          {
+            "when": "there are only two groups",
+            "use": "TEST_WELCH"
+          },
+          {
+            "when": "you need to know which pairs of groups differ",
+            "use": "TEST_TUKEY_HSD"
+          }
+        ],
+        "follow_ups": [
+          {
+            "when": "the groups differ and you want to know which pairs of groups do",
+            "use": "TEST_TUKEY_HSD"
+          },
+          {
+            "when": "the groups are the rows of a crosstab of averages and you want every pair tested",
+            "use": "OVERLAY_PAIRWISE_WELCH_T"
+          }
+        ]
+      },
+      {
+        "operator": "TEST_ANOVA_WELCH",
+        "category": "test",
+        "level": "intermediate",
+        "why": "Checks whether the average of a numeric measure differs across groups when the groups may have unequal spread. It uses spend (f64) and arm (categorical_u8, 2 groups).",
+        "bound": true,
+        "request": {
+          "cohort": {
+            "filename": "s.pulse"
+          },
+          "tests": [
+            {
+              "field": "spend",
+              "split_by": "arm",
+              "type": "TEST_ANOVA_WELCH"
+            }
+          ]
+        },
+        "alternatives": [
+          {
+            "when": "the measure is heavily skewed or only ordered",
+            "use": "TEST_KRUSKAL_WALLIS"
+          },
+          {
+            "when": "the same subjects are measured in every group",
+            "use": "TEST_ANOVA_RM"
+          },
+          {
+            "when": "there are only two groups, or you want pairwise follow-ups: run TEST_WELCH per pair and set multiplicity on the request (for example holm) to adjust their p-values for multiple comparisons",
+            "use": "TEST_WELCH"
+          },
+          {
+            "when": "spreads are similar and you want Tukey's pairwise follow-up",
+            "use": "TEST_ANOVA_F"
+          }
+        ],
+        "follow_ups": [
+          {
+            "when": "the groups differ and you want each pair tested without assuming equal spread",
+            "use": "OVERLAY_PAIRWISE_WELCH_T"
+          },
+          {
+            "when": "the groups differ and their spreads turn out similar after all",
+            "use": "TEST_TUKEY_HSD"
+          }
+        ]
+      },
+      {
+        "operator": "TEST_KRUSKAL_WALLIS",
+        "category": "test",
+        "level": "intermediate",
+        "why": "Rank-based check of whether values tend to be larger in some groups than in others, across two or more groups. It uses spend (f64) and arm (categorical_u8, 2 groups).",
+        "bound": true,
+        "request": {
+          "cohort": {
+            "filename": "s.pulse"
+          },
+          "tests": [
+            {
+              "field": "spend",
+              "split_by": "arm",
+              "type": "TEST_KRUSKAL_WALLIS"
+            }
+          ]
+        },
+        "alternatives": [
+          {
+            "when": "the data are roughly normal and you want to compare averages",
+            "use": "TEST_ANOVA_WELCH"
+          },
+          {
+            "when": "there are only two groups",
+            "use": "TEST_MANN_WHITNEY_U"
+          },
+          {
+            "when": "the same subjects are measured in every group and the measure is roughly normal (Pulse has no Friedman test for skewed repeated measures; for two conditions use TEST_WILCOXON_SR)",
+            "use": "TEST_ANOVA_RM"
+          }
+        ],
+        "follow_ups": [
+          {
+            "when": "the groups differ and you want a rank-based comparison of each pair, read with multiple-comparison caution",
+            "use": "TEST_MANN_WHITNEY_U"
+          }
+        ]
+      }
+    ],
+    "truncated": true,
+    "candidates_considered": 33
+  },
+  "errors": [],
+  "warnings": []
+}

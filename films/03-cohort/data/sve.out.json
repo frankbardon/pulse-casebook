@@ -1,0 +1,38 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "empty_sets": 3
+      }
+    ],
+    "metadata": {
+      "total_rows": 40,
+      "filtered_rows": 3,
+      "cohort_file": "svi.pulse"
+    },
+    "components": {
+      "aggregations": [
+        {
+          "label": "empty_sets",
+          "n": 3,
+          "n_null": 0
+        }
+      ],
+      "filterers": [
+        {
+          "n_in": 40,
+          "n_out": 3,
+          "n_null_input": 0
+        }
+      ],
+      "run": {
+        "total_records": 40,
+        "filtered_records": 3,
+        "null_records": 0
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

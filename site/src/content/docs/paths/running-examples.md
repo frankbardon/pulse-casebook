@@ -26,7 +26,7 @@ The script names differ slightly between case studies; each case study's **Repro
 
 ## Rebuild a film's data
 
-Films 6 to 10 quote real Pulse runs. To re-run them:
+The films with a `data/` folder quote real Pulse runs. To re-run them:
 
 ```sh
 make data                 # every film

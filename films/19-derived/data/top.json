@@ -1,0 +1,4 @@
+{"cohort":{"filename":"wd.pulse"},
+ "filterers":[{"type":"FILTER_RANGE","field":"rank","values":["1","2"]}],
+ "groups":[{"type":"GROUP_CATEGORY","field":"store"}],
+ "aggregations":[{"type":"AGG_COUNT","field":"revenue","label":"weeks"},{"type":"AGG_AVERAGE","field":"revenue","label":"top2_avg"},{"type":"AGG_AVERAGE","field":"log_rev","label":"top2_log"}]}

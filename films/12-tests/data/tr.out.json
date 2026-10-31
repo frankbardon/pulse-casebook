@@ -1,0 +1,260 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "metadata": {
+      "total_rows": 240,
+      "filtered_rows": 240,
+      "cohort_file": "t.pulse"
+    },
+    "tests": [
+      {
+        "label": "TEST_T_spend",
+        "type": "TEST_T",
+        "variant": "welch_two_sample",
+        "statistic": -4.011828778150325,
+        "df": 236.83660130648127,
+        "p_value": 0.00008082860752231373,
+        "alpha": 0.05,
+        "reject_null": true,
+        "p_adjusted": 0.00024248582256694118,
+        "significant_adjusted": true,
+        "multiplicity": {
+          "method": "holm",
+          "family": "request",
+          "alpha": 0.05,
+          "m": 4
+        },
+        "details": {
+          "ci_high": -3.592511949699316,
+          "ci_low": -10.524990656095921,
+          "diff": -7.058751302897619,
+          "effect_size": {
+            "cohens_d": -0.5183453968431917
+          },
+          "groups": [
+            "A",
+            "B"
+          ],
+          "mean": [
+            47.44731707317075,
+            54.50606837606837
+          ],
+          "n": [
+            123,
+            117
+          ],
+          "variance": [
+            181.85087389044398,
+            189.22690509873263
+          ]
+        }
+      },
+      {
+        "label": "TEST_CHISQ",
+        "type": "TEST_CHISQ",
+        "variant": "independence",
+        "statistic": 7.9039868969294504,
+        "df": 2,
+        "p_value": 0.019216356751806305,
+        "alpha": 0.05,
+        "reject_null": true,
+        "p_adjusted": 0.03843271350361261,
+        "significant_adjusted": true,
+        "multiplicity": {
+          "method": "holm",
+          "family": "request",
+          "alpha": 0.05,
+          "m": 4
+        },
+        "details": {
+          "col_labels": [
+            "A",
+            "B"
+          ],
+          "col_totals": [
+            123,
+            117
+          ],
+          "contingency": [
+            [
+              48,
+              39
+            ],
+            [
+              33,
+              51
+            ],
+            [
+              42,
+              27
+            ]
+          ],
+          "effect_size": {
+            "cramers_v": 0.18147528409457317
+          },
+          "expected_min": 33.6375,
+          "n": 240,
+          "row_labels": [
+            "East",
+            "North",
+            "South"
+          ],
+          "row_totals": [
+            87,
+            84,
+            69
+          ]
+        }
+      },
+      {
+        "label": "TEST_PEARSON_R_spend",
+        "type": "TEST_PEARSON_R",
+        "variant": "pearson",
+        "statistic": 0.7819749992101005,
+        "df": 238,
+        "p_value": 9.08658597658912e-51,
+        "alpha": 0.05,
+        "reject_null": true,
+        "p_adjusted": 3.634634390635648e-50,
+        "significant_adjusted": true,
+        "multiplicity": {
+          "method": "holm",
+          "family": "request",
+          "alpha": 0.05,
+          "m": 4
+        },
+        "details": {
+          "ci_high": 0.8267399435417158,
+          "ci_low": 0.727370334580911,
+          "covariance": 37.15621269177128,
+          "mean_x": 50.88845833333333,
+          "mean_y": 6.783333333333333,
+          "n": 240,
+          "t": 19.35429672947018,
+          "variance_x": 197.17078380578795,
+          "variance_y": 11.45076708507671
+        }
+      },
+      {
+        "label": "TEST_ANOVA_F_spend",
+        "type": "TEST_ANOVA_F",
+        "variant": "one_way",
+        "statistic": 1.335175908513945,
+        "df": 2,
+        "p_value": 0.26508360348530347,
+        "alpha": 0.05,
+        "reject_null": false,
+        "p_adjusted": 0.26508360348530347,
+        "significant_adjusted": false,
+        "multiplicity": {
+          "method": "holm",
+          "family": "request",
+          "alpha": 0.05,
+          "m": 4
+        },
+        "details": {
+          "df_between": 2,
+          "df_within": 237,
+          "effect_size": {
+            "eta_squared": 0.011141769504584042,
+            "omega_squared": 0.002785352711569275
+          },
+          "group_means": [
+            50.29130952380952,
+            49.64954022988505,
+            53.17753623188406
+          ],
+          "groups": [
+            "North",
+            "East",
+            "South"
+          ],
+          "ms_within": 196.61930218869622,
+          "n": [
+            84,
+            87,
+            69
+          ],
+          "ss_between": 525.0427108623408,
+          "ss_within": 46598.77461872101
+        }
+      }
+    ],
+    "regressions": [
+      {
+        "type": "REG_OLS",
+        "coefficients": {
+          "(intercept)": 21.32459581884211,
+          "tenure": 1.5306569958749046,
+          "visits": 3.1502934084139937
+        },
+        "std_errors": {
+          "(intercept)": 1.4677027526253155,
+          "tenure": 0.1902375283929716,
+          "visits": 0.1493624544375307
+        },
+        "p_values": {
+          "(intercept)": 1.245779959840497e-34,
+          "tenure": 4.105287167871318e-14,
+          "visits": 2.6363613047900735e-56
+        },
+        "ci_lower": {
+          "(intercept)": 18.43318615603486,
+          "tenure": 1.1558844972609241,
+          "visits": 2.8560457869192524
+        },
+        "ci_upper": {
+          "(intercept)": 24.216005481649358,
+          "tenure": 1.905429494488885,
+          "visits": 3.444541029908735
+        },
+        "df": 237,
+        "conf_level": 0.95,
+        "r2": 0.6948415756874307,
+        "adj_r2": 0.6922663991109532,
+        "n_obs": 240,
+        "residual_std_err": 7.789484918187522
+      },
+      {
+        "type": "REG_GLM",
+        "family": "binomial",
+        "link": "logit",
+        "coefficients": {
+          "(intercept)": -2.57095764635856,
+          "visits": 0.33286166628072233
+        },
+        "std_errors": {
+          "(intercept)": 0.3789342537160609,
+          "visits": 0.049133098601030434
+        },
+        "p_values": {
+          "(intercept)": 1.1632284668720757e-11,
+          "visits": 1.2467058039913372e-11
+        },
+        "ci_lower": {
+          "(intercept)": -3.3136551361506026,
+          "visits": 0.2365625625738474
+        },
+        "ci_upper": {
+          "(intercept)": -1.8282601565665175,
+          "visits": 0.4291607699875973
+        },
+        "conf_level": 0.95,
+        "deviance": 270.4263938111359,
+        "null_deviance": 328.9508194927002,
+        "pseudo_r2": 0.17791238754723038,
+        "n_obs": 240,
+        "converged_iters": 5
+      }
+    ],
+    "components": {
+      "run": {
+        "total_records": 240,
+        "filtered_records": 240,
+        "null_records": 0
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

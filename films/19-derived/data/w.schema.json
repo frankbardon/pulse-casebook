@@ -1,0 +1,9 @@
+[{"name":"store_no","type":"u64","nullable":false,"description":"Store number, the key the store table shares"},
+{"name":"store","type":"categorical_u8","nullable":false,"description":"Store name, S1 to S6"},
+{"name":"region","type":"categorical_u8","nullable":false,"description":"Sales region of the store: North or South"},
+{"name":"format","type":"categorical_u8","nullable":false,"description":"Store format: Mall or Street"},
+{"name":"opened","type":"date","nullable":false,"description":"Date the store opened"},
+{"name":"week","type":"date","nullable":false,"description":"Monday that starts the sales week"},
+{"name":"revenue","type":"f64","nullable":true,"description":"Store revenue for the week, in thousands of dollars"},
+{"name":"visits","type":"u32","nullable":false,"description":"Customer visits to the store that week"},
+{"name":"promo","type":"categorical_u8","nullable":false,"description":"Whether a promotion ran that week, as the stores reported it"}]

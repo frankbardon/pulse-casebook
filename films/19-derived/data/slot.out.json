@@ -1,0 +1,14 @@
+{
+  "format_version": "1.1",
+  "data": null,
+  "errors": [
+    {
+      "code": "PULSE_MATERIALIZE_SLOT_UNSUPPORTED",
+      "message": "materialize does not accept the groups slot: only features, filterers, attributes, windows, sort, weight and time_zone keep one row per source record",
+      "details": {
+        "slot": "groups"
+      }
+    }
+  ],
+  "warnings": []
+}

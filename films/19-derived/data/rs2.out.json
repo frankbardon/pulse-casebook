@@ -1,0 +1,50 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "metadata": {
+      "total_rows": 48,
+      "filtered_rows": 48,
+      "cohort_file": "wl.pulse"
+    },
+    "regressions": [
+      {
+        "type": "REG_OLS",
+        "coefficients": {
+          "(intercept)": -106.89933914321136,
+          "log_value": 31.842398435575642
+        },
+        "std_errors": {
+          "(intercept)": 15.822235959185479,
+          "log_value": 3.3786170258463315
+        },
+        "p_values": {
+          "(intercept)": 2.3442497573589538e-8,
+          "log_value": 3.2179041932137637e-12
+        },
+        "ci_lower": {
+          "(intercept)": -138.76695820827922,
+          "log_value": 25.03751443408802
+        },
+        "ci_upper": {
+          "(intercept)": -75.03172007814351,
+          "log_value": 38.64728243706327
+        },
+        "df": 45,
+        "conf_level": 0.95,
+        "r2": 0.6637391344946917,
+        "adj_r2": 0.6562666708167959,
+        "n_obs": 47,
+        "residual_std_err": 5.601492300708386
+      }
+    ],
+    "components": {
+      "run": {
+        "total_records": 48,
+        "filtered_records": 48,
+        "null_records": 0
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

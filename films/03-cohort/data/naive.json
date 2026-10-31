@@ -1,0 +1,25 @@
+{
+  "note": "plain left-to-right float64 sums of spend by region over s1..s4, in file order and reversed; computed by generate.js, not by Pulse",
+  "sums": {
+    "North": {
+      "forward": 167353720.86933964,
+      "reverse": 167353720.86934018,
+      "equal": false
+    },
+    "South": {
+      "forward": 164164533.3716491,
+      "reverse": 164164533.3716494,
+      "equal": false
+    },
+    "East": {
+      "forward": 164821758.06179,
+      "reverse": 164821758.06178793,
+      "equal": false
+    },
+    "West": {
+      "forward": 159978653.46137667,
+      "reverse": 159978653.46137708,
+      "equal": false
+    }
+  }
+}

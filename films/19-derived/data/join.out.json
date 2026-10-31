@@ -1,0 +1,198 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "revenue": 1122.5,
+        "sqft": 5200,
+        "st_manager": "Ada"
+      },
+      {
+        "revenue": 654.9,
+        "sqft": 2400,
+        "st_manager": "Ben"
+      },
+      {
+        "revenue": 865.7,
+        "sqft": 4800,
+        "st_manager": "Cleo"
+      },
+      {
+        "revenue": 658.4,
+        "sqft": 2100,
+        "st_manager": "Dev"
+      },
+      {
+        "revenue": 1046.2,
+        "sqft": 5600,
+        "st_manager": "Eve"
+      }
+    ],
+    "metadata": {
+      "total_rows": 40,
+      "filtered_rows": 40,
+      "cohort_file": "w.pulse"
+    },
+    "components": {
+      "aggregations": [
+        {
+          "label": "revenue",
+          "n": 39,
+          "n_null": 1,
+          "groups": [
+            {
+              "group_key": [
+                "Ada"
+              ],
+              "n": 8,
+              "n_null": 0,
+              "operator": {
+                "sum": 1122.5
+              }
+            },
+            {
+              "group_key": [
+                "Ben"
+              ],
+              "n": 8,
+              "n_null": 0,
+              "operator": {
+                "sum": 654.9
+              }
+            },
+            {
+              "group_key": [
+                "Cleo"
+              ],
+              "n": 7,
+              "n_null": 1,
+              "operator": {
+                "sum": 865.7
+              }
+            },
+            {
+              "group_key": [
+                "Dev"
+              ],
+              "n": 8,
+              "n_null": 0,
+              "operator": {
+                "sum": 658.4
+              }
+            },
+            {
+              "group_key": [
+                "Eve"
+              ],
+              "n": 8,
+              "n_null": 0,
+              "operator": {
+                "sum": 1046.2
+              }
+            }
+          ]
+        },
+        {
+          "label": "sqft",
+          "n": 40,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "Ada"
+              ],
+              "n": 8,
+              "n_null": 0,
+              "operator": {
+                "max": 5200
+              }
+            },
+            {
+              "group_key": [
+                "Ben"
+              ],
+              "n": 8,
+              "n_null": 0,
+              "operator": {
+                "max": 2400
+              }
+            },
+            {
+              "group_key": [
+                "Cleo"
+              ],
+              "n": 8,
+              "n_null": 0,
+              "operator": {
+                "max": 4800
+              }
+            },
+            {
+              "group_key": [
+                "Dev"
+              ],
+              "n": 8,
+              "n_null": 0,
+              "operator": {
+                "max": 2100
+              }
+            },
+            {
+              "group_key": [
+                "Eve"
+              ],
+              "n": 8,
+              "n_null": 0,
+              "operator": {
+                "max": 5600
+              }
+            }
+          ]
+        }
+      ],
+      "groupers": [
+        {
+          "field": "st_manager",
+          "total_n": 40,
+          "operator": {
+            "buckets": [
+              {
+                "count": 8,
+                "key": "Ada",
+                "label": "Ada"
+              },
+              {
+                "count": 8,
+                "key": "Ben",
+                "label": "Ben"
+              },
+              {
+                "count": 8,
+                "key": "Cleo",
+                "label": "Cleo"
+              },
+              {
+                "count": 8,
+                "key": "Dev",
+                "label": "Dev"
+              },
+              {
+                "count": 8,
+                "key": "Eve",
+                "label": "Eve"
+              }
+            ],
+            "dict_size": 5
+          }
+        }
+      ],
+      "run": {
+        "total_records": 40,
+        "filtered_records": 40,
+        "null_records": 1
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

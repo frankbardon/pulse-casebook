@@ -1,0 +1,123 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "metadata": {
+      "total_rows": 80,
+      "filtered_rows": 80,
+      "cohort_file": "s.pulse"
+    },
+    "regressions": [
+      {
+        "type": "REG_OLS",
+        "coefficients": {
+          "(intercept)": 40.541931548295295,
+          "age": 0.5817619888538051
+        },
+        "std_errors": {
+          "(intercept)": 2.7468986754709355,
+          "age": 0.06190749315116505
+        },
+        "p_values": {
+          "(intercept)": 2.753676144329334e-24,
+          "age": 1.8334699502543495e-14
+        },
+        "ci_lower": {
+          "(intercept)": 35.07327637191127,
+          "age": 0.4585136375763284
+        },
+        "ci_upper": {
+          "(intercept)": 46.01058672467932,
+          "age": 0.7050103401312819
+        },
+        "df": 78,
+        "conf_level": 0.95,
+        "r2": 0.5309930994211295,
+        "adj_r2": 0.5249801904393491,
+        "n_obs": 80,
+        "residual_std_err": 7.12820831455138
+      }
+    ],
+    "matrices": [
+      {
+        "name": "cor",
+        "type": "MAT_CORRELATION",
+        "primary": {
+          "kind": "square_symmetric",
+          "encoding": "full",
+          "row_keys": [
+            "age",
+            "income",
+            "tenure",
+            "spend",
+            "visits"
+          ],
+          "column_keys": [
+            "age",
+            "income",
+            "tenure",
+            "spend",
+            "visits"
+          ],
+          "values": [
+            [
+              1,
+              0.7286927332018136,
+              0.8011616134513919,
+              0.5044358011163892,
+              0.3639629991175544
+            ],
+            [
+              0.7286927332018136,
+              1,
+              0.5425450115131014,
+              0.7829263458087282,
+              0.447460886087453
+            ],
+            [
+              0.8011616134513919,
+              0.5425450115131014,
+              1,
+              0.3431700455854528,
+              0.2622739439668924
+            ],
+            [
+              0.5044358011163892,
+              0.7829263458087282,
+              0.3431700455854528,
+              1,
+              0.5220446373765926
+            ],
+            [
+              0.3639629991175544,
+              0.447460886087453,
+              0.2622739439668924,
+              0.5220446373765926,
+              1
+            ]
+          ]
+        },
+        "scalars": {
+          "determinant": 0.0446229369220261
+        }
+      }
+    ],
+    "components": {
+      "run": {
+        "total_records": 80,
+        "filtered_records": 80,
+        "null_records": 0
+      },
+      "matrices": [
+        {
+          "name": "cor",
+          "type": "MAT_CORRELATION",
+          "n": 80,
+          "n_null": 0,
+          "n_listwise_dropped": 0
+        }
+      ]
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

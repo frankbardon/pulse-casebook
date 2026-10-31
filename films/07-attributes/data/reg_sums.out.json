@@ -1,0 +1,49 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "n": 30,
+        "sum_lev": 2,
+        "sum_resid": -8.171241461241152e-14
+      }
+    ],
+    "metadata": {
+      "total_rows": 30,
+      "filtered_rows": 30,
+      "cohort_file": "reg.pulse"
+    },
+    "components": {
+      "aggregations": [
+        {
+          "label": "n",
+          "n": 30,
+          "n_null": 0
+        },
+        {
+          "label": "sum_resid",
+          "n": 30,
+          "n_null": 0,
+          "operator": {
+            "sum": -8.171241461241152e-14
+          }
+        },
+        {
+          "label": "sum_lev",
+          "n": 30,
+          "n_null": 0,
+          "operator": {
+            "sum": 2
+          }
+        }
+      ],
+      "run": {
+        "total_records": 30,
+        "filtered_records": 30,
+        "null_records": 0
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

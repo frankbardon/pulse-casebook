@@ -1,0 +1,187 @@
+1
+00:00:04,250 --> 00:00:06,157
+Many requests, as one call.
+
+2
+00:00:06,957 --> 00:00:17,098
+A composed request bundles independent requests into one call. Each slot is a complete request, with its own cohort, filters, groups and aggregations.
+
+3
+00:00:17,898 --> 00:00:27,613
+Our cohort is illustrative: two markets, a hundred and four weeks each of TV spend, search spend and sales. Three slots ask three questions of it.
+
+4
+00:00:28,413 --> 00:00:36,784
+Response i answers request i. A slot with no label gets request, underscore, and its position: here, request three.
+
+5
+00:00:37,584 --> 00:00:44,760
+Labels are how overlays and rankings name slots, so two slots with one label are refused before any slot runs.
+
+6
+00:00:45,560 --> 00:00:53,227
+With parallel workers, slots overlap, but the responses still come back in request order, byte for byte the serial run.
+
+7
+00:00:54,027 --> 00:01:02,462
+A batch saves round-trips, not decode work: every slot opens its own cohort. When one step reads another's rows, that is a chain.
+
+8
+00:01:03,262 --> 00:01:12,422
+Overlays on the composed request run after every slot has finished. Here, sales by market in twenty twenty-four and in twenty twenty-five.
+
+9
+00:01:13,222 --> 00:01:21,081
+An index and a delta against the twenty twenty-four slot: north fell to about ninety-five, south to about ninety-six.
+
+10
+00:01:21,881 --> 00:01:30,124
+The fold reads the finished slots and never changes them. With or without the overlays, both slots' responses are byte-identical.
+
+11
+00:01:30,924 --> 00:01:37,716
+Compared slots must share their shape, so vary the filter or the cohort. The overlays film covers the kinds.
+
+12
+00:01:38,516 --> 00:01:47,484
+A sweep is one request body plus axes of values. Double braces splice a value as text; a var marker keeps its JSON type.
+
+13
+00:01:48,284 --> 00:01:55,545
+Grid mode takes every combination: two markets by two years make four ordinary slots, labelled by the pattern.
+
+14
+00:01:56,345 --> 00:02:04,417
+Zip mode walks the axes in lockstep instead: three bands of TV spend make three slots, and average sales climb with spend.
+
+15
+00:02:05,217 --> 00:02:11,540
+Predict expands the sweep without running it: the expanded count and the very labels the run will use.
+
+16
+00:02:12,340 --> 00:02:20,476
+The slot limit counts the expanded total, so an oversized sweep is refused before anything runs. Each body decodes strictly.
+
+17
+00:02:21,276 --> 00:02:28,175
+A placeholder never goes inside an expression. To vary a value an expression reads, sweep a request param.
+
+18
+00:02:28,975 --> 00:02:37,068
+Now a real search. Each slot adstocks TV with a different decay and fits a regression, holding out the last thirteen weeks.
+
+19
+00:02:37,868 --> 00:02:44,191
+Rank orders the sweep slots by one number: here, the held-out error. A decay of point six wins.
+
+20
+00:02:44,991 --> 00:02:54,791
+The ranking reports each slot's value, rank, index and axes. Our generator used point six, and the winner's decay comes back as a number in axes.
+
+21
+00:02:55,591 --> 00:03:04,452
+The path walks object keys, and picks list elements by name or label, never by index. Order is ascending unless you say otherwise.
+
+22
+00:03:05,252 --> 00:03:12,236
+A path that names nothing in any slot, here a misspelt R M S E, is refused with a sweep rank path error.
+
+23
+00:03:13,036 --> 00:03:20,084
+The ranking sits outside the return. It is always emitted and never rounded, even when the slots drop their rows.
+
+24
+00:03:20,884 --> 00:03:29,660
+A grid multiplies with every axis. Random and L H S modes draw a fixed number of samples from each axis's range instead.
+
+25
+00:03:30,460 --> 00:03:34,713
+Random draws every point independently, so it leaves gaps and clumps.
+
+26
+00:03:35,513 --> 00:03:43,628
+L H S, a Latin hypercube, cuts each axis into as many strata as samples, and draws each stratum exactly once.
+
+27
+00:03:44,428 --> 00:03:52,052
+Here, every one of the forty strata on both axes. Random reached twenty-five on one axis and twenty-nine on the other.
+
+28
+00:03:52,852 --> 00:04:00,284
+The draws come from the spec and a seed, never from the data or the clock. The response echoes the seed as sweep seed.
+
+29
+00:04:01,084 --> 00:04:07,577
+Pin it as R N G seed and the run replays exactly: the same forty draws, the same ranking.
+
+30
+00:04:08,377 --> 00:04:12,054
+Set another seed and you get a fresh set. The winner moves a little.
+
+31
+00:04:12,854 --> 00:04:21,737
+Both times, TV's decay sits near point six, but search's wanders: these data barely tell it. Read the top few, not only the first.
+
+32
+00:04:22,537 --> 00:04:30,097
+For each does the same on one item inside a request. One window item becomes three, one per zipped decay and label.
+
+33
+00:04:30,897 --> 00:04:37,625
+Each becomes an ordinary column. The higher the decay, the longer last week's TV carries into this one.
+
+34
+00:04:38,425 --> 00:04:45,494
+Predict expands it exactly as the run does. It works on windows, features and attributes, by grid or zip.
+
+35
+00:04:46,294 --> 00:04:50,889
+Inside a sweep body it is refused: put its axes on the sweep instead.
+
+36
+00:04:51,689 --> 00:04:57,756
+Sweep the holdout start through a request param. A start at week one hundred and five holds out nothing.
+
+37
+00:04:58,556 --> 00:05:02,511
+That regression fails on its data, and its result carries the error.
+
+38
+00:05:03,311 --> 00:05:10,167
+A slot failed warning names it, the ranking leaves that slot out with a warning, and the other slots rank as usual.
+
+39
+00:05:10,967 --> 00:05:17,332
+A fault in the data fails that part alone, and the rest survives. Under Strict, the batch fails instead.
+
+40
+00:05:18,132 --> 00:05:24,775
+A fault in the request itself, like a misspelt field, refuses the whole batch, and the error names the slot.
+
+41
+00:05:25,575 --> 00:05:33,818
+A banner writes a survey table once. Sections and column groups expand into ordinary crosstab slots, a Total block first.
+
+42
+00:05:34,618 --> 00:05:40,173
+The response stitches them side by side. This one comes from a small survey of six hundred.
+
+43
+00:05:40,973 --> 00:05:47,381
+Letters mark a column significantly above another in its own group. The Total block is compared to nothing.
+
+44
+00:05:48,181 --> 00:05:55,293
+That's Compose today: batches, the overlay fold, sweeps and their rankings, fan-out, and slots that fail alone.
+
+45
+00:05:56,093 --> 00:06:05,786
+More are added over time, and the manifest lists what your instance offers. Embedders can register their own regressions through options dot extensions.
+
+46
+00:06:06,586 --> 00:06:12,119
+Next, the same cohort goes further: fit once, bind the winner, and optimize the budget.
+
+47
+00:06:12,919 --> 00:06:14,186
+Pulse Compose.

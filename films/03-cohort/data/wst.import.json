@@ -1,0 +1,20 @@
+{
+  "format_version": "1.1",
+  "data": null,
+  "errors": [
+    {
+      "code": "PULSE_IMPORT_ROWS_DROPPED",
+      "message": "import dropped 2 of 80 rows; first failure at row 64, column \"visits\": strconv.ParseUint: parsing \"300\": value out of range (strict: the partial import is refused and nothing is written)",
+      "details": {
+        "dropped": 2,
+        "first_failure": {
+          "column": "visits",
+          "reason": "strconv.ParseUint: parsing \"300\": value out of range",
+          "row": 64
+        },
+        "imported": 78
+      }
+    }
+  ],
+  "warnings": []
+}

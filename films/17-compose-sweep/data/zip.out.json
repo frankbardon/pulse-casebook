@@ -1,0 +1,120 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "responses": [
+      {
+        "label": "tv_off",
+        "data": [
+          {
+            "avg_sales": 283.9597701149425
+          }
+        ],
+        "metadata": {
+          "total_rows": 208,
+          "filtered_rows": 87,
+          "cohort_file": "m.pulse"
+        },
+        "components": {
+          "aggregations": [
+            {
+              "label": "avg_sales",
+              "n": 87,
+              "n_null": 0,
+              "operator": {
+                "sum": 24704.5
+              }
+            }
+          ],
+          "filterers": [
+            {
+              "n_in": 208,
+              "n_out": 87,
+              "n_null_input": 0
+            }
+          ],
+          "run": {
+            "total_records": 208,
+            "filtered_records": 87,
+            "null_records": 0
+          }
+        }
+      },
+      {
+        "label": "tv_low",
+        "data": [
+          {
+            "avg_sales": 323.89827586206894
+          }
+        ],
+        "metadata": {
+          "total_rows": 208,
+          "filtered_rows": 58,
+          "cohort_file": "m.pulse"
+        },
+        "components": {
+          "aggregations": [
+            {
+              "label": "avg_sales",
+              "n": 58,
+              "n_null": 0,
+              "operator": {
+                "sum": 18786.1
+              }
+            }
+          ],
+          "filterers": [
+            {
+              "n_in": 208,
+              "n_out": 58,
+              "n_null_input": 0
+            }
+          ],
+          "run": {
+            "total_records": 208,
+            "filtered_records": 58,
+            "null_records": 0
+          }
+        }
+      },
+      {
+        "label": "tv_high",
+        "data": [
+          {
+            "avg_sales": 367.1063492063492
+          }
+        ],
+        "metadata": {
+          "total_rows": 208,
+          "filtered_rows": 63,
+          "cohort_file": "m.pulse"
+        },
+        "components": {
+          "aggregations": [
+            {
+              "label": "avg_sales",
+              "n": 63,
+              "n_null": 0,
+              "operator": {
+                "sum": 23127.7
+              }
+            }
+          ],
+          "filterers": [
+            {
+              "n_in": 208,
+              "n_out": 63,
+              "n_null_input": 0
+            }
+          ],
+          "run": {
+            "total_records": 208,
+            "filtered_records": 63,
+            "null_records": 0
+          }
+        }
+      }
+    ]
+  },
+  "errors": [],
+  "warnings": []
+}

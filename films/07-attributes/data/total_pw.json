@@ -1,0 +1,4 @@
+{"cohort":{"filename":"m.pulse"},
+ "filterers":[{"type":"FILTER_RANGE","field":"age","values":["18","65"]}],
+ "attributes":[{"type":"ATTR_FORMULA","label":"tot","expression":"total(income)","weight":{"field":"wt","kind":"probability"}}],
+ "aggregations":[{"type":"AGG_MAX","field":"tot","label":"tot"}]}

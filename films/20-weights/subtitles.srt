@@ -1,0 +1,219 @@
+1
+00:00:04,250 --> 00:00:06,519
+Weights, and what one row stands for.
+
+2
+00:00:07,319 --> 00:00:12,362
+A weight column makes each row count as w rows in every weight-aware figure.
+
+3
+00:00:13,162 --> 00:00:19,634
+You set it on the request, on one slot, or, for an embedder, as the instance default weight in the options.
+
+4
+00:00:20,434 --> 00:00:27,802
+Our cohort: six hundred illustrative survey rows over two waves, running young and male, with the north oversampled.
+
+5
+00:00:28,602 --> 00:00:38,125
+A weight has a kind. Probability, the default, is for design and raked weights. Frequency means a row stands for w identical rows.
+
+6
+00:00:38,925 --> 00:00:45,674
+Here is one small table stored two ways: six rows with a count, and the twenty rows that count stands for.
+
+7
+00:00:46,474 --> 00:00:52,199
+Under a frequency weight, the six rows give exactly the twenty rows' count, mean and interval.
+
+8
+00:00:52,999 --> 00:00:59,599
+As a probability weight, the mean holds but the interval widens: it rests on the effective sample size.
+
+9
+00:01:00,399 --> 00:01:11,863
+Weighted inference uses one rule: the unweighted formula on a sample size N star. That is the sum of weights for frequency weights, and Kish's effective N for probability weights.
+
+10
+00:01:12,663 --> 00:01:19,348
+The survey's design weight leaves an effective sample of five hundred and sixty-six, out of six hundred rows.
+
+11
+00:01:20,148 --> 00:01:25,468
+A weighted t-test keeps the raw N, and uses the effective N as its sample size.
+
+12
+00:01:26,268 --> 00:01:33,487
+Each slot resolves its weight on its own: its own weight first, then the request's, then the instance default, then none.
+
+13
+00:01:34,287 --> 00:01:38,839
+Setting a slot's weight to null opts that one slot out, even under a default.
+
+14
+00:01:39,639 --> 00:01:45,876
+Predict shows the resolution before a row is read: each slot, its field, a status and the source.
+
+15
+00:01:46,676 --> 00:01:52,295
+Here the mean and the weighted count are applied, the base opts out, and the grouper skips the weight.
+
+16
+00:01:53,095 --> 00:01:58,479
+In the run, the weighted count is a sum of weights, and the opted-out base stays a plain count.
+
+17
+00:01:59,279 --> 00:02:06,818
+Pulse never coerces a bad weight. Here are ten rows whose weights include a null, a negative, a zero and a fraction.
+
+18
+00:02:07,618 --> 00:02:16,671
+Null and negative weights drop the row from that slot, and so does a fraction under a frequency weight. Zero is valid. N stays the raw count.
+
+19
+00:02:17,471 --> 00:02:23,346
+One warning per weight column counts the dropped rows by reason. Strict mode makes it an error.
+
+20
+00:02:24,146 --> 00:02:30,490
+Which operators take a weight? The manifest is the table: each entry lists the weight kinds it supports.
+
+21
+00:02:31,290 --> 00:02:36,802
+Most aggregators, many tests, the main regressions and most matrix fits honour a weight.
+
+22
+00:02:37,602 --> 00:02:42,389
+Filters, features and most groupers skip it. The rest refuse, at predict too.
+
+23
+00:02:43,189 --> 00:02:48,829
+A minimum or maximum has no weighted form, so an explicit weight on it is a config error.
+
+24
+00:02:49,629 --> 00:02:56,741
+A rank test weights only under frequency weights, so a probability weight is refused, naming the kinds it supports.
+
+25
+00:02:57,541 --> 00:03:04,354
+A post-test reads the result rows, which carry no row weights. Opt any refused slot out with weight null.
+
+26
+00:03:05,154 --> 00:03:10,623
+Windows have no weighted form, so a request weight on a request with windows is refused.
+
+27
+00:03:11,423 --> 00:03:15,975
+Put the weight on the aggregation instead, and the window ranks the weighted rows.
+
+28
+00:03:16,775 --> 00:03:23,716
+The total function is weighted too. Under a frequency weight it gives one hundred and thirty, the twenty rows' total.
+
+29
+00:03:24,516 --> 00:03:29,260
+Under a probability weight it is refused, because a total would scale with the weights.
+
+30
+00:03:30,060 --> 00:03:38,111
+So where do weights come from? Pulse rake computes a weight per record, so the weighted sample matches known margins, such as census shares.
+
+31
+00:03:38,911 --> 00:03:45,618
+A weight is a schema field, so it writes a new cohort with a rake weight column. Embedders call Pulse dot Rake.
+
+32
+00:03:46,418 --> 00:03:52,058
+Here we rake age and gender to census targets, written inline, and each wave on its own.
+
+33
+00:03:52,858 --> 00:04:00,055
+Each sweep rescales every margin to its target, until the largest gap is within tolerance, or the sweeps run out.
+
+34
+00:04:00,855 --> 00:04:05,855
+Targets can be shares or counts, and a base weight lets you start from a design weight.
+
+35
+00:04:06,655 --> 00:04:14,812
+The report gives each category's observed share, its target, and what the weights achieve. Three sweeps, and every margin is met.
+
+36
+00:04:15,612 --> 00:04:22,809
+The efficiency report says what that cost: an effective sample of four hundred and sixty-one, seventy-seven percent.
+
+37
+00:04:23,609 --> 00:04:30,486
+Per wave, the first wave needed bigger weights, so it kept only seventy percent. The second kept eighty-five.
+
+38
+00:04:31,286 --> 00:04:38,334
+This design effect covers unequal weighting only: no strata, clusters or finite-population corrections.
+
+39
+00:04:39,134 --> 00:04:46,801
+A cap trades fit for efficiency. Cap each weight at twice its wave's mean, and efficiency rises to seventy-nine percent.
+
+40
+00:04:47,601 --> 00:04:52,708
+But wave one can't reach its target for the over-fifty-fives with the cap in place.
+
+41
+00:04:53,508 --> 00:05:00,961
+It stops at a hundred sweeps, but still writes the cohort, with a warning naming the wave. Wave two converged in six.
+
+42
+00:05:01,761 --> 00:05:09,364
+A joint margin over two fields is cell weighting. One margin, rim or joint, is exact after a single sweep.
+
+43
+00:05:10,164 --> 00:05:14,097
+A category with no target is refused, and nothing is written.
+
+44
+00:05:14,897 --> 00:05:22,926
+Raked weights are probability weights, so name the column with the default kind. Never declare them frequency weights: they are fractional.
+
+45
+00:05:23,726 --> 00:05:31,158
+Weighted counts by age now carry the census margin, and an opted-out count shows the unweighted base beside them.
+
+46
+00:05:31,958 --> 00:05:38,835
+Older respondents are more often satisfied, so the raked share rises, from fifty-two to fifty-five percent.
+
+47
+00:05:39,635 --> 00:05:45,019
+Its interval is wider, because it rests on the effective sample, not six hundred rows.
+
+48
+00:05:45,819 --> 00:05:51,630
+To rake a table rather than a cohort, use the rake overlay on a crosstab of counts or sums.
+
+49
+00:05:52,430 --> 00:05:58,689
+It returns the fitted table and each cell's adjustment factor, beside the host, which stays unchanged.
+
+50
+00:05:59,489 --> 00:06:04,212
+It writes nothing, and every row and column key needs exactly one target.
+
+51
+00:06:05,012 --> 00:06:10,993
+Its factors match the weights from raking the whole cohort, with no wave split, to the same margins.
+
+52
+00:06:11,793 --> 00:06:20,036
+That's weights in Pulse today: two kinds and the effective sample, where a weight comes from, what honours it, and raking cohorts and tables.
+
+53
+00:06:20,836 --> 00:06:31,297
+More are added over time. The manifest lists each operator's weight kinds, and an extension registered through options dot extensions can declare itself weight-aware.
+
+54
+00:06:32,097 --> 00:06:37,886
+Remember: know what one row stands for before you count it. Next up, time zones and panels.
+
+55
+00:06:38,686 --> 00:06:39,889
+Pulse weights.

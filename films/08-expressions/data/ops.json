@@ -1,0 +1,65 @@
+{
+ "cohort": {
+  "filename": "e.pulse"
+ },
+ "attributes": [
+  {
+   "type": "ATTR_FORMULA",
+   "label": "in_ne",
+   "expression": "region in [\"North\", \"East\"] ? 1 : 0"
+  },
+  {
+   "type": "ATTR_FORMULA",
+   "label": "mod",
+   "expression": "week % 4"
+  },
+  {
+   "type": "ATTR_FORMULA",
+   "label": "negmod",
+   "expression": "-7.5 % 2"
+  },
+  {
+   "type": "ATTR_FORMULA",
+   "label": "per0",
+   "expression": "spend / 0"
+  },
+  {
+   "type": "ATTR_FORMULA",
+   "label": "big",
+   "expression": "spend ** 2"
+  }
+ ],
+ "groups": [
+  {
+   "type": "GROUP_CATEGORY",
+   "field": "id"
+  }
+ ],
+ "aggregations": [
+  {
+   "type": "AGG_MAX",
+   "field": "in_ne",
+   "label": "in_ne"
+  },
+  {
+   "type": "AGG_MAX",
+   "field": "mod",
+   "label": "mod"
+  },
+  {
+   "type": "AGG_MAX",
+   "field": "negmod",
+   "label": "negmod"
+  },
+  {
+   "type": "AGG_MAX",
+   "field": "per0",
+   "label": "per0"
+  },
+  {
+   "type": "AGG_MAX",
+   "field": "big",
+   "label": "big"
+  }
+ ]
+}

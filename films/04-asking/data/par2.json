@@ -1,0 +1,5 @@
+{"cohort":{"filename":"s.pulse"},
+"params":{"plan":"Basic","min_visits":5},
+"filterers":[{"type":"FILTER_EXPRESSION","expression":"plan == params.plan && visits >= params.min_visits"}],
+"groups":[{"type":"GROUP_CATEGORY","field":"arm"}],
+"aggregations":[{"type":"AGG_COUNT","field":"id","label":"shoppers"},{"type":"AGG_AVERAGE","field":"spend","label":"avg_spend"}]}

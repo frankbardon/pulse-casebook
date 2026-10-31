@@ -1,0 +1,29 @@
+{
+  "format_version": "1.1",
+  "data": null,
+  "errors": [
+    {
+      "code": "PULSE_REQUEST_UNKNOWN_FIELD",
+      "message": "request contains unrecognized key(s) in aggregations[0]: \"lable\" (did you mean \"label\"?). An unknown key is refused, never ignored, so a misspelled or misplaced key cannot silently drop the intended operation. Valid keys there: field, fields, label, params, type, vector, weight.",
+      "details": {
+        "path": "aggregations[0].lable",
+        "suggestions": {
+          "lable": "label"
+        },
+        "unknown_keys": [
+          "lable"
+        ],
+        "valid_keys": [
+          "field",
+          "fields",
+          "label",
+          "params",
+          "type",
+          "vector",
+          "weight"
+        ]
+      }
+    }
+  ],
+  "warnings": []
+}

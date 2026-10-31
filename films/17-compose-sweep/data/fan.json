@@ -1,0 +1,66 @@
+{
+ "cohort": {
+  "filename": "m.pulse"
+ },
+ "filterers": [
+  {
+   "type": "FILTER_INCLUDE",
+   "field": "market",
+   "values": [
+    "north"
+   ]
+  },
+  {
+   "type": "FILTER_RANGE",
+   "field": "week",
+   "values": [
+    "1",
+    "8"
+   ]
+  }
+ ],
+ "windows": [
+  {
+   "for_each": {
+    "mode": "zip",
+    "axes": [
+     {
+      "name": "d",
+      "values": [
+       30,
+       60,
+       90
+      ]
+     },
+     {
+      "name": "decay",
+      "values": [
+       0.3,
+       0.6,
+       0.9
+      ]
+     }
+    ]
+   },
+   "type": "WIN_DISTRIBUTED_LAG",
+   "field": "tv",
+   "label": "tv_ad{{d}}",
+   "partition_by": [
+    "market"
+   ],
+   "order_by": [
+    {
+     "field": "week"
+    }
+   ],
+   "params": {
+    "kernel": "geometric",
+    "max_lag": 8,
+    "decay": {
+     "$var": "decay"
+    },
+    "normalize": false
+   }
+  }
+ ]
+}

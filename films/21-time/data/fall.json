@@ -1,0 +1,37 @@
+{
+ "cohort": {
+  "filename": "h.pulse"
+ },
+ "time_zone": "Europe/Berlin",
+ "filterers": [
+  {
+   "type": "FILTER_DATE_RANGES",
+   "field": "at",
+   "params": {
+    "ranges": [
+     {
+      "label": "fall",
+      "start": "2026-10-25",
+      "end": "2026-10-25"
+     }
+    ]
+   }
+  }
+ ],
+ "groups": [
+  {
+   "type": "GROUP_DATE",
+   "field": "at",
+   "params": {
+    "component": "hour"
+   }
+  }
+ ],
+ "aggregations": [
+  {
+   "type": "AGG_COUNT",
+   "field": "kwh",
+   "label": "n"
+  }
+ ]
+}

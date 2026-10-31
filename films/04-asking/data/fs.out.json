@@ -1,0 +1,66 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "fields": {
+      "spend": {
+        "kind": "numeric",
+        "type_name": "f64",
+        "description": "Spend over the test period, in dollars",
+        "null_count": 5,
+        "numeric": {
+          "min": 5,
+          "max": 161.8,
+          "mean": 67.60099547511314,
+          "stddev": 36.90013423115493,
+          "count": 221,
+          "sum": 14939.819999999996,
+          "histogram": {
+            "min": 0,
+            "max": 180,
+            "bins": [
+              37,
+              69,
+              57,
+              28,
+              28,
+              2
+            ]
+          }
+        }
+      }
+    },
+    "additive": {
+      "region": {
+        "kind": "discrete",
+        "type_name": "categorical_u8",
+        "description": "Sales region the shopper belongs to",
+        "null_count": 0,
+        "discrete": {
+          "values": [
+            {
+              "value": "North",
+              "count": 226
+            },
+            {
+              "value": "East",
+              "count": 212
+            },
+            {
+              "value": "South",
+              "count": 196
+            },
+            {
+              "value": "West",
+              "count": 166
+            }
+          ],
+          "distinct_count": 4
+        }
+      }
+    },
+    "total_records": 800,
+    "filtered_records": 226
+  },
+  "errors": [],
+  "warnings": []
+}

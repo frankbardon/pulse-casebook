@@ -1,0 +1,10 @@
+{
+  "profile": "film-4-analyst",
+  "written_with": "1.0.0-alpha.33",
+  "features": [
+    "capability:process",
+    "AGG_COUNT", "AGG_AVERAGE",
+    "FILTER_EXPRESSION",
+    "GROUP_CATEGORY"
+  ]
+}

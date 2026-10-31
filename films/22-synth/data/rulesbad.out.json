@@ -1,0 +1,16 @@
+{
+  "format_version": "1.1",
+  "data": null,
+  "errors": [
+    {
+      "code": "PULSE_SYNTH_RULE_FIELD_NOT_NULLABLE",
+      "message": "rule 0: rule set_null names field \"region\", which is not declared nullable: the row would carry 0 rather than a null and the file could not show the rule fired",
+      "details": {
+        "field": "region",
+        "rule_index": 0,
+        "slot": "set_null"
+      }
+    }
+  ],
+  "warnings": []
+}

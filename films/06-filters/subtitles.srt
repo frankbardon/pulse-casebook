@@ -1,0 +1,151 @@
+1
+00:00:04,250 --> 00:00:09,485
+Pulse filters. Which records reach the rest of the request, taken apart in depth.
+
+2
+00:00:10,285 --> 00:00:26,634
+By default, filters run second, right after features. They read source fields and feature columns. Attributes come later, so their labels are out of reach, with one exception: the previous-state attribute runs before the filters, and an expression filter can read it.
+
+3
+00:00:27,434 --> 00:00:35,890
+Each filter names a type, a field and its values. Values are always strings: labels for categories, numbers for numeric fields.
+
+4
+00:00:36,690 --> 00:00:45,829
+An unknown label is refused before a single row is read, and the request fails. A filter adds no column. It only keeps or drops.
+
+5
+00:00:46,629 --> 00:00:52,461
+Filters run in the order you list them. Each one sees only the records the previous filter kept.
+
+6
+00:00:53,261 --> 00:01:01,696
+Every filter reports three counts: what it saw, what it let through, and how many arrived with the field null, whether it kept them or dropped them.
+
+7
+00:01:02,496 --> 00:01:09,459
+Reorder them and the survivors stay the same, but the counts move, because each filter now sees a different stream.
+
+8
+00:01:10,259 --> 00:01:16,006
+Include is an allow-list. A record stays only if its value is one of the values you name.
+
+9
+00:01:16,806 --> 00:01:20,099
+A null region is not on the list, so include drops it.
+
+10
+00:01:20,899 --> 00:01:27,904
+Exclude is a block-list, and here's the surprise: a null isn't on the block-list either, so exclude lets it through.
+
+11
+00:01:28,704 --> 00:01:34,707
+It still counts as a null input. That count covers every null the filter saw, kept or dropped.
+
+12
+00:01:35,507 --> 00:01:43,686
+A range filter keeps values between a low and a high bound. Both ends are inclusive, so eighteen and sixty-five both stay.
+
+13
+00:01:44,486 --> 00:01:49,721
+A null age has no position on the line, so it's dropped and counted as a null input.
+
+14
+00:01:50,521 --> 00:01:57,164
+Dates are matched as day numbers since nineteen seventy. For an open-ended range, use an expression instead.
+
+15
+00:01:57,964 --> 00:02:06,569
+Date ranges keep records whose date falls inside any labelled span. Spans are inclusive, and a missing end means open-ended.
+
+16
+00:02:07,369 --> 00:02:19,494
+Write the spans inline, or name a range table registered with the instance. Overlapping spans or duplicate labels are refused. A null date is dropped, and counted as a null input.
+
+17
+00:02:20,294 --> 00:02:29,070
+A datetime is first floored to its local day. Eleven-thirty at night in UTC is already the first of March in Berlin, so it's kept.
+
+18
+00:02:29,870 --> 00:02:40,609
+With no zone set, the day is UTC's, so the same instant is still February and dropped. A per-row zone field works too, and a row with a null zone is dropped and counted.
+
+19
+00:02:41,409 --> 00:02:49,929
+True keeps records whose flag is set. By default it's strict, and only works on boolean fields. Truthy mode works on any scalar type.
+
+20
+00:02:50,729 --> 00:02:59,505
+False in truthy mode keeps false, zero, empty and null. Strict mode would drop that null instead. Kept or dropped, the null is counted.
+
+21
+00:03:00,305 --> 00:03:06,585
+The null filter reads only the null bitmap. Not-a-number, or an empty set, is a value, not a null.
+
+22
+00:03:07,385 --> 00:03:15,542
+Multi-select fields are stored as bitmasks: one bit per option. The set filters compare each row's mask with a query mask.
+
+23
+00:03:16,342 --> 00:03:24,713
+Contains any keeps rows that share at least one option. Contains all needs every option. Contains none needs no overlap at all.
+
+24
+00:03:25,513 --> 00:03:35,462
+Equals needs exactly the same selection. A null set is dropped by all of them except contains none, and an empty set is a real answer, not a null.
+
+25
+00:03:36,262 --> 00:03:43,417
+When no single filter fits, write an expression. Categories read as their labels, and sets read as lists of labels.
+
+26
+00:03:44,217 --> 00:03:53,078
+The expression is compiled once, so a typo fails before any row is read, with a formula compile error, at predict and at the run alike.
+
+27
+00:03:53,878 --> 00:04:01,459
+Careful with nulls. A null compared with greater-than gives an unknown answer, and the row is dropped. Guard with a default.
+
+28
+00:04:02,259 --> 00:04:08,944
+Pass values as params, and read them as params dot name. Change the value, never the expression text.
+
+29
+00:04:09,744 --> 00:04:18,243
+Calendar helpers, like weekday and month index, read dates as days. A datetime needs to-day first, or the compile refuses it.
+
+30
+00:04:19,043 --> 00:04:28,288
+And one attribute is readable: the previous-state attribute runs before the filters, so an expression can keep the subjects who went from trial to paid.
+
+31
+00:04:29,088 --> 00:04:37,800
+Here is the whole picture. Most filters drop a null, but exclude, contains none, false in truthy mode and the is-null check all keep it.
+
+32
+00:04:38,600 --> 00:04:45,819
+Kept or dropped, every null a filter sees lands in its null input count, so you can always see where the nulls went.
+
+33
+00:04:46,619 --> 00:04:53,539
+Filters are built to be cheap. Each decides from one row, so they stream, and their counts add up across shards.
+
+34
+00:04:54,339 --> 00:05:05,142
+Set filters are a single bitwise test. Expressions compile once. On grouped cohorts, a filter can be answered once per dictionary entry, instead of once per row.
+
+35
+00:05:05,942 --> 00:05:11,859
+That's the filter toolkit today: membership, ranges, dates, flags, nulls, sets and expressions.
+
+36
+00:05:12,659 --> 00:05:20,368
+More filters are added over time, and embedders can register their own. The manifest always shows what your instance offers.
+
+37
+00:05:21,168 --> 00:05:25,443
+Remember: know what each filter does with a null. Next up, attributes.
+
+38
+00:05:26,243 --> 00:05:27,510
+Pulse filters.

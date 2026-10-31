@@ -1,0 +1,2 @@
+[{"name":"id","type":"categorical_u8","nullable":false,"description":"Customer id, one per record"},
+{"name":"plan","type":"categorical_u8","nullable":false,"description":"Subscription plan, Basic or Pro"}]

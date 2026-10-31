@@ -1,0 +1,192 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "responses": [
+      {
+        "label": "north",
+        "data": [
+          {
+            "mean_miss": -1.2165787346431511,
+            "sales": 36987.3,
+            "sd_miss": 13.130859101307673,
+            "tv_part": 9886.405327919416
+          }
+        ],
+        "metadata": {
+          "total_rows": 208,
+          "filtered_rows": 104,
+          "cohort_file": "m.pulse"
+        },
+        "components": {
+          "aggregations": [
+            {
+              "label": "sales",
+              "n": 104,
+              "n_null": 0,
+              "operator": {
+                "sum": 36987.3
+              }
+            },
+            {
+              "label": "tv_part",
+              "n": 104,
+              "n_null": 0,
+              "operator": {
+                "sum": 9886.405327919416
+              }
+            },
+            {
+              "label": "mean_miss",
+              "n": 104,
+              "n_null": 0,
+              "operator": {
+                "sum": -126.52418840288772
+              }
+            },
+            {
+              "label": "sd_miss",
+              "n": 104,
+              "n_null": 0,
+              "operator": {
+                "m2": 17931.62391679303,
+                "mean": -1.2165787346431511,
+                "stddev": 13.130859101307673,
+                "variance": 172.41946073839452
+              }
+            }
+          ],
+          "filterers": [
+            {
+              "n_in": 208,
+              "n_out": 104,
+              "n_null_input": 0
+            }
+          ],
+          "run": {
+            "total_records": 208,
+            "filtered_records": 104,
+            "null_records": 0
+          }
+        }
+      },
+      {
+        "label": "south",
+        "data": [
+          {
+            "mean_miss": -0.9527722331929513,
+            "sales": 29631,
+            "sd_miss": 13.414620183241489,
+            "tv_part": 9095.077732504611
+          }
+        ],
+        "metadata": {
+          "total_rows": 208,
+          "filtered_rows": 104,
+          "cohort_file": "m.pulse"
+        },
+        "components": {
+          "aggregations": [
+            {
+              "label": "sales",
+              "n": 104,
+              "n_null": 0,
+              "operator": {
+                "sum": 29631
+              }
+            },
+            {
+              "label": "tv_part",
+              "n": 104,
+              "n_null": 0,
+              "operator": {
+                "sum": 9095.077732504611
+              }
+            },
+            {
+              "label": "mean_miss",
+              "n": 104,
+              "n_null": 0,
+              "operator": {
+                "sum": -99.08831225206694
+              }
+            },
+            {
+              "label": "sd_miss",
+              "n": 104,
+              "n_null": 0,
+              "operator": {
+                "m2": 18715.011604705513,
+                "mean": -0.9527722331929513,
+                "stddev": 13.414620183241489,
+                "variance": 179.95203466062992
+              }
+            }
+          ],
+          "filterers": [
+            {
+              "n_in": 208,
+              "n_out": 104,
+              "n_null_input": 0
+            }
+          ],
+          "run": {
+            "total_records": 208,
+            "filtered_records": 104,
+            "null_records": 0
+          }
+        }
+      }
+    ],
+    "fits": {
+      "base": {
+        "name": "base",
+        "type": "REG_OLS",
+        "coefficients": {
+          "(intercept)": 160.10235388735157,
+          "north": 62.0020532026529,
+          "search_ad": 3.2694459663683344,
+          "tv_ad": 1.590585687990359
+        },
+        "std_errors": {
+          "(intercept)": 3.9398916716629917,
+          "north": 2.0148265670442194,
+          "search_ad": 0.27556541182368877,
+          "tv_ad": 0.03645708337318491
+        },
+        "p_values": {
+          "(intercept)": 5.5212735261124754e-92,
+          "north": 3.5388544894420827e-73,
+          "search_ad": 2.684941651930196e-24,
+          "tv_ad": 5.58979838560029e-97
+        },
+        "ci_lower": {
+          "(intercept)": 152.32744695953915,
+          "north": 58.026032961507404,
+          "search_ad": 2.725650449130381,
+          "tv_ad": 1.518641976409485
+        },
+        "ci_upper": {
+          "(intercept)": 167.877260815164,
+          "north": 65.9780734437984,
+          "search_ad": 3.813241483606288,
+          "tv_ad": 1.6625293995712331
+        },
+        "df": 178,
+        "conf_level": 0.95,
+        "r2": 0.9513101473472506,
+        "adj_r2": 0.9504895318531031,
+        "n_obs": 182,
+        "residual_std_err": 13.467941627197298,
+        "holdout": {
+          "n": 26,
+          "n_null": 0,
+          "rmse": 13.313325240836248,
+          "mae": 10.573904698468398,
+          "r2": 0.9320379805749357
+        }
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

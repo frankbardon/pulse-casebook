@@ -1,0 +1,62 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "metadata": {
+      "total_rows": 80,
+      "filtered_rows": 40,
+      "cohort_file": "s.pulse"
+    },
+    "tests": [
+      {
+        "label": "TEST_WELCH_income",
+        "type": "TEST_WELCH",
+        "variant": "welch_two_sample",
+        "statistic": -2.351101819056688,
+        "df": 37.73359169074788,
+        "p_value": 0.02404570485749692,
+        "alpha": 0.05,
+        "reject_null": true,
+        "details": {
+          "ci_high": -1.1177093847731583,
+          "ci_low": -14.992290615226812,
+          "diff": -8.054999999999986,
+          "effect_size": {
+            "cohens_d": -0.7434836759184205
+          },
+          "groups": [
+            "North",
+            "West"
+          ],
+          "mean": [
+            60.57,
+            68.62499999999999
+          ],
+          "n": [
+            20,
+            20
+          ],
+          "variance": [
+            127.24115789473682,
+            107.51565789473682
+          ]
+        }
+      }
+    ],
+    "components": {
+      "filterers": [
+        {
+          "n_in": 80,
+          "n_out": 40,
+          "n_null_input": 0
+        }
+      ],
+      "run": {
+        "total_records": 80,
+        "filtered_records": 40,
+        "null_records": 0
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

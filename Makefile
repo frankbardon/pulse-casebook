@@ -1,11 +1,11 @@
 # Pulse Casebook tasks. Run `make help` for the list.
 
 # Pulse is built from a local checkout (committed PULSE_REF only; the working tree
-# is left alone) while v1 is in flux. Once releases settle, use `make pulse-release`,
-# which installs the pinned PULSE_VERSION from GitHub instead.
+# is left alone) while v1 is in flux. `make pulse-release` installs the same pinned
+# PULSE_VERSION from GitHub instead. Keep PULSE_REF and PULSE_VERSION on one tag.
 PULSE_SRC     ?= $(abspath ../pulse)
-PULSE_REF     ?= main
-PULSE_VERSION ?= v1.0.0-alpha.9
+PULSE_REF     ?= v1.0.0-alpha.33
+PULSE_VERSION ?= v1.0.0-alpha.33
 
 BIN     := bin
 PULSE   := $(abspath $(BIN)/pulse)
@@ -20,7 +20,7 @@ SHA256  := $(shell command -v sha256sum >/dev/null 2>&1 && echo sha256sum || ech
 help: ## List targets
 	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  %-14s %s\n", $$1, $$2}'
 
-pulse: ## Build Pulse from PULSE_REF (main) of the local checkout into bin/
+pulse: ## Build Pulse from PULSE_REF (the pinned tag) of the local checkout into bin/
 	@set -e; ver=$$(git -C "$(PULSE_SRC)" describe --tags --always $(PULSE_REF)); \
 	if [ -x $(PULSE) ] && [ "$$(cat $(BIN)/.pulse-version 2>/dev/null)" = "$$ver" ]; then \
 	  echo "pulse $$ver already in $(BIN)/"; exit 0; fi; \

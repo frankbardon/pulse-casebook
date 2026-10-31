@@ -1,0 +1,4 @@
+{"cohort":{"filename":"p.pulse"},
+ "attributes":[{"type":"ATTR_PREVIOUS_STATE","label":"prev_plan","field":"plan","subject_field":"customer","order_field":"wave"}],
+ "groups":[{"type":"GROUP_CATEGORY","field":"row"},{"type":"GROUP_CATEGORY","field":"prev_plan"}],
+ "aggregations":[{"type":"AGG_COUNT","field":"row","label":"n"}]}

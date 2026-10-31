@@ -1,0 +1,184 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "valid": false,
+    "request": {
+      "cohort": {
+        "filename": "s.pulse"
+      },
+      "filterers": [
+        {
+          "type": "FILTER_EXPRESSION",
+          "expression": "plan == params.plan \u0026\u0026 visits \u003e= params.min_visits"
+        }
+      ],
+      "aggregations": [
+        {
+          "type": "AGG_COUNT",
+          "field": "id",
+          "label": "shoppers"
+        }
+      ],
+      "groups": [
+        {
+          "type": "GROUP_CATEGORY",
+          "field": "arm"
+        }
+      ],
+      "params": {
+        "plan": "Pro"
+      }
+    },
+    "schema_info": {
+      "field_count": 7,
+      "fields": [
+        "id",
+        "region",
+        "plan",
+        "arm",
+        "spend",
+        "visits",
+        "signup"
+      ]
+    },
+    "record_count": 0,
+    "shards": [],
+    "streamable": true,
+    "suggestions": [],
+    "defaults_applied": [],
+    "aggregations": [
+      {
+        "type": "AGG_COUNT",
+        "field": "id",
+        "label": "shoppers",
+        "component_schema": {
+          "keys": [
+            {
+              "name": "n",
+              "type": "int",
+              "description": "Number of records aggregated (non-null inputs)."
+            },
+            {
+              "name": "n_null",
+              "type": "int",
+              "description": "Number of null inputs encountered."
+            },
+            {
+              "name": "sum_weights",
+              "type": "float64",
+              "description": "Weighted slots only: the sum of the valid weights of the rows whose value was present.",
+              "optional": true
+            },
+            {
+              "name": "n_eff",
+              "type": "float64",
+              "description": "Weighted slots of kind probability only: Kish effective sample size (sum of weights)^2 / sum of squared weights.",
+              "optional": true
+            },
+            {
+              "name": "n_weight_invalid",
+              "type": "int",
+              "description": "Weighted slots only: rows with a present value whose weight was invalid (null, negative, NaN/Inf, non-integer frequency) and was excluded.",
+              "optional": true
+            }
+          ],
+          "mergeability": "mergeable"
+        }
+      }
+    ],
+    "groups": [
+      {
+        "type": "GROUP_CATEGORY",
+        "field": "arm",
+        "component_schema": {
+          "keys": [
+            {
+              "name": "total_n",
+              "type": "int",
+              "description": "Total records partitioned across all buckets (post-filter)."
+            },
+            {
+              "name": "n_null",
+              "type": "int",
+              "description": "Records that landed in the null/skip path (no bucket assignment)."
+            },
+            {
+              "name": "dict_size",
+              "type": "int",
+              "description": "Number of distinct values observed across all buckets (cardinality of the partition key)."
+            },
+            {
+              "name": "buckets",
+              "type": "[]bucket",
+              "description": "Per-bucket records, ordered by emission; each entry carries {key, label, count}."
+            }
+          ],
+          "mergeability": "mergeable"
+        }
+      }
+    ],
+    "filterers": [
+      {
+        "type": "FILTER_EXPRESSION",
+        "component_schema": {
+          "keys": [
+            {
+              "name": "n_in",
+              "type": "int",
+              "description": "Records that entered this filter pass."
+            },
+            {
+              "name": "n_out",
+              "type": "int",
+              "description": "Records that passed (entered the downstream stage)."
+            },
+            {
+              "name": "n_null_input",
+              "type": "int",
+              "description": "Records where the filter input field was null at evaluation time."
+            }
+          ],
+          "mergeability": "mergeable"
+        }
+      }
+    ],
+    "overlays_applied": [],
+    "overlays_schema_divergence": [],
+    "overlay_cost": {},
+    "time_zones": [],
+    "sizes": [
+      {
+        "section": "data",
+        "full_bytes": 100,
+        "shaped_bytes": 100,
+        "basis": "upper_bound"
+      },
+      {
+        "section": "metadata",
+        "full_bytes": 116,
+        "shaped_bytes": 116,
+        "basis": "heuristic"
+      },
+      {
+        "section": "components",
+        "full_bytes": 789,
+        "shaped_bytes": 789,
+        "basis": "heuristic"
+      }
+    ]
+  },
+  "errors": [
+    {
+      "code": "PULSE_PARAMS_UNDECLARED",
+      "message": "expression \"plan == params.plan \u0026\u0026 visits \u003e= params.min_visits\" reads params.min_visits, which the request's params does not declare",
+      "details": {
+        "declared": [
+          "plan"
+        ],
+        "expression": "plan == params.plan \u0026\u0026 visits \u003e= params.min_visits",
+        "param": "min_visits"
+      }
+    }
+  ],
+  "warnings": []
+}

@@ -1,0 +1,4 @@
+{"cohort":{"filename":"survey.pulse"},
+ "groups":[{"type":"GROUP_CATEGORY","field":"age"}],
+ "aggregations":[{"type":"AGG_AVERAGE","field":"spend","label":"spend","weight":"dwt"}],
+ "windows":[{"type":"WIN_RANK","label":"rank","order_by":[{"field":"spend","desc":true}]}]}

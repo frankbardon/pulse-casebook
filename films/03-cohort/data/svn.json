@@ -1,0 +1,1 @@
+{"cohort":{"filename":"svi.pulse"},"aggregations":[{"type":"AGG_COUNT","field":"id","label":"records"},{"type":"AGG_NULL_COUNT","field":"media","label":"null_sets"}]}

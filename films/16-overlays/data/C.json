@@ -1,0 +1,7 @@
+{"cohort":{"filename":"o.pulse"},
+ "groups":[{"type":"GROUP_CATEGORY","field":"region"}],
+ "aggregations":[{"type":"AGG_SUM","field":"revenue","label":"revenue"}],
+ "overlays":[{"name":"vs_north","kind":"OVERLAY_DELTA_VS_SIBLING","scope":"group","ref":{"sibling":{"field":"region","value":"North"}}},
+  {"name":"idx_north","kind":"OVERLAY_INDEX_VS_SIBLING","scope":"group","ref":{"sibling":{"field":"region","value":"North"}}},
+  {"name":"share","kind":"OVERLAY_SHARE_OF_TOTAL","scope":"group"},
+  {"name":"bad","kind":"OVERLAY_DELTA_VS_SIBLING","scope":"group","ref":{"sibling":{"field":"region","value":"West"}}}]}

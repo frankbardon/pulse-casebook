@@ -1,0 +1,10 @@
+{"description": "Shoppers and average spend by arm, for one plan and a minimum number of visits",
+"target": "request",
+"variables": [
+  {"name": "plan", "type": "enum", "values": ["Basic", "Plus", "Pro"], "required": true},
+  {"name": "min_visits", "type": "integer", "default": 5}],
+"body": {"cohort": {"filename": "s.pulse"},
+  "params": {"plan": {"$var": "plan"}, "min_visits": {"$var": "min_visits"}},
+  "filterers": [{"type": "FILTER_EXPRESSION", "expression": "plan == params.plan && visits >= params.min_visits"}],
+  "groups": [{"type": "GROUP_CATEGORY", "field": "arm"}],
+  "aggregations": [{"type": "AGG_COUNT", "field": "id", "label": "shoppers"}, {"type": "AGG_AVERAGE", "field": "spend", "label": "avg_spend"}]}}

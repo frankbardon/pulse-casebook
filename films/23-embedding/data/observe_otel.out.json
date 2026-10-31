@@ -1,0 +1,67 @@
+[
+  {
+    "attributes": {
+      "pulse.arm": "streaming",
+      "pulse.bytes_read": 466,
+      "pulse.code": "ok",
+      "pulse.cohort": "orders.pulse",
+      "pulse.op": "process",
+      "pulse.request_hash": "b62cc0c275318ea6a537f6a5a80a6fac",
+      "pulse.rows_matched": 24,
+      "pulse.rows_out": 4,
+      "pulse.rows_scanned": 24,
+      "pulse.scope": "top",
+      "pulse.workers": 1
+    },
+    "events": [
+      {
+        "attributes": {
+          "pulse.phase": "plan"
+        },
+        "name": "plan"
+      },
+      {
+        "attributes": {
+          "pulse.phase": "open"
+        },
+        "name": "open"
+      },
+      {
+        "attributes": {
+          "pulse.phase": "scan"
+        },
+        "name": "scan"
+      }
+    ],
+    "name": "pulse.process",
+    "status": "Unset",
+    "status_description": ""
+  },
+  {
+    "attributes": {
+      "pulse.code": "SERVICE_VALIDATION",
+      "pulse.cohort": "orders.pulse",
+      "pulse.error_code": "SERVICE_VALIDATION",
+      "pulse.op": "process",
+      "pulse.request_hash": "294ae756423957362df8eab4ed1242de",
+      "pulse.scope": "top"
+    },
+    "events": [
+      {
+        "attributes": {
+          "pulse.phase": "plan"
+        },
+        "name": "plan"
+      },
+      {
+        "attributes": {
+          "pulse.phase": "open"
+        },
+        "name": "open"
+      }
+    ],
+    "name": "pulse.process",
+    "status": "Error",
+    "status_description": "SERVICE_VALIDATION"
+  }
+]

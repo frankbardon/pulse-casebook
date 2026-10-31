@@ -1,0 +1,4 @@
+{"cohort":{"filename":"m.pulse"},
+ "filterers":[{"type":"FILTER_RANGE","field":"age","values":["18","65"]},{"type":"FILTER_INCLUDE","field":"rating","values":["4","5"]}],
+ "attributes":[{"type":"ATTR_CODE_IN","field":"rating","label":"top_box","params":{"codes":[4,5]}}],
+ "aggregations":[{"type":"AGG_AVERAGE","field":"top_box","label":"share"}]}

@@ -1,0 +1,103 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "avg_spend": 34.87976470588236,
+        "orders": 87,
+        "visit": "first"
+      },
+      {
+        "avg_spend": 36.69527093596059,
+        "orders": 213,
+        "visit": "repeat"
+      }
+    ],
+    "metadata": {
+      "total_rows": 300,
+      "filtered_rows": 300,
+      "cohort_file": "g.pulse"
+    },
+    "components": {
+      "aggregations": [
+        {
+          "label": "orders",
+          "n": 300,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "first"
+              ],
+              "n": 87,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "repeat"
+              ],
+              "n": 213,
+              "n_null": 0
+            }
+          ]
+        },
+        {
+          "label": "avg_spend",
+          "n": 288,
+          "n_null": 12,
+          "groups": [
+            {
+              "group_key": [
+                "first"
+              ],
+              "n": 85,
+              "n_null": 2,
+              "operator": {
+                "sum": 2964.78
+              }
+            },
+            {
+              "group_key": [
+                "repeat"
+              ],
+              "n": 203,
+              "n_null": 10,
+              "operator": {
+                "sum": 7449.14
+              }
+            }
+          ]
+        }
+      ],
+      "groupers": [
+        {
+          "field": "visit",
+          "total_n": 300,
+          "operator": {
+            "buckets": [
+              {
+                "count": 87,
+                "key": "first",
+                "label": "first"
+              },
+              {
+                "count": 213,
+                "key": "repeat",
+                "label": "repeat"
+              }
+            ],
+            "n_ranges": 2,
+            "unmatched_label": "unmatched"
+          }
+        }
+      ],
+      "run": {
+        "total_records": 300,
+        "filtered_records": 300,
+        "null_records": 0
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

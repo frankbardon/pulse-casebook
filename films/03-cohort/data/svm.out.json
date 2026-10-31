@@ -1,0 +1,97 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "income_missing": "Don't know",
+        "income_null": 4,
+        "n": 4
+      },
+      {
+        "income_missing": "Refused",
+        "income_null": 4,
+        "n": 4
+      }
+    ],
+    "metadata": {
+      "total_rows": 40,
+      "filtered_rows": 40,
+      "cohort_file": "svi.pulse"
+    },
+    "components": {
+      "aggregations": [
+        {
+          "label": "n",
+          "n": 40,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "Don't know"
+              ],
+              "n": 4,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "Refused"
+              ],
+              "n": 4,
+              "n_null": 0
+            }
+          ]
+        },
+        {
+          "label": "income_null",
+          "n": 32,
+          "n_null": 8,
+          "groups": [
+            {
+              "group_key": [
+                "Don't know"
+              ],
+              "n": 0,
+              "n_null": 4
+            },
+            {
+              "group_key": [
+                "Refused"
+              ],
+              "n": 0,
+              "n_null": 4
+            }
+          ]
+        }
+      ],
+      "groupers": [
+        {
+          "field": "income_missing",
+          "total_n": 8,
+          "n_null": 32,
+          "operator": {
+            "buckets": [
+              {
+                "count": 4,
+                "key": "Don't know",
+                "label": "Don't know"
+              },
+              {
+                "count": 4,
+                "key": "Refused",
+                "label": "Refused"
+              }
+            ],
+            "dict_size": 3
+          }
+        }
+      ],
+      "run": {
+        "total_records": 40,
+        "filtered_records": 40,
+        "null_records": 0
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

@@ -1,0 +1,243 @@
+1
+00:00:04,250 --> 00:00:07,693
+Every field against every field, taken apart in depth.
+
+2
+00:00:08,493 --> 00:00:13,962
+Matrices fold the records that pass the filters, during the same scan as everything else.
+
+3
+00:00:14,762 --> 00:00:19,826
+You name a battery of numeric fields once as a vector, then ask for a matrix over it.
+
+4
+00:00:20,626 --> 00:00:28,911
+Each result carries the matrix, extra figures, and any data-quality warnings. It arrives at the end of the run, never row by row.
+
+5
+00:00:29,711 --> 00:00:38,743
+Its components count the rows used and dropped. Our cohort is three hundred illustrative survey rows; every figure is a real Pulse result.
+
+6
+00:00:39,543 --> 00:00:45,162
+A vector lists its members by name, by glob, or by pattern, with optional display labels.
+
+7
+00:00:45,962 --> 00:00:53,799
+Schema members are numeric. Yes-or-no fields join when coerced to zero and one. Categories and dates are refused.
+
+8
+00:00:54,599 --> 00:00:59,279
+Predict echoes the resolved members, so you can check a glob before you trust it.
+
+9
+00:01:00,079 --> 00:01:07,319
+One native vector field can hold the whole battery. Name it directly, and pick elements as items one, items two.
+
+10
+00:01:08,119 --> 00:01:15,828
+A member can also be computed in the same request, here a formula that fills the blank V three. Now no row is dropped.
+
+11
+00:01:16,628 --> 00:01:23,804
+Standardize turns a covariance into a correlation, and records encoding sends every part as row-shaped records.
+
+12
+00:01:24,604 --> 00:01:28,239
+The correlation matrix puts every member against every other.
+
+13
+00:01:29,039 --> 00:01:36,727
+Here two blocks stand out: the service items move together, and so do the value items. Top pairs lists the strongest cells.
+
+14
+00:01:37,527 --> 00:01:43,786
+The covariance matrix is the same grid in the fields' own units, with variances on the diagonal.
+
+15
+00:01:44,586 --> 00:01:49,415
+Upper encoding sends half the grid. An undefined cell is null, never zero.
+
+16
+00:01:50,215 --> 00:01:56,474
+One item is blank on thirty rows. Listwise, the default, drops those rows from every cell.
+
+17
+00:01:57,274 --> 00:02:03,063
+Pairwise lets each cell use every row where both members are present, and reports each pair's count.
+
+18
+00:02:03,863 --> 00:02:13,492
+But a pairwise grid can stop being a valid correlation matrix. Partial correlation, PCA, factor analysis and collinearity then refuse it.
+
+19
+00:02:14,292 --> 00:02:21,169
+Reliability keeps alpha and returns omega as null, with a warning. Or ask for the nearest valid repair.
+
+20
+00:02:21,969 --> 00:02:24,601
+Pearson reads values along a straight line.
+
+21
+00:02:25,401 --> 00:02:31,041
+Spearman and Kendall read ranks instead, which suits ordinal scales, outliers and curves.
+
+22
+00:02:31,841 --> 00:02:37,460
+Ranks need every row, so these run buffered and serially, and take frequency weights only.
+
+23
+00:02:38,260 --> 00:02:43,580
+Partial correlation asks what is left of each link once the other members are held fixed.
+
+24
+00:02:44,380 --> 00:02:51,087
+S one and S two drop from point seven four to point five two. Part of their link runs through S three.
+
+25
+00:02:51,887 --> 00:02:57,122
+You can choose which fields to control for. Collinear fields are refused as singular.
+
+26
+00:02:57,922 --> 00:03:03,541
+Reliability asks whether several items measure one scale. Here R four is reverse-keyed.
+
+27
+00:03:04,341 --> 00:03:12,285
+Left as it is, alpha collapses to point one nine. A low or negative alpha usually means an item was not reversed.
+
+28
+00:03:13,085 --> 00:03:18,426
+Reverse it on its one-to-seven range, and alpha and omega both reach point eight nine.
+
+29
+00:03:19,226 --> 00:03:23,074
+Per item, dropping any one would lower alpha, so all four stay.
+
+30
+00:03:23,874 --> 00:03:32,053
+The range is required unless the vector declares scale bounds. Omega can come back null with a warning; alpha always computes.
+
+31
+00:03:32,853 --> 00:03:36,786
+Principal components ask how many dimensions carry the variance.
+
+32
+00:03:37,586 --> 00:03:44,527
+Two eigenvalues sit above one, so Kaiser's rule keeps two components, with seventy-seven percent of the variance.
+
+33
+00:03:45,327 --> 00:03:50,498
+The loadings show service items on the first component and value items on the second.
+
+34
+00:03:51,298 --> 00:03:58,858
+KMO and Bartlett say the battery is worth factoring. Varimax rotation sharpens the pattern, and signs are free.
+
+35
+00:03:59,658 --> 00:04:04,957
+PCA summarizes variance. A model of hidden causes is factor analysis.
+
+36
+00:04:05,757 --> 00:04:10,672
+Factor analysis models each item as the echo of a few hidden qualities.
+
+37
+00:04:11,472 --> 00:04:17,603
+The loadings say how strongly each item reflects its factor, and the uniqueness is what the factors miss.
+
+38
+00:04:18,403 --> 00:04:22,507
+Maximum likelihood adds fit figures. Here two factors fit well.
+
+39
+00:04:23,307 --> 00:04:29,288
+A uniqueness at or below zero, or too many factors for the items, comes back with a warning.
+
+40
+00:04:30,088 --> 00:04:34,704
+Collinearity checks whether candidate predictors are too alike to fit together.
+
+41
+00:04:35,504 --> 00:04:41,037
+Age and tenure correlate at point nine eight, so their variance inflation factors pass twenty.
+
+42
+00:04:41,837 --> 00:04:44,768
+Belsley's condition indices point to the same pair.
+
+43
+00:04:45,568 --> 00:04:51,997
+Exactly dependent predictors are refused as singular, with the fields named. Drop or combine them.
+
+44
+00:04:52,797 --> 00:04:57,072
+Distance measures how far apart the centres of a grouper's buckets lie.
+
+45
+00:04:57,872 --> 00:05:03,277
+Standardized, Gold rates service higher and value lower, so it sits furthest from Bronze.
+
+46
+00:05:04,077 --> 00:05:10,080
+Any grouper but a date grouper can split the rows, including an embedder's own, and you choose the metric.
+
+47
+00:05:10,880 --> 00:05:14,280
+Add groups, and every matrix comes back once per bucket.
+
+48
+00:05:15,080 --> 00:05:21,232
+Each bucket equals the ungrouped matrix over exactly its rows. Compare them as separate answers.
+
+49
+00:05:22,032 --> 00:05:27,181
+Predict estimates the buckets and bytes first, and leaves the estimate out when it cannot know.
+
+50
+00:05:27,981 --> 00:05:37,482
+Matrices can carry p-values. Turn on inference, and correlation and partial correlation add a p-value and a confidence interval for every pair.
+
+51
+00:05:38,282 --> 00:05:46,823
+A multiplicity block corrects the fifteen pairs as one matrix family. Every within-block pair survives Holm; no cross-block pair does.
+
+52
+00:05:47,623 --> 00:05:54,180
+Structural equation models report a p-value for every estimate, with their own block. They get their own film.
+
+53
+00:05:54,980 --> 00:06:00,428
+Vectors also feed profile tests, row scores and clusters, and group aggregates.
+
+54
+00:06:01,228 --> 00:06:06,015
+The coefficient covariance of a fitted model lives on the regression, not here.
+
+55
+00:06:06,815 --> 00:06:12,306
+Predict reports each matrix's shape, memory and streamability before any row is read.
+
+56
+00:06:13,106 --> 00:06:15,333
+A rank method buffers every row.
+
+57
+00:06:16,133 --> 00:06:25,314
+Streaming matrices merge in fixed blocks, so serial, parallel and sharded runs are bit-identical. A failed matrix slot fails alone.
+
+58
+00:06:26,114 --> 00:06:32,394
+That's the toolkit today: grids, scales and structure, checks and segments, and the knobs that tune them.
+
+59
+00:06:33,194 --> 00:06:42,055
+More are added over time, and the manifest shows what your instance offers. Embedders can register their own through options dot extensions.
+
+60
+00:06:42,855 --> 00:06:48,751
+Remember: check the members and the n before you read a cell. Next up, structural equation models.
+
+61
+00:06:49,551 --> 00:06:50,903
+Pulse matrices.

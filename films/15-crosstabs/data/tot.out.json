@@ -1,0 +1,213 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "metadata": {
+      "total_rows": 600,
+      "filtered_rows": 600,
+      "cohort_file": "t.pulse"
+    },
+    "crosstab": {
+      "shape": "matrix",
+      "matrix": {
+        "row_header": {
+          "fields": [
+            "region"
+          ],
+          "types": [
+            "GROUP_CATEGORY"
+          ]
+        },
+        "column_header": {
+          "fields": [
+            "_total"
+          ],
+          "types": [
+            "TOTAL"
+          ]
+        },
+        "row_keys": [
+          [
+            "East"
+          ],
+          [
+            "North"
+          ],
+          [
+            "South"
+          ],
+          [
+            "West"
+          ]
+        ],
+        "column_keys": [
+          [
+            "Total"
+          ]
+        ],
+        "cells": [
+          [
+            {
+              "value": 0.23666666666666666,
+              "present": true
+            }
+          ],
+          [
+            {
+              "value": 0.31666666666666665,
+              "present": true
+            }
+          ],
+          [
+            {
+              "value": 0.23833333333333334,
+              "present": true
+            }
+          ],
+          [
+            {
+              "value": 0.20833333333333334,
+              "present": true
+            }
+          ]
+        ],
+        "row_margins": [
+          {
+            "value": 142,
+            "present": true
+          },
+          {
+            "value": 190,
+            "present": true
+          },
+          {
+            "value": 143,
+            "present": true
+          },
+          {
+            "value": 125,
+            "present": true
+          }
+        ],
+        "column_margins": [
+          {
+            "value": 600,
+            "present": true
+          }
+        ],
+        "grand_total": {
+          "value": 600,
+          "present": true
+        },
+        "cell_label": "n",
+        "normalize_applied": "column"
+      }
+    },
+    "components": {
+      "crosstab": {
+        "cell_counts": [
+          [
+            142
+          ],
+          [
+            190
+          ],
+          [
+            143
+          ],
+          [
+            125
+          ]
+        ],
+        "cell_components": [
+          [
+            {
+              "n": 142,
+              "n_null": 0
+            }
+          ],
+          [
+            {
+              "n": 190,
+              "n_null": 0
+            }
+          ],
+          [
+            {
+              "n": 143,
+              "n_null": 0
+            }
+          ],
+          [
+            {
+              "n": 125,
+              "n_null": 0
+            }
+          ]
+        ],
+        "row_margin_counts": [
+          142,
+          190,
+          143,
+          125
+        ],
+        "row_margin_components": [
+          {
+            "n": 142,
+            "n_null": 0
+          },
+          {
+            "n": 190,
+            "n_null": 0
+          },
+          {
+            "n": 143,
+            "n_null": 0
+          },
+          {
+            "n": 125,
+            "n_null": 0
+          }
+        ],
+        "column_margin_counts": [
+          600
+        ],
+        "column_margin_components": [
+          {
+            "n": 600,
+            "n_null": 0
+          }
+        ],
+        "grand_total_count": 600,
+        "grand_total_components": {
+          "n": 600,
+          "n_null": 0
+        },
+        "row_key_components": [
+          {
+            "count": 142,
+            "key": "East",
+            "label": "East"
+          },
+          {
+            "count": 190,
+            "key": "North",
+            "label": "North"
+          },
+          {
+            "count": 143,
+            "key": "South",
+            "label": "South"
+          },
+          {
+            "count": 125,
+            "key": "West",
+            "label": "West"
+          }
+        ],
+        "included_records": 600
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

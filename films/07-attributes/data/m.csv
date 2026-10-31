@@ -1,0 +1,13 @@
+id,region,age,income,rating,joined,interests,wt,flat
+1,North,34,52,5,2023-03-14,travel|tech,2,7
+2,South,17,30,3,2024-05-02,sport,1,7
+3,East,45,58,4,2022-11-02,food,1,7
+4,West,29,61,2,2023-07-21,travel|food,3,7
+5,North,71,44,4,2021-01-19,food,1,7
+6,South,38,64,,2023-09-05,tech,1,7
+7,East,52,66,5,2022-02-17,,2,7
+8,West,24,70,3,2024-04-11,sport|tech,1,7
+9,North,41,72,4,2023-12-01,travel,1,7
+10,South,63,,1,,|,2,7
+11,East,30,75,5,2024-02-28,tech|food|sport,1,7
+12,North,58,140,3,2021-08-09,food,1,7

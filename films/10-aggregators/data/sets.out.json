@@ -1,0 +1,119 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "AGG_COUNT_interests": 7,
+        "AGG_SET_CARDINALITY_AVG_interests": 1.5714285714285714,
+        "AGG_SET_DISTINCT_VALUES_interests": 7,
+        "AGG_SET_FREQUENCY_interests": {
+          "food": 3,
+          "sport": 2,
+          "tech": 4,
+          "travel": 2
+        },
+        "AGG_SET_INTERSECTION_interests": [],
+        "AGG_SET_UNION_interests": [
+          "travel",
+          "tech",
+          "food",
+          "sport"
+        ]
+      }
+    ],
+    "metadata": {
+      "total_rows": 8,
+      "filtered_rows": 8,
+      "cohort_file": "s.pulse"
+    },
+    "components": {
+      "aggregations": [
+        {
+          "n": 7,
+          "n_null": 1,
+          "operator": {
+            "distinct_labels": 4,
+            "per_label_count": {
+              "food": 3,
+              "sport": 2,
+              "tech": 4,
+              "travel": 2
+            },
+            "total_label_observations": 11
+          }
+        },
+        {
+          "n": 7,
+          "n_null": 1,
+          "operator": {
+            "labels": [
+              "travel",
+              "tech",
+              "food",
+              "sport"
+            ],
+            "mask_union": [
+              15,
+              0,
+              0,
+              0
+            ],
+            "popcount": 4
+          }
+        },
+        {
+          "n": 7,
+          "n_null": 1,
+          "operator": {
+            "labels": [],
+            "mask_intersection": [
+              0,
+              0,
+              0,
+              0
+            ],
+            "popcount": 0
+          }
+        },
+        {
+          "n": 7,
+          "n_null": 1,
+          "operator": {
+            "avg_cardinality": 1.5714285714285714,
+            "sum_cardinality": 11
+          }
+        },
+        {
+          "n": 7,
+          "n_null": 1,
+          "operator": {
+            "labels": [
+              "travel",
+              "tech",
+              "food",
+              "sport"
+            ],
+            "mask_union": [
+              15,
+              0,
+              0,
+              0
+            ],
+            "popcount": 4
+          }
+        },
+        {
+          "n": 7,
+          "n_null": 1
+        }
+      ],
+      "run": {
+        "total_records": 8,
+        "filtered_records": 8,
+        "null_records": 1
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

@@ -1,0 +1,16 @@
+{
+  "format_version": "1.1",
+  "data": null,
+  "errors": [
+    {
+      "code": "PULSE_SHARD_SCHEMA_MISMATCH",
+      "message": "field \"id\" type differs: canonical=u16, incoming=u32",
+      "details": {
+        "canonical_type": "u16",
+        "field": "id",
+        "incoming_type": "u32"
+      }
+    }
+  ],
+  "warnings": []
+}

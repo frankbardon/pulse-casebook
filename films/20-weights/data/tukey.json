@@ -1,0 +1,5 @@
+{"cohort":{"filename":"survey.pulse"},
+ "weight":{"field":"dwt"},
+ "groups":[{"type":"GROUP_CATEGORY","field":"age"}],
+ "aggregations":[{"type":"AGG_AVERAGE","field":"spend","label":"spend"}],
+ "post_tests":[{"type":"TEST_TUKEY_HSD","field":"spend","label":"hsd"}]}

@@ -1,0 +1,187 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "AGG_COUNT_x": 3,
+        "AGG_KURTOSIS_x": null,
+        "AGG_SKEWNESS_x": null,
+        "shape": "no spread"
+      },
+      {
+        "AGG_COUNT_x": 1,
+        "AGG_KURTOSIS_x": null,
+        "AGG_SKEWNESS_x": null,
+        "shape": "one row"
+      },
+      {
+        "AGG_COUNT_x": 3,
+        "AGG_KURTOSIS_x": -1.5000000000000002,
+        "AGG_SKEWNESS_x": 0.5951700641394972,
+        "shape": "spread"
+      }
+    ],
+    "metadata": {
+      "total_rows": 7,
+      "filtered_rows": 7,
+      "cohort_file": "z.pulse"
+    },
+    "components": {
+      "aggregations": [
+        {
+          "n": 7,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "no spread"
+              ],
+              "n": 3,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "one row"
+              ],
+              "n": 1,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "spread"
+              ],
+              "n": 3,
+              "n_null": 0
+            }
+          ]
+        },
+        {
+          "n": 7,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "no spread"
+              ],
+              "n": 3,
+              "n_null": 0,
+              "operator": {
+                "m2": 0,
+                "m3": 0,
+                "mean": 4,
+                "skewness": null
+              }
+            },
+            {
+              "group_key": [
+                "one row"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "m2": 0,
+                "m3": 0,
+                "mean": 5,
+                "skewness": null
+              }
+            },
+            {
+              "group_key": [
+                "spread"
+              ],
+              "n": 3,
+              "n_null": 0,
+              "operator": {
+                "m2": 14,
+                "m3": 18,
+                "mean": 3,
+                "skewness": 0.5951700641394972
+              }
+            }
+          ]
+        },
+        {
+          "n": 7,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "no spread"
+              ],
+              "n": 3,
+              "n_null": 0,
+              "operator": {
+                "kurtosis": null,
+                "m2": 0,
+                "m3": 0,
+                "m4": 0,
+                "mean": 4
+              }
+            },
+            {
+              "group_key": [
+                "one row"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "kurtosis": null,
+                "m2": 0,
+                "m3": 0,
+                "m4": 0,
+                "mean": 5
+              }
+            },
+            {
+              "group_key": [
+                "spread"
+              ],
+              "n": 3,
+              "n_null": 0,
+              "operator": {
+                "kurtosis": -1.5000000000000002,
+                "m2": 14,
+                "m3": 18,
+                "m4": 98,
+                "mean": 3
+              }
+            }
+          ]
+        }
+      ],
+      "groupers": [
+        {
+          "field": "shape",
+          "total_n": 7,
+          "operator": {
+            "buckets": [
+              {
+                "count": 3,
+                "key": "no spread",
+                "label": "no spread"
+              },
+              {
+                "count": 1,
+                "key": "one row",
+                "label": "one row"
+              },
+              {
+                "count": 3,
+                "key": "spread",
+                "label": "spread"
+              }
+            ],
+            "dict_size": 3
+          }
+        }
+      ],
+      "run": {
+        "total_records": 7,
+        "filtered_records": 7,
+        "null_records": 0
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

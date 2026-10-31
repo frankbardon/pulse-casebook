@@ -1,0 +1,226 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "n": 1,
+        "prev_plan": "plus",
+        "row": "10"
+      },
+      {
+        "n": 1,
+        "prev_plan": "basic",
+        "row": "12"
+      },
+      {
+        "n": 1,
+        "prev_plan": "basic",
+        "row": "5"
+      },
+      {
+        "n": 1,
+        "prev_plan": "basic",
+        "row": "6"
+      },
+      {
+        "n": 1,
+        "prev_plan": "plus",
+        "row": "7"
+      },
+      {
+        "n": 1,
+        "prev_plan": "basic",
+        "row": "8"
+      },
+      {
+        "n": 1,
+        "prev_plan": "plus",
+        "row": "9"
+      }
+    ],
+    "metadata": {
+      "total_rows": 12,
+      "filtered_rows": 12,
+      "cohort_file": "p.pulse"
+    },
+    "components": {
+      "aggregations": [
+        {
+          "label": "n",
+          "n": 12,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "10",
+                "plus"
+              ],
+              "n": 1,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "12",
+                "basic"
+              ],
+              "n": 1,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "5",
+                "basic"
+              ],
+              "n": 1,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "6",
+                "basic"
+              ],
+              "n": 1,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "7",
+                "plus"
+              ],
+              "n": 1,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "8",
+                "basic"
+              ],
+              "n": 1,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "9",
+                "plus"
+              ],
+              "n": 1,
+              "n_null": 0
+            }
+          ]
+        }
+      ],
+      "groupers": [
+        {
+          "field": "row",
+          "total_n": 12,
+          "operator": {
+            "buckets": [
+              {
+                "count": 1,
+                "key": "1",
+                "label": "1"
+              },
+              {
+                "count": 1,
+                "key": "10",
+                "label": "10"
+              },
+              {
+                "count": 1,
+                "key": "11",
+                "label": "11"
+              },
+              {
+                "count": 1,
+                "key": "12",
+                "label": "12"
+              },
+              {
+                "count": 1,
+                "key": "2",
+                "label": "2"
+              },
+              {
+                "count": 1,
+                "key": "3",
+                "label": "3"
+              },
+              {
+                "count": 1,
+                "key": "4",
+                "label": "4"
+              },
+              {
+                "count": 1,
+                "key": "5",
+                "label": "5"
+              },
+              {
+                "count": 1,
+                "key": "6",
+                "label": "6"
+              },
+              {
+                "count": 1,
+                "key": "7",
+                "label": "7"
+              },
+              {
+                "count": 1,
+                "key": "8",
+                "label": "8"
+              },
+              {
+                "count": 1,
+                "key": "9",
+                "label": "9"
+              }
+            ],
+            "dict_size": 0
+          }
+        },
+        {
+          "field": "prev_plan",
+          "total_n": 7,
+          "n_null": 5,
+          "operator": {
+            "buckets": [
+              {
+                "count": 4,
+                "key": "basic",
+                "label": "basic"
+              },
+              {
+                "count": 3,
+                "key": "plus",
+                "label": "plus"
+              }
+            ],
+            "dict_size": 3
+          }
+        }
+      ],
+      "run": {
+        "total_records": 12,
+        "filtered_records": 12,
+        "null_records": 0
+      },
+      "attributes": [
+        {
+          "label": "prev_plan",
+          "type": "ATTR_PREVIOUS_STATE",
+          "n": 7,
+          "n_null": 5,
+          "operator": {
+            "n_ambiguous": 0,
+            "n_first": 4,
+            "n_gap": 1,
+            "n_subjects": 4
+          }
+        }
+      ]
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

@@ -1,0 +1,18 @@
+{
+  "format_version": "1.1",
+  "data": null,
+  "errors": [
+    {
+      "code": "SERVICE_VALIDATION",
+      "message": "group[1] field region collides with group[0] field region",
+      "details": {
+        "field": "region",
+        "group": "GROUP_CATEGORY",
+        "group_index": 1,
+        "other_group": "GROUP_CATEGORY",
+        "other_group_index": 0
+      }
+    }
+  ],
+  "warnings": []
+}

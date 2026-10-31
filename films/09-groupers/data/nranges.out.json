@@ -1,0 +1,91 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "orders": 139,
+        "spend": "small"
+      },
+      {
+        "orders": 105,
+        "spend": "mid"
+      },
+      {
+        "orders": 44,
+        "spend": "large"
+      }
+    ],
+    "metadata": {
+      "total_rows": 300,
+      "filtered_rows": 300,
+      "cohort_file": "g.pulse"
+    },
+    "components": {
+      "aggregations": [
+        {
+          "label": "orders",
+          "n": 300,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "small"
+              ],
+              "n": 139,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "mid"
+              ],
+              "n": 105,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "large"
+              ],
+              "n": 44,
+              "n_null": 0
+            }
+          ]
+        }
+      ],
+      "groupers": [
+        {
+          "field": "spend",
+          "total_n": 288,
+          "n_null": 12,
+          "operator": {
+            "buckets": [
+              {
+                "count": 139,
+                "key": "small",
+                "label": "small"
+              },
+              {
+                "count": 105,
+                "key": "mid",
+                "label": "mid"
+              },
+              {
+                "count": 44,
+                "key": "large",
+                "label": "large"
+              }
+            ],
+            "n_ranges": 3,
+            "unmatched_label": "unmatched"
+          }
+        }
+      ],
+      "run": {
+        "total_records": 300,
+        "filtered_records": 300,
+        "null_records": 0
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

@@ -1,0 +1,105 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "n": 383,
+        "region": "East"
+      },
+      {
+        "n": 800,
+        "region": "North"
+      },
+      {
+        "n": 626,
+        "region": "South"
+      },
+      {
+        "n": 191,
+        "region": "West"
+      }
+    ],
+    "metadata": {
+      "total_rows": 2000,
+      "filtered_rows": 2000,
+      "cohort_file": "shop.pulse"
+    },
+    "components": {
+      "aggregations": [
+        {
+          "label": "n",
+          "n": 2000,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "East"
+              ],
+              "n": 383,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "North"
+              ],
+              "n": 800,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "South"
+              ],
+              "n": 626,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "West"
+              ],
+              "n": 191,
+              "n_null": 0
+            }
+          ]
+        }
+      ],
+      "groupers": [
+        {
+          "field": "region",
+          "total_n": 2000,
+          "operator": {
+            "buckets": [
+              {
+                "count": 383,
+                "key": "East",
+                "label": "East"
+              },
+              {
+                "count": 800,
+                "key": "North",
+                "label": "North"
+              },
+              {
+                "count": 626,
+                "key": "South",
+                "label": "South"
+              },
+              {
+                "count": 191,
+                "key": "West",
+                "label": "West"
+              }
+            ],
+            "dict_size": 4
+          }
+        }
+      ],
+      "run": {
+        "total_records": 2000,
+        "filtered_records": 2000,
+        "null_records": 0
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

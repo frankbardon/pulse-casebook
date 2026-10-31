@@ -1,0 +1,3 @@
+{"cohort":{"filename":"raked_pooled.pulse"},
+ "groups":[{"type":"GROUP_CATEGORY","field":"age"},{"type":"GROUP_CATEGORY","field":"gender"}],
+ "aggregations":[{"type":"AGG_AVERAGE","field":"rake_weight","label":"factor"},{"type":"AGG_SUM","field":"rake_weight","label":"fitted"}]}

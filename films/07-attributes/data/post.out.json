@@ -1,0 +1,301 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "tv": 100,
+        "tv_ad": 100,
+        "tv_sat": 0.5,
+        "wk": "1"
+      },
+      {
+        "tv": 0,
+        "tv_ad": 50,
+        "tv_sat": 0.2612038749637415,
+        "wk": "2"
+      },
+      {
+        "tv": 0,
+        "tv_ad": 25,
+        "tv_sat": 0.1111111111111111,
+        "wk": "3"
+      },
+      {
+        "tv": 200,
+        "tv_ad": 212.5,
+        "tv_sat": 0.7559602555333057,
+        "wk": "4"
+      },
+      {
+        "tv": 0,
+        "tv_ad": 106.25,
+        "tv_sat": 0.5227185793488193,
+        "wk": "5"
+      },
+      {
+        "tv": 50,
+        "tv_ad": 100,
+        "tv_sat": 0.5,
+        "wk": "6"
+      }
+    ],
+    "metadata": {
+      "total_rows": 6,
+      "filtered_rows": 6,
+      "cohort_file": "w.pulse"
+    },
+    "components": {
+      "aggregations": [
+        {
+          "label": "tv",
+          "n": 6,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "1"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "sum": 100
+              }
+            },
+            {
+              "group_key": [
+                "2"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "sum": 0
+              }
+            },
+            {
+              "group_key": [
+                "3"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "sum": 0
+              }
+            },
+            {
+              "group_key": [
+                "4"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "sum": 200
+              }
+            },
+            {
+              "group_key": [
+                "5"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "sum": 0
+              }
+            },
+            {
+              "group_key": [
+                "6"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "sum": 50
+              }
+            }
+          ]
+        },
+        {
+          "label": "tv_ad",
+          "n": 6,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "1"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "sum": 100
+              }
+            },
+            {
+              "group_key": [
+                "2"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "sum": 50
+              }
+            },
+            {
+              "group_key": [
+                "3"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "sum": 25
+              }
+            },
+            {
+              "group_key": [
+                "4"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "sum": 212.5
+              }
+            },
+            {
+              "group_key": [
+                "5"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "sum": 106.25
+              }
+            },
+            {
+              "group_key": [
+                "6"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "sum": 100
+              }
+            }
+          ]
+        },
+        {
+          "label": "tv_sat",
+          "n": 6,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "1"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "sum": 0.5
+              }
+            },
+            {
+              "group_key": [
+                "2"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "sum": 0.2612038749637415
+              }
+            },
+            {
+              "group_key": [
+                "3"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "sum": 0.1111111111111111
+              }
+            },
+            {
+              "group_key": [
+                "4"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "sum": 0.7559602555333057
+              }
+            },
+            {
+              "group_key": [
+                "5"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "sum": 0.5227185793488193
+              }
+            },
+            {
+              "group_key": [
+                "6"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "sum": 0.5
+              }
+            }
+          ]
+        }
+      ],
+      "groupers": [
+        {
+          "field": "wk",
+          "total_n": 6,
+          "operator": {
+            "buckets": [
+              {
+                "count": 1,
+                "key": "1",
+                "label": "1"
+              },
+              {
+                "count": 1,
+                "key": "2",
+                "label": "2"
+              },
+              {
+                "count": 1,
+                "key": "3",
+                "label": "3"
+              },
+              {
+                "count": 1,
+                "key": "4",
+                "label": "4"
+              },
+              {
+                "count": 1,
+                "key": "5",
+                "label": "5"
+              },
+              {
+                "count": 1,
+                "key": "6",
+                "label": "6"
+              }
+            ],
+            "dict_size": 0
+          }
+        }
+      ],
+      "run": {
+        "total_records": 6,
+        "filtered_records": 6,
+        "null_records": 0
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

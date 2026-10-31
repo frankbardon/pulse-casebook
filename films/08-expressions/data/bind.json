@@ -1,0 +1,65 @@
+{
+ "cohort": {
+  "filename": "e.pulse"
+ },
+ "attributes": [
+  {
+   "type": "ATTR_FORMULA",
+   "label": "north",
+   "expression": "region == \"North\""
+  },
+  {
+   "type": "ATTR_FORMULA",
+   "label": "has_tech",
+   "expression": "\"tech\" in tags"
+  },
+  {
+   "type": "ATTR_FORMULA",
+   "label": "markup",
+   "expression": "price / cost"
+  },
+  {
+   "type": "ATTR_FORMULA",
+   "label": "day",
+   "expression": "order_day"
+  },
+  {
+   "type": "ATTR_FORMULA",
+   "label": "score0",
+   "expression": "score ?? 0"
+  }
+ ],
+ "groups": [
+  {
+   "type": "GROUP_CATEGORY",
+   "field": "id"
+  }
+ ],
+ "aggregations": [
+  {
+   "type": "AGG_MAX",
+   "field": "north",
+   "label": "north"
+  },
+  {
+   "type": "AGG_MAX",
+   "field": "has_tech",
+   "label": "has_tech"
+  },
+  {
+   "type": "AGG_MAX",
+   "field": "markup",
+   "label": "markup"
+  },
+  {
+   "type": "AGG_MAX",
+   "field": "day",
+   "label": "day"
+  },
+  {
+   "type": "AGG_MAX",
+   "field": "score0",
+   "label": "score0"
+  }
+ ]
+}

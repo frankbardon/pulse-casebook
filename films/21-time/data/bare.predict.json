@@ -1,0 +1,161 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "valid": false,
+    "request": {
+      "cohort": {
+        "filename": "o.pulse"
+      },
+      "aggregations": [
+        {
+          "type": "AGG_MAX",
+          "field": "wd",
+          "label": "wd"
+        }
+      ],
+      "attributes": [
+        {
+          "type": "ATTR_FORMULA",
+          "field": "",
+          "label": "wd",
+          "expression": "weekday(at)"
+        }
+      ]
+    },
+    "schema_info": {
+      "field_count": 5,
+      "fields": [
+        "id",
+        "store",
+        "zone",
+        "at",
+        "amount"
+      ]
+    },
+    "record_count": 0,
+    "shards": [],
+    "streamable": true,
+    "suggestions": [
+      {
+        "path": [
+          "Aggregations",
+          "0",
+          "Field"
+        ],
+        "reason": "field wd is not in the schema; closest names by edit distance",
+        "current": "wd",
+        "proposed": [
+          "id",
+          "at"
+        ],
+        "confidence": 0.9
+      }
+    ],
+    "defaults_applied": [],
+    "aggregations": [
+      {
+        "type": "AGG_MAX",
+        "field": "wd",
+        "label": "wd",
+        "component_schema": {
+          "keys": [
+            {
+              "name": "n",
+              "type": "int",
+              "description": "Number of records aggregated (non-null inputs)."
+            },
+            {
+              "name": "n_null",
+              "type": "int",
+              "description": "Number of null inputs encountered."
+            },
+            {
+              "name": "max",
+              "type": "float64",
+              "description": "Largest non-null value observed."
+            }
+          ],
+          "mergeability": "mergeable"
+        }
+      }
+    ],
+    "groups": [],
+    "filterers": [],
+    "overlays_applied": [],
+    "overlays_schema_divergence": [],
+    "overlay_cost": {},
+    "time_zones": [],
+    "sizes": [
+      {
+        "section": "data",
+        "full_bytes": 30,
+        "shaped_bytes": 30,
+        "basis": "exact"
+      },
+      {
+        "section": "metadata",
+        "full_bytes": 116,
+        "shaped_bytes": 116,
+        "basis": "heuristic"
+      },
+      {
+        "section": "components",
+        "full_bytes": 249,
+        "shaped_bytes": 249,
+        "basis": "heuristic"
+      }
+    ]
+  },
+  "errors": [
+    {
+      "code": "PULSE_FORMULA_COMPILE_ERROR",
+      "message": "compiling formula expression \"weekday(at)\": weekday() reads epoch days but \"at\" is a datetime field (epoch seconds): wrap it in to_day(), as in weekday(to_day(at)) (1:1)",
+      "details": {
+        "compile_error": "weekday() reads epoch days but \"at\" is a datetime field (epoch seconds): wrap it in to_day(), as in weekday(to_day(at)) (1:1)",
+        "expression": "weekday(at)"
+      }
+    }
+  ],
+  "warnings": [
+    {
+      "code": "PULSE_FIELD_DESCRIPTION_LOW_QUALITY",
+      "message": "field id has a low-quality description",
+      "details": {
+        "description": "",
+        "field": "id"
+      }
+    },
+    {
+      "code": "PULSE_FIELD_DESCRIPTION_LOW_QUALITY",
+      "message": "field store has a low-quality description",
+      "details": {
+        "description": "",
+        "field": "store"
+      }
+    },
+    {
+      "code": "PULSE_FIELD_DESCRIPTION_LOW_QUALITY",
+      "message": "field zone has a low-quality description",
+      "details": {
+        "description": "",
+        "field": "zone"
+      }
+    },
+    {
+      "code": "PULSE_FIELD_DESCRIPTION_LOW_QUALITY",
+      "message": "field at has a low-quality description",
+      "details": {
+        "description": "",
+        "field": "at"
+      }
+    },
+    {
+      "code": "PULSE_FIELD_DESCRIPTION_LOW_QUALITY",
+      "message": "field amount has a low-quality description",
+      "details": {
+        "description": "",
+        "field": "amount"
+      }
+    }
+  ]
+}

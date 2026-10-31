@@ -1,0 +1,19 @@
+{
+  "format_version": "1.1",
+  "data": null,
+  "errors": [
+    {
+      "code": "PULSE_JOIN_TYPE_MISMATCH",
+      "message": "a u64 join key cannot pair with an f32 / f64 key: a u64 key compares on its exact stored word, and a float has no exact integer above 2^53, so the pair could only match through a lossy float echo — key both sides as an integer type (u64, or u4 / u8 / u16 / u32 when the values fit)",
+      "details": {
+        "index": 0,
+        "left_field": "store_no",
+        "left_type": "u64",
+        "reason": "u64_float_key",
+        "right_field": "store_no",
+        "right_type": "f64"
+      }
+    }
+  ],
+  "warnings": []
+}

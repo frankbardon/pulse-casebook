@@ -1,0 +1,327 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "metadata": {
+      "total_rows": 600,
+      "filtered_rows": 600,
+      "cohort_file": "t.pulse"
+    },
+    "crosstab": {
+      "shape": "matrix",
+      "matrix": {
+        "row_header": {
+          "fields": [
+            "region"
+          ],
+          "types": [
+            "GROUP_CATEGORY"
+          ]
+        },
+        "column_header": {
+          "fields": [
+            "brand"
+          ],
+          "types": [
+            "GROUP_CATEGORY"
+          ]
+        },
+        "row_keys": [
+          [
+            "East"
+          ],
+          [
+            "North"
+          ],
+          [
+            "South"
+          ],
+          [
+            "West"
+          ]
+        ],
+        "column_keys": [
+          [
+            "Acorn"
+          ],
+          [
+            "Birch"
+          ],
+          [
+            "Cedar"
+          ]
+        ],
+        "cells": [
+          [
+            {
+              "value": 22,
+              "present": true
+            },
+            {
+              "value": 30,
+              "present": true
+            },
+            {
+              "value": 41,
+              "present": true
+            }
+          ],
+          [
+            {
+              "value": 65,
+              "present": true
+            },
+            {
+              "value": 37,
+              "present": true
+            },
+            {
+              "value": 32,
+              "present": true
+            }
+          ],
+          [
+            {
+              "value": 33,
+              "present": true
+            },
+            {
+              "value": 41,
+              "present": true
+            },
+            {
+              "value": 27,
+              "present": true
+            }
+          ],
+          [
+            {
+              "value": 32,
+              "present": true
+            },
+            {
+              "value": 37,
+              "present": true
+            },
+            {
+              "value": 23,
+              "present": true
+            }
+          ]
+        ],
+        "row_margins": [
+          {
+            "value": 93,
+            "present": true
+          },
+          {
+            "value": 134,
+            "present": true
+          },
+          {
+            "value": 101,
+            "present": true
+          },
+          {
+            "value": 92,
+            "present": true
+          }
+        ],
+        "column_margins": [
+          {
+            "value": 152,
+            "present": true
+          },
+          {
+            "value": 145,
+            "present": true
+          },
+          {
+            "value": 123,
+            "present": true
+          }
+        ],
+        "grand_total": {
+          "value": 420,
+          "present": true
+        },
+        "cell_label": "n",
+        "normalize_applied": "none"
+      }
+    },
+    "components": {
+      "crosstab": {
+        "cell_counts": [
+          [
+            22,
+            30,
+            41
+          ],
+          [
+            65,
+            37,
+            32
+          ],
+          [
+            33,
+            41,
+            27
+          ],
+          [
+            32,
+            37,
+            23
+          ]
+        ],
+        "cell_components": [
+          [
+            {
+              "n": 22,
+              "n_null": 0
+            },
+            {
+              "n": 30,
+              "n_null": 0
+            },
+            {
+              "n": 41,
+              "n_null": 0
+            }
+          ],
+          [
+            {
+              "n": 65,
+              "n_null": 0
+            },
+            {
+              "n": 37,
+              "n_null": 0
+            },
+            {
+              "n": 32,
+              "n_null": 0
+            }
+          ],
+          [
+            {
+              "n": 33,
+              "n_null": 0
+            },
+            {
+              "n": 41,
+              "n_null": 0
+            },
+            {
+              "n": 27,
+              "n_null": 0
+            }
+          ],
+          [
+            {
+              "n": 32,
+              "n_null": 0
+            },
+            {
+              "n": 37,
+              "n_null": 0
+            },
+            {
+              "n": 23,
+              "n_null": 0
+            }
+          ]
+        ],
+        "row_margin_counts": [
+          93,
+          134,
+          101,
+          92
+        ],
+        "row_margin_components": [
+          {
+            "n": 93,
+            "n_null": 0
+          },
+          {
+            "n": 134,
+            "n_null": 0
+          },
+          {
+            "n": 101,
+            "n_null": 0
+          },
+          {
+            "n": 92,
+            "n_null": 0
+          }
+        ],
+        "column_margin_counts": [
+          152,
+          145,
+          123
+        ],
+        "column_margin_components": [
+          {
+            "n": 152,
+            "n_null": 0
+          },
+          {
+            "n": 145,
+            "n_null": 0
+          },
+          {
+            "n": 123,
+            "n_null": 0
+          }
+        ],
+        "grand_total_count": 420,
+        "grand_total_components": {
+          "n": 420,
+          "n_null": 0
+        },
+        "row_key_components": [
+          {
+            "count": 142,
+            "key": "East",
+            "label": "East"
+          },
+          {
+            "count": 190,
+            "key": "North",
+            "label": "North"
+          },
+          {
+            "count": 143,
+            "key": "South",
+            "label": "South"
+          },
+          {
+            "count": 125,
+            "key": "West",
+            "label": "West"
+          }
+        ],
+        "column_key_components": [
+          {
+            "count": 152,
+            "key": "Acorn",
+            "label": "Acorn"
+          },
+          {
+            "count": 145,
+            "key": "Birch",
+            "label": "Birch"
+          },
+          {
+            "count": 123,
+            "key": "Cedar",
+            "label": "Cedar"
+          }
+        ],
+        "included_records": 420,
+        "excluded_records": 180
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

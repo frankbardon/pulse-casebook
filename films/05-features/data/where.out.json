@@ -1,0 +1,207 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "hi": 32.19,
+        "income_band": "0",
+        "lo": 8.92,
+        "n": 61
+      },
+      {
+        "hi": 58.93,
+        "income_band": "1",
+        "lo": 32.33,
+        "n": 60
+      },
+      {
+        "hi": 87.11,
+        "income_band": "2",
+        "lo": 59.08,
+        "n": 60
+      },
+      {
+        "hi": 325.93,
+        "income_band": "3",
+        "lo": 87.49,
+        "n": 59
+      }
+    ],
+    "metadata": {
+      "total_rows": 240,
+      "filtered_rows": 240,
+      "cohort_file": "f.pulse"
+    },
+    "components": {
+      "aggregations": [
+        {
+          "label": "n",
+          "n": 240,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "0"
+              ],
+              "n": 61,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "1"
+              ],
+              "n": 60,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "2"
+              ],
+              "n": 60,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "3"
+              ],
+              "n": 59,
+              "n_null": 0
+            }
+          ]
+        },
+        {
+          "label": "lo",
+          "n": 240,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "0"
+              ],
+              "n": 61,
+              "n_null": 0,
+              "operator": {
+                "min": 8.92
+              }
+            },
+            {
+              "group_key": [
+                "1"
+              ],
+              "n": 60,
+              "n_null": 0,
+              "operator": {
+                "min": 32.33
+              }
+            },
+            {
+              "group_key": [
+                "2"
+              ],
+              "n": 60,
+              "n_null": 0,
+              "operator": {
+                "min": 59.08
+              }
+            },
+            {
+              "group_key": [
+                "3"
+              ],
+              "n": 59,
+              "n_null": 0,
+              "operator": {
+                "min": 87.49
+              }
+            }
+          ]
+        },
+        {
+          "label": "hi",
+          "n": 240,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "0"
+              ],
+              "n": 61,
+              "n_null": 0,
+              "operator": {
+                "max": 32.19
+              }
+            },
+            {
+              "group_key": [
+                "1"
+              ],
+              "n": 60,
+              "n_null": 0,
+              "operator": {
+                "max": 58.93
+              }
+            },
+            {
+              "group_key": [
+                "2"
+              ],
+              "n": 60,
+              "n_null": 0,
+              "operator": {
+                "max": 87.11
+              }
+            },
+            {
+              "group_key": [
+                "3"
+              ],
+              "n": 59,
+              "n_null": 0,
+              "operator": {
+                "max": 325.93
+              }
+            }
+          ]
+        }
+      ],
+      "groupers": [
+        {
+          "field": "income_band",
+          "total_n": 240,
+          "operator": {
+            "buckets": [
+              {
+                "count": 61,
+                "key": "0",
+                "label": "0"
+              },
+              {
+                "count": 60,
+                "key": "1",
+                "label": "1"
+              },
+              {
+                "count": 60,
+                "key": "2",
+                "label": "2"
+              },
+              {
+                "count": 59,
+                "key": "3",
+                "label": "3"
+              }
+            ],
+            "dict_size": 0
+          }
+        }
+      ],
+      "run": {
+        "total_records": 240,
+        "filtered_records": 240,
+        "null_records": 0
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

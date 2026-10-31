@@ -1,0 +1,12 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "target": "wl.pulse",
+    "records": 48,
+    "derived_columns": [
+      "log_value"
+    ]
+  },
+  "errors": [],
+  "warnings": []
+}

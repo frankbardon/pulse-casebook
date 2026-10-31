@@ -1,0 +1,162 @@
+{
+  "source_rows": 1000,
+  "synthetic_rows": 500,
+  "fields": [
+    {
+      "field": "region",
+      "test": "TEST_CHISQ",
+      "result": {
+        "label": "TEST_CHISQ",
+        "type": "TEST_CHISQ",
+        "variant": "independence",
+        "statistic": 1.3119720604631535,
+        "df": 3,
+        "p_value": 0.7262921743196384,
+        "alpha": 0.05,
+        "reject_null": false,
+        "details": {
+          "col_labels": [
+            "false",
+            "true"
+          ],
+          "col_totals": [
+            1000,
+            500
+          ],
+          "contingency": [
+            [
+              185,
+              89
+            ],
+            [
+              399,
+              214
+            ],
+            [
+              308,
+              143
+            ],
+            [
+              108,
+              54
+            ]
+          ],
+          "effect_size": {
+            "cramers_v": 0.029574449112515503
+          },
+          "expected_min": 54,
+          "n": 1500,
+          "row_labels": [
+            "East",
+            "North",
+            "South",
+            "West"
+          ],
+          "row_totals": [
+            274,
+            613,
+            451,
+            162
+          ]
+        }
+      }
+    },
+    {
+      "field": "age",
+      "test": "TEST_KS",
+      "result": {
+        "label": "TEST_KS_age",
+        "type": "TEST_KS",
+        "variant": "two_sample",
+        "statistic": 0.049000000000000044,
+        "p_value": 0.4002134181751996,
+        "alpha": 0.05,
+        "reject_null": false,
+        "details": {
+          "groups": [
+            "false",
+            "true"
+          ],
+          "n": [
+            1000,
+            500
+          ]
+        }
+      }
+    },
+    {
+      "field": "spend",
+      "test": "TEST_KS",
+      "result": {
+        "label": "TEST_KS_spend",
+        "type": "TEST_KS",
+        "variant": "two_sample",
+        "statistic": 0.07,
+        "p_value": 0.07626242398653393,
+        "alpha": 0.05,
+        "reject_null": false,
+        "details": {
+          "groups": [
+            "false",
+            "true"
+          ],
+          "n": [
+            1000,
+            500
+          ]
+        }
+      }
+    },
+    {
+      "field": "plan",
+      "test": "TEST_CHISQ",
+      "result": {
+        "label": "TEST_CHISQ",
+        "type": "TEST_CHISQ",
+        "variant": "independence",
+        "statistic": 0.11837121212121213,
+        "df": 1,
+        "p_value": 0.730807799331991,
+        "alpha": 0.05,
+        "reject_null": false,
+        "details": {
+          "col_labels": [
+            "false",
+            "true"
+          ],
+          "col_totals": [
+            1000,
+            500
+          ],
+          "contingency": [
+            [
+              645,
+              327
+            ],
+            [
+              355,
+              173
+            ]
+          ],
+          "effect_size": {
+            "cramers_v": 0.008883363181483769,
+            "phi": 0.008883363181483769
+          },
+          "expected_min": 176,
+          "n": 1500,
+          "row_labels": [
+            "basic",
+            "plus"
+          ],
+          "row_totals": [
+            972,
+            528
+          ]
+        }
+      }
+    }
+  ],
+  "warnings": [
+    "conditional relationship conflict: field \"spend\" is already claimed by captured shape (--fit-shape); dropping pairwise correlation (excluding this field; remaining participants still correlate)"
+  ]
+}

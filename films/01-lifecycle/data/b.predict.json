@@ -1,0 +1,254 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "valid": false,
+    "request": {
+      "cohort": {
+        "filename": "members.pulse"
+      },
+      "aggregations": [
+        {
+          "type": "AGG_MEDIAN",
+          "field": "income"
+        }
+      ],
+      "groups": [
+        {
+          "type": "GROUP_CATEGORY",
+          "field": "region"
+        }
+      ]
+    },
+    "schema_info": {
+      "field_count": 6,
+      "fields": [
+        "region",
+        "age",
+        "signup",
+        "income",
+        "opted_in",
+        "tier"
+      ]
+    },
+    "record_count": 140,
+    "shards": [
+      {
+        "filename": "l1.pulse",
+        "record_count": 35
+      },
+      {
+        "filename": "l2.pulse",
+        "record_count": 35
+      },
+      {
+        "filename": "l3.pulse",
+        "record_count": 35
+      },
+      {
+        "filename": "l4.pulse",
+        "record_count": 35
+      }
+    ],
+    "streamable": false,
+    "streamable_reasons": [
+      "aggregation AGG_MEDIAN is not streamable"
+    ],
+    "suggestions": [
+      {
+        "path": [
+          "Aggregations",
+          "0",
+          "Type"
+        ],
+        "reason": "operator AGG_MEDIAN forces the buffered path; closest streamable substitute is the aggregator AGG_AVERAGE",
+        "current": "AGG_MEDIAN",
+        "proposed": [
+          "AGG_AVERAGE"
+        ],
+        "confidence": 0.8
+      }
+    ],
+    "defaults_applied": [],
+    "aggregations": [
+      {
+        "type": "AGG_MEDIAN",
+        "field": "income",
+        "component_schema": {
+          "keys": [
+            {
+              "name": "n",
+              "type": "int",
+              "description": "Number of records aggregated (non-null inputs)."
+            },
+            {
+              "name": "n_null",
+              "type": "int",
+              "description": "Number of null inputs encountered."
+            },
+            {
+              "name": "sum_weights",
+              "type": "float64",
+              "description": "Weighted slots only: the sum of the valid weights of the rows whose value was present.",
+              "optional": true
+            },
+            {
+              "name": "n_eff",
+              "type": "float64",
+              "description": "Weighted slots of kind probability only: Kish effective sample size (sum of weights)^2 / sum of squared weights.",
+              "optional": true
+            },
+            {
+              "name": "n_weight_invalid",
+              "type": "int",
+              "description": "Weighted slots only: rows with a present value whose weight was invalid (null, negative, NaN/Inf, non-integer frequency) and was excluded.",
+              "optional": true
+            },
+            {
+              "name": "position_low",
+              "type": "int",
+              "description": "Lower index used to bracket the median in the sorted value set (weighted: the expanded-index floor of 0.5·(Σw − 1), probability weights rescaled to Σw = n)."
+            },
+            {
+              "name": "position_high",
+              "type": "int",
+              "description": "Upper index used to bracket the median in the sorted value set (weighted: the expanded-index ceiling of 0.5·(Σw − 1), probability weights rescaled to Σw = n)."
+            },
+            {
+              "name": "median",
+              "type": "float64",
+              "description": "Resolved median value (linear interpolation between the bracketing positions)."
+            }
+          ],
+          "mergeability": "none"
+        },
+        "buffered_components": true
+      }
+    ],
+    "groups": [
+      {
+        "type": "GROUP_CATEGORY",
+        "field": "region",
+        "component_schema": {
+          "keys": [
+            {
+              "name": "total_n",
+              "type": "int",
+              "description": "Total records partitioned across all buckets (post-filter)."
+            },
+            {
+              "name": "n_null",
+              "type": "int",
+              "description": "Records that landed in the null/skip path (no bucket assignment)."
+            },
+            {
+              "name": "dict_size",
+              "type": "int",
+              "description": "Number of distinct values observed across all buckets (cardinality of the partition key)."
+            },
+            {
+              "name": "buckets",
+              "type": "[]bucket",
+              "description": "Per-bucket records, ordered by emission; each entry carries {key, label, count}."
+            }
+          ],
+          "mergeability": "mergeable"
+        }
+      }
+    ],
+    "filterers": [],
+    "overlays_applied": [],
+    "overlays_schema_divergence": [],
+    "overlay_cost": {},
+    "time_zones": [],
+    "sizes": [
+      {
+        "section": "data",
+        "full_bytes": 238,
+        "shaped_bytes": 238,
+        "basis": "upper_bound"
+      },
+      {
+        "section": "metadata",
+        "full_bytes": 116,
+        "shaped_bytes": 116,
+        "basis": "heuristic"
+      },
+      {
+        "section": "components",
+        "full_bytes": 983,
+        "shaped_bytes": 983,
+        "basis": "heuristic"
+      }
+    ],
+    "limit_findings": [
+      {
+        "limit": "max_estimated_memory",
+        "configured": 8388608,
+        "estimated": 16828707,
+        "grade": "certain"
+      }
+    ]
+  },
+  "errors": [
+    {
+      "code": "PULSE_LIMIT_EXCEEDED",
+      "message": "limit max_estimated_memory exceeded: observed 16,828,707, configured 8,388,608 (raise Options.Limits.MaxEstimatedMemory, feature profile limits.max_estimated_memory or the CLI's --limit max_estimated_memory= on any pulse command, or reduce the request)",
+      "details": {
+        "configured": 8388608,
+        "limit": "max_estimated_memory",
+        "observed": 16828707,
+        "option": "Options.Limits.MaxEstimatedMemory"
+      }
+    }
+  ],
+  "warnings": [
+    {
+      "code": "PULSE_FIELD_DESCRIPTION_LOW_QUALITY",
+      "message": "field region has a low-quality description",
+      "details": {
+        "description": "",
+        "field": "region"
+      }
+    },
+    {
+      "code": "PULSE_FIELD_DESCRIPTION_LOW_QUALITY",
+      "message": "field age has a low-quality description",
+      "details": {
+        "description": "",
+        "field": "age"
+      }
+    },
+    {
+      "code": "PULSE_FIELD_DESCRIPTION_LOW_QUALITY",
+      "message": "field signup has a low-quality description",
+      "details": {
+        "description": "",
+        "field": "signup"
+      }
+    },
+    {
+      "code": "PULSE_FIELD_DESCRIPTION_LOW_QUALITY",
+      "message": "field income has a low-quality description",
+      "details": {
+        "description": "",
+        "field": "income"
+      }
+    },
+    {
+      "code": "PULSE_FIELD_DESCRIPTION_LOW_QUALITY",
+      "message": "field opted_in has a low-quality description",
+      "details": {
+        "description": "",
+        "field": "opted_in"
+      }
+    },
+    {
+      "code": "PULSE_FIELD_DESCRIPTION_LOW_QUALITY",
+      "message": "field tier has a low-quality description",
+      "details": {
+        "description": "",
+        "field": "tier"
+      }
+    }
+  ]
+}

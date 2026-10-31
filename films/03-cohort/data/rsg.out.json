@@ -1,0 +1,214 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "n": 197,
+        "region": "East",
+        "spend": 14292.32,
+        "sqft": 24829.94923857868
+      },
+      {
+        "n": 86,
+        "region": "North",
+        "spend": 4903.39,
+        "sqft": 26500
+      },
+      {
+        "n": 102,
+        "region": "South",
+        "spend": 7154.87,
+        "sqft": 9000
+      },
+      {
+        "n": 95,
+        "region": "West",
+        "spend": 6322.4,
+        "sqft": 23000
+      }
+    ],
+    "metadata": {
+      "total_rows": 1200,
+      "filtered_rows": 480,
+      "cohort_file": "mg.pulse"
+    },
+    "components": {
+      "aggregations": [
+        {
+          "label": "n",
+          "n": 480,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "East"
+              ],
+              "n": 197,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "North"
+              ],
+              "n": 86,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "South"
+              ],
+              "n": 102,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "West"
+              ],
+              "n": 95,
+              "n_null": 0
+            }
+          ]
+        },
+        {
+          "label": "spend",
+          "n": 480,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "East"
+              ],
+              "n": 197,
+              "n_null": 0,
+              "operator": {
+                "sum": 14292.32
+              }
+            },
+            {
+              "group_key": [
+                "North"
+              ],
+              "n": 86,
+              "n_null": 0,
+              "operator": {
+                "sum": 4903.39
+              }
+            },
+            {
+              "group_key": [
+                "South"
+              ],
+              "n": 102,
+              "n_null": 0,
+              "operator": {
+                "sum": 7154.87
+              }
+            },
+            {
+              "group_key": [
+                "West"
+              ],
+              "n": 95,
+              "n_null": 0,
+              "operator": {
+                "sum": 6322.4
+              }
+            }
+          ]
+        },
+        {
+          "label": "sqft",
+          "n": 480,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "East"
+              ],
+              "n": 197,
+              "n_null": 0,
+              "operator": {
+                "sum": 4891500
+              }
+            },
+            {
+              "group_key": [
+                "North"
+              ],
+              "n": 86,
+              "n_null": 0,
+              "operator": {
+                "sum": 2279000
+              }
+            },
+            {
+              "group_key": [
+                "South"
+              ],
+              "n": 102,
+              "n_null": 0,
+              "operator": {
+                "sum": 918000
+              }
+            },
+            {
+              "group_key": [
+                "West"
+              ],
+              "n": 95,
+              "n_null": 0,
+              "operator": {
+                "sum": 2185000
+              }
+            }
+          ]
+        }
+      ],
+      "groupers": [
+        {
+          "field": "region",
+          "total_n": 480,
+          "operator": {
+            "buckets": [
+              {
+                "count": 197,
+                "key": "East",
+                "label": "East"
+              },
+              {
+                "count": 86,
+                "key": "North",
+                "label": "North"
+              },
+              {
+                "count": 102,
+                "key": "South",
+                "label": "South"
+              },
+              {
+                "count": 95,
+                "key": "West",
+                "label": "West"
+              }
+            ],
+            "dict_size": 4
+          }
+        }
+      ],
+      "filterers": [
+        {
+          "n_in": 1200,
+          "n_out": 480,
+          "n_null_input": 0
+        }
+      ],
+      "run": {
+        "total_records": 1200,
+        "filtered_records": 480,
+        "null_records": 0
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

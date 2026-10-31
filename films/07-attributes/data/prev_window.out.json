@@ -1,0 +1,148 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "metadata": {
+      "total_rows": 12,
+      "filtered_rows": 4,
+      "cohort_file": "p.pulse"
+    },
+    "crosstab": {
+      "shape": "matrix",
+      "matrix": {
+        "row_header": {
+          "fields": [
+            "prev_plan"
+          ],
+          "types": [
+            "GROUP_CATEGORY"
+          ]
+        },
+        "column_header": {
+          "fields": [
+            "plan"
+          ],
+          "types": [
+            "GROUP_CATEGORY"
+          ]
+        },
+        "row_keys": [
+          [
+            "basic"
+          ],
+          [
+            "plus"
+          ]
+        ],
+        "column_keys": [
+          [
+            "plus"
+          ],
+          [
+            "pro"
+          ]
+        ],
+        "cells": [
+          [
+            {
+              "value": 1,
+              "present": true
+            },
+            {
+              "present": false
+            }
+          ],
+          [
+            {
+              "value": 1,
+              "present": true
+            },
+            {
+              "value": 1,
+              "present": true
+            }
+          ]
+        ],
+        "grand_total": {
+          "present": false
+        },
+        "cell_label": "n",
+        "normalize_applied": "none"
+      }
+    },
+    "components": {
+      "crosstab": {
+        "cell_counts": [
+          [
+            1,
+            0
+          ],
+          [
+            1,
+            1
+          ]
+        ],
+        "cell_components": [
+          [
+            {
+              "n": 1,
+              "n_null": 0
+            },
+            null
+          ],
+          [
+            {
+              "n": 1,
+              "n_null": 0
+            },
+            {
+              "n": 1,
+              "n_null": 0
+            }
+          ]
+        ],
+        "row_key_components": [
+          {
+            "count": 1,
+            "key": "basic",
+            "label": "basic"
+          },
+          {
+            "count": 2,
+            "key": "plus",
+            "label": "plus"
+          }
+        ],
+        "column_key_components": [
+          {
+            "count": 3,
+            "key": "plus",
+            "label": "plus"
+          },
+          {
+            "count": 1,
+            "key": "pro",
+            "label": "pro"
+          }
+        ],
+        "included_records": 3,
+        "excluded_records": 1
+      },
+      "attributes": [
+        {
+          "label": "prev_plan",
+          "type": "ATTR_PREVIOUS_STATE",
+          "n": 7,
+          "n_null": 5,
+          "operator": {
+            "n_ambiguous": 0,
+            "n_first": 4,
+            "n_gap": 1,
+            "n_subjects": 4
+          }
+        }
+      ]
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

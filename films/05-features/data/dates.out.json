@@ -1,0 +1,627 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "event_day": 14,
+        "event_dow": 4,
+        "event_hour": 22,
+        "event_month": 3,
+        "event_quarter": 1,
+        "event_year": 2024,
+        "id": "e1",
+        "signup_day": 14,
+        "signup_dow": 4,
+        "signup_month": 3,
+        "signup_quarter": 1,
+        "signup_year": 2024
+      },
+      {
+        "event_day": 15,
+        "event_dow": 5,
+        "event_hour": 2,
+        "event_month": 3,
+        "event_quarter": 1,
+        "event_year": 2024,
+        "id": "e2",
+        "signup_day": 14,
+        "signup_dow": 4,
+        "signup_month": 3,
+        "signup_quarter": 1,
+        "signup_year": 2024
+      },
+      {
+        "event_day": 15,
+        "event_dow": 5,
+        "event_hour": 11,
+        "event_month": 3,
+        "event_quarter": 1,
+        "event_year": 2024,
+        "id": "e3",
+        "signup_day": 14,
+        "signup_dow": 4,
+        "signup_month": 3,
+        "signup_quarter": 1,
+        "signup_year": 2024
+      },
+      {
+        "event_day": null,
+        "event_dow": null,
+        "event_hour": null,
+        "event_month": null,
+        "event_quarter": null,
+        "event_year": null,
+        "id": "e4",
+        "signup_day": 14,
+        "signup_dow": 4,
+        "signup_month": 3,
+        "signup_quarter": 1,
+        "signup_year": 2024
+      }
+    ],
+    "metadata": {
+      "total_rows": 4,
+      "filtered_rows": 4,
+      "cohort_file": "d.pulse"
+    },
+    "components": {
+      "aggregations": [
+        {
+          "label": "signup_year",
+          "n": 4,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "e1"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "min": 2024
+              }
+            },
+            {
+              "group_key": [
+                "e2"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "min": 2024
+              }
+            },
+            {
+              "group_key": [
+                "e3"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "min": 2024
+              }
+            },
+            {
+              "group_key": [
+                "e4"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "min": 2024
+              }
+            }
+          ]
+        },
+        {
+          "label": "signup_month",
+          "n": 4,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "e1"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "min": 3
+              }
+            },
+            {
+              "group_key": [
+                "e2"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "min": 3
+              }
+            },
+            {
+              "group_key": [
+                "e3"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "min": 3
+              }
+            },
+            {
+              "group_key": [
+                "e4"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "min": 3
+              }
+            }
+          ]
+        },
+        {
+          "label": "signup_day",
+          "n": 4,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "e1"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "min": 14
+              }
+            },
+            {
+              "group_key": [
+                "e2"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "min": 14
+              }
+            },
+            {
+              "group_key": [
+                "e3"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "min": 14
+              }
+            },
+            {
+              "group_key": [
+                "e4"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "min": 14
+              }
+            }
+          ]
+        },
+        {
+          "label": "signup_dow",
+          "n": 4,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "e1"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "min": 4
+              }
+            },
+            {
+              "group_key": [
+                "e2"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "min": 4
+              }
+            },
+            {
+              "group_key": [
+                "e3"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "min": 4
+              }
+            },
+            {
+              "group_key": [
+                "e4"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "min": 4
+              }
+            }
+          ]
+        },
+        {
+          "label": "signup_quarter",
+          "n": 4,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "e1"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "min": 1
+              }
+            },
+            {
+              "group_key": [
+                "e2"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "min": 1
+              }
+            },
+            {
+              "group_key": [
+                "e3"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "min": 1
+              }
+            },
+            {
+              "group_key": [
+                "e4"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "min": 1
+              }
+            }
+          ]
+        },
+        {
+          "label": "event_year",
+          "n": 3,
+          "n_null": 1,
+          "groups": [
+            {
+              "group_key": [
+                "e1"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "min": 2024
+              }
+            },
+            {
+              "group_key": [
+                "e2"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "min": 2024
+              }
+            },
+            {
+              "group_key": [
+                "e3"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "min": 2024
+              }
+            },
+            {
+              "group_key": [
+                "e4"
+              ],
+              "n": 0,
+              "n_null": 1,
+              "operator": {
+                "min": null
+              }
+            }
+          ]
+        },
+        {
+          "label": "event_month",
+          "n": 3,
+          "n_null": 1,
+          "groups": [
+            {
+              "group_key": [
+                "e1"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "min": 3
+              }
+            },
+            {
+              "group_key": [
+                "e2"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "min": 3
+              }
+            },
+            {
+              "group_key": [
+                "e3"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "min": 3
+              }
+            },
+            {
+              "group_key": [
+                "e4"
+              ],
+              "n": 0,
+              "n_null": 1,
+              "operator": {
+                "min": null
+              }
+            }
+          ]
+        },
+        {
+          "label": "event_day",
+          "n": 3,
+          "n_null": 1,
+          "groups": [
+            {
+              "group_key": [
+                "e1"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "min": 14
+              }
+            },
+            {
+              "group_key": [
+                "e2"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "min": 15
+              }
+            },
+            {
+              "group_key": [
+                "e3"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "min": 15
+              }
+            },
+            {
+              "group_key": [
+                "e4"
+              ],
+              "n": 0,
+              "n_null": 1,
+              "operator": {
+                "min": null
+              }
+            }
+          ]
+        },
+        {
+          "label": "event_dow",
+          "n": 3,
+          "n_null": 1,
+          "groups": [
+            {
+              "group_key": [
+                "e1"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "min": 4
+              }
+            },
+            {
+              "group_key": [
+                "e2"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "min": 5
+              }
+            },
+            {
+              "group_key": [
+                "e3"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "min": 5
+              }
+            },
+            {
+              "group_key": [
+                "e4"
+              ],
+              "n": 0,
+              "n_null": 1,
+              "operator": {
+                "min": null
+              }
+            }
+          ]
+        },
+        {
+          "label": "event_quarter",
+          "n": 3,
+          "n_null": 1,
+          "groups": [
+            {
+              "group_key": [
+                "e1"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "min": 1
+              }
+            },
+            {
+              "group_key": [
+                "e2"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "min": 1
+              }
+            },
+            {
+              "group_key": [
+                "e3"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "min": 1
+              }
+            },
+            {
+              "group_key": [
+                "e4"
+              ],
+              "n": 0,
+              "n_null": 1,
+              "operator": {
+                "min": null
+              }
+            }
+          ]
+        },
+        {
+          "label": "event_hour",
+          "n": 3,
+          "n_null": 1,
+          "groups": [
+            {
+              "group_key": [
+                "e1"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "min": 22
+              }
+            },
+            {
+              "group_key": [
+                "e2"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "min": 2
+              }
+            },
+            {
+              "group_key": [
+                "e3"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "min": 11
+              }
+            },
+            {
+              "group_key": [
+                "e4"
+              ],
+              "n": 0,
+              "n_null": 1,
+              "operator": {
+                "min": null
+              }
+            }
+          ]
+        }
+      ],
+      "groupers": [
+        {
+          "field": "id",
+          "total_n": 4,
+          "operator": {
+            "buckets": [
+              {
+                "count": 1,
+                "key": "e1",
+                "label": "e1"
+              },
+              {
+                "count": 1,
+                "key": "e2",
+                "label": "e2"
+              },
+              {
+                "count": 1,
+                "key": "e3",
+                "label": "e3"
+              },
+              {
+                "count": 1,
+                "key": "e4",
+                "label": "e4"
+              }
+            ],
+            "dict_size": 4
+          }
+        }
+      ],
+      "run": {
+        "total_records": 4,
+        "filtered_records": 4,
+        "null_records": 0
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

@@ -1,0 +1,11 @@
+{
+  "format_version": "1.1",
+  "data": null,
+  "errors": [
+    {
+      "code": "PULSE_DECIMAL_DIVIDE_BY_ZERO",
+      "message": "decimal divide by zero"
+    }
+  ],
+  "warnings": []
+}

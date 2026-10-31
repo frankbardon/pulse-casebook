@@ -1,0 +1,207 @@
+1
+00:00:04,250 --> 00:00:07,159
+Rows by columns, with the margins around them.
+
+2
+00:00:07,959 --> 00:00:13,236
+A crosstab pivots one cell aggregation across rows and columns of groupers.
+
+3
+00:00:14,036 --> 00:00:25,159
+Any grouper can sit on either axis, and several on one axis nest. Here, region runs down the side, and the brand each respondent uses most runs across the top.
+
+4
+00:00:25,959 --> 00:00:34,202
+Pulse returns the matrix with its row margins, column margins and grand total, and the counts behind each cell in the components.
+
+5
+00:00:35,002 --> 00:00:43,607
+A crosstab replaces groups and aggregations. Put both on one request, and it is refused as a crosstab that conflicts with groups.
+
+6
+00:00:44,407 --> 00:00:52,628
+So pick by what the table needs: one figure per key, margins and shares, several figures per cell, or a test between cells.
+
+7
+00:00:53,428 --> 00:00:57,852
+Tests and regressions can still run beside a crosstab, on the raw rows.
+
+8
+00:00:58,652 --> 00:01:06,255
+This survey has six hundred respondents, but only the four hundred and twenty aware of the category were asked which brand they use.
+
+9
+00:01:07,055 --> 00:01:16,343
+The rest have a region and no brand. They reach no cell, so they reach no margin. The East row counts ninety-three of its hundred and forty-two.
+
+10
+00:01:17,143 --> 00:01:22,847
+So a column percent is a share of those asked. East is fourteen percent of Acorn users.
+
+11
+00:01:23,647 --> 00:01:29,159
+Margins are recomputed from the raw rows of each margin, not added up from the cells.
+
+12
+00:01:29,959 --> 00:01:41,551
+Acorn's mean score across both waves is six point nine five, not the six point nine one you get by averaging its two cells, because the waves hold different numbers of Acorn users.
+
+13
+00:01:42,351 --> 00:01:50,978
+So means, medians and percentiles get true margins. The manifest classifies each cell aggregator by how its margin is found.
+
+14
+00:01:51,778 --> 00:01:55,242
+Normalize divides each cell by its matching margin.
+
+15
+00:01:56,042 --> 00:01:59,677
+By column, North is forty-three percent of Acorn users.
+
+16
+00:02:00,477 --> 00:02:04,197
+By row, forty-nine percent of North's brand users pick Acorn.
+
+17
+00:02:04,997 --> 00:02:09,421
+By total, North and Acorn together are fifteen percent of everyone asked.
+
+18
+00:02:10,221 --> 00:02:17,312
+It needs no margin flag. A zero margin leaves the cell marked not present, rather than inventing a zero.
+
+19
+00:02:18,112 --> 00:02:20,872
+Here the columns nest: wave, then brand.
+
+20
+00:02:21,672 --> 00:02:32,923
+Normalize by row, within the first column grouper, and each region's brand shares sum to one within each wave. East's Cedar share rises from thirty-seven to forty-nine percent.
+
+21
+00:02:33,723 --> 00:02:41,667
+Normalize level rolls up the same axis instead. By column, at level zero, each cell is a share of its whole wave.
+
+22
+00:02:42,467 --> 00:02:45,824
+Leave the columns out, and Pulse adds one Total column.
+
+23
+00:02:46,624 --> 00:02:56,381
+It holds every record whose row key resolved, so all six hundred respondents land, and its column percent sums to one. North is thirty-two percent.
+
+24
+00:02:57,181 --> 00:03:02,224
+Comparisons then run between the rows, and the Total column itself gets no letter.
+
+25
+00:03:03,024 --> 00:03:09,645
+One table can stack several measures. List them in cells, and each becomes a stub row under every row key.
+
+26
+00:03:10,445 --> 00:03:16,277
+Here, a base count and a mean score for each brand, read against the same waves in one scan.
+
+27
+00:03:17,077 --> 00:03:31,336
+Each measure runs exactly as its own one-cell crosstab would. Its column margins move to the measures block: a base of a hundred and ninety and two hundred and thirty, and a mean of six point three two and six point six eight.
+
+28
+00:03:32,136 --> 00:03:36,560
+Set a request weight, and the crosstab is recomputed from the weighted rows.
+
+29
+00:03:37,360 --> 00:03:42,339
+Cells, margins and shares all move together, and a share is weighted over weighted.
+
+30
+00:03:43,139 --> 00:03:52,192
+Weighted, North is forty-four percent of Acorn users, and the grand total reads four hundred and twelve point six, instead of four hundred and twenty.
+
+31
+00:03:52,992 --> 00:03:58,227
+The components keep the raw counts beside the sum of weights and the effective sample size.
+
+32
+00:03:59,027 --> 00:04:05,350
+Margin aggregations add a second figure to the margins only, never to a cell, in the same scan.
+
+33
+00:04:06,150 --> 00:04:14,457
+The classic use is an unweighted base beside a weighted mean. The base opts out with weight null, and predict lists it as opted out.
+
+34
+00:04:15,257 --> 00:04:30,902
+An auxiliary sees only the records that reached a cell, and it drops a null cell field. East has a hundred and forty-two respondents, and three skipped the score, so its base is a hundred and thirty-nine. The cell's own margin counts those three as nulls.
+
+35
+00:04:31,702 --> 00:04:37,939
+The default shape is a matrix: a grid of keys, cells and margins, and the shape overlays read.
+
+36
+00:04:38,739 --> 00:04:44,123
+Ask for long, and you get one row per cell in the response data, followed by the margins.
+
+37
+00:04:44,923 --> 00:04:49,304
+Each margin row is tagged as a row, column or grand margin.
+
+38
+00:04:50,104 --> 00:04:54,869
+A crosstab's output is always buffered. What varies is how the grid is built.
+
+39
+00:04:55,669 --> 00:05:07,304
+When the cell is mergeable and every axis keys one record at a time, Pulse fuses: one decode pass into per-cell and per-margin state. Predict reports crosstab fusable, true.
+
+40
+00:05:08,104 --> 00:05:15,408
+A quantile axis must see the whole filtered set before it can bucket anyone, so predict reports false, and says why.
+
+41
+00:05:16,208 --> 00:05:20,675
+Both paths give identical output, and overlays never stop a fuse.
+
+42
+00:05:21,475 --> 00:05:26,795
+Survey cohorts often store codes. Here, purchase intent is one, two or three.
+
+43
+00:05:27,595 --> 00:05:36,136
+A label binding in replace mode rewrites the axis keys from a label table at output time. Filters and sorts still see the codes.
+
+44
+00:05:36,936 --> 00:05:45,200
+Augment mode adds a sibling column, and a matrix axis has none, so Pulse keeps the codes and warns that the label was not applied.
+
+45
+00:05:45,1000 --> 00:05:50,296
+To compare cells, add a pairwise overlay. Each region gets a letter.
+
+46
+00:05:51,096 --> 00:06:01,472
+Ask for letters, and each cell lists the regions it beats at five percent. North leads on Acorn, East on Cedar, and South and West both beat North on Birch.
+
+47
+00:06:02,272 --> 00:06:08,381
+Predict counts eighteen raw p-values here, and suggests a correction. Overlays are film sixteen.
+
+48
+00:06:09,181 --> 00:06:21,200
+That's the crosstab today: rows by columns, one cell or several, margins from raw rows, normalize, the Total column, auxiliary and weighted bases, two shapes, labels and letters.
+
+49
+00:06:21,1000 --> 00:06:31,181
+Any grouper and any cell aggregator can be used. Pulse adds more over time, and your instance's manifest lists them, with how each one margins.
+
+50
+00:06:31,981 --> 00:06:38,602
+Embedders can register their own groupers, aggregators and label tables, through options dot extensions.
+
+51
+00:06:39,402 --> 00:06:43,527
+And remember: a record reaches a margin only if it reached a cell.
+
+52
+00:06:44,327 --> 00:06:45,743
+Pulse crosstabs.

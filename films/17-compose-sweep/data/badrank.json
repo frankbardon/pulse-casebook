@@ -1,0 +1,93 @@
+{
+ "sweep": {
+  "mode": "grid",
+  "axes": [
+   {
+    "name": "tv",
+    "values": [
+     0,
+     0.2,
+     0.4,
+     0.6,
+     0.8
+    ]
+   }
+  ],
+  "label": "tv={{tv}}",
+  "request": {
+   "cohort": {
+    "filename": "m.pulse"
+   },
+   "attributes": [
+    {
+     "type": "ATTR_FORMULA",
+     "label": "north",
+     "expression": "market == \"north\" ? 1 : 0"
+    }
+   ],
+   "windows": [
+    {
+     "type": "WIN_DISTRIBUTED_LAG",
+     "field": "tv",
+     "label": "tv_ad",
+     "partition_by": [
+      "market"
+     ],
+     "order_by": [
+      {
+       "field": "week"
+      }
+     ],
+     "params": {
+      "kernel": "geometric",
+      "max_lag": 8,
+      "decay": {
+       "$var": "tv"
+      },
+      "normalize": false
+     }
+    },
+    {
+     "type": "WIN_DISTRIBUTED_LAG",
+     "field": "search",
+     "label": "search_ad",
+     "partition_by": [
+      "market"
+     ],
+     "order_by": [
+      {
+       "field": "week"
+      }
+     ],
+     "params": {
+      "kernel": "geometric",
+      "max_lag": 8,
+      "decay": 0.2,
+      "normalize": false
+     }
+    }
+   ],
+   "regressions": [
+    {
+     "type": "REG_OLS",
+     "name": "sales",
+     "target": "sales",
+     "predictors": [
+      "tv_ad",
+      "search_ad",
+      "north"
+     ],
+     "holdout": "week >= 92"
+    }
+   ],
+   "return": {
+    "exclude": [
+     "data"
+    ]
+   }
+  },
+  "rank": {
+   "by": "regressions.sales.holdout.rsme"
+  }
+ }
+}

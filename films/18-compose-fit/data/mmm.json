@@ -1,0 +1,278 @@
+{
+ "params": {
+  "budget": 33,
+  "cap_search": 12
+ },
+ "sweep": {
+  "mode": "lhs",
+  "samples": 400,
+  "axes": [
+   {
+    "name": "tv",
+    "range": {
+     "min": 0.3,
+     "max": 0.8
+    }
+   },
+   {
+    "name": "search",
+    "range": {
+     "min": 0,
+     "max": 0.6
+    }
+   }
+  ],
+  "request": {
+   "cohort": {
+    "filename": "h.pulse"
+   },
+   "attributes": [
+    {
+     "type": "ATTR_FORMULA",
+     "label": "north",
+     "expression": "market == \"north\" ? 1 : 0"
+    }
+   ],
+   "windows": [
+    {
+     "type": "WIN_DISTRIBUTED_LAG",
+     "field": "tv",
+     "label": "tv_ad",
+     "partition_by": [
+      "market"
+     ],
+     "order_by": [
+      {
+       "field": "week"
+      }
+     ],
+     "params": {
+      "kernel": "geometric",
+      "max_lag": 8,
+      "decay": {
+       "$var": "tv"
+      },
+      "normalize": false
+     }
+    },
+    {
+     "type": "WIN_DISTRIBUTED_LAG",
+     "field": "search",
+     "label": "search_ad",
+     "partition_by": [
+      "market"
+     ],
+     "order_by": [
+      {
+       "field": "week"
+      }
+     ],
+     "params": {
+      "kernel": "geometric",
+      "max_lag": 8,
+      "decay": {
+       "$var": "search"
+      },
+      "normalize": false
+     }
+    }
+   ],
+   "regressions": [
+    {
+     "type": "REG_MMM_HILL",
+     "name": "mmm",
+     "target": "sales",
+     "predictors": [
+      "tv_ad",
+      "search_ad",
+      "north"
+     ],
+     "params": {
+      "channels": [
+       "tv_ad",
+       "search_ad"
+      ]
+     },
+     "holdout": "week >= 92"
+    }
+   ],
+   "return": {
+    "exclude": [
+     "data"
+    ]
+   }
+  },
+  "rank": {
+   "by": "regressions.mmm.holdout.rmse",
+   "order": "asc"
+  }
+ },
+ "fits": [
+  {
+   "name": "mmm",
+   "from_sweep": {
+    "regression": "mmm"
+   },
+   "save": "models/mmm.pulse-model.json"
+  }
+ ],
+ "requests": [
+  {
+   "label": "contribution",
+   "cohort": {
+    "filename": "h.pulse"
+   },
+   "windows": [
+    {
+     "for_each": {
+      "mode": "grid",
+      "axes": [
+       {
+        "name": "ch",
+        "values": [
+         "tv",
+         "search"
+        ]
+       },
+       {
+        "name": "lag",
+        "values": [
+         1,
+         2,
+         3,
+         4,
+         5,
+         6,
+         7,
+         8
+        ]
+       }
+      ]
+     },
+     "type": "WIN_LAG",
+     "field": "{{ch}}",
+     "label": "{{ch}}_l{{lag}}",
+     "partition_by": [
+      "market"
+     ],
+     "order_by": [
+      {
+       "field": "week"
+      }
+     ],
+     "params": {
+      "offset": {
+       "$var": "lag"
+      },
+      "default": 0
+     }
+    }
+   ],
+   "attributes": [
+    {
+     "type": "ATTR_FORMULA",
+     "label": "tv_ad",
+     "expression": "tv + sweep_axis(\"mmm\", \"tv\") * (tv_l1 + sweep_axis(\"mmm\", \"tv\") * (tv_l2 + sweep_axis(\"mmm\", \"tv\") * (tv_l3 + sweep_axis(\"mmm\", \"tv\") * (tv_l4 + sweep_axis(\"mmm\", \"tv\") * (tv_l5 + sweep_axis(\"mmm\", \"tv\") * (tv_l6 + sweep_axis(\"mmm\", \"tv\") * (tv_l7 + sweep_axis(\"mmm\", \"tv\") * (tv_l8))))))))"
+    },
+    {
+     "type": "ATTR_FORMULA",
+     "label": "search_ad",
+     "expression": "search + sweep_axis(\"mmm\", \"search\") * (search_l1 + sweep_axis(\"mmm\", \"search\") * (search_l2 + sweep_axis(\"mmm\", \"search\") * (search_l3 + sweep_axis(\"mmm\", \"search\") * (search_l4 + sweep_axis(\"mmm\", \"search\") * (search_l5 + sweep_axis(\"mmm\", \"search\") * (search_l6 + sweep_axis(\"mmm\", \"search\") * (search_l7 + sweep_axis(\"mmm\", \"search\") * (search_l8))))))))"
+    },
+    {
+     "type": "ATTR_FORMULA",
+     "label": "tv_c",
+     "expression": "coef(\"mmm\", \"tv_ad\") * hill(tv_ad, coef(\"mmm\", \"k:tv_ad\"), coef(\"mmm\", \"s:tv_ad\"))"
+    },
+    {
+     "type": "ATTR_FORMULA",
+     "label": "search_c",
+     "expression": "coef(\"mmm\", \"search_ad\") * hill(search_ad, coef(\"mmm\", \"k:search_ad\"), coef(\"mmm\", \"s:search_ad\"))"
+    }
+   ],
+   "groups": [
+    {
+     "type": "GROUP_CATEGORY",
+     "field": "market"
+    }
+   ],
+   "aggregations": [
+    {
+     "type": "AGG_SUM",
+     "field": "sales",
+     "label": "sales"
+    },
+    {
+     "type": "AGG_SUM",
+     "field": "tv_c",
+     "label": "tv_c"
+    },
+    {
+     "type": "AGG_SUM",
+     "field": "search_c",
+     "label": "search_c"
+    },
+    {
+     "type": "AGG_SUM",
+     "field": "tv",
+     "label": "tv"
+    },
+    {
+     "type": "AGG_SUM",
+     "field": "search",
+     "label": "search"
+    }
+   ]
+  }
+ ],
+ "optimize": [
+  {
+   "name": "allocation",
+   "direction": "maximize",
+   "variables": [
+    {
+     "name": "tv",
+     "lower": 0,
+     "upper": 60
+    },
+    {
+     "name": "search",
+     "lower": 0,
+     "upper": "params.cap_search"
+    }
+   ],
+   "objective": "coef(\"mmm\", \"tv_ad\") * hill((1 - sweep_axis(\"mmm\", \"tv\") ^ 9) / (1 - sweep_axis(\"mmm\", \"tv\")) * tv, coef(\"mmm\", \"k:tv_ad\"), coef(\"mmm\", \"s:tv_ad\")) + coef(\"mmm\", \"search_ad\") * hill((1 - sweep_axis(\"mmm\", \"search\") ^ 9) / (1 - sweep_axis(\"mmm\", \"search\")) * search, coef(\"mmm\", \"k:search_ad\"), coef(\"mmm\", \"s:search_ad\"))",
+   "constraints": [
+    {
+     "expr": "tv + search - params.budget",
+     "type": "eq"
+    }
+   ],
+   "starts": 8
+  },
+  {
+   "name": "overspend",
+   "direction": "maximize",
+   "variables": [
+    {
+     "name": "tv",
+     "lower": 0,
+     "upper": 60
+    },
+    {
+     "name": "search",
+     "lower": 0,
+     "upper": "params.cap_search"
+    }
+   ],
+   "objective": "coef(\"mmm\", \"tv_ad\") * hill((1 - sweep_axis(\"mmm\", \"tv\") ^ 9) / (1 - sweep_axis(\"mmm\", \"tv\")) * tv, coef(\"mmm\", \"k:tv_ad\"), coef(\"mmm\", \"s:tv_ad\")) + coef(\"mmm\", \"search_ad\") * hill((1 - sweep_axis(\"mmm\", \"search\") ^ 9) / (1 - sweep_axis(\"mmm\", \"search\")) * search, coef(\"mmm\", \"k:search_ad\"), coef(\"mmm\", \"s:search_ad\"))",
+   "constraints": [
+    {
+     "expr": "tv + search - 80",
+     "type": "eq"
+    }
+   ],
+   "starts": 8
+  }
+ ]
+}

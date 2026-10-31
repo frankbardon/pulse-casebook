@@ -1,0 +1,128 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "id": "1",
+        "n": 1
+      },
+      {
+        "id": "2",
+        "n": 1
+      },
+      {
+        "id": "3",
+        "n": 1
+      },
+      {
+        "id": "4",
+        "n": 1
+      },
+      {
+        "id": "6",
+        "n": 1
+      }
+    ],
+    "metadata": {
+      "total_rows": 6,
+      "filtered_rows": 5,
+      "cohort_file": "e.pulse"
+    },
+    "components": {
+      "aggregations": [
+        {
+          "label": "n",
+          "n": 5,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "1"
+              ],
+              "n": 1,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "2"
+              ],
+              "n": 1,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "3"
+              ],
+              "n": 1,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "4"
+              ],
+              "n": 1,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "6"
+              ],
+              "n": 1,
+              "n_null": 0
+            }
+          ]
+        }
+      ],
+      "groupers": [
+        {
+          "field": "id",
+          "total_n": 5,
+          "operator": {
+            "buckets": [
+              {
+                "count": 1,
+                "key": "1",
+                "label": "1"
+              },
+              {
+                "count": 1,
+                "key": "2",
+                "label": "2"
+              },
+              {
+                "count": 1,
+                "key": "3",
+                "label": "3"
+              },
+              {
+                "count": 1,
+                "key": "4",
+                "label": "4"
+              },
+              {
+                "count": 1,
+                "key": "6",
+                "label": "6"
+              }
+            ],
+            "dict_size": 0
+          }
+        }
+      ],
+      "filterers": [
+        {
+          "n_in": 6,
+          "n_out": 5,
+          "n_null_input": 0
+        }
+      ],
+      "run": {
+        "total_records": 6,
+        "filtered_records": 5,
+        "null_records": 0
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

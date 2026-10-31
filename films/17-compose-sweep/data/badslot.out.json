@@ -1,0 +1,16 @@
+{
+  "format_version": "1.1",
+  "data": null,
+  "errors": [
+    {
+      "code": "SERVICE_VALIDATION",
+      "message": "aggregation references unknown field: salse",
+      "details": {
+        "aggregation": "AGG_AVERAGE",
+        "field": "salse",
+        "request": 1
+      }
+    }
+  ],
+  "warnings": []
+}

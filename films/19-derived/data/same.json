@@ -1,0 +1,1 @@
+{"cohort":{"filename":"w.pulse"},"features":[{"type":"FEAT_LOG","field":"revenue","label":"log_value"}],"regressions":[{"type":"REG_OLS","target":"visits","predictors":["log_value"]}]}

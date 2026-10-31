@@ -1,0 +1,1 @@
+{"cohort":{"filename":"f.pulse"},"filterers":[{"type":"FILTER_NULL","field":"age","values":["is_null"]}],"groups":[{"type":"GROUP_CATEGORY","field":"id"}],"aggregations":[{"type":"AGG_COUNT","field":"id","label":"n"}]}

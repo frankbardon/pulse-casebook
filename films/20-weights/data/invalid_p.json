@@ -1,0 +1,3 @@
+{"cohort":{"filename":"inv.pulse"},
+ "weight":{"field":"w","kind":"probability"},
+ "aggregations":[{"type":"AGG_COUNT","field":"x","label":"count"},{"type":"AGG_AVERAGE","field":"x","label":"mean"}]}

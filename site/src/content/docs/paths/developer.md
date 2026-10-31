@@ -11,7 +11,9 @@ You are wiring Pulse into a product or a pipeline. This path starts with how a r
 
 Watch [Film 1: Lifecycle](/films/lifecycle/). One request goes from bytes on disk to a JSON envelope: admitted, checked against the schema, routed to an execution arm, and streamed through the record loop across shards.
 
-Then [Film 2: Concepts](/films/concepts/) names the parts of a request you will be writing.
+Then [Film 2: Concepts](/films/concepts/) names the parts of a request you will be writing, [Film 3: Cohort file](/films/cohort/) shows the file and shard archives Pulse reads, and [Film 4: Asking before running](/films/asking/) covers the no-execute reads (manifest, inspect, recommend, predict) an integration makes first.
+
+When you embed Pulse, watch [Film 23: Embedding Pulse](/films/embedding/) for the Go library, extensions and streaming results, and [Film 22: Synthetic data](/films/synth/) for test cohorts.
 
 ## 2. Run the examples
 

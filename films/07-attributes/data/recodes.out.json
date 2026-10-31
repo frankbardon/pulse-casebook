@@ -1,0 +1,1174 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "day": 14,
+        "id": "1",
+        "iso_weekday": 2,
+        "month": 3,
+        "month_day": 314,
+        "picks": 2,
+        "tech": 1,
+        "top_box": 1,
+        "year": 2023,
+        "year_month": 202303
+      },
+      {
+        "day": null,
+        "id": "10",
+        "iso_weekday": null,
+        "month": null,
+        "month_day": null,
+        "picks": 0,
+        "tech": 0,
+        "top_box": 0,
+        "year": null,
+        "year_month": null
+      },
+      {
+        "day": 28,
+        "id": "11",
+        "iso_weekday": 3,
+        "month": 2,
+        "month_day": 228,
+        "picks": 3,
+        "tech": 1,
+        "top_box": 1,
+        "year": 2024,
+        "year_month": 202402
+      },
+      {
+        "day": 9,
+        "id": "12",
+        "iso_weekday": 1,
+        "month": 8,
+        "month_day": 809,
+        "picks": 1,
+        "tech": 0,
+        "top_box": 0,
+        "year": 2021,
+        "year_month": 202108
+      },
+      {
+        "day": 2,
+        "id": "3",
+        "iso_weekday": 3,
+        "month": 11,
+        "month_day": 1102,
+        "picks": 1,
+        "tech": 0,
+        "top_box": 1,
+        "year": 2022,
+        "year_month": 202211
+      },
+      {
+        "day": 21,
+        "id": "4",
+        "iso_weekday": 5,
+        "month": 7,
+        "month_day": 721,
+        "picks": 2,
+        "tech": 0,
+        "top_box": 0,
+        "year": 2023,
+        "year_month": 202307
+      },
+      {
+        "day": 5,
+        "id": "6",
+        "iso_weekday": 2,
+        "month": 9,
+        "month_day": 905,
+        "picks": 1,
+        "tech": 1,
+        "top_box": 0,
+        "year": 2023,
+        "year_month": 202309
+      },
+      {
+        "day": 17,
+        "id": "7",
+        "iso_weekday": 4,
+        "month": 2,
+        "month_day": 217,
+        "picks": null,
+        "tech": 0,
+        "top_box": 1,
+        "year": 2022,
+        "year_month": 202202
+      },
+      {
+        "day": 11,
+        "id": "8",
+        "iso_weekday": 4,
+        "month": 4,
+        "month_day": 411,
+        "picks": 2,
+        "tech": 1,
+        "top_box": 0,
+        "year": 2024,
+        "year_month": 202404
+      },
+      {
+        "day": 1,
+        "id": "9",
+        "iso_weekday": 5,
+        "month": 12,
+        "month_day": 1201,
+        "picks": 1,
+        "tech": 0,
+        "top_box": 1,
+        "year": 2023,
+        "year_month": 202312
+      }
+    ],
+    "metadata": {
+      "total_rows": 12,
+      "filtered_rows": 10,
+      "cohort_file": "m.pulse"
+    },
+    "components": {
+      "aggregations": [
+        {
+          "label": "top_box",
+          "n": 10,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "1"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 1
+              }
+            },
+            {
+              "group_key": [
+                "10"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 0
+              }
+            },
+            {
+              "group_key": [
+                "11"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 1
+              }
+            },
+            {
+              "group_key": [
+                "12"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 0
+              }
+            },
+            {
+              "group_key": [
+                "3"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 1
+              }
+            },
+            {
+              "group_key": [
+                "4"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 0
+              }
+            },
+            {
+              "group_key": [
+                "6"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 0
+              }
+            },
+            {
+              "group_key": [
+                "7"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 1
+              }
+            },
+            {
+              "group_key": [
+                "8"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 0
+              }
+            },
+            {
+              "group_key": [
+                "9"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 1
+              }
+            }
+          ]
+        },
+        {
+          "label": "year",
+          "n": 9,
+          "n_null": 1,
+          "groups": [
+            {
+              "group_key": [
+                "1"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 2023
+              }
+            },
+            {
+              "group_key": [
+                "10"
+              ],
+              "n": 0,
+              "n_null": 1,
+              "operator": {
+                "max": null
+              }
+            },
+            {
+              "group_key": [
+                "11"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 2024
+              }
+            },
+            {
+              "group_key": [
+                "12"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 2021
+              }
+            },
+            {
+              "group_key": [
+                "3"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 2022
+              }
+            },
+            {
+              "group_key": [
+                "4"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 2023
+              }
+            },
+            {
+              "group_key": [
+                "6"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 2023
+              }
+            },
+            {
+              "group_key": [
+                "7"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 2022
+              }
+            },
+            {
+              "group_key": [
+                "8"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 2024
+              }
+            },
+            {
+              "group_key": [
+                "9"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 2023
+              }
+            }
+          ]
+        },
+        {
+          "label": "month",
+          "n": 9,
+          "n_null": 1,
+          "groups": [
+            {
+              "group_key": [
+                "1"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 3
+              }
+            },
+            {
+              "group_key": [
+                "10"
+              ],
+              "n": 0,
+              "n_null": 1,
+              "operator": {
+                "max": null
+              }
+            },
+            {
+              "group_key": [
+                "11"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 2
+              }
+            },
+            {
+              "group_key": [
+                "12"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 8
+              }
+            },
+            {
+              "group_key": [
+                "3"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 11
+              }
+            },
+            {
+              "group_key": [
+                "4"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 7
+              }
+            },
+            {
+              "group_key": [
+                "6"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 9
+              }
+            },
+            {
+              "group_key": [
+                "7"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 2
+              }
+            },
+            {
+              "group_key": [
+                "8"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 4
+              }
+            },
+            {
+              "group_key": [
+                "9"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 12
+              }
+            }
+          ]
+        },
+        {
+          "label": "day",
+          "n": 9,
+          "n_null": 1,
+          "groups": [
+            {
+              "group_key": [
+                "1"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 14
+              }
+            },
+            {
+              "group_key": [
+                "10"
+              ],
+              "n": 0,
+              "n_null": 1,
+              "operator": {
+                "max": null
+              }
+            },
+            {
+              "group_key": [
+                "11"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 28
+              }
+            },
+            {
+              "group_key": [
+                "12"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 9
+              }
+            },
+            {
+              "group_key": [
+                "3"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 2
+              }
+            },
+            {
+              "group_key": [
+                "4"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 21
+              }
+            },
+            {
+              "group_key": [
+                "6"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 5
+              }
+            },
+            {
+              "group_key": [
+                "7"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 17
+              }
+            },
+            {
+              "group_key": [
+                "8"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 11
+              }
+            },
+            {
+              "group_key": [
+                "9"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 1
+              }
+            }
+          ]
+        },
+        {
+          "label": "year_month",
+          "n": 9,
+          "n_null": 1,
+          "groups": [
+            {
+              "group_key": [
+                "1"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 202303
+              }
+            },
+            {
+              "group_key": [
+                "10"
+              ],
+              "n": 0,
+              "n_null": 1,
+              "operator": {
+                "max": null
+              }
+            },
+            {
+              "group_key": [
+                "11"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 202402
+              }
+            },
+            {
+              "group_key": [
+                "12"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 202108
+              }
+            },
+            {
+              "group_key": [
+                "3"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 202211
+              }
+            },
+            {
+              "group_key": [
+                "4"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 202307
+              }
+            },
+            {
+              "group_key": [
+                "6"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 202309
+              }
+            },
+            {
+              "group_key": [
+                "7"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 202202
+              }
+            },
+            {
+              "group_key": [
+                "8"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 202404
+              }
+            },
+            {
+              "group_key": [
+                "9"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 202312
+              }
+            }
+          ]
+        },
+        {
+          "label": "month_day",
+          "n": 9,
+          "n_null": 1,
+          "groups": [
+            {
+              "group_key": [
+                "1"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 314
+              }
+            },
+            {
+              "group_key": [
+                "10"
+              ],
+              "n": 0,
+              "n_null": 1,
+              "operator": {
+                "max": null
+              }
+            },
+            {
+              "group_key": [
+                "11"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 228
+              }
+            },
+            {
+              "group_key": [
+                "12"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 809
+              }
+            },
+            {
+              "group_key": [
+                "3"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 1102
+              }
+            },
+            {
+              "group_key": [
+                "4"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 721
+              }
+            },
+            {
+              "group_key": [
+                "6"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 905
+              }
+            },
+            {
+              "group_key": [
+                "7"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 217
+              }
+            },
+            {
+              "group_key": [
+                "8"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 411
+              }
+            },
+            {
+              "group_key": [
+                "9"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 1201
+              }
+            }
+          ]
+        },
+        {
+          "label": "iso_weekday",
+          "n": 9,
+          "n_null": 1,
+          "groups": [
+            {
+              "group_key": [
+                "1"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 2
+              }
+            },
+            {
+              "group_key": [
+                "10"
+              ],
+              "n": 0,
+              "n_null": 1,
+              "operator": {
+                "max": null
+              }
+            },
+            {
+              "group_key": [
+                "11"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 3
+              }
+            },
+            {
+              "group_key": [
+                "12"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 1
+              }
+            },
+            {
+              "group_key": [
+                "3"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 3
+              }
+            },
+            {
+              "group_key": [
+                "4"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 5
+              }
+            },
+            {
+              "group_key": [
+                "6"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 2
+              }
+            },
+            {
+              "group_key": [
+                "7"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 4
+              }
+            },
+            {
+              "group_key": [
+                "8"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 4
+              }
+            },
+            {
+              "group_key": [
+                "9"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 5
+              }
+            }
+          ]
+        },
+        {
+          "label": "tech",
+          "n": 10,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "1"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 1
+              }
+            },
+            {
+              "group_key": [
+                "10"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 0
+              }
+            },
+            {
+              "group_key": [
+                "11"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 1
+              }
+            },
+            {
+              "group_key": [
+                "12"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 0
+              }
+            },
+            {
+              "group_key": [
+                "3"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 0
+              }
+            },
+            {
+              "group_key": [
+                "4"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 0
+              }
+            },
+            {
+              "group_key": [
+                "6"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 1
+              }
+            },
+            {
+              "group_key": [
+                "7"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 0
+              }
+            },
+            {
+              "group_key": [
+                "8"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 1
+              }
+            },
+            {
+              "group_key": [
+                "9"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 0
+              }
+            }
+          ]
+        },
+        {
+          "label": "picks",
+          "n": 9,
+          "n_null": 1,
+          "groups": [
+            {
+              "group_key": [
+                "1"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 2
+              }
+            },
+            {
+              "group_key": [
+                "10"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 0
+              }
+            },
+            {
+              "group_key": [
+                "11"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 3
+              }
+            },
+            {
+              "group_key": [
+                "12"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 1
+              }
+            },
+            {
+              "group_key": [
+                "3"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 1
+              }
+            },
+            {
+              "group_key": [
+                "4"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 2
+              }
+            },
+            {
+              "group_key": [
+                "6"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 1
+              }
+            },
+            {
+              "group_key": [
+                "7"
+              ],
+              "n": 0,
+              "n_null": 1,
+              "operator": {
+                "max": null
+              }
+            },
+            {
+              "group_key": [
+                "8"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 2
+              }
+            },
+            {
+              "group_key": [
+                "9"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 1
+              }
+            }
+          ]
+        }
+      ],
+      "groupers": [
+        {
+          "field": "id",
+          "total_n": 10,
+          "operator": {
+            "buckets": [
+              {
+                "count": 1,
+                "key": "1",
+                "label": "1"
+              },
+              {
+                "count": 1,
+                "key": "10",
+                "label": "10"
+              },
+              {
+                "count": 1,
+                "key": "11",
+                "label": "11"
+              },
+              {
+                "count": 1,
+                "key": "12",
+                "label": "12"
+              },
+              {
+                "count": 1,
+                "key": "3",
+                "label": "3"
+              },
+              {
+                "count": 1,
+                "key": "4",
+                "label": "4"
+              },
+              {
+                "count": 1,
+                "key": "6",
+                "label": "6"
+              },
+              {
+                "count": 1,
+                "key": "7",
+                "label": "7"
+              },
+              {
+                "count": 1,
+                "key": "8",
+                "label": "8"
+              },
+              {
+                "count": 1,
+                "key": "9",
+                "label": "9"
+              }
+            ],
+            "dict_size": 0
+          }
+        }
+      ],
+      "filterers": [
+        {
+          "n_in": 12,
+          "n_out": 10,
+          "n_null_input": 0
+        }
+      ],
+      "run": {
+        "total_records": 12,
+        "filtered_records": 10,
+        "null_records": 0
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

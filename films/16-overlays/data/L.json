@@ -1,0 +1,6 @@
+{"cohort":{"filename":"u.pulse"},
+ "vectors":[{"name":"usage","fields":["sessions","minutes","tickets"]}],
+ "groups":[{"type":"GROUP_CATEGORY","field":"region"}],
+ "aggregations":[{"type":"AGG_COUNT","field":"id","label":"n"}],
+ "matrices":[{"name":"cor","type":"MAT_CORRELATION","vector":"usage"}],
+ "overlays":[{"name":"across","kind":"OVERLAY_MATRIX_GROUP_SUMMARY","scope":"matrix","ref":{"matrix":{"name":"cor"}}}]}

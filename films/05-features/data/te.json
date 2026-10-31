@@ -1,0 +1,6 @@
+{"cohort":{"filename":"f.pulse"},
+"features":[{"type":"FEAT_TRAIN_TEST_SPLIT","params":{"ratios":[0.7,0.3],"seed":42}},
+{"type":"FEAT_TARGET_ENCODE","field":"occupation","label":"te_s0","params":{"target":"churned","fit_on":"split == 0"}},
+{"type":"FEAT_TARGET_ENCODE","field":"occupation","label":"te_s10","params":{"target":"churned","smoothing":10,"fit_on":"split == 0"}}],
+"groups":[{"type":"GROUP_CATEGORY","field":"occupation"}],
+"aggregations":[{"type":"AGG_COUNT","field":"churned","label":"n"},{"type":"AGG_AVERAGE","field":"te_s0","label":"te_s0"},{"type":"AGG_AVERAGE","field":"te_s10","label":"te_s10"}]}

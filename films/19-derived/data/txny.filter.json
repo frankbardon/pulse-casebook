@@ -1,0 +1,10 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "input": "tx.pulse",
+    "output": "txw_ny.pulse",
+    "written_records": 4
+  },
+  "errors": [],
+  "warnings": []
+}

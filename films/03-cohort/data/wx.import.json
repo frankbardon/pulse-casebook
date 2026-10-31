@@ -1,0 +1,18 @@
+{
+  "format_version": "1.1",
+  "data": null,
+  "errors": [
+    {
+      "code": "PULSE_IMPORT_SCHEMA_COLUMN_UNMAPPED",
+      "message": "source column \"age\" is not named by the explicit schema (pass --ignore-extra to drop it)",
+      "details": {
+        "column": "age",
+        "fields": [
+          "id",
+          "visits"
+        ]
+      }
+    }
+  ],
+  "warnings": []
+}

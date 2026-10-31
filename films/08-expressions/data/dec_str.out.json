@@ -1,0 +1,15 @@
+{
+  "format_version": "1.1",
+  "data": null,
+  "errors": [
+    {
+      "code": "PULSE_FORMULA_COMPILE_ERROR",
+      "message": "compiling formula expression \"price + region\": invalid operation: + (mismatched types exprenv.Decimal and string) (1:7)",
+      "details": {
+        "compile_error": "invalid operation: + (mismatched types exprenv.Decimal and string) (1:7)",
+        "expression": "price + region"
+      }
+    }
+  ],
+  "warnings": []
+}

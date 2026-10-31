@@ -1,0 +1,41 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "sum": 1000.0000000000001
+      }
+    ],
+    "metadata": {
+      "total_rows": 6,
+      "filtered_rows": 3,
+      "cohort_file": "e.pulse"
+    },
+    "components": {
+      "aggregations": [
+        {
+          "label": "sum",
+          "n": 3,
+          "n_null": 0,
+          "operator": {
+            "sum": 1000.0000000000001
+          }
+        }
+      ],
+      "filterers": [
+        {
+          "n_in": 6,
+          "n_out": 3,
+          "n_null_input": 0
+        }
+      ],
+      "run": {
+        "total_records": 6,
+        "filtered_records": 3,
+        "null_records": 0
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

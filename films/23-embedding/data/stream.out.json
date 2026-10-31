@@ -1,0 +1,388 @@
+{
+  "stream": {
+    "chunks": [
+      {
+        "components": {
+          "aggregations": [
+            {
+              "label": "mid",
+              "n": 24,
+              "n_null": 0
+            },
+            {
+              "label": "avg",
+              "n": 24,
+              "n_null": 0,
+              "operator": {
+                "sum": 1272.07
+              }
+            },
+            {
+              "label": "median",
+              "n": 24,
+              "n_null": 0,
+              "operator": {
+                "median": 57.725,
+                "position_high": 12,
+                "position_low": 11
+              }
+            }
+          ],
+          "run": {
+            "total_records": 24,
+            "filtered_records": 24,
+            "null_records": 0
+          }
+        },
+        "data": {
+          "avg": 53.002916666666664,
+          "median": 57.725,
+          "mid": 54.315
+        },
+        "has_components": true,
+        "progress": 0.041666666666666664,
+        "sequence": 0
+      }
+    ],
+    "header": {
+      "estimated_total": 24,
+      "request_hash": "ddcd9aefea684251707724163be11767",
+      "request_hash_matches": true
+    },
+    "terminal_components_equal_process": true,
+    "terminator": {
+      "error": null,
+      "status": "completed",
+      "total_rows": 1,
+      "warnings": null
+    }
+  },
+  "stream_grouped": {
+    "chunks": [
+      {
+        "components": {
+          "aggregations": [
+            {
+              "label": "mid",
+              "n": 24,
+              "n_null": 0
+            },
+            {
+              "label": "avg",
+              "n": 24,
+              "n_null": 0
+            }
+          ],
+          "groupers": [
+            {
+              "field": "region",
+              "total_n": 24,
+              "operator": {
+                "buckets": [
+                  {
+                    "count": 6,
+                    "key": "East",
+                    "label": "East"
+                  },
+                  {
+                    "count": 6,
+                    "key": "North",
+                    "label": "North"
+                  },
+                  {
+                    "count": 6,
+                    "key": "South",
+                    "label": "South"
+                  },
+                  {
+                    "count": 6,
+                    "key": "West",
+                    "label": "West"
+                  }
+                ],
+                "dict_size": 4
+              }
+            }
+          ],
+          "run": {
+            "total_records": 24,
+            "filtered_records": 24,
+            "null_records": 0
+          }
+        },
+        "data": {
+          "avg": 60.824999999999996,
+          "mid": 63.29,
+          "region": "East"
+        },
+        "has_components": true,
+        "progress": 0.041666666666666664,
+        "sequence": 0
+      },
+      {
+        "components": {
+          "aggregations": [
+            {
+              "label": "mid",
+              "n": 24,
+              "n_null": 0
+            },
+            {
+              "label": "avg",
+              "n": 24,
+              "n_null": 0
+            }
+          ],
+          "groupers": [
+            {
+              "field": "region",
+              "total_n": 24,
+              "operator": {
+                "buckets": [
+                  {
+                    "count": 6,
+                    "key": "East",
+                    "label": "East"
+                  },
+                  {
+                    "count": 6,
+                    "key": "North",
+                    "label": "North"
+                  },
+                  {
+                    "count": 6,
+                    "key": "South",
+                    "label": "South"
+                  },
+                  {
+                    "count": 6,
+                    "key": "West",
+                    "label": "West"
+                  }
+                ],
+                "dict_size": 4
+              }
+            }
+          ],
+          "run": {
+            "total_records": 24,
+            "filtered_records": 24,
+            "null_records": 0
+          }
+        },
+        "data": {
+          "avg": 60.23333333333333,
+          "mid": 55.410000000000004,
+          "region": "North"
+        },
+        "has_components": true,
+        "progress": 0.08333333333333333,
+        "sequence": 1
+      },
+      {
+        "components": {
+          "aggregations": [
+            {
+              "label": "mid",
+              "n": 24,
+              "n_null": 0
+            },
+            {
+              "label": "avg",
+              "n": 24,
+              "n_null": 0
+            }
+          ],
+          "groupers": [
+            {
+              "field": "region",
+              "total_n": 24,
+              "operator": {
+                "buckets": [
+                  {
+                    "count": 6,
+                    "key": "East",
+                    "label": "East"
+                  },
+                  {
+                    "count": 6,
+                    "key": "North",
+                    "label": "North"
+                  },
+                  {
+                    "count": 6,
+                    "key": "South",
+                    "label": "South"
+                  },
+                  {
+                    "count": 6,
+                    "key": "West",
+                    "label": "West"
+                  }
+                ],
+                "dict_size": 4
+              }
+            }
+          ],
+          "run": {
+            "total_records": 24,
+            "filtered_records": 24,
+            "null_records": 0
+          }
+        },
+        "data": {
+          "avg": 47.004999999999995,
+          "mid": 47.455,
+          "region": "South"
+        },
+        "has_components": true,
+        "progress": 0.125,
+        "sequence": 2
+      },
+      {
+        "components": {
+          "aggregations": [
+            {
+              "label": "mid",
+              "n": 24,
+              "n_null": 0,
+              "groups": [
+                {
+                  "group_key": [
+                    "East"
+                  ],
+                  "n": 6,
+                  "n_null": 0
+                },
+                {
+                  "group_key": [
+                    "North"
+                  ],
+                  "n": 6,
+                  "n_null": 0
+                },
+                {
+                  "group_key": [
+                    "South"
+                  ],
+                  "n": 6,
+                  "n_null": 0
+                },
+                {
+                  "group_key": [
+                    "West"
+                  ],
+                  "n": 6,
+                  "n_null": 0
+                }
+              ]
+            },
+            {
+              "label": "avg",
+              "n": 24,
+              "n_null": 0,
+              "groups": [
+                {
+                  "group_key": [
+                    "East"
+                  ],
+                  "n": 6,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 364.95
+                  }
+                },
+                {
+                  "group_key": [
+                    "North"
+                  ],
+                  "n": 6,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 361.4
+                  }
+                },
+                {
+                  "group_key": [
+                    "South"
+                  ],
+                  "n": 6,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 282.03
+                  }
+                },
+                {
+                  "group_key": [
+                    "West"
+                  ],
+                  "n": 6,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 263.69
+                  }
+                }
+              ]
+            }
+          ],
+          "groupers": [
+            {
+              "field": "region",
+              "total_n": 24,
+              "operator": {
+                "buckets": [
+                  {
+                    "count": 6,
+                    "key": "East",
+                    "label": "East"
+                  },
+                  {
+                    "count": 6,
+                    "key": "North",
+                    "label": "North"
+                  },
+                  {
+                    "count": 6,
+                    "key": "South",
+                    "label": "South"
+                  },
+                  {
+                    "count": 6,
+                    "key": "West",
+                    "label": "West"
+                  }
+                ],
+                "dict_size": 4
+              }
+            }
+          ],
+          "run": {
+            "total_records": 24,
+            "filtered_records": 24,
+            "null_records": 0
+          }
+        },
+        "data": {
+          "avg": 43.94833333333333,
+          "mid": 45.47,
+          "region": "West"
+        },
+        "has_components": true,
+        "progress": 0.16666666666666666,
+        "sequence": 3
+      }
+    ],
+    "header": {
+      "estimated_total": 24,
+      "request_hash": "0097acd49639b3a4dd1d9d7a351c01d5",
+      "request_hash_matches": true
+    },
+    "terminal_components_equal_process": true,
+    "terminator": {
+      "error": null,
+      "status": "completed",
+      "total_rows": 4,
+      "warnings": null
+    }
+  }
+}

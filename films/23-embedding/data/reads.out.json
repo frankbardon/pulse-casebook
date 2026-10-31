@@ -1,0 +1,103 @@
+{
+  "expression_reads": [
+    {
+      "expression": "with_tax(amount, lookup(\"tax_rate\", region)) - params.fee",
+      "reads": {
+        "vars": [
+          "amount",
+          "region"
+        ],
+        "params": [
+          "fee"
+        ],
+        "funcs": [
+          "lookup",
+          "with_tax"
+        ]
+      }
+    },
+    {
+      "expression": "let gross = amount * items; gross > params.cut and channel == \"web\"",
+      "reads": {
+        "vars": [
+          "amount",
+          "items",
+          "channel"
+        ],
+        "params": [
+          "cut"
+        ],
+        "funcs": []
+      }
+    },
+    {
+      "error": {
+        "code": "PULSE_FORMULA_COMPILE_ERROR"
+      },
+      "expression": "amount * (",
+      "reads": {
+        "vars": [],
+        "params": [],
+        "funcs": []
+      }
+    }
+  ],
+  "request_reads": {
+    "root": "request",
+    "slots": [
+      {
+        "path": "aggregations[0]",
+        "key": "field",
+        "request": "",
+        "columns": [
+          "gross"
+        ],
+        "params": []
+      },
+      {
+        "path": "aggregations[1]",
+        "key": "field",
+        "request": "",
+        "columns": [
+          "order_id"
+        ],
+        "params": []
+      },
+      {
+        "path": "attributes[0]",
+        "key": "expression",
+        "request": "",
+        "columns": [
+          "amount",
+          "region"
+        ],
+        "params": [
+          "fee"
+        ],
+        "funcs": [
+          "lookup",
+          "with_tax"
+        ]
+      },
+      {
+        "path": "filterers[0]",
+        "key": "expression",
+        "request": "",
+        "columns": [
+          "channel"
+        ],
+        "params": []
+      },
+      {
+        "path": "groups[0]",
+        "key": "field",
+        "request": "",
+        "columns": [
+          "region"
+        ],
+        "params": []
+      }
+    ]
+  },
+  "request_reads_error": null
+}

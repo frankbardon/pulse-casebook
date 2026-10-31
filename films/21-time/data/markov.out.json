@@ -1,0 +1,677 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "metadata": {
+      "total_rows": 1204,
+      "filtered_rows": 1204,
+      "cohort_file": "p.pulse"
+    },
+    "warnings": [
+      {
+        "code": "PULSE_OVERLAY_REF_ZERO",
+        "message": "overlay OVERLAY_MARKOV added a unit row for column-only states declared in params.absorbing: no move out of them was observed, and an absorbing state keeps everyone it receives",
+        "details": {
+          "axis": "row",
+          "kind": "OVERLAY_MARKOV",
+          "reason": "absorbing_row_synthesized",
+          "states": [
+            [
+              "churned"
+            ]
+          ]
+        }
+      },
+      {
+        "code": "PULSE_OVERLAY_MARKOV_NOT_ERGODIC",
+        "message": "overlay OVERLAY_MARKOV chain is reducible (3 communicating classes): it has no single long-run distribution, so steady_state is omitted",
+        "details": {
+          "classes": [
+            [
+              [
+                "basic"
+              ],
+              [
+                "pro"
+              ]
+            ],
+            [
+              [
+                "trial"
+              ]
+            ],
+            [
+              [
+                "churned"
+              ]
+            ]
+          ],
+          "kind": "OVERLAY_MARKOV",
+          "reason": "reducible"
+        }
+      }
+    ],
+    "crosstab": {
+      "shape": "matrix",
+      "matrix": {
+        "row_header": {
+          "fields": [
+            "prev"
+          ],
+          "types": [
+            "GROUP_CATEGORY"
+          ]
+        },
+        "column_header": {
+          "fields": [
+            "plan"
+          ],
+          "types": [
+            "GROUP_CATEGORY"
+          ]
+        },
+        "row_keys": [
+          [
+            "basic"
+          ],
+          [
+            "pro"
+          ],
+          [
+            "trial"
+          ]
+        ],
+        "column_keys": [
+          [
+            "basic"
+          ],
+          [
+            "churned"
+          ],
+          [
+            "pro"
+          ],
+          [
+            "trial"
+          ]
+        ],
+        "cells": [
+          [
+            {
+              "value": 297,
+              "present": true
+            },
+            {
+              "value": 43,
+              "present": true
+            },
+            {
+              "value": 37,
+              "present": true
+            },
+            {
+              "present": false
+            }
+          ],
+          [
+            {
+              "value": 18,
+              "present": true
+            },
+            {
+              "value": 12,
+              "present": true
+            },
+            {
+              "value": 135,
+              "present": true
+            },
+            {
+              "present": false
+            }
+          ],
+          [
+            {
+              "value": 166,
+              "present": true
+            },
+            {
+              "value": 79,
+              "present": true
+            },
+            {
+              "value": 55,
+              "present": true
+            },
+            {
+              "value": 62,
+              "present": true
+            }
+          ]
+        ],
+        "grand_total": {
+          "present": false
+        },
+        "cell_label": "n",
+        "normalize_applied": "none"
+      }
+    },
+    "overlays": [
+      {
+        "name": "markov",
+        "kind": "OVERLAY_MARKOV",
+        "scope": "matrix",
+        "ref": {},
+        "payload": {
+          "shape": "matrix",
+          "matrix": {
+            "row_header": {
+              "fields": [
+                "prev"
+              ],
+              "types": [
+                "GROUP_CATEGORY"
+              ]
+            },
+            "column_header": {
+              "fields": [
+                "plan"
+              ],
+              "types": [
+                "GROUP_CATEGORY"
+              ]
+            },
+            "row_keys": [
+              [
+                "basic"
+              ],
+              [
+                "pro"
+              ],
+              [
+                "trial"
+              ],
+              [
+                "churned"
+              ]
+            ],
+            "column_keys": [
+              [
+                "basic"
+              ],
+              [
+                "pro"
+              ],
+              [
+                "trial"
+              ],
+              [
+                "churned"
+              ]
+            ],
+            "cells": [
+              [
+                {
+                  "value": 0.7877984084880637,
+                  "present": true
+                },
+                {
+                  "value": 0.09814323607427056,
+                  "present": true
+                },
+                {
+                  "value": 0,
+                  "present": true
+                },
+                {
+                  "value": 0.11405835543766578,
+                  "present": true
+                }
+              ],
+              [
+                {
+                  "value": 0.10909090909090909,
+                  "present": true
+                },
+                {
+                  "value": 0.8181818181818182,
+                  "present": true
+                },
+                {
+                  "value": 0,
+                  "present": true
+                },
+                {
+                  "value": 0.07272727272727272,
+                  "present": true
+                }
+              ],
+              [
+                {
+                  "value": 0.4585635359116022,
+                  "present": true
+                },
+                {
+                  "value": 0.15193370165745856,
+                  "present": true
+                },
+                {
+                  "value": 0.1712707182320442,
+                  "present": true
+                },
+                {
+                  "value": 0.21823204419889503,
+                  "present": true
+                }
+              ],
+              [
+                {
+                  "value": 0,
+                  "present": true
+                },
+                {
+                  "value": 0,
+                  "present": true
+                },
+                {
+                  "value": 0,
+                  "present": true
+                },
+                {
+                  "value": 1,
+                  "present": true
+                }
+              ]
+            ],
+            "grand_total": {
+              "present": false
+            },
+            "cell_label": "transition",
+            "normalize_applied": "none"
+          },
+          "parts": {
+            "absorption_time": {
+              "shape": "series",
+              "series": {
+                "entries": [
+                  {
+                    "key": [
+                      "basic"
+                    ],
+                    "summary": {
+                      "statistic": 10.043252595155712
+                    }
+                  },
+                  {
+                    "key": [
+                      "pro"
+                    ],
+                    "summary": {
+                      "statistic": 11.525951557093428
+                    }
+                  },
+                  {
+                    "key": [
+                      "trial"
+                    ],
+                    "summary": {
+                      "statistic": 8.877024221453288
+                    }
+                  }
+                ]
+              }
+            },
+            "distribution_3": {
+              "shape": "series",
+              "series": {
+                "entries": [
+                  {
+                    "key": [
+                      "basic"
+                    ],
+                    "summary": {
+                      "statistic": 0.3942872864378823
+                    }
+                  },
+                  {
+                    "key": [
+                      "pro"
+                    ],
+                    "summary": {
+                      "statistic": 0.2090667160164731
+                    }
+                  },
+                  {
+                    "key": [
+                      "trial"
+                    ],
+                    "summary": {
+                      "statistic": 0.005023996832239385
+                    }
+                  },
+                  {
+                    "key": [
+                      "churned"
+                    ],
+                    "summary": {
+                      "statistic": 0.3916220007134053
+                    }
+                  }
+                ]
+              }
+            },
+            "step_3": {
+              "shape": "matrix",
+              "matrix": {
+                "row_header": {
+                  "fields": [
+                    "prev"
+                  ],
+                  "types": [
+                    "GROUP_CATEGORY"
+                  ]
+                },
+                "column_header": {
+                  "fields": [
+                    "plan"
+                  ],
+                  "types": [
+                    "GROUP_CATEGORY"
+                  ]
+                },
+                "row_keys": [
+                  [
+                    "basic"
+                  ],
+                  [
+                    "pro"
+                  ],
+                  [
+                    "trial"
+                  ],
+                  [
+                    "churned"
+                  ]
+                ],
+                "column_keys": [
+                  [
+                    "basic"
+                  ],
+                  [
+                    "pro"
+                  ],
+                  [
+                    "trial"
+                  ],
+                  [
+                    "churned"
+                  ]
+                ],
+                "cells": [
+                  [
+                    {
+                      "value": 0.5145575113106222,
+                      "present": true
+                    },
+                    {
+                      "value": 0.1909196750557543,
+                      "present": true
+                    },
+                    {
+                      "value": 0,
+                      "present": true
+                    },
+                    {
+                      "value": 0.29452281363362365,
+                      "present": true
+                    }
+                  ],
+                  [
+                    {
+                      "value": 0.21221636608162958,
+                      "present": true
+                    },
+                    {
+                      "value": 0.5736628652590867,
+                      "present": true
+                    },
+                    {
+                      "value": 0,
+                      "present": true
+                    },
+                    {
+                      "value": 0.21412076865928387,
+                      "present": true
+                    }
+                  ],
+                  [
+                    {
+                      "value": 0.3942872864378823,
+                      "present": true
+                    },
+                    {
+                      "value": 0.2090667160164731,
+                      "present": true
+                    },
+                    {
+                      "value": 0.005023996832239385,
+                      "present": true
+                    },
+                    {
+                      "value": 0.3916220007134053,
+                      "present": true
+                    }
+                  ],
+                  [
+                    {
+                      "value": 0,
+                      "present": true
+                    },
+                    {
+                      "value": 0,
+                      "present": true
+                    },
+                    {
+                      "value": 0,
+                      "present": true
+                    },
+                    {
+                      "value": 1,
+                      "present": true
+                    }
+                  ]
+                ],
+                "grand_total": {
+                  "present": false
+                },
+                "cell_label": "step_3",
+                "normalize_applied": "none"
+              }
+            }
+          }
+        },
+        "summary": {
+          "parameters": {
+            "classes": 3,
+            "irreducible": 0,
+            "states": 4,
+            "synthesized_rows": 1
+          }
+        }
+      }
+    ],
+    "components": {
+      "crosstab": {
+        "cell_counts": [
+          [
+            297,
+            43,
+            37,
+            0
+          ],
+          [
+            18,
+            12,
+            135,
+            0
+          ],
+          [
+            166,
+            79,
+            55,
+            62
+          ]
+        ],
+        "cell_components": [
+          [
+            {
+              "n": 297,
+              "n_null": 0
+            },
+            {
+              "n": 43,
+              "n_null": 0
+            },
+            {
+              "n": 37,
+              "n_null": 0
+            },
+            null
+          ],
+          [
+            {
+              "n": 18,
+              "n_null": 0
+            },
+            {
+              "n": 12,
+              "n_null": 0
+            },
+            {
+              "n": 135,
+              "n_null": 0
+            },
+            null
+          ],
+          [
+            {
+              "n": 166,
+              "n_null": 0
+            },
+            {
+              "n": 79,
+              "n_null": 0
+            },
+            {
+              "n": 55,
+              "n_null": 0
+            },
+            {
+              "n": 62,
+              "n_null": 0
+            }
+          ]
+        ],
+        "row_key_components": [
+          {
+            "count": 377,
+            "key": "basic",
+            "label": "basic"
+          },
+          {
+            "count": 165,
+            "key": "pro",
+            "label": "pro"
+          },
+          {
+            "count": 362,
+            "key": "trial",
+            "label": "trial"
+          }
+        ],
+        "column_key_components": [
+          {
+            "count": 481,
+            "key": "basic",
+            "label": "basic"
+          },
+          {
+            "count": 134,
+            "key": "churned",
+            "label": "churned"
+          },
+          {
+            "count": 227,
+            "key": "pro",
+            "label": "pro"
+          },
+          {
+            "count": 362,
+            "key": "trial",
+            "label": "trial"
+          }
+        ],
+        "included_records": 904,
+        "excluded_records": 300
+      },
+      "attributes": [
+        {
+          "label": "prev",
+          "type": "ATTR_PREVIOUS_STATE",
+          "n": 904,
+          "n_null": 300,
+          "operator": {
+            "n_ambiguous": 0,
+            "n_first": 300,
+            "n_gap": 0,
+            "n_subjects": 300
+          }
+        }
+      ]
+    }
+  },
+  "errors": [],
+  "warnings": [
+    {
+      "code": "PULSE_OVERLAY_REF_ZERO",
+      "message": "overlay OVERLAY_MARKOV added a unit row for column-only states declared in params.absorbing: no move out of them was observed, and an absorbing state keeps everyone it receives",
+      "details": {
+        "axis": "row",
+        "kind": "OVERLAY_MARKOV",
+        "reason": "absorbing_row_synthesized",
+        "states": [
+          [
+            "churned"
+          ]
+        ]
+      }
+    },
+    {
+      "code": "PULSE_OVERLAY_MARKOV_NOT_ERGODIC",
+      "message": "overlay OVERLAY_MARKOV chain is reducible (3 communicating classes): it has no single long-run distribution, so steady_state is omitted",
+      "details": {
+        "classes": [
+          [
+            [
+              "basic"
+            ],
+            [
+              "pro"
+            ]
+          ],
+          [
+            [
+              "trial"
+            ]
+          ],
+          [
+            [
+              "churned"
+            ]
+          ]
+        ],
+        "kind": "OVERLAY_MARKOV",
+        "reason": "reducible"
+      }
+    }
+  ]
+}

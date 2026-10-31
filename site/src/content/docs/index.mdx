@@ -2,7 +2,18 @@
 title: Pulse Casebook
 description: Learn Pulse through narrated films and worked case studies, every figure computed by Pulse.
 template: splash
+head:
+  - tag: script
+    attrs:
+      type: importmap
+    content: '{ "imports": { "three": "/brand/three.module.min.js" } }'
+  - tag: script
+    attrs:
+      type: module
+      src: /brand/pulse-mark.js
 hero:
+  image:
+    html: '<pulse-mark mark="wave" build glow signal style="width:min(360px,70vw)" aria-label="Pulse" role="img"></pulse-mark>'
   tagline: Learn Pulse through narrated films and worked case studies. Every figure on this site was computed by Pulse, and every request is here to run yourself.
   actions:
     - text: I analyse data
@@ -18,7 +29,7 @@ import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
 
 <CardGrid>
 	<Card title="Films" icon="seti:video">
-		Ten narrated films, from one request's lifecycle to overlays. Each stage of a request gets its own film.
+		Twenty-three narrated films in five parts: foundations, the request spine, analysis, beyond one request, and around Pulse. Each stage of a request gets its own film.
 		[Start with the lifecycle](/films/lifecycle/).
 	</Card>
 	<Card title="Case studies" icon="open-book">

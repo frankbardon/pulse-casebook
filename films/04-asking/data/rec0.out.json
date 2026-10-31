@@ -1,0 +1,154 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "intent": "compare_groups",
+    "bound": false,
+    "shapes": [
+      {
+        "roles": [
+          {
+            "name": "outcome",
+            "kinds": [
+              "numeric",
+              "categorical",
+              "bool"
+            ],
+            "min": 1,
+            "max": 1
+          },
+          {
+            "name": "group",
+            "kinds": [
+              "categorical",
+              "bool"
+            ],
+            "min": 1,
+            "max": 1
+          }
+        ]
+      }
+    ],
+    "recommendations": [
+      {
+        "operator": "TEST_PROP_Z",
+        "category": "test",
+        "level": "basic",
+        "why": "Checks whether the rate of one outcome, such as conversion, differs between two groups, or from a planned rate. Fill in each placeholder in the draft before you run it.",
+        "bound": false,
+        "request": {
+          "cohort": {
+            "filename": "\u003ccohort\u003e"
+          },
+          "tests": [
+            {
+              "field": "\u003cfield\u003e",
+              "params": {
+                "success": "\u003csuccess\u003e"
+              },
+              "split_by": "\u003csplit_by\u003e",
+              "type": "TEST_PROP_Z"
+            }
+          ]
+        },
+        "placeholders": [
+          "cohort",
+          "field",
+          "split_by",
+          "success"
+        ],
+        "alternatives": [
+          {
+            "when": "some groups have only a handful of successes or failures",
+            "use": "TEST_FISHER_EXACT"
+          },
+          {
+            "when": "there are more than two groups or more than two outcomes",
+            "use": "TEST_CHISQ"
+          },
+          {
+            "when": "the outcome is a numeric measure rather than a yes/no rate",
+            "use": "TEST_WELCH"
+          }
+        ]
+      },
+      {
+        "operator": "GROUP_CATEGORY",
+        "category": "grouper",
+        "level": "basic",
+        "why": "Splits the rows into one group per distinct value of a field, such as one group per region or per answer option. Fill in each placeholder in the draft before you run it.",
+        "bound": false,
+        "request": {
+          "cohort": {
+            "filename": "\u003ccohort\u003e"
+          },
+          "groups": [
+            {
+              "field": "\u003cfield\u003e",
+              "type": "GROUP_CATEGORY"
+            }
+          ]
+        },
+        "placeholders": [
+          "cohort",
+          "field"
+        ],
+        "alternatives": [
+          {
+            "when": "the field is a number you want in bands, not one group per value",
+            "use": "GROUP_RANGE"
+          },
+          {
+            "when": "the field is a date and you want months or quarters",
+            "use": "GROUP_DATE"
+          },
+          {
+            "when": "the field is a multi-select answer",
+            "use": "GROUP_SET_PER_ELEMENT"
+          }
+        ]
+      },
+      {
+        "operator": "GROUP_DATE_RANGES",
+        "category": "grouper",
+        "level": "basic",
+        "why": "Labels each row with the named date range its date falls in, such as custom fiscal quarters or before and after a launch. Fill in each placeholder in the draft before you run it.",
+        "bound": false,
+        "request": {
+          "cohort": {
+            "filename": "\u003ccohort\u003e"
+          },
+          "groups": [
+            {
+              "field": "\u003cfield\u003e",
+              "params": {
+                "ranges": [
+                  "\u003cranges\u003e"
+                ]
+              },
+              "type": "GROUP_DATE_RANGES"
+            }
+          ]
+        },
+        "placeholders": [
+          "cohort",
+          "field",
+          "ranges"
+        ],
+        "alternatives": [
+          {
+            "when": "plain calendar months, quarters or weeks are enough",
+            "use": "GROUP_DATE"
+          },
+          {
+            "when": "you want to keep only the rows inside the ranges",
+            "use": "FILTER_DATE_RANGES"
+          }
+        ]
+      }
+    ],
+    "truncated": true,
+    "candidates_considered": 28
+  },
+  "errors": [],
+  "warnings": []
+}

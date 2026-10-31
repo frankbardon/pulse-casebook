@@ -1,0 +1,7 @@
+[{"name":"region","type":"categorical_u8","nullable":false,"description":"Sales region of the customer"},
+{"name":"occupation","type":"categorical_u8","nullable":false,"description":"Customer occupation, with a rare tail"},
+{"name":"plan","type":"categorical_u8","nullable":false,"description":"Subscription plan, Basic or Pro"},
+{"name":"member","type":"packed_bool","nullable":false,"description":"Whether the customer joined the loyalty club"},
+{"name":"income","type":"f64","nullable":false,"description":"Annual income in thousands, right-skewed"},
+{"name":"churned","type":"f64","nullable":false,"description":"Outcome: 1 if the customer churned, else 0"},
+{"name":"signup","type":"date","nullable":false,"description":"Date the customer signed up"}]

@@ -1,0 +1,65 @@
+{
+ "cohort": {
+  "filename": "e.pulse"
+ },
+ "attributes": [
+  {
+   "type": "ATTR_FORMULA",
+   "label": "pop",
+   "expression": "popcount(tags)"
+  },
+  {
+   "type": "ATTR_FORMULA",
+   "label": "jac",
+   "expression": "jaccard(tags, [\"travel\", \"tech\"])"
+  },
+  {
+   "type": "ATTR_FORMULA",
+   "label": "inter",
+   "expression": "len(set_intersect(tags, [\"travel\", \"food\"]))"
+  },
+  {
+   "type": "ATTR_FORMULA",
+   "label": "all",
+   "expression": "has_all(tags, \"travel\", \"tech\")"
+  },
+  {
+   "type": "ATTR_FORMULA",
+   "label": "none",
+   "expression": "has_none(tags, \"sport\")"
+  }
+ ],
+ "groups": [
+  {
+   "type": "GROUP_CATEGORY",
+   "field": "id"
+  }
+ ],
+ "aggregations": [
+  {
+   "type": "AGG_MAX",
+   "field": "pop",
+   "label": "pop"
+  },
+  {
+   "type": "AGG_MAX",
+   "field": "jac",
+   "label": "jac"
+  },
+  {
+   "type": "AGG_MAX",
+   "field": "inter",
+   "label": "inter"
+  },
+  {
+   "type": "AGG_MAX",
+   "field": "all",
+   "label": "all"
+  },
+  {
+   "type": "AGG_MAX",
+   "field": "none",
+   "label": "none"
+  }
+ ]
+}

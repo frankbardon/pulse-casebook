@@ -1,0 +1,3 @@
+{"cohort":{"filename":"h.pulse"},"aggregations":[
+{"type":"AGG_SKEWNESS","field":"x"},{"type":"AGG_KURTOSIS","field":"x"},
+{"type":"AGG_PERCENTILE","field":"x","params":{"percentile":90}},{"type":"AGG_COUNT","field":"x"}]}

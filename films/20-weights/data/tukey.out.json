@@ -1,0 +1,17 @@
+{
+  "format_version": "1.1",
+  "data": null,
+  "errors": [
+    {
+      "code": "PULSE_WEIGHT_UNSUPPORTED",
+      "message": "post_tests[0]: TEST_TUKEY_HSD cannot be weighted: a post-test reads the aggregated result rows, which carry no row weights; opt the slot out with \"weight\": null to run it unweighted",
+      "details": {
+        "field": "dwt",
+        "operator": "TEST_TUKEY_HSD",
+        "reason": "a post-test reads the aggregated result rows, which carry no row weights",
+        "slot": "post_tests[0]"
+      }
+    }
+  ],
+  "warnings": []
+}

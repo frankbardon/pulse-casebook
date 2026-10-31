@@ -1,0 +1,13 @@
+subject,wave,plan
+a,2026-01-01,trial
+a,2026-02-01,paid
+a,2026-03-01,paid
+b,2026-01-01,trial
+b,2026-02-01,trial
+b,2026-03-01,churned
+c,2026-01-01,trial
+c,2026-02-01,churned
+d,2026-01-01,paid
+d,2026-02-01,paid
+e,2026-02-01,trial
+e,2026-03-01,paid

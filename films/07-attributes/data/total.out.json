@@ -1,0 +1,355 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "id": "1",
+        "share": 0.0790273556231003,
+        "tot": 658
+      },
+      {
+        "id": "10",
+        "share": null,
+        "tot": 658
+      },
+      {
+        "id": "11",
+        "share": 0.11398176291793313,
+        "tot": 658
+      },
+      {
+        "id": "12",
+        "share": 0.2127659574468085,
+        "tot": 658
+      },
+      {
+        "id": "3",
+        "share": 0.08814589665653495,
+        "tot": 658
+      },
+      {
+        "id": "4",
+        "share": 0.09270516717325228,
+        "tot": 658
+      },
+      {
+        "id": "6",
+        "share": 0.0972644376899696,
+        "tot": 658
+      },
+      {
+        "id": "7",
+        "share": 0.10030395136778116,
+        "tot": 658
+      },
+      {
+        "id": "8",
+        "share": 0.10638297872340426,
+        "tot": 658
+      },
+      {
+        "id": "9",
+        "share": 0.1094224924012158,
+        "tot": 658
+      }
+    ],
+    "metadata": {
+      "total_rows": 12,
+      "filtered_rows": 10,
+      "cohort_file": "m.pulse"
+    },
+    "components": {
+      "aggregations": [
+        {
+          "label": "tot",
+          "n": 10,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "1"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 658
+              }
+            },
+            {
+              "group_key": [
+                "10"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 658
+              }
+            },
+            {
+              "group_key": [
+                "11"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 658
+              }
+            },
+            {
+              "group_key": [
+                "12"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 658
+              }
+            },
+            {
+              "group_key": [
+                "3"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 658
+              }
+            },
+            {
+              "group_key": [
+                "4"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 658
+              }
+            },
+            {
+              "group_key": [
+                "6"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 658
+              }
+            },
+            {
+              "group_key": [
+                "7"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 658
+              }
+            },
+            {
+              "group_key": [
+                "8"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 658
+              }
+            },
+            {
+              "group_key": [
+                "9"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 658
+              }
+            }
+          ]
+        },
+        {
+          "label": "share",
+          "n": 9,
+          "n_null": 1,
+          "groups": [
+            {
+              "group_key": [
+                "1"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 0.0790273556231003
+              }
+            },
+            {
+              "group_key": [
+                "10"
+              ],
+              "n": 0,
+              "n_null": 1,
+              "operator": {
+                "max": null
+              }
+            },
+            {
+              "group_key": [
+                "11"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 0.11398176291793313
+              }
+            },
+            {
+              "group_key": [
+                "12"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 0.2127659574468085
+              }
+            },
+            {
+              "group_key": [
+                "3"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 0.08814589665653495
+              }
+            },
+            {
+              "group_key": [
+                "4"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 0.09270516717325228
+              }
+            },
+            {
+              "group_key": [
+                "6"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 0.0972644376899696
+              }
+            },
+            {
+              "group_key": [
+                "7"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 0.10030395136778116
+              }
+            },
+            {
+              "group_key": [
+                "8"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 0.10638297872340426
+              }
+            },
+            {
+              "group_key": [
+                "9"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 0.1094224924012158
+              }
+            }
+          ]
+        }
+      ],
+      "groupers": [
+        {
+          "field": "id",
+          "total_n": 10,
+          "operator": {
+            "buckets": [
+              {
+                "count": 1,
+                "key": "1",
+                "label": "1"
+              },
+              {
+                "count": 1,
+                "key": "10",
+                "label": "10"
+              },
+              {
+                "count": 1,
+                "key": "11",
+                "label": "11"
+              },
+              {
+                "count": 1,
+                "key": "12",
+                "label": "12"
+              },
+              {
+                "count": 1,
+                "key": "3",
+                "label": "3"
+              },
+              {
+                "count": 1,
+                "key": "4",
+                "label": "4"
+              },
+              {
+                "count": 1,
+                "key": "6",
+                "label": "6"
+              },
+              {
+                "count": 1,
+                "key": "7",
+                "label": "7"
+              },
+              {
+                "count": 1,
+                "key": "8",
+                "label": "8"
+              },
+              {
+                "count": 1,
+                "key": "9",
+                "label": "9"
+              }
+            ],
+            "dict_size": 0
+          }
+        }
+      ],
+      "filterers": [
+        {
+          "n_in": 12,
+          "n_out": 10,
+          "n_null_input": 0
+        }
+      ],
+      "run": {
+        "total_records": 12,
+        "filtered_records": 10,
+        "null_records": 0
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

@@ -1,0 +1,310 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "region": "East",
+        "revenue": 18660.82
+      },
+      {
+        "region": "North",
+        "revenue": 22252.35
+      },
+      {
+        "region": "South",
+        "revenue": 21127.5
+      }
+    ],
+    "metadata": {
+      "total_rows": 1282,
+      "filtered_rows": 1282,
+      "cohort_file": "o.pulse"
+    },
+    "warnings": [
+      {
+        "code": "PULSE_OVERLAY_REF_UNKNOWN",
+        "message": "overlay OVERLAY_DELTA_VS_SIBLING sibling reference does not resolve to a known host group",
+        "details": {
+          "field": "region",
+          "group_count": 3,
+          "host": "series",
+          "kind": "OVERLAY_DELTA_VS_SIBLING",
+          "value": "West"
+        }
+      }
+    ],
+    "overlays": [
+      {
+        "name": "vs_north",
+        "kind": "OVERLAY_DELTA_VS_SIBLING",
+        "scope": "group",
+        "ref": {
+          "sibling": {
+            "field": "region",
+            "value": "North"
+          }
+        },
+        "payload": {
+          "shape": "series",
+          "series": {
+            "entries": [
+              {
+                "key": [
+                  "East"
+                ],
+                "summary": {
+                  "statistic": -3591.529999999999
+                }
+              },
+              {
+                "key": [
+                  "North"
+                ],
+                "summary": {
+                  "statistic": 0
+                }
+              },
+              {
+                "key": [
+                  "South"
+                ],
+                "summary": {
+                  "statistic": -1124.8499999999985
+                }
+              }
+            ]
+          }
+        },
+        "summary": {
+          "min": -3591.529999999999,
+          "max": 0,
+          "count": 3,
+          "baseline": 0
+        }
+      },
+      {
+        "name": "idx_north",
+        "kind": "OVERLAY_INDEX_VS_SIBLING",
+        "scope": "group",
+        "ref": {
+          "sibling": {
+            "field": "region",
+            "value": "North"
+          }
+        },
+        "payload": {
+          "shape": "series",
+          "series": {
+            "entries": [
+              {
+                "key": [
+                  "East"
+                ],
+                "summary": {
+                  "statistic": 83.85999680932576
+                }
+              },
+              {
+                "key": [
+                  "North"
+                ],
+                "summary": {
+                  "statistic": 100
+                }
+              },
+              {
+                "key": [
+                  "South"
+                ],
+                "summary": {
+                  "statistic": 94.94502827791223
+                }
+              }
+            ]
+          }
+        },
+        "summary": {
+          "min": 83.85999680932576,
+          "max": 100,
+          "count": 3,
+          "baseline": 100
+        }
+      },
+      {
+        "name": "share",
+        "kind": "OVERLAY_SHARE_OF_TOTAL",
+        "scope": "group",
+        "ref": {},
+        "payload": {
+          "shape": "series",
+          "series": {
+            "entries": [
+              {
+                "key": [
+                  "East"
+                ],
+                "summary": {
+                  "statistic": 0.30078366336146917
+                }
+              },
+              {
+                "key": [
+                  "North"
+                ],
+                "summary": {
+                  "statistic": 0.3586735926610721
+                }
+              },
+              {
+                "key": [
+                  "South"
+                ],
+                "summary": {
+                  "statistic": 0.34054274397745865
+                }
+              }
+            ]
+          }
+        },
+        "summary": {
+          "min": 0.30078366336146917,
+          "max": 0.3586735926610721,
+          "count": 3,
+          "baseline": 1
+        }
+      },
+      {
+        "name": "bad",
+        "kind": "OVERLAY_DELTA_VS_SIBLING",
+        "scope": "group",
+        "ref": {
+          "sibling": {
+            "field": "region",
+            "value": "West"
+          }
+        },
+        "payload": {
+          "shape": "series",
+          "series": {
+            "entries": [
+              {
+                "key": [
+                  "East"
+                ],
+                "summary": {
+                  "statistic": null
+                }
+              },
+              {
+                "key": [
+                  "North"
+                ],
+                "summary": {
+                  "statistic": null
+                }
+              },
+              {
+                "key": [
+                  "South"
+                ],
+                "summary": {
+                  "statistic": null
+                }
+              }
+            ]
+          }
+        },
+        "summary": {
+          "count": 0,
+          "baseline": 0
+        }
+      }
+    ],
+    "components": {
+      "aggregations": [
+        {
+          "label": "revenue",
+          "n": 1282,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "East"
+              ],
+              "n": 324,
+              "n_null": 0,
+              "operator": {
+                "sum": 18660.82
+              }
+            },
+            {
+              "group_key": [
+                "North"
+              ],
+              "n": 506,
+              "n_null": 0,
+              "operator": {
+                "sum": 22252.35
+              }
+            },
+            {
+              "group_key": [
+                "South"
+              ],
+              "n": 452,
+              "n_null": 0,
+              "operator": {
+                "sum": 21127.5
+              }
+            }
+          ]
+        }
+      ],
+      "groupers": [
+        {
+          "field": "region",
+          "total_n": 1282,
+          "operator": {
+            "buckets": [
+              {
+                "count": 324,
+                "key": "East",
+                "label": "East"
+              },
+              {
+                "count": 506,
+                "key": "North",
+                "label": "North"
+              },
+              {
+                "count": 452,
+                "key": "South",
+                "label": "South"
+              }
+            ],
+            "dict_size": 3
+          }
+        }
+      ],
+      "run": {
+        "total_records": 1282,
+        "filtered_records": 1282,
+        "null_records": 0
+      }
+    }
+  },
+  "errors": [],
+  "warnings": [
+    {
+      "code": "PULSE_OVERLAY_REF_UNKNOWN",
+      "message": "overlay OVERLAY_DELTA_VS_SIBLING sibling reference does not resolve to a known host group",
+      "details": {
+        "field": "region",
+        "group_count": 3,
+        "host": "series",
+        "kind": "OVERLAY_DELTA_VS_SIBLING",
+        "value": "West"
+      }
+    }
+  ]
+}

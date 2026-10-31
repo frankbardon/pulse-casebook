@@ -1,0 +1,45 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "code": "PULSE_TEST_SPLIT_GROUPS_LT_2",
+    "domain": "PULSE",
+    "message": "A two-sample or ANOVA test observed fewer than the required number of distinct groups in the SplitBy field. On a grouped request it is also raised at predict and runtime when SplitBy names a grouper field (details.reason split_is_grouper: every group holds one level) or a post-test's SplitBy names one of its partition key columns (details.reason split_is_partition_key: every partition holds one level), and it rides a warning naming details.group_key when one group is too sparse (that group's statistic and p_value are null; the others proceed).",
+    "fixups": [
+      {
+        "action": "REPLACE_FIELD",
+        "path": [
+          "Tests",
+          "*",
+          "SplitBy"
+        ],
+        "hint": "Pick a SplitBy field that resolves to \u003e= 2 distinct categories after filtering, or relax upstream filters."
+      },
+      {
+        "action": "REPLACE_FIELD",
+        "path": [
+          "Groups",
+          "*",
+          "Field"
+        ],
+        "hint": "split_is_grouper: a grouped request runs the test once per group; drop the SplitBy field from groups, or run the across-groups test as its own ungrouped request."
+      },
+      {
+        "action": "REPLACE_FIELD",
+        "path": [
+          "PostTests",
+          "*",
+          "Params",
+          "partition_by"
+        ],
+        "hint": "split_is_partition_key: a post-test runs once per partition (every key but the last by default); pass partition_by [] to compare across the partition keys in one run, or reorder Request.Groups so the split key comes last.",
+        "examples": [
+          {
+            "partition_by": []
+          }
+        ]
+      }
+    ]
+  },
+  "errors": [],
+  "warnings": []
+}

@@ -1,0 +1,3181 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "responses": [
+      {
+        "label": "all:Total",
+        "metadata": {
+          "total_rows": 600,
+          "filtered_rows": 600,
+          "cohort_file": "s.pulse"
+        },
+        "crosstab": {
+          "shape": "matrix",
+          "matrix": {
+            "row_header": {
+              "fields": [
+                "brand"
+              ],
+              "types": [
+                "GROUP_CATEGORY"
+              ]
+            },
+            "column_header": {
+              "fields": [
+                "_total"
+              ],
+              "types": [
+                "TOTAL"
+              ]
+            },
+            "row_keys": [
+              [
+                "Alto"
+              ],
+              [
+                "Brio"
+              ],
+              [
+                "Cora"
+              ]
+            ],
+            "column_keys": [
+              [
+                "Total"
+              ]
+            ],
+            "cells": [
+              [
+                {
+                  "value": 0.35333333333333333,
+                  "present": true
+                }
+              ],
+              [
+                {
+                  "value": 0.35,
+                  "present": true
+                }
+              ],
+              [
+                {
+                  "value": 0.2966666666666667,
+                  "present": true
+                }
+              ]
+            ],
+            "row_margins": [
+              {
+                "value": 212,
+                "present": true
+              },
+              {
+                "value": 210,
+                "present": true
+              },
+              {
+                "value": 178,
+                "present": true
+              }
+            ],
+            "column_margins": [
+              {
+                "value": 600,
+                "present": true
+              }
+            ],
+            "grand_total": {
+              "value": 600,
+              "present": true
+            },
+            "cell_label": "n",
+            "normalize_applied": "column"
+          }
+        },
+        "components": {
+          "crosstab": {
+            "cell_counts": [
+              [
+                212
+              ],
+              [
+                210
+              ],
+              [
+                178
+              ]
+            ],
+            "cell_components": [
+              [
+                {
+                  "n": 212,
+                  "n_null": 0
+                }
+              ],
+              [
+                {
+                  "n": 210,
+                  "n_null": 0
+                }
+              ],
+              [
+                {
+                  "n": 178,
+                  "n_null": 0
+                }
+              ]
+            ],
+            "row_margin_counts": [
+              212,
+              210,
+              178
+            ],
+            "row_margin_components": [
+              {
+                "n": 212,
+                "n_null": 0
+              },
+              {
+                "n": 210,
+                "n_null": 0
+              },
+              {
+                "n": 178,
+                "n_null": 0
+              }
+            ],
+            "column_margin_counts": [
+              600
+            ],
+            "column_margin_components": [
+              {
+                "n": 600,
+                "n_null": 0
+              }
+            ],
+            "grand_total_count": 600,
+            "grand_total_components": {
+              "n": 600,
+              "n_null": 0
+            },
+            "row_key_components": [
+              {
+                "count": 212,
+                "key": "Alto",
+                "label": "Alto"
+              },
+              {
+                "count": 210,
+                "key": "Brio",
+                "label": "Brio"
+              },
+              {
+                "count": 178,
+                "key": "Cora",
+                "label": "Cora"
+              }
+            ],
+            "included_records": 600
+          }
+        }
+      },
+      {
+        "label": "all:Gender",
+        "metadata": {
+          "total_rows": 600,
+          "filtered_rows": 600,
+          "cohort_file": "s.pulse"
+        },
+        "crosstab": {
+          "shape": "matrix",
+          "matrix": {
+            "row_header": {
+              "fields": [
+                "brand"
+              ],
+              "types": [
+                "GROUP_CATEGORY"
+              ]
+            },
+            "column_header": {
+              "fields": [
+                "gender"
+              ],
+              "types": [
+                "GROUP_CATEGORY"
+              ]
+            },
+            "row_keys": [
+              [
+                "Alto"
+              ],
+              [
+                "Brio"
+              ],
+              [
+                "Cora"
+              ]
+            ],
+            "column_keys": [
+              [
+                "female"
+              ],
+              [
+                "male"
+              ]
+            ],
+            "cells": [
+              [
+                {
+                  "value": 0.32673267326732675,
+                  "present": true
+                },
+                {
+                  "value": 0.38047138047138046,
+                  "present": true
+                }
+              ],
+              [
+                {
+                  "value": 0.37293729372937295,
+                  "present": true
+                },
+                {
+                  "value": 0.3265993265993266,
+                  "present": true
+                }
+              ],
+              [
+                {
+                  "value": 0.30033003300330036,
+                  "present": true
+                },
+                {
+                  "value": 0.29292929292929293,
+                  "present": true
+                }
+              ]
+            ],
+            "row_margins": [
+              {
+                "value": 212,
+                "present": true
+              },
+              {
+                "value": 210,
+                "present": true
+              },
+              {
+                "value": 178,
+                "present": true
+              }
+            ],
+            "column_margins": [
+              {
+                "value": 303,
+                "present": true
+              },
+              {
+                "value": 297,
+                "present": true
+              }
+            ],
+            "grand_total": {
+              "value": 600,
+              "present": true
+            },
+            "cell_label": "n",
+            "normalize_applied": "column"
+          }
+        },
+        "overlays": [
+          {
+            "name": "sig",
+            "kind": "OVERLAY_PAIRWISE_PROP_Z",
+            "scope": "column",
+            "ref": {},
+            "payload": {
+              "shape": "matrix",
+              "matrix": {
+                "row_header": {
+                  "fields": [
+                    "brand"
+                  ],
+                  "types": [
+                    "GROUP_CATEGORY"
+                  ]
+                },
+                "column_header": {
+                  "fields": [
+                    "pair_a",
+                    "pair_b"
+                  ],
+                  "types": [
+                    "PAIR",
+                    "PAIR"
+                  ]
+                },
+                "row_keys": [
+                  [
+                    "Alto"
+                  ],
+                  [
+                    "Brio"
+                  ],
+                  [
+                    "Cora"
+                  ]
+                ],
+                "column_keys": [
+                  [
+                    "female",
+                    "male"
+                  ]
+                ],
+                "cells": [
+                  [
+                    {
+                      "value": 0.16856651443037166,
+                      "present": true
+                    }
+                  ],
+                  [
+                    {
+                      "value": 0.23412907457732457,
+                      "present": true
+                    }
+                  ],
+                  [
+                    {
+                      "value": 0.8427169556279961,
+                      "present": true
+                    }
+                  ]
+                ],
+                "grand_total": {
+                  "present": false
+                },
+                "cell_label": "p_value",
+                "normalize_applied": ""
+              },
+              "parts": {
+                "letters": {
+                  "shape": "matrix",
+                  "matrix": {
+                    "row_header": {
+                      "fields": [
+                        "brand"
+                      ],
+                      "types": [
+                        "GROUP_CATEGORY"
+                      ]
+                    },
+                    "column_header": {
+                      "fields": [
+                        "gender"
+                      ],
+                      "types": [
+                        "GROUP_CATEGORY"
+                      ]
+                    },
+                    "row_keys": [
+                      [
+                        "Alto"
+                      ],
+                      [
+                        "Brio"
+                      ],
+                      [
+                        "Cora"
+                      ]
+                    ],
+                    "column_keys": [
+                      [
+                        "female"
+                      ],
+                      [
+                        "male"
+                      ]
+                    ],
+                    "cells": [
+                      [
+                        {
+                          "value": {
+                            "letter": "A",
+                            "group": 0,
+                            "higher": [],
+                            "above": []
+                          },
+                          "present": true
+                        },
+                        {
+                          "value": {
+                            "letter": "B",
+                            "group": 0,
+                            "higher": [
+                              "A"
+                            ],
+                            "above": []
+                          },
+                          "present": true
+                        }
+                      ],
+                      [
+                        {
+                          "value": {
+                            "letter": "A",
+                            "group": 0,
+                            "higher": [
+                              "B"
+                            ],
+                            "above": []
+                          },
+                          "present": true
+                        },
+                        {
+                          "value": {
+                            "letter": "B",
+                            "group": 0,
+                            "higher": [],
+                            "above": []
+                          },
+                          "present": true
+                        }
+                      ],
+                      [
+                        {
+                          "value": {
+                            "letter": "A",
+                            "group": 0,
+                            "higher": [
+                              "B"
+                            ],
+                            "above": []
+                          },
+                          "present": true
+                        },
+                        {
+                          "value": {
+                            "letter": "B",
+                            "group": 0,
+                            "higher": [],
+                            "above": []
+                          },
+                          "present": true
+                        }
+                      ]
+                    ],
+                    "grand_total": {
+                      "present": false
+                    },
+                    "cell_label": "letters",
+                    "normalize_applied": ""
+                  }
+                }
+              }
+            },
+            "summary": {
+              "count": 3
+            }
+          }
+        ],
+        "components": {
+          "crosstab": {
+            "cell_counts": [
+              [
+                99,
+                113
+              ],
+              [
+                113,
+                97
+              ],
+              [
+                91,
+                87
+              ]
+            ],
+            "cell_components": [
+              [
+                {
+                  "n": 99,
+                  "n_null": 0
+                },
+                {
+                  "n": 113,
+                  "n_null": 0
+                }
+              ],
+              [
+                {
+                  "n": 113,
+                  "n_null": 0
+                },
+                {
+                  "n": 97,
+                  "n_null": 0
+                }
+              ],
+              [
+                {
+                  "n": 91,
+                  "n_null": 0
+                },
+                {
+                  "n": 87,
+                  "n_null": 0
+                }
+              ]
+            ],
+            "row_margin_counts": [
+              212,
+              210,
+              178
+            ],
+            "row_margin_components": [
+              {
+                "n": 212,
+                "n_null": 0
+              },
+              {
+                "n": 210,
+                "n_null": 0
+              },
+              {
+                "n": 178,
+                "n_null": 0
+              }
+            ],
+            "column_margin_counts": [
+              303,
+              297
+            ],
+            "column_margin_components": [
+              {
+                "n": 303,
+                "n_null": 0
+              },
+              {
+                "n": 297,
+                "n_null": 0
+              }
+            ],
+            "grand_total_count": 600,
+            "grand_total_components": {
+              "n": 600,
+              "n_null": 0
+            },
+            "row_key_components": [
+              {
+                "count": 212,
+                "key": "Alto",
+                "label": "Alto"
+              },
+              {
+                "count": 210,
+                "key": "Brio",
+                "label": "Brio"
+              },
+              {
+                "count": 178,
+                "key": "Cora",
+                "label": "Cora"
+              }
+            ],
+            "column_key_components": [
+              {
+                "count": 303,
+                "key": "female",
+                "label": "female"
+              },
+              {
+                "count": 297,
+                "key": "male",
+                "label": "male"
+              }
+            ],
+            "included_records": 600
+          }
+        }
+      },
+      {
+        "label": "all:Age",
+        "metadata": {
+          "total_rows": 600,
+          "filtered_rows": 600,
+          "cohort_file": "s.pulse"
+        },
+        "crosstab": {
+          "shape": "matrix",
+          "matrix": {
+            "row_header": {
+              "fields": [
+                "brand"
+              ],
+              "types": [
+                "GROUP_CATEGORY"
+              ]
+            },
+            "column_header": {
+              "fields": [
+                "age"
+              ],
+              "types": [
+                "GROUP_CATEGORY"
+              ]
+            },
+            "row_keys": [
+              [
+                "Alto"
+              ],
+              [
+                "Brio"
+              ],
+              [
+                "Cora"
+              ]
+            ],
+            "column_keys": [
+              [
+                "18-34"
+              ],
+              [
+                "35-54"
+              ],
+              [
+                "55+"
+              ]
+            ],
+            "cells": [
+              [
+                {
+                  "value": 0.5235849056603774,
+                  "present": true
+                },
+                {
+                  "value": 0.3406113537117904,
+                  "present": true
+                },
+                {
+                  "value": 0.14465408805031446,
+                  "present": true
+                }
+              ],
+              [
+                {
+                  "value": 0.24056603773584906,
+                  "present": true
+                },
+                {
+                  "value": 0.4410480349344978,
+                  "present": true
+                },
+                {
+                  "value": 0.36477987421383645,
+                  "present": true
+                }
+              ],
+              [
+                {
+                  "value": 0.2358490566037736,
+                  "present": true
+                },
+                {
+                  "value": 0.2183406113537118,
+                  "present": true
+                },
+                {
+                  "value": 0.49056603773584906,
+                  "present": true
+                }
+              ]
+            ],
+            "row_margins": [
+              {
+                "value": 212,
+                "present": true
+              },
+              {
+                "value": 210,
+                "present": true
+              },
+              {
+                "value": 178,
+                "present": true
+              }
+            ],
+            "column_margins": [
+              {
+                "value": 212,
+                "present": true
+              },
+              {
+                "value": 229,
+                "present": true
+              },
+              {
+                "value": 159,
+                "present": true
+              }
+            ],
+            "grand_total": {
+              "value": 600,
+              "present": true
+            },
+            "cell_label": "n",
+            "normalize_applied": "column"
+          }
+        },
+        "overlays": [
+          {
+            "name": "sig",
+            "kind": "OVERLAY_PAIRWISE_PROP_Z",
+            "scope": "column",
+            "ref": {},
+            "payload": {
+              "shape": "matrix",
+              "matrix": {
+                "row_header": {
+                  "fields": [
+                    "brand"
+                  ],
+                  "types": [
+                    "GROUP_CATEGORY"
+                  ]
+                },
+                "column_header": {
+                  "fields": [
+                    "pair_a",
+                    "pair_b"
+                  ],
+                  "types": [
+                    "PAIR",
+                    "PAIR"
+                  ]
+                },
+                "row_keys": [
+                  [
+                    "Alto"
+                  ],
+                  [
+                    "Brio"
+                  ],
+                  [
+                    "Cora"
+                  ]
+                ],
+                "column_keys": [
+                  [
+                    "18-34",
+                    "35-54"
+                  ],
+                  [
+                    "18-34",
+                    "55+"
+                  ],
+                  [
+                    "35-54",
+                    "55+"
+                  ]
+                ],
+                "cells": [
+                  [
+                    {
+                      "value": 0.00010472385456074207,
+                      "present": true
+                    },
+                    {
+                      "value": 5.500185940541499e-14,
+                      "present": true
+                    },
+                    {
+                      "value": 0.00001518044600306333,
+                      "present": true
+                    }
+                  ],
+                  [
+                    {
+                      "value": 0.000009600458528480995,
+                      "present": true
+                    },
+                    {
+                      "value": 0.009340901050970215,
+                      "present": true
+                    },
+                    {
+                      "value": 0.13301744427411008,
+                      "present": true
+                    }
+                  ],
+                  [
+                    {
+                      "value": 0.6608732721394469,
+                      "present": true
+                    },
+                    {
+                      "value": 3.2655372898270274e-7,
+                      "present": true
+                    },
+                    {
+                      "value": 2.037458500596763e-8,
+                      "present": true
+                    }
+                  ]
+                ],
+                "grand_total": {
+                  "present": false
+                },
+                "cell_label": "p_value",
+                "normalize_applied": ""
+              },
+              "parts": {
+                "letters": {
+                  "shape": "matrix",
+                  "matrix": {
+                    "row_header": {
+                      "fields": [
+                        "brand"
+                      ],
+                      "types": [
+                        "GROUP_CATEGORY"
+                      ]
+                    },
+                    "column_header": {
+                      "fields": [
+                        "age"
+                      ],
+                      "types": [
+                        "GROUP_CATEGORY"
+                      ]
+                    },
+                    "row_keys": [
+                      [
+                        "Alto"
+                      ],
+                      [
+                        "Brio"
+                      ],
+                      [
+                        "Cora"
+                      ]
+                    ],
+                    "column_keys": [
+                      [
+                        "18-34"
+                      ],
+                      [
+                        "35-54"
+                      ],
+                      [
+                        "55+"
+                      ]
+                    ],
+                    "cells": [
+                      [
+                        {
+                          "value": {
+                            "letter": "A",
+                            "group": 0,
+                            "higher": [
+                              "B",
+                              "C"
+                            ],
+                            "above": [
+                              "B",
+                              "C"
+                            ]
+                          },
+                          "present": true
+                        },
+                        {
+                          "value": {
+                            "letter": "B",
+                            "group": 0,
+                            "higher": [
+                              "C"
+                            ],
+                            "above": [
+                              "C"
+                            ]
+                          },
+                          "present": true
+                        },
+                        {
+                          "value": {
+                            "letter": "C",
+                            "group": 0,
+                            "higher": [],
+                            "above": []
+                          },
+                          "present": true
+                        }
+                      ],
+                      [
+                        {
+                          "value": {
+                            "letter": "A",
+                            "group": 0,
+                            "higher": [],
+                            "above": []
+                          },
+                          "present": true
+                        },
+                        {
+                          "value": {
+                            "letter": "B",
+                            "group": 0,
+                            "higher": [
+                              "A",
+                              "C"
+                            ],
+                            "above": [
+                              "A"
+                            ]
+                          },
+                          "present": true
+                        },
+                        {
+                          "value": {
+                            "letter": "C",
+                            "group": 0,
+                            "higher": [
+                              "A"
+                            ],
+                            "above": [
+                              "A"
+                            ]
+                          },
+                          "present": true
+                        }
+                      ],
+                      [
+                        {
+                          "value": {
+                            "letter": "A",
+                            "group": 0,
+                            "higher": [
+                              "B"
+                            ],
+                            "above": []
+                          },
+                          "present": true
+                        },
+                        {
+                          "value": {
+                            "letter": "B",
+                            "group": 0,
+                            "higher": [],
+                            "above": []
+                          },
+                          "present": true
+                        },
+                        {
+                          "value": {
+                            "letter": "C",
+                            "group": 0,
+                            "higher": [
+                              "A",
+                              "B"
+                            ],
+                            "above": [
+                              "A",
+                              "B"
+                            ]
+                          },
+                          "present": true
+                        }
+                      ]
+                    ],
+                    "grand_total": {
+                      "present": false
+                    },
+                    "cell_label": "letters",
+                    "normalize_applied": ""
+                  }
+                }
+              }
+            },
+            "summary": {
+              "count": 9
+            }
+          }
+        ],
+        "components": {
+          "crosstab": {
+            "cell_counts": [
+              [
+                111,
+                78,
+                23
+              ],
+              [
+                51,
+                101,
+                58
+              ],
+              [
+                50,
+                50,
+                78
+              ]
+            ],
+            "cell_components": [
+              [
+                {
+                  "n": 111,
+                  "n_null": 0
+                },
+                {
+                  "n": 78,
+                  "n_null": 0
+                },
+                {
+                  "n": 23,
+                  "n_null": 0
+                }
+              ],
+              [
+                {
+                  "n": 51,
+                  "n_null": 0
+                },
+                {
+                  "n": 101,
+                  "n_null": 0
+                },
+                {
+                  "n": 58,
+                  "n_null": 0
+                }
+              ],
+              [
+                {
+                  "n": 50,
+                  "n_null": 0
+                },
+                {
+                  "n": 50,
+                  "n_null": 0
+                },
+                {
+                  "n": 78,
+                  "n_null": 0
+                }
+              ]
+            ],
+            "row_margin_counts": [
+              212,
+              210,
+              178
+            ],
+            "row_margin_components": [
+              {
+                "n": 212,
+                "n_null": 0
+              },
+              {
+                "n": 210,
+                "n_null": 0
+              },
+              {
+                "n": 178,
+                "n_null": 0
+              }
+            ],
+            "column_margin_counts": [
+              212,
+              229,
+              159
+            ],
+            "column_margin_components": [
+              {
+                "n": 212,
+                "n_null": 0
+              },
+              {
+                "n": 229,
+                "n_null": 0
+              },
+              {
+                "n": 159,
+                "n_null": 0
+              }
+            ],
+            "grand_total_count": 600,
+            "grand_total_components": {
+              "n": 600,
+              "n_null": 0
+            },
+            "row_key_components": [
+              {
+                "count": 212,
+                "key": "Alto",
+                "label": "Alto"
+              },
+              {
+                "count": 210,
+                "key": "Brio",
+                "label": "Brio"
+              },
+              {
+                "count": 178,
+                "key": "Cora",
+                "label": "Cora"
+              }
+            ],
+            "column_key_components": [
+              {
+                "count": 212,
+                "key": "18-34",
+                "label": "18-34"
+              },
+              {
+                "count": 229,
+                "key": "35-54",
+                "label": "35-54"
+              },
+              {
+                "count": 159,
+                "key": "55+",
+                "label": "55+"
+              }
+            ],
+            "included_records": 600
+          }
+        }
+      },
+      {
+        "label": "aware:Total",
+        "metadata": {
+          "total_rows": 600,
+          "filtered_rows": 327,
+          "cohort_file": "s.pulse"
+        },
+        "crosstab": {
+          "shape": "matrix",
+          "matrix": {
+            "row_header": {
+              "fields": [
+                "brand"
+              ],
+              "types": [
+                "GROUP_CATEGORY"
+              ]
+            },
+            "column_header": {
+              "fields": [
+                "_total"
+              ],
+              "types": [
+                "TOTAL"
+              ]
+            },
+            "row_keys": [
+              [
+                "Alto"
+              ],
+              [
+                "Brio"
+              ],
+              [
+                "Cora"
+              ]
+            ],
+            "column_keys": [
+              [
+                "Total"
+              ]
+            ],
+            "cells": [
+              [
+                {
+                  "value": 0.3547400611620795,
+                  "present": true
+                }
+              ],
+              [
+                {
+                  "value": 0.363914373088685,
+                  "present": true
+                }
+              ],
+              [
+                {
+                  "value": 0.28134556574923547,
+                  "present": true
+                }
+              ]
+            ],
+            "row_margins": [
+              {
+                "value": 116,
+                "present": true
+              },
+              {
+                "value": 119,
+                "present": true
+              },
+              {
+                "value": 92,
+                "present": true
+              }
+            ],
+            "column_margins": [
+              {
+                "value": 327,
+                "present": true
+              }
+            ],
+            "grand_total": {
+              "value": 327,
+              "present": true
+            },
+            "cell_label": "n",
+            "normalize_applied": "column"
+          }
+        },
+        "components": {
+          "crosstab": {
+            "cell_counts": [
+              [
+                116
+              ],
+              [
+                119
+              ],
+              [
+                92
+              ]
+            ],
+            "cell_components": [
+              [
+                {
+                  "n": 116,
+                  "n_null": 0
+                }
+              ],
+              [
+                {
+                  "n": 119,
+                  "n_null": 0
+                }
+              ],
+              [
+                {
+                  "n": 92,
+                  "n_null": 0
+                }
+              ]
+            ],
+            "row_margin_counts": [
+              116,
+              119,
+              92
+            ],
+            "row_margin_components": [
+              {
+                "n": 116,
+                "n_null": 0
+              },
+              {
+                "n": 119,
+                "n_null": 0
+              },
+              {
+                "n": 92,
+                "n_null": 0
+              }
+            ],
+            "column_margin_counts": [
+              327
+            ],
+            "column_margin_components": [
+              {
+                "n": 327,
+                "n_null": 0
+              }
+            ],
+            "grand_total_count": 327,
+            "grand_total_components": {
+              "n": 327,
+              "n_null": 0
+            },
+            "row_key_components": [
+              {
+                "count": 116,
+                "key": "Alto",
+                "label": "Alto"
+              },
+              {
+                "count": 119,
+                "key": "Brio",
+                "label": "Brio"
+              },
+              {
+                "count": 92,
+                "key": "Cora",
+                "label": "Cora"
+              }
+            ],
+            "included_records": 327
+          }
+        }
+      },
+      {
+        "label": "aware:Gender",
+        "metadata": {
+          "total_rows": 600,
+          "filtered_rows": 327,
+          "cohort_file": "s.pulse"
+        },
+        "crosstab": {
+          "shape": "matrix",
+          "matrix": {
+            "row_header": {
+              "fields": [
+                "brand"
+              ],
+              "types": [
+                "GROUP_CATEGORY"
+              ]
+            },
+            "column_header": {
+              "fields": [
+                "gender"
+              ],
+              "types": [
+                "GROUP_CATEGORY"
+              ]
+            },
+            "row_keys": [
+              [
+                "Alto"
+              ],
+              [
+                "Brio"
+              ],
+              [
+                "Cora"
+              ]
+            ],
+            "column_keys": [
+              [
+                "female"
+              ],
+              [
+                "male"
+              ]
+            ],
+            "cells": [
+              [
+                {
+                  "value": 0.3220338983050847,
+                  "present": true
+                },
+                {
+                  "value": 0.3933333333333333,
+                  "present": true
+                }
+              ],
+              [
+                {
+                  "value": 0.384180790960452,
+                  "present": true
+                },
+                {
+                  "value": 0.34,
+                  "present": true
+                }
+              ],
+              [
+                {
+                  "value": 0.2937853107344633,
+                  "present": true
+                },
+                {
+                  "value": 0.26666666666666666,
+                  "present": true
+                }
+              ]
+            ],
+            "row_margins": [
+              {
+                "value": 116,
+                "present": true
+              },
+              {
+                "value": 119,
+                "present": true
+              },
+              {
+                "value": 92,
+                "present": true
+              }
+            ],
+            "column_margins": [
+              {
+                "value": 177,
+                "present": true
+              },
+              {
+                "value": 150,
+                "present": true
+              }
+            ],
+            "grand_total": {
+              "value": 327,
+              "present": true
+            },
+            "cell_label": "n",
+            "normalize_applied": "column"
+          }
+        },
+        "overlays": [
+          {
+            "name": "sig",
+            "kind": "OVERLAY_PAIRWISE_PROP_Z",
+            "scope": "column",
+            "ref": {},
+            "payload": {
+              "shape": "matrix",
+              "matrix": {
+                "row_header": {
+                  "fields": [
+                    "brand"
+                  ],
+                  "types": [
+                    "GROUP_CATEGORY"
+                  ]
+                },
+                "column_header": {
+                  "fields": [
+                    "pair_a",
+                    "pair_b"
+                  ],
+                  "types": [
+                    "PAIR",
+                    "PAIR"
+                  ]
+                },
+                "row_keys": [
+                  [
+                    "Alto"
+                  ],
+                  [
+                    "Brio"
+                  ],
+                  [
+                    "Cora"
+                  ]
+                ],
+                "column_keys": [
+                  [
+                    "female",
+                    "male"
+                  ]
+                ],
+                "cells": [
+                  [
+                    {
+                      "value": 0.17932605536600799,
+                      "present": true
+                    }
+                  ],
+                  [
+                    {
+                      "value": 0.40798991244221083,
+                      "present": true
+                    }
+                  ],
+                  [
+                    {
+                      "value": 0.5868314877436244,
+                      "present": true
+                    }
+                  ]
+                ],
+                "grand_total": {
+                  "present": false
+                },
+                "cell_label": "p_value",
+                "normalize_applied": ""
+              },
+              "parts": {
+                "letters": {
+                  "shape": "matrix",
+                  "matrix": {
+                    "row_header": {
+                      "fields": [
+                        "brand"
+                      ],
+                      "types": [
+                        "GROUP_CATEGORY"
+                      ]
+                    },
+                    "column_header": {
+                      "fields": [
+                        "gender"
+                      ],
+                      "types": [
+                        "GROUP_CATEGORY"
+                      ]
+                    },
+                    "row_keys": [
+                      [
+                        "Alto"
+                      ],
+                      [
+                        "Brio"
+                      ],
+                      [
+                        "Cora"
+                      ]
+                    ],
+                    "column_keys": [
+                      [
+                        "female"
+                      ],
+                      [
+                        "male"
+                      ]
+                    ],
+                    "cells": [
+                      [
+                        {
+                          "value": {
+                            "letter": "A",
+                            "group": 0,
+                            "higher": [],
+                            "above": []
+                          },
+                          "present": true
+                        },
+                        {
+                          "value": {
+                            "letter": "B",
+                            "group": 0,
+                            "higher": [
+                              "A"
+                            ],
+                            "above": []
+                          },
+                          "present": true
+                        }
+                      ],
+                      [
+                        {
+                          "value": {
+                            "letter": "A",
+                            "group": 0,
+                            "higher": [
+                              "B"
+                            ],
+                            "above": []
+                          },
+                          "present": true
+                        },
+                        {
+                          "value": {
+                            "letter": "B",
+                            "group": 0,
+                            "higher": [],
+                            "above": []
+                          },
+                          "present": true
+                        }
+                      ],
+                      [
+                        {
+                          "value": {
+                            "letter": "A",
+                            "group": 0,
+                            "higher": [
+                              "B"
+                            ],
+                            "above": []
+                          },
+                          "present": true
+                        },
+                        {
+                          "value": {
+                            "letter": "B",
+                            "group": 0,
+                            "higher": [],
+                            "above": []
+                          },
+                          "present": true
+                        }
+                      ]
+                    ],
+                    "grand_total": {
+                      "present": false
+                    },
+                    "cell_label": "letters",
+                    "normalize_applied": ""
+                  }
+                }
+              }
+            },
+            "summary": {
+              "count": 3
+            }
+          }
+        ],
+        "components": {
+          "crosstab": {
+            "cell_counts": [
+              [
+                57,
+                59
+              ],
+              [
+                68,
+                51
+              ],
+              [
+                52,
+                40
+              ]
+            ],
+            "cell_components": [
+              [
+                {
+                  "n": 57,
+                  "n_null": 0
+                },
+                {
+                  "n": 59,
+                  "n_null": 0
+                }
+              ],
+              [
+                {
+                  "n": 68,
+                  "n_null": 0
+                },
+                {
+                  "n": 51,
+                  "n_null": 0
+                }
+              ],
+              [
+                {
+                  "n": 52,
+                  "n_null": 0
+                },
+                {
+                  "n": 40,
+                  "n_null": 0
+                }
+              ]
+            ],
+            "row_margin_counts": [
+              116,
+              119,
+              92
+            ],
+            "row_margin_components": [
+              {
+                "n": 116,
+                "n_null": 0
+              },
+              {
+                "n": 119,
+                "n_null": 0
+              },
+              {
+                "n": 92,
+                "n_null": 0
+              }
+            ],
+            "column_margin_counts": [
+              177,
+              150
+            ],
+            "column_margin_components": [
+              {
+                "n": 177,
+                "n_null": 0
+              },
+              {
+                "n": 150,
+                "n_null": 0
+              }
+            ],
+            "grand_total_count": 327,
+            "grand_total_components": {
+              "n": 327,
+              "n_null": 0
+            },
+            "row_key_components": [
+              {
+                "count": 116,
+                "key": "Alto",
+                "label": "Alto"
+              },
+              {
+                "count": 119,
+                "key": "Brio",
+                "label": "Brio"
+              },
+              {
+                "count": 92,
+                "key": "Cora",
+                "label": "Cora"
+              }
+            ],
+            "column_key_components": [
+              {
+                "count": 177,
+                "key": "female",
+                "label": "female"
+              },
+              {
+                "count": 150,
+                "key": "male",
+                "label": "male"
+              }
+            ],
+            "included_records": 327
+          }
+        }
+      },
+      {
+        "label": "aware:Age",
+        "metadata": {
+          "total_rows": 600,
+          "filtered_rows": 327,
+          "cohort_file": "s.pulse"
+        },
+        "crosstab": {
+          "shape": "matrix",
+          "matrix": {
+            "row_header": {
+              "fields": [
+                "brand"
+              ],
+              "types": [
+                "GROUP_CATEGORY"
+              ]
+            },
+            "column_header": {
+              "fields": [
+                "age"
+              ],
+              "types": [
+                "GROUP_CATEGORY"
+              ]
+            },
+            "row_keys": [
+              [
+                "Alto"
+              ],
+              [
+                "Brio"
+              ],
+              [
+                "Cora"
+              ]
+            ],
+            "column_keys": [
+              [
+                "18-34"
+              ],
+              [
+                "35-54"
+              ],
+              [
+                "55+"
+              ]
+            ],
+            "cells": [
+              [
+                {
+                  "value": 0.59375,
+                  "present": true
+                },
+                {
+                  "value": 0.32142857142857145,
+                  "present": true
+                },
+                {
+                  "value": 0.15384615384615385,
+                  "present": true
+                }
+              ],
+              [
+                {
+                  "value": 0.20833333333333334,
+                  "present": true
+                },
+                {
+                  "value": 0.4785714285714286,
+                  "present": true
+                },
+                {
+                  "value": 0.3516483516483517,
+                  "present": true
+                }
+              ],
+              [
+                {
+                  "value": 0.19791666666666666,
+                  "present": true
+                },
+                {
+                  "value": 0.2,
+                  "present": true
+                },
+                {
+                  "value": 0.4945054945054945,
+                  "present": true
+                }
+              ]
+            ],
+            "row_margins": [
+              {
+                "value": 116,
+                "present": true
+              },
+              {
+                "value": 119,
+                "present": true
+              },
+              {
+                "value": 92,
+                "present": true
+              }
+            ],
+            "column_margins": [
+              {
+                "value": 96,
+                "present": true
+              },
+              {
+                "value": 140,
+                "present": true
+              },
+              {
+                "value": 91,
+                "present": true
+              }
+            ],
+            "grand_total": {
+              "value": 327,
+              "present": true
+            },
+            "cell_label": "n",
+            "normalize_applied": "column"
+          }
+        },
+        "overlays": [
+          {
+            "name": "sig",
+            "kind": "OVERLAY_PAIRWISE_PROP_Z",
+            "scope": "column",
+            "ref": {},
+            "payload": {
+              "shape": "matrix",
+              "matrix": {
+                "row_header": {
+                  "fields": [
+                    "brand"
+                  ],
+                  "types": [
+                    "GROUP_CATEGORY"
+                  ]
+                },
+                "column_header": {
+                  "fields": [
+                    "pair_a",
+                    "pair_b"
+                  ],
+                  "types": [
+                    "PAIR",
+                    "PAIR"
+                  ]
+                },
+                "row_keys": [
+                  [
+                    "Alto"
+                  ],
+                  [
+                    "Brio"
+                  ],
+                  [
+                    "Cora"
+                  ]
+                ],
+                "column_keys": [
+                  [
+                    "18-34",
+                    "35-54"
+                  ],
+                  [
+                    "18-34",
+                    "55+"
+                  ],
+                  [
+                    "35-54",
+                    "55+"
+                  ]
+                ],
+                "cells": [
+                  [
+                    {
+                      "value": 0.00003347463985786883,
+                      "present": true
+                    },
+                    {
+                      "value": 5.809847821223043e-10,
+                      "present": true
+                    },
+                    {
+                      "value": 0.004319490040912349,
+                      "present": true
+                    }
+                  ],
+                  [
+                    {
+                      "value": 0.00002366516110147707,
+                      "present": true
+                    },
+                    {
+                      "value": 0.02879715771593937,
+                      "present": true
+                    },
+                    {
+                      "value": 0.056818992787189875,
+                      "present": true
+                    }
+                  ],
+                  [
+                    {
+                      "value": 0.9685976272870438,
+                      "present": true
+                    },
+                    {
+                      "value": 0.000019323137952283014,
+                      "present": true
+                    },
+                    {
+                      "value": 0.0000025475030841524565,
+                      "present": true
+                    }
+                  ]
+                ],
+                "grand_total": {
+                  "present": false
+                },
+                "cell_label": "p_value",
+                "normalize_applied": ""
+              },
+              "parts": {
+                "letters": {
+                  "shape": "matrix",
+                  "matrix": {
+                    "row_header": {
+                      "fields": [
+                        "brand"
+                      ],
+                      "types": [
+                        "GROUP_CATEGORY"
+                      ]
+                    },
+                    "column_header": {
+                      "fields": [
+                        "age"
+                      ],
+                      "types": [
+                        "GROUP_CATEGORY"
+                      ]
+                    },
+                    "row_keys": [
+                      [
+                        "Alto"
+                      ],
+                      [
+                        "Brio"
+                      ],
+                      [
+                        "Cora"
+                      ]
+                    ],
+                    "column_keys": [
+                      [
+                        "18-34"
+                      ],
+                      [
+                        "35-54"
+                      ],
+                      [
+                        "55+"
+                      ]
+                    ],
+                    "cells": [
+                      [
+                        {
+                          "value": {
+                            "letter": "A",
+                            "group": 0,
+                            "higher": [
+                              "B",
+                              "C"
+                            ],
+                            "above": [
+                              "B",
+                              "C"
+                            ]
+                          },
+                          "present": true
+                        },
+                        {
+                          "value": {
+                            "letter": "B",
+                            "group": 0,
+                            "higher": [
+                              "C"
+                            ],
+                            "above": [
+                              "C"
+                            ]
+                          },
+                          "present": true
+                        },
+                        {
+                          "value": {
+                            "letter": "C",
+                            "group": 0,
+                            "higher": [],
+                            "above": []
+                          },
+                          "present": true
+                        }
+                      ],
+                      [
+                        {
+                          "value": {
+                            "letter": "A",
+                            "group": 0,
+                            "higher": [],
+                            "above": []
+                          },
+                          "present": true
+                        },
+                        {
+                          "value": {
+                            "letter": "B",
+                            "group": 0,
+                            "higher": [
+                              "A",
+                              "C"
+                            ],
+                            "above": [
+                              "A"
+                            ]
+                          },
+                          "present": true
+                        },
+                        {
+                          "value": {
+                            "letter": "C",
+                            "group": 0,
+                            "higher": [
+                              "A"
+                            ],
+                            "above": [
+                              "A"
+                            ]
+                          },
+                          "present": true
+                        }
+                      ],
+                      [
+                        {
+                          "value": {
+                            "letter": "A",
+                            "group": 0,
+                            "higher": [],
+                            "above": []
+                          },
+                          "present": true
+                        },
+                        {
+                          "value": {
+                            "letter": "B",
+                            "group": 0,
+                            "higher": [
+                              "A"
+                            ],
+                            "above": []
+                          },
+                          "present": true
+                        },
+                        {
+                          "value": {
+                            "letter": "C",
+                            "group": 0,
+                            "higher": [
+                              "A",
+                              "B"
+                            ],
+                            "above": [
+                              "A",
+                              "B"
+                            ]
+                          },
+                          "present": true
+                        }
+                      ]
+                    ],
+                    "grand_total": {
+                      "present": false
+                    },
+                    "cell_label": "letters",
+                    "normalize_applied": ""
+                  }
+                }
+              }
+            },
+            "summary": {
+              "count": 9
+            }
+          }
+        ],
+        "components": {
+          "crosstab": {
+            "cell_counts": [
+              [
+                57,
+                45,
+                14
+              ],
+              [
+                20,
+                67,
+                32
+              ],
+              [
+                19,
+                28,
+                45
+              ]
+            ],
+            "cell_components": [
+              [
+                {
+                  "n": 57,
+                  "n_null": 0
+                },
+                {
+                  "n": 45,
+                  "n_null": 0
+                },
+                {
+                  "n": 14,
+                  "n_null": 0
+                }
+              ],
+              [
+                {
+                  "n": 20,
+                  "n_null": 0
+                },
+                {
+                  "n": 67,
+                  "n_null": 0
+                },
+                {
+                  "n": 32,
+                  "n_null": 0
+                }
+              ],
+              [
+                {
+                  "n": 19,
+                  "n_null": 0
+                },
+                {
+                  "n": 28,
+                  "n_null": 0
+                },
+                {
+                  "n": 45,
+                  "n_null": 0
+                }
+              ]
+            ],
+            "row_margin_counts": [
+              116,
+              119,
+              92
+            ],
+            "row_margin_components": [
+              {
+                "n": 116,
+                "n_null": 0
+              },
+              {
+                "n": 119,
+                "n_null": 0
+              },
+              {
+                "n": 92,
+                "n_null": 0
+              }
+            ],
+            "column_margin_counts": [
+              96,
+              140,
+              91
+            ],
+            "column_margin_components": [
+              {
+                "n": 96,
+                "n_null": 0
+              },
+              {
+                "n": 140,
+                "n_null": 0
+              },
+              {
+                "n": 91,
+                "n_null": 0
+              }
+            ],
+            "grand_total_count": 327,
+            "grand_total_components": {
+              "n": 327,
+              "n_null": 0
+            },
+            "row_key_components": [
+              {
+                "count": 116,
+                "key": "Alto",
+                "label": "Alto"
+              },
+              {
+                "count": 119,
+                "key": "Brio",
+                "label": "Brio"
+              },
+              {
+                "count": 92,
+                "key": "Cora",
+                "label": "Cora"
+              }
+            ],
+            "column_key_components": [
+              {
+                "count": 96,
+                "key": "18-34",
+                "label": "18-34"
+              },
+              {
+                "count": 140,
+                "key": "35-54",
+                "label": "35-54"
+              },
+              {
+                "count": 91,
+                "key": "55+",
+                "label": "55+"
+              }
+            ],
+            "included_records": 327
+          }
+        }
+      }
+    ],
+    "banner": {
+      "sections": [
+        {
+          "label": "all",
+          "row_header": {
+            "fields": [
+              "brand"
+            ],
+            "types": [
+              "GROUP_CATEGORY"
+            ]
+          },
+          "row_keys": [
+            [
+              "Alto"
+            ],
+            [
+              "Brio"
+            ],
+            [
+              "Cora"
+            ]
+          ],
+          "column_keys": [
+            [
+              "Total"
+            ],
+            [
+              "female"
+            ],
+            [
+              "male"
+            ],
+            [
+              "18-34"
+            ],
+            [
+              "35-54"
+            ],
+            [
+              "55+"
+            ]
+          ],
+          "cells": [
+            [
+              {
+                "value": 0.35333333333333333,
+                "present": true
+              },
+              {
+                "value": 0.32673267326732675,
+                "present": true
+              },
+              {
+                "value": 0.38047138047138046,
+                "present": true
+              },
+              {
+                "value": 0.5235849056603774,
+                "present": true
+              },
+              {
+                "value": 0.3406113537117904,
+                "present": true
+              },
+              {
+                "value": 0.14465408805031446,
+                "present": true
+              }
+            ],
+            [
+              {
+                "value": 0.35,
+                "present": true
+              },
+              {
+                "value": 0.37293729372937295,
+                "present": true
+              },
+              {
+                "value": 0.3265993265993266,
+                "present": true
+              },
+              {
+                "value": 0.24056603773584906,
+                "present": true
+              },
+              {
+                "value": 0.4410480349344978,
+                "present": true
+              },
+              {
+                "value": 0.36477987421383645,
+                "present": true
+              }
+            ],
+            [
+              {
+                "value": 0.2966666666666667,
+                "present": true
+              },
+              {
+                "value": 0.30033003300330036,
+                "present": true
+              },
+              {
+                "value": 0.29292929292929293,
+                "present": true
+              },
+              {
+                "value": 0.2358490566037736,
+                "present": true
+              },
+              {
+                "value": 0.2183406113537118,
+                "present": true
+              },
+              {
+                "value": 0.49056603773584906,
+                "present": true
+              }
+            ]
+          ],
+          "column_margins": [
+            {
+              "value": 600,
+              "present": true
+            },
+            {
+              "value": 303,
+              "present": true
+            },
+            {
+              "value": 297,
+              "present": true
+            },
+            {
+              "value": 212,
+              "present": true
+            },
+            {
+              "value": 229,
+              "present": true
+            },
+            {
+              "value": 159,
+              "present": true
+            }
+          ],
+          "cell_label": "n",
+          "normalize_applied": "column",
+          "blocks": [
+            {
+              "label": "Total",
+              "slot": "all:Total",
+              "total": true,
+              "start": 0,
+              "count": 1,
+              "column_header": {
+                "fields": [
+                  "_total"
+                ],
+                "types": [
+                  "TOTAL"
+                ]
+              },
+              "row_margins": [
+                {
+                  "value": 212,
+                  "present": true
+                },
+                {
+                  "value": 210,
+                  "present": true
+                },
+                {
+                  "value": 178,
+                  "present": true
+                }
+              ],
+              "grand_total": {
+                "value": 600,
+                "present": true
+              }
+            },
+            {
+              "label": "Gender",
+              "slot": "all:Gender",
+              "start": 1,
+              "count": 2,
+              "column_header": {
+                "fields": [
+                  "gender"
+                ],
+                "types": [
+                  "GROUP_CATEGORY"
+                ]
+              },
+              "row_margins": [
+                {
+                  "value": 212,
+                  "present": true
+                },
+                {
+                  "value": 210,
+                  "present": true
+                },
+                {
+                  "value": 178,
+                  "present": true
+                }
+              ],
+              "grand_total": {
+                "value": 600,
+                "present": true
+              }
+            },
+            {
+              "label": "Age",
+              "slot": "all:Age",
+              "start": 3,
+              "count": 3,
+              "column_header": {
+                "fields": [
+                  "age"
+                ],
+                "types": [
+                  "GROUP_CATEGORY"
+                ]
+              },
+              "row_margins": [
+                {
+                  "value": 212,
+                  "present": true
+                },
+                {
+                  "value": 210,
+                  "present": true
+                },
+                {
+                  "value": 178,
+                  "present": true
+                }
+              ],
+              "grand_total": {
+                "value": 600,
+                "present": true
+              }
+            }
+          ],
+          "letters": [
+            {
+              "overlay": 0,
+              "name": "sig",
+              "kind": "OVERLAY_PAIRWISE_PROP_Z",
+              "scope": "column",
+              "cells": [
+                [
+                  {
+                    "present": false
+                  },
+                  {
+                    "value": {
+                      "letter": "A",
+                      "group": 0,
+                      "higher": [],
+                      "above": []
+                    },
+                    "present": true
+                  },
+                  {
+                    "value": {
+                      "letter": "B",
+                      "group": 0,
+                      "higher": [
+                        "A"
+                      ],
+                      "above": []
+                    },
+                    "present": true
+                  },
+                  {
+                    "value": {
+                      "letter": "C",
+                      "group": 1,
+                      "higher": [
+                        "D",
+                        "E"
+                      ],
+                      "above": [
+                        "D",
+                        "E"
+                      ]
+                    },
+                    "present": true
+                  },
+                  {
+                    "value": {
+                      "letter": "D",
+                      "group": 1,
+                      "higher": [
+                        "E"
+                      ],
+                      "above": [
+                        "E"
+                      ]
+                    },
+                    "present": true
+                  },
+                  {
+                    "value": {
+                      "letter": "E",
+                      "group": 1,
+                      "higher": [],
+                      "above": []
+                    },
+                    "present": true
+                  }
+                ],
+                [
+                  {
+                    "present": false
+                  },
+                  {
+                    "value": {
+                      "letter": "A",
+                      "group": 0,
+                      "higher": [
+                        "B"
+                      ],
+                      "above": []
+                    },
+                    "present": true
+                  },
+                  {
+                    "value": {
+                      "letter": "B",
+                      "group": 0,
+                      "higher": [],
+                      "above": []
+                    },
+                    "present": true
+                  },
+                  {
+                    "value": {
+                      "letter": "C",
+                      "group": 1,
+                      "higher": [],
+                      "above": []
+                    },
+                    "present": true
+                  },
+                  {
+                    "value": {
+                      "letter": "D",
+                      "group": 1,
+                      "higher": [
+                        "C",
+                        "E"
+                      ],
+                      "above": [
+                        "C"
+                      ]
+                    },
+                    "present": true
+                  },
+                  {
+                    "value": {
+                      "letter": "E",
+                      "group": 1,
+                      "higher": [
+                        "C"
+                      ],
+                      "above": [
+                        "C"
+                      ]
+                    },
+                    "present": true
+                  }
+                ],
+                [
+                  {
+                    "present": false
+                  },
+                  {
+                    "value": {
+                      "letter": "A",
+                      "group": 0,
+                      "higher": [
+                        "B"
+                      ],
+                      "above": []
+                    },
+                    "present": true
+                  },
+                  {
+                    "value": {
+                      "letter": "B",
+                      "group": 0,
+                      "higher": [],
+                      "above": []
+                    },
+                    "present": true
+                  },
+                  {
+                    "value": {
+                      "letter": "C",
+                      "group": 1,
+                      "higher": [
+                        "D"
+                      ],
+                      "above": []
+                    },
+                    "present": true
+                  },
+                  {
+                    "value": {
+                      "letter": "D",
+                      "group": 1,
+                      "higher": [],
+                      "above": []
+                    },
+                    "present": true
+                  },
+                  {
+                    "value": {
+                      "letter": "E",
+                      "group": 1,
+                      "higher": [
+                        "C",
+                        "D"
+                      ],
+                      "above": [
+                        "C",
+                        "D"
+                      ]
+                    },
+                    "present": true
+                  }
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "label": "aware",
+          "row_header": {
+            "fields": [
+              "brand"
+            ],
+            "types": [
+              "GROUP_CATEGORY"
+            ]
+          },
+          "row_keys": [
+            [
+              "Alto"
+            ],
+            [
+              "Brio"
+            ],
+            [
+              "Cora"
+            ]
+          ],
+          "column_keys": [
+            [
+              "Total"
+            ],
+            [
+              "female"
+            ],
+            [
+              "male"
+            ],
+            [
+              "18-34"
+            ],
+            [
+              "35-54"
+            ],
+            [
+              "55+"
+            ]
+          ],
+          "cells": [
+            [
+              {
+                "value": 0.3547400611620795,
+                "present": true
+              },
+              {
+                "value": 0.3220338983050847,
+                "present": true
+              },
+              {
+                "value": 0.3933333333333333,
+                "present": true
+              },
+              {
+                "value": 0.59375,
+                "present": true
+              },
+              {
+                "value": 0.32142857142857145,
+                "present": true
+              },
+              {
+                "value": 0.15384615384615385,
+                "present": true
+              }
+            ],
+            [
+              {
+                "value": 0.363914373088685,
+                "present": true
+              },
+              {
+                "value": 0.384180790960452,
+                "present": true
+              },
+              {
+                "value": 0.34,
+                "present": true
+              },
+              {
+                "value": 0.20833333333333334,
+                "present": true
+              },
+              {
+                "value": 0.4785714285714286,
+                "present": true
+              },
+              {
+                "value": 0.3516483516483517,
+                "present": true
+              }
+            ],
+            [
+              {
+                "value": 0.28134556574923547,
+                "present": true
+              },
+              {
+                "value": 0.2937853107344633,
+                "present": true
+              },
+              {
+                "value": 0.26666666666666666,
+                "present": true
+              },
+              {
+                "value": 0.19791666666666666,
+                "present": true
+              },
+              {
+                "value": 0.2,
+                "present": true
+              },
+              {
+                "value": 0.4945054945054945,
+                "present": true
+              }
+            ]
+          ],
+          "column_margins": [
+            {
+              "value": 327,
+              "present": true
+            },
+            {
+              "value": 177,
+              "present": true
+            },
+            {
+              "value": 150,
+              "present": true
+            },
+            {
+              "value": 96,
+              "present": true
+            },
+            {
+              "value": 140,
+              "present": true
+            },
+            {
+              "value": 91,
+              "present": true
+            }
+          ],
+          "cell_label": "n",
+          "normalize_applied": "column",
+          "blocks": [
+            {
+              "label": "Total",
+              "slot": "aware:Total",
+              "total": true,
+              "start": 0,
+              "count": 1,
+              "column_header": {
+                "fields": [
+                  "_total"
+                ],
+                "types": [
+                  "TOTAL"
+                ]
+              },
+              "row_margins": [
+                {
+                  "value": 116,
+                  "present": true
+                },
+                {
+                  "value": 119,
+                  "present": true
+                },
+                {
+                  "value": 92,
+                  "present": true
+                }
+              ],
+              "grand_total": {
+                "value": 327,
+                "present": true
+              }
+            },
+            {
+              "label": "Gender",
+              "slot": "aware:Gender",
+              "start": 1,
+              "count": 2,
+              "column_header": {
+                "fields": [
+                  "gender"
+                ],
+                "types": [
+                  "GROUP_CATEGORY"
+                ]
+              },
+              "row_margins": [
+                {
+                  "value": 116,
+                  "present": true
+                },
+                {
+                  "value": 119,
+                  "present": true
+                },
+                {
+                  "value": 92,
+                  "present": true
+                }
+              ],
+              "grand_total": {
+                "value": 327,
+                "present": true
+              }
+            },
+            {
+              "label": "Age",
+              "slot": "aware:Age",
+              "start": 3,
+              "count": 3,
+              "column_header": {
+                "fields": [
+                  "age"
+                ],
+                "types": [
+                  "GROUP_CATEGORY"
+                ]
+              },
+              "row_margins": [
+                {
+                  "value": 116,
+                  "present": true
+                },
+                {
+                  "value": 119,
+                  "present": true
+                },
+                {
+                  "value": 92,
+                  "present": true
+                }
+              ],
+              "grand_total": {
+                "value": 327,
+                "present": true
+              }
+            }
+          ],
+          "letters": [
+            {
+              "overlay": 0,
+              "name": "sig",
+              "kind": "OVERLAY_PAIRWISE_PROP_Z",
+              "scope": "column",
+              "cells": [
+                [
+                  {
+                    "present": false
+                  },
+                  {
+                    "value": {
+                      "letter": "A",
+                      "group": 0,
+                      "higher": [],
+                      "above": []
+                    },
+                    "present": true
+                  },
+                  {
+                    "value": {
+                      "letter": "B",
+                      "group": 0,
+                      "higher": [
+                        "A"
+                      ],
+                      "above": []
+                    },
+                    "present": true
+                  },
+                  {
+                    "value": {
+                      "letter": "C",
+                      "group": 1,
+                      "higher": [
+                        "D",
+                        "E"
+                      ],
+                      "above": [
+                        "D",
+                        "E"
+                      ]
+                    },
+                    "present": true
+                  },
+                  {
+                    "value": {
+                      "letter": "D",
+                      "group": 1,
+                      "higher": [
+                        "E"
+                      ],
+                      "above": [
+                        "E"
+                      ]
+                    },
+                    "present": true
+                  },
+                  {
+                    "value": {
+                      "letter": "E",
+                      "group": 1,
+                      "higher": [],
+                      "above": []
+                    },
+                    "present": true
+                  }
+                ],
+                [
+                  {
+                    "present": false
+                  },
+                  {
+                    "value": {
+                      "letter": "A",
+                      "group": 0,
+                      "higher": [
+                        "B"
+                      ],
+                      "above": []
+                    },
+                    "present": true
+                  },
+                  {
+                    "value": {
+                      "letter": "B",
+                      "group": 0,
+                      "higher": [],
+                      "above": []
+                    },
+                    "present": true
+                  },
+                  {
+                    "value": {
+                      "letter": "C",
+                      "group": 1,
+                      "higher": [],
+                      "above": []
+                    },
+                    "present": true
+                  },
+                  {
+                    "value": {
+                      "letter": "D",
+                      "group": 1,
+                      "higher": [
+                        "C",
+                        "E"
+                      ],
+                      "above": [
+                        "C"
+                      ]
+                    },
+                    "present": true
+                  },
+                  {
+                    "value": {
+                      "letter": "E",
+                      "group": 1,
+                      "higher": [
+                        "C"
+                      ],
+                      "above": [
+                        "C"
+                      ]
+                    },
+                    "present": true
+                  }
+                ],
+                [
+                  {
+                    "present": false
+                  },
+                  {
+                    "value": {
+                      "letter": "A",
+                      "group": 0,
+                      "higher": [
+                        "B"
+                      ],
+                      "above": []
+                    },
+                    "present": true
+                  },
+                  {
+                    "value": {
+                      "letter": "B",
+                      "group": 0,
+                      "higher": [],
+                      "above": []
+                    },
+                    "present": true
+                  },
+                  {
+                    "value": {
+                      "letter": "C",
+                      "group": 1,
+                      "higher": [],
+                      "above": []
+                    },
+                    "present": true
+                  },
+                  {
+                    "value": {
+                      "letter": "D",
+                      "group": 1,
+                      "higher": [
+                        "C"
+                      ],
+                      "above": []
+                    },
+                    "present": true
+                  },
+                  {
+                    "value": {
+                      "letter": "E",
+                      "group": 1,
+                      "higher": [
+                        "C",
+                        "D"
+                      ],
+                      "above": [
+                        "C",
+                        "D"
+                      ]
+                    },
+                    "present": true
+                  }
+                ]
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

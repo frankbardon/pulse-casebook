@@ -1,0 +1,1 @@
+{"cohort":{"filename":"shop.pulse"},"vectors":[{"name":"v","fields":["age","spend"]}],"matrices":[{"type":"MAT_CORRELATION","vector":"v","name":"r","params":{"method":"pearson"}}]}

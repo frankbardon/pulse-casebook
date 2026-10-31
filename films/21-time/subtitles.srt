@@ -1,0 +1,179 @@
+1
+00:00:04,250 --> 00:00:06,839
+Every row, read in its own local time.
+
+2
+00:00:07,639 --> 00:00:16,244
+Pulse stores every instant in U T C. A datetime is whole seconds since the epoch; a date is whole days. The two never mix.
+
+3
+00:00:17,044 --> 00:00:25,137
+A zone changes only how an instant is read or exported. Half past midnight U T C is half past one in Berlin.
+
+4
+00:00:25,937 --> 00:00:34,905
+Zones are U T C or I A N A names, from Pulse's own time zone database. E S T is refused as an unknown time zone.
+
+5
+00:00:35,705 --> 00:00:44,204
+A slot takes the first zone set: its own T Z or T Z field, then the request's, then the instance default, then U T C.
+
+6
+00:00:45,004 --> 00:00:54,399
+Predict reports what each slot resolved, and where from. Here the request says New York, one slot reads a zone column, and the grouper names Tokyo.
+
+7
+00:00:55,199 --> 00:01:03,890
+Our orders come from stores in New York, London and Tokyo, over one local week. By day with no zone, the days are U T C days.
+
+8
+00:01:04,690 --> 00:01:12,335
+Set the time zone to New York, and every row is read on a New York calendar. Tokyo's early-morning orders slide back a day.
+
+9
+00:01:13,135 --> 00:01:19,820
+The time zone field reads each row in its own store's zone: exactly Monday to Sunday, local everywhere.
+
+10
+00:01:20,620 --> 00:01:28,116
+One order has no zone. It gets no local day at all, never a U T C fallback, and the grouper counts it as null.
+
+11
+00:01:28,916 --> 00:01:34,983
+A Berlin meter reports every half hour. In U T C, every day holds forty-eight readings.
+
+12
+00:01:35,783 --> 00:01:44,132
+In Berlin, the twenty-ninth of March has twenty-three hours: forty-six readings. The twenty-fifth of October has twenty-five: fifty.
+
+13
+00:01:44,932 --> 00:01:52,172
+By the hour, the skipped hour in March has no bucket. In October, the repeated hour is one bucket, with four readings.
+
+14
+00:01:52,972 --> 00:02:00,660
+A date ranges filter matches the local calendar day too. One range: the twenty-ninth of March, as both start and end.
+
+15
+00:02:01,460 --> 00:02:10,961
+With no zone it keeps the U T C day: forty-eight readings. With the time zone set to Berlin, it keeps Berlin's twenty-three-hour day: forty-six.
+
+16
+00:02:11,761 --> 00:02:18,233
+Range literals are always local days in the slot's zone, and date-range groupers read them the same way.
+
+17
+00:02:19,033 --> 00:02:28,833
+Zones matter on the way in, too. This logger wrote naive wall-clock times, with no offset. Imported as they are, each is read as U T C.
+
+18
+00:02:29,633 --> 00:02:39,092
+Name their zone with the source T Z flag. Berlin skips half past two on the twenty-ninth of March, so the import is refused, and no file is written.
+
+19
+00:02:39,892 --> 00:02:48,988
+A D S T policy resolves it: earlier takes the offset before the change, later the one after. A warning counts every value it resolved.
+
+20
+00:02:49,788 --> 00:02:58,052
+Under earlier, it counts three skipped times, not one: a single file zone reads the Tokyo and New York rows as Berlin too.
+
+21
+00:02:58,852 --> 00:03:06,305
+The source T Z field flag reads each row's own zone column. Tokyo and New York land on their true instants.
+
+22
+00:03:07,105 --> 00:03:15,476
+Export with the T Z flag renders the stored instants on a Berlin clock, offsets included. The stored values never change.
+
+23
+00:03:16,276 --> 00:03:25,351
+Calendar parts follow the zone too. An I S O weekday with a T Z field reads each order in its store's zone: all three were placed on a Monday.
+
+24
+00:03:26,151 --> 00:03:34,714
+A formula's to day function reads only the request zone, never a zone column. Under New York, the Tokyo order falls on Sunday.
+
+25
+00:03:35,514 --> 00:03:43,373
+A bare datetime in weekday is refused at compile: wrap it in to day. The expressions film covers the calendar helpers.
+
+26
+00:03:44,173 --> 00:03:52,778
+Now, panels. Three hundred subscribers, one row per subject per month from January to June, on trial, basic, pro or churned.
+
+27
+00:03:53,578 --> 00:04:02,098
+The previous state attribute gives each row the plan its subject held at the previous time point, typed as the plan, with the same dictionary.
+
+28
+00:04:02,898 --> 00:04:11,525
+A subject's first month has nothing before it, so it is null, never zero. Rows are ordered by instant, and this attribute takes no zone.
+
+29
+00:04:12,325 --> 00:04:20,333
+This attribute runs over the whole cohort before the filters. Keep only June, and every June row still knows its May plan.
+
+30
+00:04:21,133 --> 00:04:29,760
+Of the June rows, a hundred and fourteen were basic in May, sixty-one pro, and three still on trial. Its components count every record.
+
+31
+00:04:30,560 --> 00:04:37,267
+Crosstab the previous plan against the plan, and the long panel becomes a transition table, with no pivot.
+
+32
+00:04:38,067 --> 00:04:46,950
+First months reach no cell, so nine hundred and four transitions remain. Churned is only a column: nobody is observed after leaving.
+
+33
+00:04:47,750 --> 00:04:57,166
+The Markov overlay turns the table into a transition matrix, each row summing to one. A trial moves to basic forty-six percent of the time.
+
+34
+00:04:57,966 --> 00:05:08,043
+Churned is listed as absorbing, so Pulse adds its unit row with a warning. The chain has no single long run, so the steady state is left out, with a warning too.
+
+35
+00:05:08,843 --> 00:05:19,048
+Three months after a trial, thirty-nine percent are basic and as many churned. Expected time to churn: about nine months from trial, eleven and a half from pro.
+
+36
+00:05:19,848 --> 00:05:26,469
+The retention overlay reads the same table per starting state: the share that stayed, switched, or churned.
+
+37
+00:05:27,269 --> 00:05:34,850
+Pro keeps eighty-two percent a month, basic seventy-nine. Trial keeps seventeen percent: sixty-one percent switch plan.
+
+38
+00:05:35,650 --> 00:05:41,653
+Each row adds to one. Across all nine hundred and four transitions, fifty-five percent stayed.
+
+39
+00:05:42,453 --> 00:05:50,205
+Lags over a panel are windows. A delta of spend per subject, ordered by month, gives each row its change since last month.
+
+40
+00:05:51,005 --> 00:05:59,077
+A crosstab cell reads that window label, so the windows run first, over the records, before the cells. Predict reports the plan.
+
+41
+00:05:59,877 --> 00:06:07,885
+Trial to pro adds about fifty a month; pro to basic drops about twenty-nine. The windows film covers frames and partitions.
+
+42
+00:06:08,685 --> 00:06:17,888
+That's time in Pulse today: U T C instants, request and row zones, local days through D S T, source zones on import, and panels.
+
+43
+00:06:18,688 --> 00:06:29,704
+More are added over time, and the manifest lists what your instance offers. Embedders can register their own groupers, attributes and windows through options dot extensions.
+
+44
+00:06:30,504 --> 00:06:34,928
+Next, synthetic data: cohorts like these, generated from a spec.
+
+45
+00:06:35,728 --> 00:06:37,400
+Pulse, in local time.

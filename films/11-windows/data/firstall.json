@@ -1,0 +1,1 @@
+{"cohort":{"filename":"s.pulse"},"windows":[{"type":"WIN_DELTA","field":"sales","label":"change","order_by":[{"field":"date"}],"params":{"periods":1}}],"groups":[{"type":"GROUP_CATEGORY","field":"region"}],"aggregations":[{"type":"AGG_AVERAGE","field":"change","label":"mean_change"}]}

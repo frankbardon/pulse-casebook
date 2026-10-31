@@ -1,0 +1,128 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "age": "18-34",
+        "rank": 3,
+        "spend": 39.375035629453684
+      },
+      {
+        "age": "35-54",
+        "rank": 2,
+        "spend": 46.683916713562176
+      },
+      {
+        "age": "55+",
+        "rank": 1,
+        "spend": 56.09349298100743
+      }
+    ],
+    "metadata": {
+      "total_rows": 600,
+      "filtered_rows": 600,
+      "cohort_file": "survey.pulse"
+    },
+    "components": {
+      "aggregations": [
+        {
+          "label": "spend",
+          "n": 600,
+          "n_null": 0,
+          "sum_weights": 593.5,
+          "n_eff": 565.9873865188398,
+          "n_weight_invalid": 0,
+          "groups": [
+            {
+              "group_key": [
+                "18-34"
+              ],
+              "n": 294,
+              "n_null": 0,
+              "sum_weights": 294.7,
+              "n_eff": 277.37245696400623,
+              "n_weight_invalid": 0,
+              "operator": {
+                "m2_weighted": 36487.579727125914,
+                "sum": 11603.823,
+                "sum_weighted": 11603.823,
+                "sum_weights_sq": 313.11,
+                "weighted_mean": 39.375035629453684,
+                "weighted_variance": 124.23418361295852
+              }
+            },
+            {
+              "group_key": [
+                "35-54"
+              ],
+              "n": 179,
+              "n_null": 0,
+              "sum_weights": 177.70000000000002,
+              "n_eff": 168.85348377092134,
+              "n_weight_invalid": 0,
+              "operator": {
+                "m2_weighted": 23993.032753967356,
+                "sum": 8295.732,
+                "sum_weighted": 8295.732,
+                "sum_weights_sq": 187.01000000000002,
+                "weighted_mean": 46.683916713562176,
+                "weighted_variance": 135.783999739487
+              }
+            },
+            {
+              "group_key": [
+                "55+"
+              ],
+              "n": 127,
+              "n_null": 0,
+              "sum_weights": 121.10000000000001,
+              "n_eff": 119.98044669884644,
+              "n_weight_invalid": 0,
+              "operator": {
+                "m2_weighted": 16006.88267246903,
+                "sum": 6792.9220000000005,
+                "sum_weighted": 6792.9220000000005,
+                "sum_weights_sq": 122.23000000000002,
+                "weighted_mean": 56.09349298100743,
+                "weighted_variance": 133.27962258508768
+              }
+            }
+          ]
+        }
+      ],
+      "groupers": [
+        {
+          "field": "age",
+          "total_n": 600,
+          "operator": {
+            "buckets": [
+              {
+                "count": 294,
+                "key": "18-34",
+                "label": "18-34"
+              },
+              {
+                "count": 179,
+                "key": "35-54",
+                "label": "35-54"
+              },
+              {
+                "count": 127,
+                "key": "55+",
+                "label": "55+"
+              }
+            ],
+            "dict_size": 3
+          }
+        }
+      ],
+      "run": {
+        "total_records": 600,
+        "filtered_records": 600,
+        "null_records": 0
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

@@ -1,0 +1,17 @@
+{
+  "format_version": "1.1",
+  "data": null,
+  "errors": [
+    {
+      "code": "PULSE_LIMIT_EXCEEDED",
+      "message": "limit max_estimated_memory exceeded: observed 16,828,707, configured 8,388,608 (raise Options.Limits.MaxEstimatedMemory, feature profile limits.max_estimated_memory or the CLI's --limit max_estimated_memory= on any pulse command, or reduce the request)",
+      "details": {
+        "configured": 8388608,
+        "limit": "max_estimated_memory",
+        "observed": 16828707,
+        "option": "Options.Limits.MaxEstimatedMemory"
+      }
+    }
+  ],
+  "warnings": []
+}

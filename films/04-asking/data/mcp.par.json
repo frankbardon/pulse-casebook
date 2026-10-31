@@ -1,0 +1,38 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": {
+        "code": "PULSE_REQUEST_UNKNOWN_FIELD",
+        "message": "request contains unrecognized top-level key(s): \"params\". An unknown key is refused, never ignored, so a misspelled or misplaced key cannot silently drop the intended operation. Valid request keys: aggregations, attributes, cohort, disable_components, features, filterers, groups, label, labels, outputs, post_tests, regressions, return, sort, tests, time_zone, time_zone_field, windows.",
+        "details": {
+          "suggestions": {},
+          "unknown_keys": [
+            "params"
+          ],
+          "valid_keys": [
+            "aggregations",
+            "attributes",
+            "cohort",
+            "disable_components",
+            "features",
+            "filterers",
+            "groups",
+            "label",
+            "labels",
+            "outputs",
+            "post_tests",
+            "regressions",
+            "return",
+            "sort",
+            "tests",
+            "time_zone",
+            "time_zone_field",
+            "windows"
+          ]
+        }
+      }
+    }
+  ],
+  "isError": true
+}

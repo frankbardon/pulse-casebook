@@ -1,0 +1,1 @@
+{"cohort":{"filename":"g.pulse"},"groups":[{"type":"GROUP_CATEGORY","field":"region","include":["West","North"]}],"aggregations":[{"type":"AGG_COUNT","field":"id","label":"orders"}]}

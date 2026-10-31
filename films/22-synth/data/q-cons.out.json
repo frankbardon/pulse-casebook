@@ -1,0 +1,94 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "age": 42.272478383413265,
+        "age_max": 80,
+        "age_min": 18,
+        "max_id": 2000,
+        "n": 2000,
+        "spend": 66.77235571505385,
+        "spend_min": 30.072582919485175,
+        "visits": 2.943
+      }
+    ],
+    "metadata": {
+      "total_rows": 2000,
+      "filtered_rows": 2000,
+      "cohort_file": "cons.pulse"
+    },
+    "components": {
+      "aggregations": [
+        {
+          "label": "n",
+          "n": 2000,
+          "n_null": 0
+        },
+        {
+          "label": "max_id",
+          "n": 2000,
+          "n_null": 0,
+          "operator": {
+            "max": 2000
+          }
+        },
+        {
+          "label": "age",
+          "n": 2000,
+          "n_null": 0,
+          "operator": {
+            "sum": 84544.95676682654
+          }
+        },
+        {
+          "label": "age_min",
+          "n": 2000,
+          "n_null": 0,
+          "operator": {
+            "min": 18
+          }
+        },
+        {
+          "label": "age_max",
+          "n": 2000,
+          "n_null": 0,
+          "operator": {
+            "max": 80
+          }
+        },
+        {
+          "label": "spend",
+          "n": 2000,
+          "n_null": 0,
+          "operator": {
+            "sum": 133544.7114301077
+          }
+        },
+        {
+          "label": "spend_min",
+          "n": 2000,
+          "n_null": 0,
+          "operator": {
+            "min": 30.072582919485175
+          }
+        },
+        {
+          "label": "visits",
+          "n": 2000,
+          "n_null": 0,
+          "operator": {
+            "sum": 5886
+          }
+        }
+      ],
+      "run": {
+        "total_records": 2000,
+        "filtered_records": 2000,
+        "null_records": 0
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

@@ -1,0 +1,1170 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "valid": true,
+    "request": {
+      "requests": [
+        {
+          "label": "long_run",
+          "cohort": {
+            "filename": "m.pulse"
+          },
+          "aggregations": [
+            {
+              "type": "AGG_MAX",
+              "field": "tv_mult",
+              "label": "tv_mult"
+            },
+            {
+              "type": "AGG_MAX",
+              "field": "tv_long",
+              "label": "tv_long"
+            },
+            {
+              "type": "AGG_MAX",
+              "field": "search_long",
+              "label": "search_long"
+            }
+          ],
+          "attributes": [
+            {
+              "type": "ATTR_FORMULA",
+              "field": "",
+              "label": "tv_mult",
+              "expression": "(1 - sweep_axis(\"best\", \"tv\") ^ 9) / (1 - sweep_axis(\"best\", \"tv\"))"
+            },
+            {
+              "type": "ATTR_FORMULA",
+              "field": "",
+              "label": "tv_long",
+              "expression": "coef(\"best\", \"tv_ad\") * (1 - sweep_axis(\"best\", \"tv\") ^ 9) / (1 - sweep_axis(\"best\", \"tv\"))"
+            },
+            {
+              "type": "ATTR_FORMULA",
+              "field": "",
+              "label": "search_long",
+              "expression": "coef(\"best\", \"search_ad\") * (1 - sweep_axis(\"best\", \"search\") ^ 9) / (1 - sweep_axis(\"best\", \"search\"))"
+            }
+          ]
+        }
+      ],
+      "sweep": {
+        "axes": [
+          {
+            "name": "tv",
+            "range": {
+              "min": 0,
+              "max": 0.95
+            }
+          },
+          {
+            "name": "search",
+            "range": {
+              "min": 0,
+              "max": 0.95
+            }
+          }
+        ],
+        "mode": "lhs",
+        "samples": 40,
+        "request": {
+          "cohort": {
+            "filename": "m.pulse"
+          },
+          "attributes": [
+            {
+              "type": "ATTR_FORMULA",
+              "label": "north",
+              "expression": "market == \"north\" ? 1 : 0"
+            }
+          ],
+          "windows": [
+            {
+              "type": "WIN_DISTRIBUTED_LAG",
+              "field": "tv",
+              "label": "tv_ad",
+              "partition_by": [
+                "market"
+              ],
+              "order_by": [
+                {
+                  "field": "week"
+                }
+              ],
+              "params": {
+                "kernel": "geometric",
+                "max_lag": 8,
+                "decay": {
+                  "$var": "tv"
+                },
+                "normalize": false
+              }
+            },
+            {
+              "type": "WIN_DISTRIBUTED_LAG",
+              "field": "search",
+              "label": "search_ad",
+              "partition_by": [
+                "market"
+              ],
+              "order_by": [
+                {
+                  "field": "week"
+                }
+              ],
+              "params": {
+                "kernel": "geometric",
+                "max_lag": 8,
+                "decay": {
+                  "$var": "search"
+                },
+                "normalize": false
+              }
+            }
+          ],
+          "regressions": [
+            {
+              "type": "REG_OLS",
+              "name": "sales",
+              "target": "sales",
+              "predictors": [
+                "tv_ad",
+                "search_ad",
+                "north"
+              ],
+              "holdout": "week \u003e= 92"
+            }
+          ],
+          "return": {
+            "exclude": [
+              "data"
+            ]
+          }
+        },
+        "rank": {
+          "by": "regressions.sales.holdout.rmse"
+        }
+      },
+      "fits": [
+        {
+          "name": "best",
+          "from_sweep": {
+            "regression": "sales"
+          }
+        }
+      ]
+    },
+    "overlays_schema_divergence": [],
+    "overlay_cost": {},
+    "slots": [
+      {
+        "request": 0,
+        "label": "long_run",
+        "streamable": true
+      },
+      {
+        "request": 1,
+        "label": "sample=0_tv=0.3074802960905435_search=0.7433009819334716",
+        "streamable": false,
+        "streamable_reasons": [
+          "regression REG_OLS holdout requires the buffered path (the held-out rows are scored after the fit)",
+          "windows run over the whole row set (every filtered record, or the post-aggregate rows when grouped)"
+        ],
+        "p_values": {
+          "total": 3,
+          "uncorrected": 3,
+          "basis": "exact",
+          "threshold": 10
+        },
+        "post_window": {
+          "windows_first": false,
+          "window_labels": [
+            "tv_ad",
+            "search_ad"
+          ],
+          "attributes": []
+        }
+      },
+      {
+        "request": 2,
+        "label": "sample=1_tv=0.43342413799459845_search=0.9271132675184132",
+        "streamable": false,
+        "streamable_reasons": [
+          "regression REG_OLS holdout requires the buffered path (the held-out rows are scored after the fit)",
+          "windows run over the whole row set (every filtered record, or the post-aggregate rows when grouped)"
+        ],
+        "p_values": {
+          "total": 3,
+          "uncorrected": 3,
+          "basis": "exact",
+          "threshold": 10
+        },
+        "post_window": {
+          "windows_first": false,
+          "window_labels": [
+            "tv_ad",
+            "search_ad"
+          ],
+          "attributes": []
+        }
+      },
+      {
+        "request": 3,
+        "label": "sample=2_tv=0.2737078304732204_search=0.1856243005955715",
+        "streamable": false,
+        "streamable_reasons": [
+          "regression REG_OLS holdout requires the buffered path (the held-out rows are scored after the fit)",
+          "windows run over the whole row set (every filtered record, or the post-aggregate rows when grouped)"
+        ],
+        "p_values": {
+          "total": 3,
+          "uncorrected": 3,
+          "basis": "exact",
+          "threshold": 10
+        },
+        "post_window": {
+          "windows_first": false,
+          "window_labels": [
+            "tv_ad",
+            "search_ad"
+          ],
+          "attributes": []
+        }
+      },
+      {
+        "request": 4,
+        "label": "sample=3_tv=0.05488168727706386_search=0.7689297931585485",
+        "streamable": false,
+        "streamable_reasons": [
+          "regression REG_OLS holdout requires the buffered path (the held-out rows are scored after the fit)",
+          "windows run over the whole row set (every filtered record, or the post-aggregate rows when grouped)"
+        ],
+        "p_values": {
+          "total": 3,
+          "uncorrected": 3,
+          "basis": "exact",
+          "threshold": 10
+        },
+        "post_window": {
+          "windows_first": false,
+          "window_labels": [
+            "tv_ad",
+            "search_ad"
+          ],
+          "attributes": []
+        }
+      },
+      {
+        "request": 5,
+        "label": "sample=4_tv=0.5254881244814542_search=0.02992584954826812",
+        "streamable": false,
+        "streamable_reasons": [
+          "regression REG_OLS holdout requires the buffered path (the held-out rows are scored after the fit)",
+          "windows run over the whole row set (every filtered record, or the post-aggregate rows when grouped)"
+        ],
+        "p_values": {
+          "total": 3,
+          "uncorrected": 3,
+          "basis": "exact",
+          "threshold": 10
+        },
+        "post_window": {
+          "windows_first": false,
+          "window_labels": [
+            "tv_ad",
+            "search_ad"
+          ],
+          "attributes": []
+        }
+      },
+      {
+        "request": 6,
+        "label": "sample=5_tv=0.30911695909539993_search=0.3014182518514443",
+        "streamable": false,
+        "streamable_reasons": [
+          "regression REG_OLS holdout requires the buffered path (the held-out rows are scored after the fit)",
+          "windows run over the whole row set (every filtered record, or the post-aggregate rows when grouped)"
+        ],
+        "p_values": {
+          "total": 3,
+          "uncorrected": 3,
+          "basis": "exact",
+          "threshold": 10
+        },
+        "post_window": {
+          "windows_first": false,
+          "window_labels": [
+            "tv_ad",
+            "search_ad"
+          ],
+          "attributes": []
+        }
+      },
+      {
+        "request": 7,
+        "label": "sample=6_tv=0.15359904008878456_search=0.1411542774909779",
+        "streamable": false,
+        "streamable_reasons": [
+          "regression REG_OLS holdout requires the buffered path (the held-out rows are scored after the fit)",
+          "windows run over the whole row set (every filtered record, or the post-aggregate rows when grouped)"
+        ],
+        "p_values": {
+          "total": 3,
+          "uncorrected": 3,
+          "basis": "exact",
+          "threshold": 10
+        },
+        "post_window": {
+          "windows_first": false,
+          "window_labels": [
+            "tv_ad",
+            "search_ad"
+          ],
+          "attributes": []
+        }
+      },
+      {
+        "request": 8,
+        "label": "sample=7_tv=0.18113689325745644_search=0.11251918765950096",
+        "streamable": false,
+        "streamable_reasons": [
+          "regression REG_OLS holdout requires the buffered path (the held-out rows are scored after the fit)",
+          "windows run over the whole row set (every filtered record, or the post-aggregate rows when grouped)"
+        ],
+        "p_values": {
+          "total": 3,
+          "uncorrected": 3,
+          "basis": "exact",
+          "threshold": 10
+        },
+        "post_window": {
+          "windows_first": false,
+          "window_labels": [
+            "tv_ad",
+            "search_ad"
+          ],
+          "attributes": []
+        }
+      },
+      {
+        "request": 9,
+        "label": "sample=8_tv=0.4020205525713519_search=0.8510722969494102",
+        "streamable": false,
+        "streamable_reasons": [
+          "regression REG_OLS holdout requires the buffered path (the held-out rows are scored after the fit)",
+          "windows run over the whole row set (every filtered record, or the post-aggregate rows when grouped)"
+        ],
+        "p_values": {
+          "total": 3,
+          "uncorrected": 3,
+          "basis": "exact",
+          "threshold": 10
+        },
+        "post_window": {
+          "windows_first": false,
+          "window_labels": [
+            "tv_ad",
+            "search_ad"
+          ],
+          "attributes": []
+        }
+      },
+      {
+        "request": 10,
+        "label": "sample=9_tv=0.9000741167440869_search=0.5588803451126618",
+        "streamable": false,
+        "streamable_reasons": [
+          "regression REG_OLS holdout requires the buffered path (the held-out rows are scored after the fit)",
+          "windows run over the whole row set (every filtered record, or the post-aggregate rows when grouped)"
+        ],
+        "p_values": {
+          "total": 3,
+          "uncorrected": 3,
+          "basis": "exact",
+          "threshold": 10
+        },
+        "post_window": {
+          "windows_first": false,
+          "window_labels": [
+            "tv_ad",
+            "search_ad"
+          ],
+          "attributes": []
+        }
+      },
+      {
+        "request": 11,
+        "label": "sample=10_tv=0.9067581448332867_search=0.6956152304109033",
+        "streamable": false,
+        "streamable_reasons": [
+          "regression REG_OLS holdout requires the buffered path (the held-out rows are scored after the fit)",
+          "windows run over the whole row set (every filtered record, or the post-aggregate rows when grouped)"
+        ],
+        "p_values": {
+          "total": 3,
+          "uncorrected": 3,
+          "basis": "exact",
+          "threshold": 10
+        },
+        "post_window": {
+          "windows_first": false,
+          "window_labels": [
+            "tv_ad",
+            "search_ad"
+          ],
+          "attributes": []
+        }
+      },
+      {
+        "request": 12,
+        "label": "sample=11_tv=0.8763740207092392_search=0.5279319751350654",
+        "streamable": false,
+        "streamable_reasons": [
+          "regression REG_OLS holdout requires the buffered path (the held-out rows are scored after the fit)",
+          "windows run over the whole row set (every filtered record, or the post-aggregate rows when grouped)"
+        ],
+        "p_values": {
+          "total": 3,
+          "uncorrected": 3,
+          "basis": "exact",
+          "threshold": 10
+        },
+        "post_window": {
+          "windows_first": false,
+          "window_labels": [
+            "tv_ad",
+            "search_ad"
+          ],
+          "attributes": []
+        }
+      },
+      {
+        "request": 13,
+        "label": "sample=12_tv=0.5523110783139714_search=0.8938184612901375",
+        "streamable": false,
+        "streamable_reasons": [
+          "regression REG_OLS holdout requires the buffered path (the held-out rows are scored after the fit)",
+          "windows run over the whole row set (every filtered record, or the post-aggregate rows when grouped)"
+        ],
+        "p_values": {
+          "total": 3,
+          "uncorrected": 3,
+          "basis": "exact",
+          "threshold": 10
+        },
+        "post_window": {
+          "windows_first": false,
+          "window_labels": [
+            "tv_ad",
+            "search_ad"
+          ],
+          "attributes": []
+        }
+      },
+      {
+        "request": 14,
+        "label": "sample=13_tv=0.7147733445587816_search=0.33270021204869854",
+        "streamable": false,
+        "streamable_reasons": [
+          "regression REG_OLS holdout requires the buffered path (the held-out rows are scored after the fit)",
+          "windows run over the whole row set (every filtered record, or the post-aggregate rows when grouped)"
+        ],
+        "p_values": {
+          "total": 3,
+          "uncorrected": 3,
+          "basis": "exact",
+          "threshold": 10
+        },
+        "post_window": {
+          "windows_first": false,
+          "window_labels": [
+            "tv_ad",
+            "search_ad"
+          ],
+          "attributes": []
+        }
+      },
+      {
+        "request": 15,
+        "label": "sample=14_tv=0.6553516559843326_search=0.2825657819923835",
+        "streamable": false,
+        "streamable_reasons": [
+          "regression REG_OLS holdout requires the buffered path (the held-out rows are scored after the fit)",
+          "windows run over the whole row set (every filtered record, or the post-aggregate rows when grouped)"
+        ],
+        "p_values": {
+          "total": 3,
+          "uncorrected": 3,
+          "basis": "exact",
+          "threshold": 10
+        },
+        "post_window": {
+          "windows_first": false,
+          "window_labels": [
+            "tv_ad",
+            "search_ad"
+          ],
+          "attributes": []
+        }
+      },
+      {
+        "request": 16,
+        "label": "sample=15_tv=0.7763619549122267_search=0.4483236139182516",
+        "streamable": false,
+        "streamable_reasons": [
+          "regression REG_OLS holdout requires the buffered path (the held-out rows are scored after the fit)",
+          "windows run over the whole row set (every filtered record, or the post-aggregate rows when grouped)"
+        ],
+        "p_values": {
+          "total": 3,
+          "uncorrected": 3,
+          "basis": "exact",
+          "threshold": 10
+        },
+        "post_window": {
+          "windows_first": false,
+          "window_labels": [
+            "tv_ad",
+            "search_ad"
+          ],
+          "attributes": []
+        }
+      },
+      {
+        "request": 17,
+        "label": "sample=16_tv=0.2247621180265922_search=0.19650030442900493",
+        "streamable": false,
+        "streamable_reasons": [
+          "regression REG_OLS holdout requires the buffered path (the held-out rows are scored after the fit)",
+          "windows run over the whole row set (every filtered record, or the post-aggregate rows when grouped)"
+        ],
+        "p_values": {
+          "total": 3,
+          "uncorrected": 3,
+          "basis": "exact",
+          "threshold": 10
+        },
+        "post_window": {
+          "windows_first": false,
+          "window_labels": [
+            "tv_ad",
+            "search_ad"
+          ],
+          "attributes": []
+        }
+      },
+      {
+        "request": 18,
+        "label": "sample=17_tv=0.7066613312984145_search=0.3644715131007652",
+        "streamable": false,
+        "streamable_reasons": [
+          "regression REG_OLS holdout requires the buffered path (the held-out rows are scored after the fit)",
+          "windows run over the whole row set (every filtered record, or the post-aggregate rows when grouped)"
+        ],
+        "p_values": {
+          "total": 3,
+          "uncorrected": 3,
+          "basis": "exact",
+          "threshold": 10
+        },
+        "post_window": {
+          "windows_first": false,
+          "window_labels": [
+            "tv_ad",
+            "search_ad"
+          ],
+          "attributes": []
+        }
+      },
+      {
+        "request": 19,
+        "label": "sample=18_tv=0.48385863313656563_search=0.15192078110315838",
+        "streamable": false,
+        "streamable_reasons": [
+          "regression REG_OLS holdout requires the buffered path (the held-out rows are scored after the fit)",
+          "windows run over the whole row set (every filtered record, or the post-aggregate rows when grouped)"
+        ],
+        "p_values": {
+          "total": 3,
+          "uncorrected": 3,
+          "basis": "exact",
+          "threshold": 10
+        },
+        "post_window": {
+          "windows_first": false,
+          "window_labels": [
+            "tv_ad",
+            "search_ad"
+          ],
+          "attributes": []
+        }
+      },
+      {
+        "request": 20,
+        "label": "sample=19_tv=0.00723998158295405_search=0.8619629968756751",
+        "streamable": false,
+        "streamable_reasons": [
+          "regression REG_OLS holdout requires the buffered path (the held-out rows are scored after the fit)",
+          "windows run over the whole row set (every filtered record, or the post-aggregate rows when grouped)"
+        ],
+        "p_values": {
+          "total": 3,
+          "uncorrected": 3,
+          "basis": "exact",
+          "threshold": 10
+        },
+        "post_window": {
+          "windows_first": false,
+          "window_labels": [
+            "tv_ad",
+            "search_ad"
+          ],
+          "attributes": []
+        }
+      },
+      {
+        "request": 21,
+        "label": "sample=20_tv=0.4695107357280617_search=0.570973197651653",
+        "streamable": false,
+        "streamable_reasons": [
+          "regression REG_OLS holdout requires the buffered path (the held-out rows are scored after the fit)",
+          "windows run over the whole row set (every filtered record, or the post-aggregate rows when grouped)"
+        ],
+        "p_values": {
+          "total": 3,
+          "uncorrected": 3,
+          "basis": "exact",
+          "threshold": 10
+        },
+        "post_window": {
+          "windows_first": false,
+          "window_labels": [
+            "tv_ad",
+            "search_ad"
+          ],
+          "attributes": []
+        }
+      },
+      {
+        "request": 22,
+        "label": "sample=21_tv=0.6169928658836008_search=0.8078046680679184",
+        "streamable": false,
+        "streamable_reasons": [
+          "regression REG_OLS holdout requires the buffered path (the held-out rows are scored after the fit)",
+          "windows run over the whole row set (every filtered record, or the post-aggregate rows when grouped)"
+        ],
+        "p_values": {
+          "total": 3,
+          "uncorrected": 3,
+          "basis": "exact",
+          "threshold": 10
+        },
+        "post_window": {
+          "windows_first": false,
+          "window_labels": [
+            "tv_ad",
+            "search_ad"
+          ],
+          "attributes": []
+        }
+      },
+      {
+        "request": 23,
+        "label": "sample=22_tv=0.40645763366429943_search=0.7189677351872737",
+        "streamable": false,
+        "streamable_reasons": [
+          "regression REG_OLS holdout requires the buffered path (the held-out rows are scored after the fit)",
+          "windows run over the whole row set (every filtered record, or the post-aggregate rows when grouped)"
+        ],
+        "p_values": {
+          "total": 3,
+          "uncorrected": 3,
+          "basis": "exact",
+          "threshold": 10
+        },
+        "post_window": {
+          "windows_first": false,
+          "window_labels": [
+            "tv_ad",
+            "search_ad"
+          ],
+          "attributes": []
+        }
+      },
+      {
+        "request": 24,
+        "label": "sample=23_tv=0.6310430185702727_search=0.9108198300556788",
+        "streamable": false,
+        "streamable_reasons": [
+          "regression REG_OLS holdout requires the buffered path (the held-out rows are scored after the fit)",
+          "windows run over the whole row set (every filtered record, or the post-aggregate rows when grouped)"
+        ],
+        "p_values": {
+          "total": 3,
+          "uncorrected": 3,
+          "basis": "exact",
+          "threshold": 10
+        },
+        "post_window": {
+          "windows_first": false,
+          "window_labels": [
+            "tv_ad",
+            "search_ad"
+          ],
+          "attributes": []
+        }
+      },
+      {
+        "request": 25,
+        "label": "sample=24_tv=0.2483071903062203_search=0.482193967409661",
+        "streamable": false,
+        "streamable_reasons": [
+          "regression REG_OLS holdout requires the buffered path (the held-out rows are scored after the fit)",
+          "windows run over the whole row set (every filtered record, or the post-aggregate rows when grouped)"
+        ],
+        "p_values": {
+          "total": 3,
+          "uncorrected": 3,
+          "basis": "exact",
+          "threshold": 10
+        },
+        "post_window": {
+          "windows_first": false,
+          "window_labels": [
+            "tv_ad",
+            "search_ad"
+          ],
+          "attributes": []
+        }
+      },
+      {
+        "request": 26,
+        "label": "sample=25_tv=0.08834557045286004_search=0.6056357597931343",
+        "streamable": false,
+        "streamable_reasons": [
+          "regression REG_OLS holdout requires the buffered path (the held-out rows are scored after the fit)",
+          "windows run over the whole row set (every filtered record, or the post-aggregate rows when grouped)"
+        ],
+        "p_values": {
+          "total": 3,
+          "uncorrected": 3,
+          "basis": "exact",
+          "threshold": 10
+        },
+        "post_window": {
+          "windows_first": false,
+          "window_labels": [
+            "tv_ad",
+            "search_ad"
+          ],
+          "attributes": []
+        }
+      },
+      {
+        "request": 27,
+        "label": "sample=26_tv=0.5098553553805452_search=0.45446046511569915",
+        "streamable": false,
+        "streamable_reasons": [
+          "regression REG_OLS holdout requires the buffered path (the held-out rows are scored after the fit)",
+          "windows run over the whole row set (every filtered record, or the post-aggregate rows when grouped)"
+        ],
+        "p_values": {
+          "total": 3,
+          "uncorrected": 3,
+          "basis": "exact",
+          "threshold": 10
+        },
+        "post_window": {
+          "windows_first": false,
+          "window_labels": [
+            "tv_ad",
+            "search_ad"
+          ],
+          "attributes": []
+        }
+      },
+      {
+        "request": 28,
+        "label": "sample=27_tv=0.14226812306795267_search=0.3938546270327545",
+        "streamable": false,
+        "streamable_reasons": [
+          "regression REG_OLS holdout requires the buffered path (the held-out rows are scored after the fit)",
+          "windows run over the whole row set (every filtered record, or the post-aggregate rows when grouped)"
+        ],
+        "p_values": {
+          "total": 3,
+          "uncorrected": 3,
+          "basis": "exact",
+          "threshold": 10
+        },
+        "post_window": {
+          "windows_first": false,
+          "window_labels": [
+            "tv_ad",
+            "search_ad"
+          ],
+          "attributes": []
+        }
+      },
+      {
+        "request": 29,
+        "label": "sample=28_tv=0.9417801365603645_search=0.2602199449927365",
+        "streamable": false,
+        "streamable_reasons": [
+          "regression REG_OLS holdout requires the buffered path (the held-out rows are scored after the fit)",
+          "windows run over the whole row set (every filtered record, or the post-aggregate rows when grouped)"
+        ],
+        "p_values": {
+          "total": 3,
+          "uncorrected": 3,
+          "basis": "exact",
+          "threshold": 10
+        },
+        "post_window": {
+          "windows_first": false,
+          "window_labels": [
+            "tv_ad",
+            "search_ad"
+          ],
+          "attributes": []
+        }
+      },
+      {
+        "request": 30,
+        "label": "sample=29_tv=0.7864660924137152_search=0.6193533697950095",
+        "streamable": false,
+        "streamable_reasons": [
+          "regression REG_OLS holdout requires the buffered path (the held-out rows are scored after the fit)",
+          "windows run over the whole row set (every filtered record, or the post-aggregate rows when grouped)"
+        ],
+        "p_values": {
+          "total": 3,
+          "uncorrected": 3,
+          "basis": "exact",
+          "threshold": 10
+        },
+        "post_window": {
+          "windows_first": false,
+          "window_labels": [
+            "tv_ad",
+            "search_ad"
+          ],
+          "attributes": []
+        }
+      },
+      {
+        "request": 31,
+        "label": "sample=30_tv=0.6715051443367931_search=0.22361739334327954",
+        "streamable": false,
+        "streamable_reasons": [
+          "regression REG_OLS holdout requires the buffered path (the held-out rows are scored after the fit)",
+          "windows run over the whole row set (every filtered record, or the post-aggregate rows when grouped)"
+        ],
+        "p_values": {
+          "total": 3,
+          "uncorrected": 3,
+          "basis": "exact",
+          "threshold": 10
+        },
+        "post_window": {
+          "windows_first": false,
+          "window_labels": [
+            "tv_ad",
+            "search_ad"
+          ],
+          "attributes": []
+        }
+      },
+      {
+        "request": 32,
+        "label": "sample=31_tv=0.11476504992396831_search=0.42531518189149287",
+        "streamable": false,
+        "streamable_reasons": [
+          "regression REG_OLS holdout requires the buffered path (the held-out rows are scored after the fit)",
+          "windows run over the whole row set (every filtered record, or the post-aggregate rows when grouped)"
+        ],
+        "p_values": {
+          "total": 3,
+          "uncorrected": 3,
+          "basis": "exact",
+          "threshold": 10
+        },
+        "post_window": {
+          "windows_first": false,
+          "window_labels": [
+            "tv_ad",
+            "search_ad"
+          ],
+          "attributes": []
+        }
+      },
+      {
+        "request": 33,
+        "label": "sample=32_tv=0.02911509179288941_search=0.7855458025409893",
+        "streamable": false,
+        "streamable_reasons": [
+          "regression REG_OLS holdout requires the buffered path (the held-out rows are scored after the fit)",
+          "windows run over the whole row set (every filtered record, or the post-aggregate rows when grouped)"
+        ],
+        "p_values": {
+          "total": 3,
+          "uncorrected": 3,
+          "basis": "exact",
+          "threshold": 10
+        },
+        "post_window": {
+          "windows_first": false,
+          "window_labels": [
+            "tv_ad",
+            "search_ad"
+          ],
+          "attributes": []
+        }
+      },
+      {
+        "request": 34,
+        "label": "sample=33_tv=0.37819527190939883_search=0.08284578913438675",
+        "streamable": false,
+        "streamable_reasons": [
+          "regression REG_OLS holdout requires the buffered path (the held-out rows are scored after the fit)",
+          "windows run over the whole row set (every filtered record, or the post-aggregate rows when grouped)"
+        ],
+        "p_values": {
+          "total": 3,
+          "uncorrected": 3,
+          "basis": "exact",
+          "threshold": 10
+        },
+        "post_window": {
+          "windows_first": false,
+          "window_labels": [
+            "tv_ad",
+            "search_ad"
+          ],
+          "attributes": []
+        }
+      },
+      {
+        "request": 35,
+        "label": "sample=34_tv=0.8301905791457876_search=0.061564300493304656",
+        "streamable": false,
+        "streamable_reasons": [
+          "regression REG_OLS holdout requires the buffered path (the held-out rows are scored after the fit)",
+          "windows run over the whole row set (every filtered record, or the post-aggregate rows when grouped)"
+        ],
+        "p_values": {
+          "total": 3,
+          "uncorrected": 3,
+          "basis": "exact",
+          "threshold": 10
+        },
+        "post_window": {
+          "windows_first": false,
+          "window_labels": [
+            "tv_ad",
+            "search_ad"
+          ],
+          "attributes": []
+        }
+      },
+      {
+        "request": 36,
+        "label": "sample=35_tv=0.7575114220635987_search=0.0055138503585256396",
+        "streamable": false,
+        "streamable_reasons": [
+          "regression REG_OLS holdout requires the buffered path (the held-out rows are scored after the fit)",
+          "windows run over the whole row set (every filtered record, or the post-aggregate rows when grouped)"
+        ],
+        "p_values": {
+          "total": 3,
+          "uncorrected": 3,
+          "basis": "exact",
+          "threshold": 10
+        },
+        "post_window": {
+          "windows_first": false,
+          "window_labels": [
+            "tv_ad",
+            "search_ad"
+          ],
+          "attributes": []
+        }
+      },
+      {
+        "request": 37,
+        "label": "sample=36_tv=0.8432826533441529_search=0.6879239453905812",
+        "streamable": false,
+        "streamable_reasons": [
+          "regression REG_OLS holdout requires the buffered path (the held-out rows are scored after the fit)",
+          "windows run over the whole row set (every filtered record, or the post-aggregate rows when grouped)"
+        ],
+        "p_values": {
+          "total": 3,
+          "uncorrected": 3,
+          "basis": "exact",
+          "threshold": 10
+        },
+        "post_window": {
+          "windows_first": false,
+          "window_labels": [
+            "tv_ad",
+            "search_ad"
+          ],
+          "attributes": []
+        }
+      },
+      {
+        "request": 38,
+        "label": "sample=37_tv=0.21099237640076657_search=0.5154762131966035",
+        "streamable": false,
+        "streamable_reasons": [
+          "regression REG_OLS holdout requires the buffered path (the held-out rows are scored after the fit)",
+          "windows run over the whole row set (every filtered record, or the post-aggregate rows when grouped)"
+        ],
+        "p_values": {
+          "total": 3,
+          "uncorrected": 3,
+          "basis": "exact",
+          "threshold": 10
+        },
+        "post_window": {
+          "windows_first": false,
+          "window_labels": [
+            "tv_ad",
+            "search_ad"
+          ],
+          "attributes": []
+        }
+      },
+      {
+        "request": 39,
+        "label": "sample=38_tv=0.3514145798380555_search=0.3250755784172539",
+        "streamable": false,
+        "streamable_reasons": [
+          "regression REG_OLS holdout requires the buffered path (the held-out rows are scored after the fit)",
+          "windows run over the whole row set (every filtered record, or the post-aggregate rows when grouped)"
+        ],
+        "p_values": {
+          "total": 3,
+          "uncorrected": 3,
+          "basis": "exact",
+          "threshold": 10
+        },
+        "post_window": {
+          "windows_first": false,
+          "window_labels": [
+            "tv_ad",
+            "search_ad"
+          ],
+          "attributes": []
+        }
+      },
+      {
+        "request": 40,
+        "label": "sample=39_tv=0.5774013476427499_search=0.6591608729082602",
+        "streamable": false,
+        "streamable_reasons": [
+          "regression REG_OLS holdout requires the buffered path (the held-out rows are scored after the fit)",
+          "windows run over the whole row set (every filtered record, or the post-aggregate rows when grouped)"
+        ],
+        "p_values": {
+          "total": 3,
+          "uncorrected": 3,
+          "basis": "exact",
+          "threshold": 10
+        },
+        "post_window": {
+          "windows_first": false,
+          "window_labels": [
+            "tv_ad",
+            "search_ad"
+          ],
+          "attributes": []
+        }
+      }
+    ],
+    "sweep": {
+      "axes": [
+        {
+          "name": "tv",
+          "count": 40,
+          "range": {
+            "min": 0,
+            "max": 0.95
+          }
+        },
+        {
+          "name": "search",
+          "count": 40,
+          "range": {
+            "min": 0,
+            "max": 0.95
+          }
+        }
+      ],
+      "mode": "lhs",
+      "expanded_count": 40,
+      "rng_seed": 4503367277782454912,
+      "labels": [
+        "sample=0_tv=0.3074802960905435_search=0.7433009819334716",
+        "sample=1_tv=0.43342413799459845_search=0.9271132675184132",
+        "sample=2_tv=0.2737078304732204_search=0.1856243005955715",
+        "sample=3_tv=0.05488168727706386_search=0.7689297931585485",
+        "sample=4_tv=0.5254881244814542_search=0.02992584954826812",
+        "sample=5_tv=0.30911695909539993_search=0.3014182518514443",
+        "sample=6_tv=0.15359904008878456_search=0.1411542774909779",
+        "sample=7_tv=0.18113689325745644_search=0.11251918765950096",
+        "sample=8_tv=0.4020205525713519_search=0.8510722969494102",
+        "sample=9_tv=0.9000741167440869_search=0.5588803451126618",
+        "sample=10_tv=0.9067581448332867_search=0.6956152304109033",
+        "sample=11_tv=0.8763740207092392_search=0.5279319751350654",
+        "sample=12_tv=0.5523110783139714_search=0.8938184612901375",
+        "sample=13_tv=0.7147733445587816_search=0.33270021204869854",
+        "sample=14_tv=0.6553516559843326_search=0.2825657819923835",
+        "sample=15_tv=0.7763619549122267_search=0.4483236139182516",
+        "sample=16_tv=0.2247621180265922_search=0.19650030442900493",
+        "sample=17_tv=0.7066613312984145_search=0.3644715131007652",
+        "sample=18_tv=0.48385863313656563_search=0.15192078110315838",
+        "sample=19_tv=0.00723998158295405_search=0.8619629968756751",
+        "sample=20_tv=0.4695107357280617_search=0.570973197651653",
+        "sample=21_tv=0.6169928658836008_search=0.8078046680679184",
+        "sample=22_tv=0.40645763366429943_search=0.7189677351872737",
+        "sample=23_tv=0.6310430185702727_search=0.9108198300556788",
+        "sample=24_tv=0.2483071903062203_search=0.482193967409661",
+        "sample=25_tv=0.08834557045286004_search=0.6056357597931343",
+        "sample=26_tv=0.5098553553805452_search=0.45446046511569915",
+        "sample=27_tv=0.14226812306795267_search=0.3938546270327545",
+        "sample=28_tv=0.9417801365603645_search=0.2602199449927365",
+        "sample=29_tv=0.7864660924137152_search=0.6193533697950095",
+        "sample=30_tv=0.6715051443367931_search=0.22361739334327954",
+        "sample=31_tv=0.11476504992396831_search=0.42531518189149287",
+        "sample=32_tv=0.02911509179288941_search=0.7855458025409893",
+        "sample=33_tv=0.37819527190939883_search=0.08284578913438675",
+        "sample=34_tv=0.8301905791457876_search=0.061564300493304656",
+        "sample=35_tv=0.7575114220635987_search=0.0055138503585256396",
+        "sample=36_tv=0.8432826533441529_search=0.6879239453905812",
+        "sample=37_tv=0.21099237640076657_search=0.5154762131966035",
+        "sample=38_tv=0.3514145798380555_search=0.3250755784172539",
+        "sample=39_tv=0.5774013476427499_search=0.6591608729082602"
+      ]
+    },
+    "fits": [
+      {
+        "name": "best",
+        "type": "REG_OLS",
+        "target": "sales",
+        "predictors": [
+          "tv_ad",
+          "search_ad",
+          "north"
+        ],
+        "cohort": "m.pulse",
+        "from_sweep": {
+          "regression": "sales"
+        }
+      }
+    ]
+  },
+  "errors": [],
+  "warnings": []
+}

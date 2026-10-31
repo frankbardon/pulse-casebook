@@ -1,0 +1,394 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "stages": [
+      {
+        "data": [
+          {
+            "region": "North",
+            "store": "S1",
+            "store_rev": 1122.5
+          },
+          {
+            "region": "North",
+            "store": "S2",
+            "store_rev": 654.9
+          },
+          {
+            "region": "North",
+            "store": "S3",
+            "store_rev": 865.7
+          },
+          {
+            "region": "South",
+            "store": "S4",
+            "store_rev": 658.4
+          },
+          {
+            "region": "South",
+            "store": "S5",
+            "store_rev": 1046.2
+          },
+          {
+            "region": "South",
+            "store": "S6",
+            "store_rev": 799
+          }
+        ],
+        "metadata": {
+          "total_rows": 48,
+          "filtered_rows": 48,
+          "cohort_file": "w.pulse"
+        },
+        "components": {
+          "aggregations": [
+            {
+              "label": "store_rev",
+              "n": 47,
+              "n_null": 1,
+              "groups": [
+                {
+                  "group_key": [
+                    "North",
+                    "S1"
+                  ],
+                  "n": 8,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 1122.5
+                  }
+                },
+                {
+                  "group_key": [
+                    "North",
+                    "S2"
+                  ],
+                  "n": 8,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 654.9
+                  }
+                },
+                {
+                  "group_key": [
+                    "North",
+                    "S3"
+                  ],
+                  "n": 7,
+                  "n_null": 1,
+                  "operator": {
+                    "sum": 865.7
+                  }
+                },
+                {
+                  "group_key": [
+                    "South",
+                    "S4"
+                  ],
+                  "n": 8,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 658.4
+                  }
+                },
+                {
+                  "group_key": [
+                    "South",
+                    "S5"
+                  ],
+                  "n": 8,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 1046.2
+                  }
+                },
+                {
+                  "group_key": [
+                    "South",
+                    "S6"
+                  ],
+                  "n": 8,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 799
+                  }
+                }
+              ]
+            }
+          ],
+          "groupers": [
+            {
+              "field": "region",
+              "total_n": 48,
+              "operator": {
+                "buckets": [
+                  {
+                    "count": 24,
+                    "key": "North",
+                    "label": "North"
+                  },
+                  {
+                    "count": 24,
+                    "key": "South",
+                    "label": "South"
+                  }
+                ],
+                "dict_size": 2
+              }
+            },
+            {
+              "field": "store",
+              "total_n": 48,
+              "operator": {
+                "buckets": [
+                  {
+                    "count": 8,
+                    "key": "S1",
+                    "label": "S1"
+                  },
+                  {
+                    "count": 8,
+                    "key": "S2",
+                    "label": "S2"
+                  },
+                  {
+                    "count": 8,
+                    "key": "S3",
+                    "label": "S3"
+                  },
+                  {
+                    "count": 8,
+                    "key": "S4",
+                    "label": "S4"
+                  },
+                  {
+                    "count": 8,
+                    "key": "S5",
+                    "label": "S5"
+                  },
+                  {
+                    "count": 8,
+                    "key": "S6",
+                    "label": "S6"
+                  }
+                ],
+                "dict_size": 6
+              }
+            }
+          ],
+          "run": {
+            "total_records": 48,
+            "filtered_records": 48,
+            "null_records": 1
+          }
+        }
+      },
+      {
+        "data": [
+          {
+            "avg_store": 881.0333333333333,
+            "best_store": 1122.5,
+            "region": "North"
+          },
+          {
+            "avg_store": 834.5333333333333,
+            "best_store": 1046.2,
+            "region": "South"
+          }
+        ],
+        "metadata": {
+          "total_rows": 6,
+          "filtered_rows": 6
+        },
+        "components": {
+          "aggregations": [
+            {
+              "label": "avg_store",
+              "n": 6,
+              "n_null": 0,
+              "groups": [
+                {
+                  "group_key": [
+                    "North"
+                  ],
+                  "n": 3,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 2643.1
+                  }
+                },
+                {
+                  "group_key": [
+                    "South"
+                  ],
+                  "n": 3,
+                  "n_null": 0,
+                  "operator": {
+                    "sum": 2503.6
+                  }
+                }
+              ]
+            },
+            {
+              "label": "best_store",
+              "n": 6,
+              "n_null": 0,
+              "groups": [
+                {
+                  "group_key": [
+                    "North"
+                  ],
+                  "n": 3,
+                  "n_null": 0,
+                  "operator": {
+                    "max": 1122.5
+                  }
+                },
+                {
+                  "group_key": [
+                    "South"
+                  ],
+                  "n": 3,
+                  "n_null": 0,
+                  "operator": {
+                    "max": 1046.2
+                  }
+                }
+              ]
+            }
+          ],
+          "groupers": [
+            {
+              "field": "region",
+              "total_n": 6,
+              "operator": {
+                "buckets": [
+                  {
+                    "count": 3,
+                    "key": "North",
+                    "label": "North"
+                  },
+                  {
+                    "count": 3,
+                    "key": "South",
+                    "label": "South"
+                  }
+                ],
+                "dict_size": 2
+              }
+            }
+          ],
+          "run": {
+            "total_records": 6,
+            "filtered_records": 6,
+            "null_records": 0
+          }
+        }
+      }
+    ],
+    "final": {
+      "data": [
+        {
+          "avg_store": 881.0333333333333,
+          "best_store": 1122.5,
+          "region": "North"
+        },
+        {
+          "avg_store": 834.5333333333333,
+          "best_store": 1046.2,
+          "region": "South"
+        }
+      ],
+      "metadata": {
+        "total_rows": 6,
+        "filtered_rows": 6
+      },
+      "components": {
+        "aggregations": [
+          {
+            "label": "avg_store",
+            "n": 6,
+            "n_null": 0,
+            "groups": [
+              {
+                "group_key": [
+                  "North"
+                ],
+                "n": 3,
+                "n_null": 0,
+                "operator": {
+                  "sum": 2643.1
+                }
+              },
+              {
+                "group_key": [
+                  "South"
+                ],
+                "n": 3,
+                "n_null": 0,
+                "operator": {
+                  "sum": 2503.6
+                }
+              }
+            ]
+          },
+          {
+            "label": "best_store",
+            "n": 6,
+            "n_null": 0,
+            "groups": [
+              {
+                "group_key": [
+                  "North"
+                ],
+                "n": 3,
+                "n_null": 0,
+                "operator": {
+                  "max": 1122.5
+                }
+              },
+              {
+                "group_key": [
+                  "South"
+                ],
+                "n": 3,
+                "n_null": 0,
+                "operator": {
+                  "max": 1046.2
+                }
+              }
+            ]
+          }
+        ],
+        "groupers": [
+          {
+            "field": "region",
+            "total_n": 6,
+            "operator": {
+              "buckets": [
+                {
+                  "count": 3,
+                  "key": "North",
+                  "label": "North"
+                },
+                {
+                  "count": 3,
+                  "key": "South",
+                  "label": "South"
+                }
+              ],
+              "dict_size": 2
+            }
+          }
+        ],
+        "run": {
+          "total_records": 6,
+          "filtered_records": 6,
+          "null_records": 0
+        }
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

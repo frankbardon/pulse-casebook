@@ -1,0 +1,6 @@
+[{"name":"region","type":"categorical_u8","nullable":false},
+ {"name":"age","type":"u8","nullable":true},
+ {"name":"signup","type":"date","nullable":false},
+ {"name":"income","type":"f64","nullable":true},
+ {"name":"opted_in","type":"packed_bool","nullable":false},
+ {"name":"tier","type":"u4","nullable":true}]

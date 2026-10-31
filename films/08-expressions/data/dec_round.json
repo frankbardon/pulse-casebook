@@ -1,0 +1,45 @@
+{
+ "cohort": {
+  "filename": "e.pulse"
+ },
+ "attributes": [
+  {
+   "type": "ATTR_FORMULA",
+   "label": "markup",
+   "expression": "price / cost"
+  },
+  {
+   "type": "ATTR_FORMULA",
+   "label": "rd",
+   "expression": "round(price / 5)"
+  },
+  {
+   "type": "ATTR_FORMULA",
+   "label": "rf",
+   "expression": "round(float(price) / 5)"
+  }
+ ],
+ "groups": [
+  {
+   "type": "GROUP_CATEGORY",
+   "field": "id"
+  }
+ ],
+ "aggregations": [
+  {
+   "type": "AGG_MAX",
+   "field": "markup",
+   "label": "markup"
+  },
+  {
+   "type": "AGG_MAX",
+   "field": "rd",
+   "label": "rd"
+  },
+  {
+   "type": "AGG_MAX",
+   "field": "rf",
+   "label": "rf"
+  }
+ ]
+}

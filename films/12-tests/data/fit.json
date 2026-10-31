@@ -1,0 +1,4 @@
+{"cohort":{"filename":"t.pulse"},
+"regressions":[{"type":"REG_OLS","target":"spend","predictors":["visits","tenure"],"covariance":{"type":"hc3"}},
+{"type":"REG_OLS","target":"spend","predictors":["visits","tenure"],"holdout":"id > 192"},
+{"type":"REG_BAYES_LINEAR","target":"spend","predictors":["visits","tenure"]}]}

@@ -1,0 +1,211 @@
+1
+00:00:04,250 --> 00:00:09,549
+Pulse windows. One value per row, read from its neighbours, taken apart in depth.
+
+2
+00:00:10,349 --> 00:00:23,840
+By default, windows run sixth, after aggregation. They see one row per group, or one row per record when nothing was grouped. When a group or an aggregation reads a window label, the windows run first instead.
+
+3
+00:00:24,640 --> 00:00:29,789
+Each window names a type and a field, a partition and an order, plus its own parameters.
+
+4
+00:00:30,589 --> 00:00:38,682
+It adds one new column to every row and collapses nothing. Without a label, the column is the type and the field joined together.
+
+5
+00:00:39,482 --> 00:00:47,895
+A window needs its partition sorted, so any window turns streaming off. Windows that share a partition and an order share one sort.
+
+6
+00:00:48,695 --> 00:00:53,076
+Every window shares three ideas. Here are twelve rows, as they're stored.
+
+7
+00:00:53,876 --> 00:01:00,775
+Partition carves them into independent slices, here by region. A window never reads across a partition.
+
+8
+00:01:01,575 --> 00:01:05,764
+Order sorts each slice. That order is the direction the window scans.
+
+9
+00:01:06,564 --> 00:01:11,863
+And the frame bounds which rows the current row may read, such as the two before it and itself.
+
+10
+00:01:12,663 --> 00:01:19,583
+Nulls always sort last, whichever direction you choose. Descending reverses only the values that exist.
+
+11
+00:01:20,383 --> 00:01:28,626
+The order is the scan order, not the response order. Rows come back as they went in, so add a sort to the request if you need them ordered.
+
+12
+00:01:29,426 --> 00:01:38,010
+Ordering by a grouper's key follows that grouper, so day of week runs Monday first. Only a plain text column sorts alphabetically.
+
+13
+00:01:38,810 --> 00:01:45,133
+Lag reads a value from earlier in the partition, by an offset you choose. A null carries straight through.
+
+14
+00:01:45,933 --> 00:01:47,712
+Lead reads forward instead.
+
+15
+00:01:48,512 --> 00:01:52,680
+At the edge there is no neighbour, so you get null, or a default you set.
+
+16
+00:01:53,480 --> 00:01:57,840
+Delta subtracts the earlier value, so it reads in the field's own units.
+
+17
+00:01:58,640 --> 00:02:05,069
+Percent change divides by it instead, giving a fraction. If either side is null, both return null.
+
+18
+00:02:05,869 --> 00:02:14,410
+From February to March, sales went from zero to thirty. Delta says thirty. Percent change says null, because it won't divide by zero.
+
+19
+00:02:15,210 --> 00:02:19,847
+Use points when the metric is already a rate, and the fraction when the base matters.
+
+20
+00:02:20,647 --> 00:02:27,311
+Running sum and running average read everything so far: a frame with no start, ending at the current row.
+
+21
+00:02:28,111 --> 00:02:36,055
+April is null. It's skipped, not counted as zero. The total holds, and the average divides by the values that exist.
+
+22
+00:02:36,855 --> 00:02:41,492
+A moving average reads a frame bounded on both sides, like the last three months.
+
+23
+00:02:42,292 --> 00:02:45,713
+Shift the frame and it centres on the current month instead.
+
+24
+00:02:46,513 --> 00:02:55,609
+Leave one end open and Pulse refuses it, at predict and at the run alike, because that's a running average. Near the start, the frame is simply shorter.
+
+25
+00:02:56,409 --> 00:03:03,308
+An exponentially weighted moving average blends each value with everything before it, weighting recent values more.
+
+26
+00:03:04,108 --> 00:03:12,500
+Set either alpha or decay, never both. Decay is one minus alpha, and a higher alpha follows the latest value more closely.
+
+27
+00:03:13,300 --> 00:03:18,172
+A null row returns null, but the smoothing carries on to the next real value.
+
+28
+00:03:18,972 --> 00:03:28,452
+For carry-over, such as media adstock, use the distributed lag window. It weights each value and the ones before it through a lag kernel, and sums them.
+
+29
+00:03:29,252 --> 00:03:38,924
+Here a geometric kernel halves the weight at each lag, two lags back. March is thirty, plus nothing from February, plus a quarter of January's twelve.
+
+30
+00:03:39,724 --> 00:03:51,700
+Lags before the partition starts add zero, so there is no seed, unlike smoothing. A null row emits null and adds nothing. The old adstock name is refused, and the error names the new one.
+
+31
+00:03:52,500 --> 00:03:58,631
+Ranking windows read no field. The order is their whole input, here sales from highest to lowest.
+
+32
+00:03:59,431 --> 00:04:02,468
+Row number counts one, two, three, and never ties.
+
+33
+00:04:03,268 --> 00:04:06,049
+Rank lets ties share a place, then skips ahead.
+
+34
+00:04:06,849 --> 00:04:10,292
+Dense rank lets ties share a place, with no gap after.
+
+35
+00:04:11,092 --> 00:04:17,244
+The null sorts last and still gets a rank. Name a field on a ranking window and Pulse refuses it.
+
+36
+00:04:18,044 --> 00:04:22,660
+The share window gives each row its share of the partition total, as a fraction.
+
+37
+00:04:23,460 --> 00:04:28,951
+Make it cumulative and it runs down the order, a capture curve that ends at exactly one.
+
+38
+00:04:29,751 --> 00:04:33,940
+A null row reads null, and the cumulative share carries straight through it.
+
+39
+00:04:34,740 --> 00:04:39,868
+The lift window divides that share by a base column's share, which builds a gains table.
+
+40
+00:04:40,668 --> 00:04:45,796
+By default, windows run after aggregation, so they can work on the result rows.
+
+41
+00:04:46,596 --> 00:04:50,892
+Group the dates by month, sum the sales, then window over the totals.
+
+42
+00:04:51,692 --> 00:04:56,543
+That gives a cumulative total and a month-on-month change in a single request.
+
+43
+00:04:57,343 --> 00:05:04,455
+Now turn it around. Here an aggregation reads the window's label: the average month-on-month change in each region.
+
+44
+00:05:05,255 --> 00:05:11,962
+North changes by six on average, South by three. The response holds only the aggregation rows.
+
+45
+00:05:12,762 --> 00:05:21,901
+The read is the trigger. The window runs over the filtered records first, then the groups read its column like a stored field. Predict reports the plan.
+
+46
+00:05:22,701 --> 00:05:31,797
+The window sees one sequence, not one per group, so restart it with a partition. A request weight is refused, so weight the aggregation instead.
+
+47
+00:05:32,597 --> 00:05:38,002
+One request can't filter on a window, because its filters ran before the window existed.
+
+48
+00:05:38,802 --> 00:05:47,365
+So write the column first. Materialize stores the row number as an ordinary field in a new cohort, and the next request filters on it.
+
+49
+00:05:48,165 --> 00:05:50,797
+That keeps the top two months in every region.
+
+50
+00:05:51,597 --> 00:05:59,690
+That's the window toolkit today: offsets, changes, running and moving aggregates, smoothing, carry-over, ranks, shares and lift.
+
+51
+00:06:00,490 --> 00:06:08,114
+More windows are added over time, and embedders can register their own. The manifest always shows what your instance offers.
+
+52
+00:06:08,914 --> 00:06:15,087
+Remember: check the partition and the order before you read the number. Next up, tests and regressions.
+
+53
+00:06:15,887 --> 00:06:17,111
+Pulse windows.

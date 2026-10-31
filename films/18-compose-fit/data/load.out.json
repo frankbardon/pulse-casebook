@@ -1,0 +1,143 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "mean_pred": 347.7619773453959,
+        "mean_sales": 347.1019230769231,
+        "sd_miss": 14.94634977087335,
+        "year": "2024"
+      },
+      {
+        "mean_pred": 334.9952153273838,
+        "mean_sales": 333.8067307692308,
+        "sd_miss": 11.336160296905778,
+        "year": "2025"
+      }
+    ],
+    "metadata": {
+      "total_rows": 208,
+      "filtered_rows": 208,
+      "cohort_file": "h.pulse"
+    },
+    "components": {
+      "aggregations": [
+        {
+          "label": "mean_sales",
+          "n": 208,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "2024"
+              ],
+              "n": 104,
+              "n_null": 0,
+              "operator": {
+                "sum": 36098.6
+              }
+            },
+            {
+              "group_key": [
+                "2025"
+              ],
+              "n": 104,
+              "n_null": 0,
+              "operator": {
+                "sum": 34715.9
+              }
+            }
+          ]
+        },
+        {
+          "label": "mean_pred",
+          "n": 208,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "2024"
+              ],
+              "n": 104,
+              "n_null": 0,
+              "operator": {
+                "sum": 36167.245643921175
+              }
+            },
+            {
+              "group_key": [
+                "2025"
+              ],
+              "n": 104,
+              "n_null": 0,
+              "operator": {
+                "sum": 34839.502394047915
+              }
+            }
+          ]
+        },
+        {
+          "label": "sd_miss",
+          "n": 208,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "2024"
+              ],
+              "n": 104,
+              "n_null": 0,
+              "operator": {
+                "m2": 23232.91063322173,
+                "mean": -0.6600542684728027,
+                "stddev": 14.94634977087335,
+                "variance": 223.39337147328587
+              }
+            },
+            {
+              "group_key": [
+                "2025"
+              ],
+              "n": 104,
+              "n_null": 0,
+              "operator": {
+                "m2": 13364.88714882286,
+                "mean": -1.1884845581530052,
+                "stddev": 11.336160296905778,
+                "variance": 128.50853027714288
+              }
+            }
+          ]
+        }
+      ],
+      "groupers": [
+        {
+          "field": "year",
+          "total_n": 208,
+          "operator": {
+            "buckets": [
+              {
+                "count": 104,
+                "key": "2024",
+                "label": "2024"
+              },
+              {
+                "count": 104,
+                "key": "2025",
+                "label": "2025"
+              }
+            ],
+            "dict_size": 0
+          }
+        }
+      ],
+      "run": {
+        "total_records": 208,
+        "filtered_records": 208,
+        "null_records": 0
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

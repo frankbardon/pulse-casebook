@@ -1,0 +1,13 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "rows_generated": 2000,
+    "rows_rejected": 0,
+    "output_path": "claim.pulse",
+    "warnings": [
+      "conditional relationship conflict: field \"spend\" is already claimed by structural rule 0 (set_expr); dropping pairwise correlation (excluding this field; remaining participants still correlate)"
+    ]
+  },
+  "errors": [],
+  "warnings": []
+}

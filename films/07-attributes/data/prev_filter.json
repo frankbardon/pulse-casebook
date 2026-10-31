@@ -1,0 +1,5 @@
+{"cohort":{"filename":"p.pulse"},
+ "filterers":[{"type":"FILTER_EXPRESSION","expression":"prev_plan != nil && plan != nil && prev_plan != plan"}],
+ "attributes":[{"type":"ATTR_PREVIOUS_STATE","label":"prev_plan","field":"plan","subject_field":"customer","order_field":"wave"}],
+ "groups":[{"type":"GROUP_CATEGORY","field":"customer"}],
+ "aggregations":[{"type":"AGG_COUNT","field":"row","label":"moves"}]}

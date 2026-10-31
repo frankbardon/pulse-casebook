@@ -1,0 +1,58 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "AGG_AVERAGE_spend": 58.8421052631579,
+        "AGG_COUNT_spend": 9.5,
+        "unweighted": 70.77777777777777
+      }
+    ],
+    "metadata": {
+      "total_rows": 10,
+      "filtered_rows": 10,
+      "cohort_file": "p.pulse"
+    },
+    "components": {
+      "aggregations": [
+        {
+          "n": 9,
+          "n_null": 1,
+          "sum_weights": 9.5,
+          "n_eff": 7.92361720807726,
+          "n_weight_invalid": 0
+        },
+        {
+          "n": 9,
+          "n_null": 1,
+          "sum_weights": 9.5,
+          "n_eff": 7.92361720807726,
+          "n_weight_invalid": 0,
+          "operator": {
+            "m2_weighted": 14276.063157894738,
+            "sum": 559,
+            "sum_weighted": 559,
+            "sum_weights_sq": 11.39,
+            "weighted_mean": 58.8421052631579,
+            "weighted_variance": 1679.5368421052633
+          }
+        },
+        {
+          "label": "unweighted",
+          "n": 9,
+          "n_null": 1,
+          "operator": {
+            "sum": 637
+          }
+        }
+      ],
+      "run": {
+        "total_records": 10,
+        "filtered_records": 10,
+        "null_records": 1
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

@@ -1,0 +1,59 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "mean": 68.975,
+        "n": 8,
+        "sd": 7.432655985581468
+      }
+    ],
+    "metadata": {
+      "total_rows": 12,
+      "filtered_rows": 9,
+      "cohort_file": "c.pulse"
+    },
+    "components": {
+      "aggregations": [
+        {
+          "label": "n",
+          "n": 8,
+          "n_null": 1
+        },
+        {
+          "label": "mean",
+          "n": 8,
+          "n_null": 1,
+          "operator": {
+            "sum": 551.8
+          }
+        },
+        {
+          "label": "sd",
+          "n": 8,
+          "n_null": 1,
+          "operator": {
+            "m2": 441.9550000000001,
+            "mean": 68.97500000000001,
+            "stddev": 7.432655985581468,
+            "variance": 55.24437500000001
+          }
+        }
+      ],
+      "filterers": [
+        {
+          "n_in": 12,
+          "n_out": 9,
+          "n_null_input": 0
+        }
+      ],
+      "run": {
+        "total_records": 12,
+        "filtered_records": 9,
+        "null_records": 1
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

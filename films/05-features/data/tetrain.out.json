@@ -1,0 +1,190 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "mean_train": 0.9,
+        "n_train": 10,
+        "occupation": "Artist"
+      },
+      {
+        "mean_train": 0.1864406779661017,
+        "n_train": 59,
+        "occupation": "Engineer"
+      },
+      {
+        "mean_train": 0.26,
+        "n_train": 50,
+        "occupation": "Nurse"
+      },
+      {
+        "mean_train": 0,
+        "n_train": 5,
+        "occupation": "Pilot"
+      },
+      {
+        "mean_train": 0.20454545454545456,
+        "n_train": 44,
+        "occupation": "Teacher"
+      }
+    ],
+    "metadata": {
+      "total_rows": 240,
+      "filtered_rows": 168,
+      "cohort_file": "f.pulse"
+    },
+    "components": {
+      "aggregations": [
+        {
+          "label": "n_train",
+          "n": 168,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "Artist"
+              ],
+              "n": 10,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "Engineer"
+              ],
+              "n": 59,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "Nurse"
+              ],
+              "n": 50,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "Pilot"
+              ],
+              "n": 5,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "Teacher"
+              ],
+              "n": 44,
+              "n_null": 0
+            }
+          ]
+        },
+        {
+          "label": "mean_train",
+          "n": 168,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "Artist"
+              ],
+              "n": 10,
+              "n_null": 0,
+              "operator": {
+                "sum": 9
+              }
+            },
+            {
+              "group_key": [
+                "Engineer"
+              ],
+              "n": 59,
+              "n_null": 0,
+              "operator": {
+                "sum": 11
+              }
+            },
+            {
+              "group_key": [
+                "Nurse"
+              ],
+              "n": 50,
+              "n_null": 0,
+              "operator": {
+                "sum": 13
+              }
+            },
+            {
+              "group_key": [
+                "Pilot"
+              ],
+              "n": 5,
+              "n_null": 0,
+              "operator": {
+                "sum": 0
+              }
+            },
+            {
+              "group_key": [
+                "Teacher"
+              ],
+              "n": 44,
+              "n_null": 0,
+              "operator": {
+                "sum": 9
+              }
+            }
+          ]
+        }
+      ],
+      "groupers": [
+        {
+          "field": "occupation",
+          "total_n": 168,
+          "operator": {
+            "buckets": [
+              {
+                "count": 10,
+                "key": "Artist",
+                "label": "Artist"
+              },
+              {
+                "count": 59,
+                "key": "Engineer",
+                "label": "Engineer"
+              },
+              {
+                "count": 50,
+                "key": "Nurse",
+                "label": "Nurse"
+              },
+              {
+                "count": 5,
+                "key": "Pilot",
+                "label": "Pilot"
+              },
+              {
+                "count": 44,
+                "key": "Teacher",
+                "label": "Teacher"
+              }
+            ],
+            "dict_size": 5
+          }
+        }
+      ],
+      "filterers": [
+        {
+          "n_in": 240,
+          "n_out": 168,
+          "n_null_input": 0
+        }
+      ],
+      "run": {
+        "total_records": 240,
+        "filtered_records": 168,
+        "null_records": 0
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

@@ -15,19 +15,31 @@ const DOCS = path.join(SITE, 'src/content/docs');
 const PUBLIC = path.join(SITE, 'public');
 const GENERATED = path.join(SITE, 'src/generated');
 
-// Operator-name prefix → topic. A film covers the topic in depth where one exists.
+// Operator-name prefix → topic. `films` lists film topics (the folder name after
+// NN-), best first: the topic page links the first one whose folder exists as the
+// film to learn it from. `also` lists the other films that teach part of the topic.
+// Films are found by folder, so renumbering a folder never touches this list.
 const TOPICS = [
-  { prefix: 'FEAT', slug: 'features', title: 'Features', film: '03-features' },
-  { prefix: 'FILTER', slug: 'filters', title: 'Filters', film: '04-filters' },
-  { prefix: 'ATTR', slug: 'attributes', title: 'Attributes', film: '05-attributes' },
-  { prefix: 'GROUP', slug: 'groups', title: 'Groups', film: '02-concepts' },
-  { prefix: 'AGG', slug: 'aggregators', title: 'Aggregators', film: '06-aggregators' },
-  { prefix: 'WIN', slug: 'windows', title: 'Windows', film: '07-windows' },
-  { prefix: 'TEST', slug: 'tests', title: 'Tests', film: '08-tests' },
-  { prefix: 'REG', slug: 'regression', title: 'Regression', film: '08-tests' },
-  { prefix: 'MAT', slug: 'matrices', title: 'Matrices', film: '09-matrices' },
-  { prefix: 'OVERLAY', slug: 'overlays', title: 'Overlays', film: '10-overlays' },
+  { prefix: 'FEAT', slug: 'features', title: 'Features', films: ['features'], also: ['derived'] },
+  { prefix: 'FILTER', slug: 'filters', title: 'Filters', films: ['filters'], also: ['expressions', 'time', 'derived'] },
+  { prefix: 'ATTR', slug: 'attributes', title: 'Attributes', films: ['attributes'], also: ['expressions', 'time', 'compose-fit'] },
+  { prefix: 'GROUP', slug: 'groups', title: 'Groups', films: ['groupers', 'concepts'], also: ['crosstabs', 'time'] },
+  { prefix: 'AGG', slug: 'aggregators', title: 'Aggregators', films: ['aggregators'], also: ['cohort', 'weights', 'embedding'] },
+  { prefix: 'WIN', slug: 'windows', title: 'Windows', films: ['windows'], also: ['time', 'compose-fit'] },
+  { prefix: 'TEST', slug: 'tests', title: 'Tests', films: ['tests'], also: ['asking', 'weights', 'synth'] },
+  { prefix: 'REG', slug: 'regression', title: 'Regression', films: ['tests'], also: ['compose-sweep', 'compose-fit'] },
+  { prefix: 'MAT', slug: 'matrices', title: 'Matrices', films: ['matrices'], also: ['sem'] },
+  { prefix: 'OVERLAY', slug: 'overlays', title: 'Overlays', films: ['overlays'], also: ['crosstabs', 'compose-sweep', 'weights', 'time'] },
 ];
+// The five parts of the series (SERIES-RULES.md §4), by folder number.
+const PARTS = [
+  { from: 1, title: 'Foundations' },
+  { from: 5, title: 'The request spine' },
+  { from: 12, title: 'Analysis' },
+  { from: 17, title: 'Beyond one request' },
+  { from: 22, title: 'Around Pulse' },
+];
+const partOf = num => PARTS.findLastIndex(p => num >= p.from);
 const topicOf = op => TOPICS.find(t => op.startsWith(t.prefix + '_'));
 
 // ---------- helpers ----------
@@ -80,20 +92,42 @@ fs.mkdirSync(GENERATED, { recursive: true });
 const films = fs.readdirSync(FILMS).filter(d => /^\d\d-/.test(d)).sort().map(dir => {
   const html = read(path.join(FILMS, dir, 'index.html'));
   const num = parseInt(dir, 10), topic = dir.replace(/^\d\d-/, '');
-  const title = decode(html.match(/<title>([^<]*)<\/title>/)[1].replace(/^Pulse\s+/, ''));
+  const title = decode(html.match(/<title>([^<]*)<\/title>/)[1].replace(/^Pulse:?\s+/, '').replace(/^./, c => c.toUpperCase()));
   const intro = decode((html.match(/<p class="intro">([\s\S]*?)<\/p>/) || [, ''])[1].replace(/<[^>]+>/g, ''));
   const dataDir = path.join(FILMS, dir, 'data');
   const dataFiles = fs.existsSync(dataDir) ? walk(dataDir, rel => rel.endsWith('.pulse')) : [];
-  return { dir, num, topic, title, intro, dataFiles };
+  return { dir, num, topic, title, intro, dataFiles, part: partOf(num) };
 });
-copyFiles(FILMS, path.join(PUBLIC, 'films'), ['kit/film-kit.js']);
-fs.copyFileSync(path.join(FILMS, 'plates/index.html'), path.join(PUBLIC, 'plates/index.html'));
+// Each topic's film: the first of its `films` that has a folder.
+for (const t of TOPICS) {
+  t.film = t.films.map(n => films.find(f => f.topic === n)).find(Boolean);
+  t.inDepth = t.film && t.film.topic === t.films[0];
+  t.alsoFilms = (t.also || []).map(n => films.find(f => f.topic === n)).filter(f => f && f !== t.film);
+}
+const filmLink = f => `[Film ${f.num}: ${f.title}](/films/${f.topic}/)`;
+copyFiles(FILMS, path.join(PUBLIC, 'films'), ['kit/film-kit.js', 'kit/pulse-ring.js'].filter(f => fs.existsSync(path.join(FILMS, f))));
+copyFiles(path.join(FILMS, 'plates'), path.join(PUBLIC, 'plates'), ['index.html', 'pulse-ring.svg']);
 for (const f of films) {
   const keep = ['index.html', 'scenes.js', 'narration.mp3', 'subtitles.srt'].filter(n => fs.existsSync(path.join(FILMS, f.dir, n)));
-  copyFiles(path.join(FILMS, f.dir), path.join(PUBLIC, 'films', f.dir), [...keep, ...f.dataFiles.map(d => `data/${d}`)]);
+  f.published = [...keep, ...f.dataFiles.map(d => `data/${d}`)];
+  copyFiles(path.join(FILMS, f.dir), path.join(PUBLIC, 'films', f.dir), f.published);
   f.topics = recordUsage('film', f.dir, `Film ${f.num}: ${f.title}`, `/films/${f.topic}/`,
     f.dataFiles.filter(isRequest).map(d => path.join(FILMS, f.dir, 'data', d)));
 }
+
+// ---------- redirects for renumbered folders (films/slugs.json) ----------
+// astro.config.mjs redirects each old folder page. A static build cannot redirect a
+// file, so public/_redirects (Netlify / Cloudflare Pages syntax) sends each file under
+// an old folder to the same file in the new one, and anything else there to the film page.
+const { folders } = JSON.parse(read(path.join(FILMS, 'slugs.json')));
+const redirectLines = [];
+for (const [from, to] of Object.entries(folders)) {
+  const f = films.find(x => x.dir === to);
+  if (from === to || !f) continue;
+  for (const file of f.published) redirectLines.push(`/films/${from}/${file} /films/${to}/${file} 301`);
+  redirectLines.push(`/films/${from} /films/${to}/ 301`, `/films/${from}/ /films/${to}/ 301`, `/films/${from}/* /films/${f.topic}/ 301`);
+}
+write(path.join(PUBLIC, '_redirects'), redirectLines.join('\n') + '\n');
 
 function transcript(srt) {
   return srt.trim().split(/\n\s*\n/).map(block => block.split('\n').slice(2).join(' ').trim()).filter(Boolean);
@@ -168,7 +202,7 @@ ${sections}
 // ---------- film pages ----------
 for (const f of films) {
   const lines = fs.existsSync(path.join(FILMS, f.dir, 'subtitles.srt')) ? transcript(read(path.join(FILMS, f.dir, 'subtitles.srt'))) : [];
-  const related = TOPICS.filter(t => t.film === f.dir);
+  const related = TOPICS.filter(t => t.film === f || t.alsoFilms.includes(f));
   const cases = studies.filter(s => related.some(t => s.topics.includes(t.slug)));
   const dataList = f.dataFiles.map(d => `- [\`${d}\`](/films/${f.dir}/data/${d})`).join('\n');
   write(path.join(DOCS, 'films', `${f.topic}.mdx`), `---
@@ -206,7 +240,7 @@ ${lines.map(mdxText).join('\n\n')}
 
 // ---------- topics ----------
 for (const [i, t] of TOPICS.entries()) {
-  const film = films.find(f => f.dir === t.film);
+  const film = t.film;
   const uses = usage[t.slug];
   const all = new Map();
   for (const u of uses) for (const [op, n] of u.ops) all.set(op, (all.get(op) || 0) + n);
@@ -218,7 +252,7 @@ sidebar:
   order: ${i + 1}
 ---
 
-${film ? `**Learn it:** [Film ${film.num}: ${film.title}](/films/${film.topic}/)${t.film === '02-concepts' ? ' introduces them; no film covers them in depth yet.' : ''}` : ''}
+${film ? `**Learn it:** ${filmLink(film)}${t.inDepth ? '' : ' introduces them; no film covers them in depth yet.'}` : ''}${t.alsoFilms.length ? `\n\n**Also in:** ${t.alsoFilms.map(filmLink).join(' · ')}` : ''}
 
 ## Operators in use
 
@@ -229,17 +263,27 @@ ${where ? `## Where they appear\n\n| Used in | Operators |\n|---|---|\n${where}\
 `);
 }
 
-// ---------- reference: film data (single source: films/DATA.md) ----------
+// ---------- reference: film data (films/DATA.md plus each film's data/README.md) ----------
+// The index block in DATA.md is replaced by every film's own notes, found by folder.
+const dataNotes = films.filter(f => fs.existsSync(path.join(FILMS, f.dir, 'data/README.md'))).map(f => {
+  const md = read(path.join(FILMS, f.dir, 'data/README.md'));
+  const head = md.match(/^#\s+(.+)$/m)?.[1].trim() || f.title;
+  return `### ${head}\n\nFilm ${f.num}, [${f.title}](/films/${f.topic}/) · \`films/${f.dir}/data/\`\n\n` +
+    md.replace(/^#\s+.+\n/, '').replace(/^(#{2,4}) /gm, '$1# ').trim();
+}).join('\n\n');
 write(path.join(DOCS, 'reference/film-data.md'), `---
 title: Film data
-description: The cohorts, requests and captured Pulse outputs behind films 6 to 10.
+description: The cohorts, requests and captured Pulse outputs behind the films.
 ---
 
-${read(path.join(FILMS, 'DATA.md')).replace(/^#\s+.+\n/, '')}`);
+${read(path.join(FILMS, 'DATA.md')).replace(/^#\s+.+\n/, '')
+  .replace(/The index is written by[^\n]*\n/, '')
+  .replace(/<!-- data-index:start -->[\s\S]*?<!-- data-index:end -->/, () => dataNotes || 'No film records Pulse runs yet.')}`);
 
 // ---------- sidebar ----------
 write(path.join(GENERATED, 'sidebar.json'), JSON.stringify({
-  films: films.map(f => ({ label: `${f.num}. ${f.title}`, slug: `films/${f.topic}` })),
+  films: PARTS.map((p, i) => ({ label: `Part ${i + 1}: ${p.title}`, items: films.filter(f => f.part === i)
+    .map(f => ({ label: `${f.num}. ${f.title}`, slug: `films/${f.topic}` })) })).filter(g => g.items.length),
   cases: studies.map(s => ({ label: s.title.split(':')[0], slug: `case-studies/${s.slug}` })),
   topics: TOPICS.map(t => ({ label: t.title, slug: `topics/${t.slug}` })),
 }, null, 2));

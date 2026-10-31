@@ -1,0 +1,6 @@
+{"cohort":{"filename":"c.pulse"},
+ "filterers":[{"type":"FILTER_RANGE","field":"age","values":["18","65"]}],
+ "attributes":[{"type":"ATTR_FORMULA","label":"senior","expression":"age >= 50 ? 1 : 0"},
+               {"type":"ATTR_ZSCORE","field":"income","label":"z_income"}],
+ "groups":[{"type":"GROUP_CATEGORY","field":"id"}],
+ "aggregations":[{"type":"AGG_MAX","field":"senior","label":"senior"},{"type":"AGG_MAX","field":"z_income","label":"z_income"}]}

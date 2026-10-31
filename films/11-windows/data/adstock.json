@@ -1,0 +1,1 @@
+{"cohort":{"filename":"s.pulse"},"windows":[{"type":"WIN_ADSTOCK","field":"sales","label":"carry","partition_by":["region"],"order_by":[{"field":"date"}],"params":{"decay":0.5}}]}

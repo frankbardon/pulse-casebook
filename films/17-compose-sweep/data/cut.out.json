@@ -1,0 +1,246 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "responses": [
+      {
+        "label": "holdout_from_79",
+        "metadata": {
+          "total_rows": 208,
+          "filtered_rows": 208,
+          "cohort_file": "m.pulse"
+        },
+        "regressions": [
+          {
+            "name": "sales",
+            "type": "REG_OLS",
+            "coefficients": {
+              "(intercept)": 164.83807571348083,
+              "north": 61.87261607994298,
+              "search_ad": 3.1771705817977236,
+              "tv_ad": 1.5647584297466852
+            },
+            "std_errors": {
+              "(intercept)": 4.407568433073444,
+              "north": 2.0785145209761984,
+              "search_ad": 0.29536761755497376,
+              "tv_ad": 0.03760314728773714
+            },
+            "p_values": {
+              "(intercept)": 1.489100429546062e-78,
+              "north": 2.6891074357933905e-65,
+              "search_ad": 2.0274069226161206e-20,
+              "tv_ad": 5.615596460710296e-85
+            },
+            "ci_lower": {
+              "(intercept)": 156.13006952382736,
+              "north": 57.76610756197444,
+              "search_ad": 2.5936145733210982,
+              "tv_ad": 1.4904661199835596
+            },
+            "ci_upper": {
+              "(intercept)": 173.5460819031343,
+              "north": 65.97912459791152,
+              "search_ad": 3.760726590274349,
+              "tv_ad": 1.6390507395098108
+            },
+            "df": 152,
+            "conf_level": 0.95,
+            "r2": 0.9505905017531867,
+            "adj_r2": 0.9496153142877891,
+            "n_obs": 156,
+            "residual_std_err": 12.949665042978703,
+            "holdout": {
+              "n": 52,
+              "n_null": 0,
+              "rmse": 16.117087408079723,
+              "mae": 13.475960404347132,
+              "r2": 0.9320087831014596
+            }
+          }
+        ],
+        "components": {
+          "run": {
+            "total_records": 208,
+            "filtered_records": 208,
+            "null_records": 0
+          }
+        },
+        "returned": {
+          "preset": "custom",
+          "digest": "rp1:d75e499bd87dd45454117bab48551ac3b83827d3c3caa6d86c0d7ccf8ef95f0c"
+        }
+      },
+      {
+        "label": "holdout_from_92",
+        "metadata": {
+          "total_rows": 208,
+          "filtered_rows": 208,
+          "cohort_file": "m.pulse"
+        },
+        "regressions": [
+          {
+            "name": "sales",
+            "type": "REG_OLS",
+            "coefficients": {
+              "(intercept)": 160.10235388735157,
+              "north": 62.0020532026529,
+              "search_ad": 3.2694459663683344,
+              "tv_ad": 1.590585687990359
+            },
+            "std_errors": {
+              "(intercept)": 3.9398916716629917,
+              "north": 2.0148265670442194,
+              "search_ad": 0.27556541182368877,
+              "tv_ad": 0.03645708337318491
+            },
+            "p_values": {
+              "(intercept)": 5.5212735261124754e-92,
+              "north": 3.5388544894420827e-73,
+              "search_ad": 2.684941651930196e-24,
+              "tv_ad": 5.58979838560029e-97
+            },
+            "ci_lower": {
+              "(intercept)": 152.32744695953915,
+              "north": 58.026032961507404,
+              "search_ad": 2.725650449130381,
+              "tv_ad": 1.518641976409485
+            },
+            "ci_upper": {
+              "(intercept)": 167.877260815164,
+              "north": 65.9780734437984,
+              "search_ad": 3.813241483606288,
+              "tv_ad": 1.6625293995712331
+            },
+            "df": 178,
+            "conf_level": 0.95,
+            "r2": 0.9513101473472506,
+            "adj_r2": 0.9504895318531031,
+            "n_obs": 182,
+            "residual_std_err": 13.467941627197298,
+            "holdout": {
+              "n": 26,
+              "n_null": 0,
+              "rmse": 13.313325240836248,
+              "mae": 10.573904698468398,
+              "r2": 0.9320379805749357
+            }
+          }
+        ],
+        "components": {
+          "run": {
+            "total_records": 208,
+            "filtered_records": 208,
+            "null_records": 0
+          }
+        },
+        "returned": {
+          "preset": "custom",
+          "digest": "rp1:d75e499bd87dd45454117bab48551ac3b83827d3c3caa6d86c0d7ccf8ef95f0c"
+        }
+      },
+      {
+        "label": "holdout_from_105",
+        "metadata": {
+          "total_rows": 208,
+          "filtered_rows": 208,
+          "cohort_file": "m.pulse"
+        },
+        "regressions": [
+          {
+            "name": "sales",
+            "type": "REG_OLS",
+            "error": {
+              "code": "PROCESSING_REGRESSION_INSUFFICIENT_DATA",
+              "message": "regression REG_OLS holdout \"week \u003e= params.cut\" held out no scorable row (true on none, or every held-out row has a null target or predictor)",
+              "details": {
+                "holdout": "week \u003e= params.cut",
+                "name": "sales",
+                "reason": "holdout_empty",
+                "regression": "REG_OLS",
+                "slot": "holdout"
+              }
+            }
+          }
+        ],
+        "warnings": [
+          {
+            "code": "PULSE_SLOT_FAILED",
+            "message": "regressions[0] \"sales\" failed with PROCESSING_REGRESSION_INSUFFICIENT_DATA: regression REG_OLS holdout \"week \u003e= params.cut\" held out no scorable row (true on none, or every held-out row has a null target or predictor); its result carries the error and the other slots proceed",
+            "details": {
+              "code": "PROCESSING_REGRESSION_INSUFFICIENT_DATA",
+              "index": 0,
+              "label": "sales",
+              "slot_kind": "regressions"
+            }
+          },
+          {
+            "code": "PULSE_SWEEP_RANK_PATH",
+            "message": "sweep slot \"holdout_from_105\" is left out of the ranking: its response has no \"holdout\" on the path \"regressions.sales.holdout.rmse\"",
+            "details": {
+              "by": "regressions.sales.holdout.rmse",
+              "label": "holdout_from_105",
+              "reason": "missing",
+              "segment": "holdout"
+            }
+          }
+        ],
+        "components": {
+          "run": {
+            "total_records": 208,
+            "filtered_records": 208,
+            "null_records": 0
+          }
+        },
+        "returned": {
+          "preset": "custom",
+          "digest": "rp1:d75e499bd87dd45454117bab48551ac3b83827d3c3caa6d86c0d7ccf8ef95f0c"
+        }
+      }
+    ],
+    "ranking": [
+      {
+        "label": "holdout_from_92",
+        "value": 13.313325240836248,
+        "rank": 1,
+        "slot": 1,
+        "axes": {
+          "cut": 92
+        }
+      },
+      {
+        "label": "holdout_from_79",
+        "value": 16.117087408079723,
+        "rank": 2,
+        "slot": 0,
+        "axes": {
+          "cut": 79
+        }
+      }
+    ]
+  },
+  "errors": [],
+  "warnings": [
+    {
+      "code": "PULSE_SLOT_FAILED",
+      "message": "regressions[0] \"sales\" failed with PROCESSING_REGRESSION_INSUFFICIENT_DATA: regression REG_OLS holdout \"week \u003e= params.cut\" held out no scorable row (true on none, or every held-out row has a null target or predictor); its result carries the error and the other slots proceed",
+      "details": {
+        "code": "PROCESSING_REGRESSION_INSUFFICIENT_DATA",
+        "index": 0,
+        "label": "sales",
+        "request": 2,
+        "slot_kind": "regressions"
+      }
+    },
+    {
+      "code": "PULSE_SWEEP_RANK_PATH",
+      "message": "sweep slot \"holdout_from_105\" is left out of the ranking: its response has no \"holdout\" on the path \"regressions.sales.holdout.rmse\"",
+      "details": {
+        "by": "regressions.sales.holdout.rmse",
+        "label": "holdout_from_105",
+        "reason": "missing",
+        "request": 2,
+        "segment": "holdout"
+      }
+    }
+  ]
+}

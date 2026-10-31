@@ -1,0 +1,18 @@
+{
+  "format_version": "1.1",
+  "data": null,
+  "errors": [
+    {
+      "code": "PULSE_FORMULA_TOTAL_SITE",
+      "message": "total() is only available in ATTR_FORMULA; FILTER_EXPRESSION cannot call it: spend \u003e total(spend) / 6",
+      "details": {
+        "expression": "spend \u003e total(spend) / 6",
+        "site": "FILTER_EXPRESSION",
+        "valid_sites": [
+          "ATTR_FORMULA"
+        ]
+      }
+    }
+  ],
+  "warnings": []
+}

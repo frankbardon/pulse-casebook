@@ -1,0 +1,1 @@
+{"cohort":{"filename":"b.pulse"},"filterers":[{"type":"FILTER_DATE_RANGES","field":"at","params":{"ranges":[{"label":"march","start":"2026-03-01","end":"2026-03-31"}]}}],"groups":[{"type":"GROUP_CATEGORY","field":"id"}],"aggregations":[{"type":"AGG_COUNT","field":"id","label":"n"}]}

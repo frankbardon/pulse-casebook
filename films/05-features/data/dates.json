@@ -1,0 +1,6 @@
+{"cohort":{"filename":"d.pulse"},
+"features":[{"type":"FEAT_DATE_FEATURES","field":"signup"},
+{"type":"FEAT_DATE_FEATURES","field":"event","tz_field":"zone"}],
+"groups":[{"type":"GROUP_CATEGORY","field":"id"}],
+"aggregations":[{"type":"AGG_MIN","field":"signup_year","label":"signup_year"},{"type":"AGG_MIN","field":"signup_month","label":"signup_month"},{"type":"AGG_MIN","field":"signup_day","label":"signup_day"},{"type":"AGG_MIN","field":"signup_dow","label":"signup_dow"},{"type":"AGG_MIN","field":"signup_quarter","label":"signup_quarter"},
+{"type":"AGG_MIN","field":"event_year","label":"event_year"},{"type":"AGG_MIN","field":"event_month","label":"event_month"},{"type":"AGG_MIN","field":"event_day","label":"event_day"},{"type":"AGG_MIN","field":"event_dow","label":"event_dow"},{"type":"AGG_MIN","field":"event_quarter","label":"event_quarter"},{"type":"AGG_MIN","field":"event_hour","label":"event_hour"}]}

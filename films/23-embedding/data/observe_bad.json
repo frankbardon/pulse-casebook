@@ -1,0 +1,1 @@
+{"cohort":{"filename":"orders.pulse"},"aggregations":[{"type":"AGG_AVERAGE","field":"amout","label":"avg"}]}

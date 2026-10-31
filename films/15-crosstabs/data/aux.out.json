@@ -1,0 +1,482 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "metadata": {
+      "total_rows": 600,
+      "filtered_rows": 600,
+      "cohort_file": "t.pulse"
+    },
+    "crosstab": {
+      "shape": "matrix",
+      "matrix": {
+        "row_header": {
+          "fields": [
+            "region"
+          ],
+          "types": [
+            "GROUP_CATEGORY"
+          ]
+        },
+        "column_header": {
+          "fields": [
+            "wave"
+          ],
+          "types": [
+            "GROUP_CATEGORY"
+          ]
+        },
+        "row_keys": [
+          [
+            "East"
+          ],
+          [
+            "North"
+          ],
+          [
+            "South"
+          ],
+          [
+            "West"
+          ]
+        ],
+        "column_keys": [
+          [
+            "W1"
+          ],
+          [
+            "W2"
+          ]
+        ],
+        "cells": [
+          [
+            {
+              "value": 6.385381964388283,
+              "present": true
+            },
+            {
+              "value": 6.6833784874337105,
+              "present": true
+            }
+          ],
+          [
+            {
+              "value": 6.497073359149839,
+              "present": true
+            },
+            {
+              "value": 6.96956323238472,
+              "present": true
+            }
+          ],
+          [
+            {
+              "value": 6.179724286605776,
+              "present": true
+            },
+            {
+              "value": 6.424848585040352,
+              "present": true
+            }
+          ],
+          [
+            {
+              "value": 6.159148037671348,
+              "present": true
+            },
+            {
+              "value": 6.726443719939314,
+              "present": true
+            }
+          ]
+        ],
+        "row_margins": [
+          {
+            "value": 6.534114448472294,
+            "present": true
+          },
+          {
+            "value": 6.713614318211082,
+            "present": true
+          },
+          {
+            "value": 6.298736929666465,
+            "present": true
+          },
+          {
+            "value": 6.448122204682978,
+            "present": true
+          }
+        ],
+        "column_margins": [
+          {
+            "value": 6.329783803371776,
+            "present": true
+          },
+          {
+            "value": 6.71836702998814,
+            "present": true
+          }
+        ],
+        "grand_total": {
+          "value": 6.518261334045537,
+          "present": true
+        },
+        "cell_label": "wmean",
+        "normalize_applied": "none"
+      }
+    },
+    "components": {
+      "crosstab": {
+        "cell_counts": [
+          [
+            69,
+            73
+          ],
+          [
+            100,
+            90
+          ],
+          [
+            72,
+            71
+          ],
+          [
+            59,
+            66
+          ]
+        ],
+        "cell_components": [
+          [
+            {
+              "m2_weighted": 211.46511883974725,
+              "n": 67,
+              "n_eff": 61.264218860017245,
+              "n_null": 2,
+              "n_weight_invalid": 0,
+              "sum": 444.678,
+              "sum_weighted": 444.678,
+              "sum_weights": 69.64,
+              "sum_weights_sq": 79.160882,
+              "weighted_mean": 6.385381964388283,
+              "weighted_variance": 3.0807855308820984
+            },
+            {
+              "m2_weighted": 247.52250874740614,
+              "n": 72,
+              "n_eff": 66.194048673129,
+              "n_null": 1,
+              "n_weight_invalid": 0,
+              "sum": 463.773,
+              "sum_weighted": 463.773,
+              "sum_weights": 69.392,
+              "sum_weights_sq": 72.74445,
+              "weighted_mean": 6.6833784874337105,
+              "weighted_variance": 3.6191734230232506
+            }
+          ],
+          [
+            {
+              "m2_weighted": 315.06338517762873,
+              "n": 99,
+              "n_eff": 90.08128704334344,
+              "n_null": 1,
+              "n_weight_invalid": 0,
+              "sum": 656.003,
+              "sum_weighted": 656.003,
+              "sum_weights": 100.969,
+              "sum_weights_sq": 113.172661,
+              "weighted_mean": 6.497073359149839,
+              "weighted_variance": 3.151610851140141
+            },
+            {
+              "m2_weighted": 319.31486440420036,
+              "n": 87,
+              "n_eff": 80.41681309375623,
+              "n_null": 3,
+              "n_weight_invalid": 0,
+              "sum": 595.361,
+              "sum_weighted": 595.361,
+              "sum_weights": 85.423,
+              "sum_weights_sq": 90.740837,
+              "weighted_mean": 6.96956323238472,
+              "weighted_variance": 3.782320746765696
+            }
+          ],
+          [
+            {
+              "m2_weighted": 227.71253384013156,
+              "n": 69,
+              "n_eff": 63.8375992251827,
+              "n_null": 3,
+              "n_weight_invalid": 0,
+              "sum": 435.72,
+              "sum_weighted": 435.72,
+              "sum_weights": 70.508,
+              "sum_weights_sq": 77.875392,
+              "weighted_mean": 6.179724286605776,
+              "weighted_variance": 3.2760622351402944
+            },
+            {
+              "m2_weighted": 198.61095534949433,
+              "n": 69,
+              "n_eff": 62.68816563384917,
+              "n_null": 2,
+              "n_weight_invalid": 0,
+              "sum": 427.503,
+              "sum_weighted": 427.503,
+              "sum_weights": 66.539,
+              "sum_weights_sq": 70.626385,
+              "weighted_mean": 6.424848585040352,
+              "weighted_variance": 3.030423951380008
+            }
+          ],
+          [
+            {
+              "m2_weighted": 198.34557108623508,
+              "n": 58,
+              "n_eff": 53.08553799172626,
+              "n_null": 1,
+              "n_weight_invalid": 0,
+              "sum": 367.541,
+              "sum_weighted": 367.541,
+              "sum_weights": 59.674,
+              "sum_weights_sq": 67.080158,
+              "weighted_mean": 6.159148037671348,
+              "weighted_variance": 3.3804678577604235
+            },
+            {
+              "m2_weighted": 227.5504946092515,
+              "n": 65,
+              "n_eff": 59.71885614900803,
+              "n_null": 1,
+              "n_weight_invalid": 0,
+              "sum": 416.757,
+              "sum_weighted": 416.757,
+              "sum_weights": 61.958,
+              "sum_weights_sq": 64.2811,
+              "weighted_mean": 6.726443719939314,
+              "weighted_variance": 3.7329061748950343
+            }
+          ]
+        ],
+        "row_margin_counts": [
+          142,
+          190,
+          143,
+          125
+        ],
+        "row_margin_components": [
+          {
+            "m2_weighted": 462.07419517089596,
+            "n": 139,
+            "n_eff": 127.2496282355645,
+            "n_null": 3,
+            "n_weight_invalid": 0,
+            "sum": 908.451,
+            "sum_weighted": 908.451,
+            "sum_weights": 139.032,
+            "sum_weights_sq": 151.90533200000002,
+            "weighted_mean": 6.534114448472294,
+            "weighted_variance": 3.347587480952938
+          },
+          {
+            "m2_weighted": 644.7087323061073,
+            "n": 186,
+            "n_eff": 170.37605653746374,
+            "n_null": 4,
+            "n_weight_invalid": 0,
+            "sum": 1251.364,
+            "sum_weighted": 1251.364,
+            "sum_weights": 186.392,
+            "sum_weights_sq": 203.913498,
+            "weighted_mean": 6.713614318211082,
+            "weighted_variance": 3.477543433945949
+          },
+          {
+            "m2_weighted": 428.38041136252536,
+            "n": 138,
+            "n_eff": 126.4757943536258,
+            "n_null": 5,
+            "n_weight_invalid": 0,
+            "sum": 863.223,
+            "sum_weighted": 863.223,
+            "sum_weights": 137.047,
+            "sum_weights_sq": 148.501777,
+            "weighted_mean": 6.298736929666465,
+            "weighted_variance": 3.1487677887974406
+          },
+          {
+            "m2_weighted": 435.67865111154936,
+            "n": 123,
+            "n_eff": 112.62333848843014,
+            "n_null": 2,
+            "n_weight_invalid": 0,
+            "sum": 784.298,
+            "sum_weighted": 784.298,
+            "sum_weights": 121.632,
+            "sum_weights_sq": 131.361258,
+            "weighted_mean": 6.448122204682978,
+            "weighted_variance": 3.611634152725225
+          }
+        ],
+        "column_margin_counts": [
+          300,
+          300
+        ],
+        "column_margin_components": [
+          {
+            "m2_weighted": 958.9527658407341,
+            "n": 293,
+            "n_eff": 268.24236999860534,
+            "n_null": 7,
+            "n_weight_invalid": 0,
+            "sum": 1903.942,
+            "sum_weighted": 1903.942,
+            "sum_weights": 300.791,
+            "sum_weights_sq": 337.289093,
+            "weighted_mean": 6.329783803371776,
+            "weighted_variance": 3.1987376733815696
+          },
+          {
+            "m2_weighted": 1004.2105053227533,
+            "n": 293,
+            "n_eff": 268.9934102827398,
+            "n_null": 7,
+            "n_weight_invalid": 0,
+            "sum": 1903.394,
+            "sum_weighted": 1903.394,
+            "sum_weights": 283.312,
+            "sum_weights_sq": 298.392772,
+            "weighted_mean": 6.71836702998814,
+            "weighted_variance": 3.557094651742587
+          }
+        ],
+        "grand_total_count": 600,
+        "grand_total_components": {
+          "m2_weighted": 1985.1929654804037,
+          "n": 586,
+          "n_eff": 536.7092147720778,
+          "n_null": 14,
+          "n_weight_invalid": 0,
+          "sum": 3807.336,
+          "sum_weighted": 3807.336,
+          "sum_weights": 584.103,
+          "sum_weights_sq": 635.681865,
+          "weighted_mean": 6.518261334045537,
+          "weighted_variance": 3.4045322446984563
+        },
+        "row_margin_aggregations": [
+          {
+            "base": {
+              "value": 139,
+              "present": true,
+              "components": {
+                "n": 139,
+                "n_null": 0
+              }
+            }
+          },
+          {
+            "base": {
+              "value": 186,
+              "present": true,
+              "components": {
+                "n": 186,
+                "n_null": 0
+              }
+            }
+          },
+          {
+            "base": {
+              "value": 138,
+              "present": true,
+              "components": {
+                "n": 138,
+                "n_null": 0
+              }
+            }
+          },
+          {
+            "base": {
+              "value": 123,
+              "present": true,
+              "components": {
+                "n": 123,
+                "n_null": 0
+              }
+            }
+          }
+        ],
+        "column_margin_aggregations": [
+          {
+            "base": {
+              "value": 293,
+              "present": true,
+              "components": {
+                "n": 293,
+                "n_null": 0
+              }
+            }
+          },
+          {
+            "base": {
+              "value": 293,
+              "present": true,
+              "components": {
+                "n": 293,
+                "n_null": 0
+              }
+            }
+          }
+        ],
+        "grand_total_aggregations": {
+          "base": {
+            "value": 586,
+            "present": true,
+            "components": {
+              "n": 586,
+              "n_null": 0
+            }
+          }
+        },
+        "row_key_components": [
+          {
+            "count": 142,
+            "key": "East",
+            "label": "East"
+          },
+          {
+            "count": 190,
+            "key": "North",
+            "label": "North"
+          },
+          {
+            "count": 143,
+            "key": "South",
+            "label": "South"
+          },
+          {
+            "count": 125,
+            "key": "West",
+            "label": "West"
+          }
+        ],
+        "column_key_components": [
+          {
+            "count": 300,
+            "key": "W1",
+            "label": "W1"
+          },
+          {
+            "count": 300,
+            "key": "W2",
+            "label": "W2"
+          }
+        ],
+        "included_records": 600
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

@@ -1,0 +1,90 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "orders": 75,
+        "ts": "promo"
+      },
+      {
+        "orders": 72,
+        "ts": "launch"
+      },
+      {
+        "orders": 153,
+        "ts": "unmatched"
+      }
+    ],
+    "metadata": {
+      "total_rows": 300,
+      "filtered_rows": 300,
+      "cohort_file": "g.pulse"
+    },
+    "components": {
+      "aggregations": [
+        {
+          "label": "orders",
+          "n": 300,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "promo"
+              ],
+              "n": 75,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "launch"
+              ],
+              "n": 72,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "unmatched"
+              ],
+              "n": 153,
+              "n_null": 0
+            }
+          ]
+        }
+      ],
+      "groupers": [
+        {
+          "field": "ts",
+          "total_n": 300,
+          "operator": {
+            "buckets": [
+              {
+                "count": 75,
+                "key": "promo",
+                "label": "promo"
+              },
+              {
+                "count": 72,
+                "key": "launch",
+                "label": "launch"
+              },
+              {
+                "count": 153,
+                "key": "unmatched",
+                "label": "unmatched"
+              }
+            ],
+            "n_ranges": 2,
+            "unmatched_label": "unmatched"
+          }
+        }
+      ],
+      "run": {
+        "total_records": 300,
+        "filtered_records": 300,
+        "null_records": 0
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

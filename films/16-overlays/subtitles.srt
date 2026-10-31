@@ -1,0 +1,215 @@
+1
+00:00:04,250 --> 00:00:06,754
+Reading a finished result against something.
+
+2
+00:00:07,554 --> 00:00:11,253
+Overlays run last, on a result that is already computed.
+
+3
+00:00:12,053 --> 00:00:15,986
+Each spec adds one layer to the response, in the order you list them.
+
+4
+00:00:16,786 --> 00:00:25,989
+A layer is a read-only sibling keyed to the result's rows and columns. Run with or without overlays, the base figures are byte-identical.
+
+5
+00:00:26,789 --> 00:00:34,456
+Use one for a figure derived from the result: a share, an index, a change, a z-score, or a test between cells.
+
+6
+00:00:35,256 --> 00:00:39,125
+A spec names its kind, its scope, and what it compares against.
+
+7
+00:00:39,925 --> 00:00:50,002
+The reference can be a margin, a sibling group, an earlier point in the series, another cohort, an earlier chain stage, another Compose slot, or a named matrix.
+
+8
+00:00:50,802 --> 00:01:00,261
+Every layer is a scalar, a series or a matrix, with named parts for multi-output kinds. Indices centre on a hundred, deltas on zero.
+
+9
+00:01:01,061 --> 00:01:06,701
+The request that carries the spec decides the host, and the host decides which kinds make sense.
+
+10
+00:01:07,501 --> 00:01:13,653
+On a crosstab with columns, predict and the runtime both refuse an index against the prior point.
+
+11
+00:01:14,453 --> 00:01:19,261
+On a crosstab of region by plan, overlays read the cells and their margins.
+
+12
+00:01:20,061 --> 00:01:26,000
+Share of row turns counts into each region's plan mix. North leans basic, East leans pro.
+
+13
+00:01:26,800 --> 00:01:34,595
+Share of row reads the row margin only: a column-axis reference is refused. Crosstabs themselves are film fifteen.
+
+14
+00:01:35,395 --> 00:01:41,078
+A chi-square layer tests the whole table at once. Here plan mix clearly depends on region.
+
+15
+00:01:41,878 --> 00:01:48,243
+Pairwise overlays test one region against another in the same crosstab, with a raw p-value per pair.
+
+16
+00:01:49,043 --> 00:01:53,360
+Ask for letters, and each cell lists the regions it beats at five percent.
+
+17
+00:01:54,160 --> 00:02:01,080
+North leads on basic, South on plus, and East on pro. Minimum sample sizes are still yours to check.
+
+18
+00:02:01,880 --> 00:02:06,197
+A formula overlay computes your own figure from the host's variables.
+
+19
+00:02:06,997 --> 00:02:15,218
+Here, lift: each plan's share in a region against its share overall. East buys pro at one point six times the overall rate.
+
+20
+00:02:16,018 --> 00:02:21,701
+The variables are fixed per shape, and predict catches an unknown name before any row is read.
+
+21
+00:02:22,501 --> 00:02:26,605
+On a monthly series, overlays compare each point with earlier ones.
+
+22
+00:02:27,405 --> 00:02:30,229
+Index against prior shows month-on-month change.
+
+23
+00:02:31,029 --> 00:02:39,357
+Index against a baseline sets January twenty twenty-four to a hundred, so March twenty twenty-five reads two hundred and twenty-one.
+
+24
+00:02:40,157 --> 00:02:48,869
+Year over year compares each month with the same month a year before. The first year has nothing to compare, so it is null, with no warning.
+
+25
+00:02:49,669 --> 00:02:57,016
+Over two or more groupers, a series overlay runs once per partition. By default it runs down the last grouper.
+
+26
+00:02:57,816 --> 00:03:04,736
+Here, each region's twenty twenty-five revenue is indexed on its own twenty twenty-four. South grew most.
+
+27
+00:03:05,536 --> 00:03:12,179
+A rolling z-score asks whether a point is unusual against the few points before it, using their sample spread.
+
+28
+00:03:12,979 --> 00:03:19,387
+December twenty twenty-four stands out at more than six standard deviations above the three months before it.
+
+29
+00:03:20,187 --> 00:03:26,702
+By default a point needs a full window of earlier points, so the first three months are null, with no warning.
+
+30
+00:03:27,502 --> 00:03:33,078
+Set min periods to two, and March twenty twenty-four answers, at one point one nine.
+
+31
+00:03:33,878 --> 00:03:38,707
+Leave out the window, or set min periods out of range, and predict refuses it.
+
+32
+00:03:39,507 --> 00:03:43,760
+A sibling overlay compares every group with one named group, here North.
+
+33
+00:03:44,560 --> 00:03:49,368
+East trails North by about three thousand six hundred, an index of eighty-four.
+
+34
+00:03:50,168 --> 00:03:59,712
+Name a sibling that is not there, and every entry comes back null with a warning. The request still succeeds, so read the warnings before you report a figure.
+
+35
+00:04:00,512 --> 00:04:07,795
+On a facet, overlays compare a subset with a population cohort: here, this year's sign-ups against everyone.
+
+36
+00:04:08,595 --> 00:04:15,579
+Pro runs about nine percent above its overall share, but a chi-square says a shift that size is well within chance.
+
+37
+00:04:16,379 --> 00:04:22,958
+Population overlays ride on the facet request, not the process request, and they refuse a set weight.
+
+38
+00:04:23,758 --> 00:04:28,758
+In Compose, overlays compare one slot with another after every slot has run.
+
+39
+00:04:29,558 --> 00:04:36,926
+Indexing twenty twenty-five against twenty twenty-four shows every cell grew, with South's pro plan almost doubling.
+
+40
+00:04:37,726 --> 00:04:44,219
+A chi-square says the mix itself changed. On this kind the scalar is the p-value, so read the summary.
+
+41
+00:04:45,019 --> 00:04:48,568
+The slots must line up on keys, schema and dictionaries.
+
+42
+00:04:49,368 --> 00:04:56,501
+A grouped request can carry a matrix, such as a correlation for each region. That grouped result is a host too.
+
+43
+00:04:57,301 --> 00:05:05,352
+A group summary names the matrix in its reference and reads every bucket. Its primary layer is each cell's mean across the regions.
+
+44
+00:05:06,152 --> 00:05:14,651
+The minimum, maximum, range and group count ride beside it as named parts. Minutes and tickets vary most from region to region.
+
+45
+00:05:15,451 --> 00:05:20,814
+Descriptive overlays read weighted figures from a weighted host, with no extra setting.
+
+46
+00:05:21,614 --> 00:05:29,942
+Inferential overlays return p-values. On a weighted host they run on each cell's effective base; only a few refuse a weight.
+
+47
+00:05:30,742 --> 00:05:38,771
+A multiplicity block adds adjusted p-values beside the raw ones, per layer, row, column, request or Compose batch.
+
+48
+00:05:39,571 --> 00:05:42,480
+Predict lists each overlay and whether it streams.
+
+49
+00:05:43,280 --> 00:05:50,968
+An index against the prior point keeps one number and streams. Windows, siblings and year-back lookups need the whole series.
+
+50
+00:05:51,768 --> 00:05:57,941
+The manifest lists every kind with its shapes, scopes, parts and flags, so you can pick by intent.
+
+51
+00:05:58,741 --> 00:06:05,832
+That's the toolkit today: shares, indices, deltas, z-scores, tests, structure and flows, formulas and ranks.
+
+52
+00:06:06,632 --> 00:06:11,120
+More are added over time, and the manifest shows what your instance offers.
+
+53
+00:06:11,920 --> 00:06:14,467
+Remember: the base result never moves.
+
+54
+00:06:15,267 --> 00:06:16,619
+Pulse overlays.

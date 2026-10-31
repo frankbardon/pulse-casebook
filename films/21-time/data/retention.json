@@ -1,0 +1,45 @@
+{
+ "cohort": {
+  "filename": "p.pulse"
+ },
+ "attributes": [
+  {
+   "type": "ATTR_PREVIOUS_STATE",
+   "field": "plan",
+   "subject_field": "subject",
+   "order_field": "month",
+   "label": "prev"
+  }
+ ],
+ "crosstab": {
+  "rows": [
+   {
+    "type": "GROUP_CATEGORY",
+    "field": "prev"
+   }
+  ],
+  "columns": [
+   {
+    "type": "GROUP_CATEGORY",
+    "field": "plan"
+   }
+  ],
+  "cell": {
+   "type": "AGG_COUNT",
+   "field": "subject",
+   "label": "n"
+  }
+ },
+ "overlays": [
+  {
+   "scope": "row",
+   "params": {
+    "absorbing": [
+     "churned"
+    ]
+   },
+   "kind": "OVERLAY_RETENTION",
+   "name": "retention"
+  }
+ ]
+}

@@ -1,0 +1,3 @@
+[{"name":"store_no","type":"u32","nullable":false,"description":"Store number, one row per store"},
+{"name":"manager","type":"categorical_u8","nullable":false,"description":"Name of the store manager"},
+{"name":"sqft","type":"u32","nullable":false,"description":"Selling floor area in square feet"}]

@@ -1,0 +1,13 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "rows_generated": 2000,
+    "rows_rejected": 0,
+    "output_path": "rules.pulse",
+    "warnings": [
+      "rule 2 never fired: when \"age \u003e 90\" was true on 0 of 2000 generated row(s), so the rule applied to nothing; it reads \"age\" (f64, normal), and only the values those fields actually generate can match it — check the predicate against each field's own reconstruction"
+    ]
+  },
+  "errors": [],
+  "warnings": []
+}

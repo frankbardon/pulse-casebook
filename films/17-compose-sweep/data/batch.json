@@ -1,0 +1,10 @@
+{"requests": [
+  {"label": "total", "cohort": {"filename": "m.pulse"},
+   "aggregations": [{"type": "AGG_SUM", "field": "sales", "label": "sales"}, {"type": "AGG_SUM", "field": "tv", "label": "tv"}]},
+  {"label": "by_market", "cohort": {"filename": "m.pulse"},
+   "groups": [{"type": "GROUP_CATEGORY", "field": "market"}],
+   "aggregations": [{"type": "AGG_AVERAGE", "field": "sales", "label": "avg_sales"}]},
+  {"cohort": {"filename": "m.pulse"},
+   "filterers": [{"type": "FILTER_RANGE", "field": "tv", "values": ["0", "0"]}],
+   "aggregations": [{"type": "AGG_AVERAGE", "field": "sales", "label": "avg_sales"}]}
+]}

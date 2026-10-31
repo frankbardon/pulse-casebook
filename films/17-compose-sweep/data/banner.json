@@ -1,0 +1,13 @@
+{"banner": {
+  "request": {"cohort": {"filename": "s.pulse"},
+    "crosstab": {"rows": [{"type": "GROUP_CATEGORY", "field": "brand"}],
+                 "cell": {"type": "AGG_COUNT", "field": "id", "label": "n"},
+                 "normalize": "column",
+                 "margins": {"rows": true, "columns": true, "grand": true}}},
+  "sections": [{"label": "all"},
+               {"label": "aware", "filterers": [{"type": "FILTER_TRUE", "field": "aware"}]}],
+  "groups": [{"label": "Gender", "columns": [{"type": "GROUP_CATEGORY", "field": "gender"}]},
+             {"label": "Age", "columns": [{"type": "GROUP_CATEGORY", "field": "age"}]}],
+  "total": true,
+  "overlays": [{"name": "sig", "kind": "OVERLAY_PAIRWISE_PROP_Z", "scope": "column", "params": {"letters": {}}}]
+}}

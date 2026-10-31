@@ -1,0 +1,55 @@
+{
+ "cohort": {
+  "filename": "e.pulse"
+ },
+ "attributes": [
+  {
+   "type": "ATTR_FORMULA",
+   "label": "wd",
+   "expression": "weekday(to_day(created_at))"
+  },
+  {
+   "type": "ATTR_FORMULA",
+   "label": "day",
+   "expression": "to_day(created_at)"
+  },
+  {
+   "type": "ATTR_FORMULA",
+   "label": "months",
+   "expression": "month_index(order_day) - month_index(signup_day)"
+  },
+  {
+   "type": "ATTR_FORMULA",
+   "label": "wk",
+   "expression": "date_trunc(\"week\", order_day)"
+  }
+ ],
+ "groups": [
+  {
+   "type": "GROUP_CATEGORY",
+   "field": "id"
+  }
+ ],
+ "aggregations": [
+  {
+   "type": "AGG_MAX",
+   "field": "wd",
+   "label": "wd"
+  },
+  {
+   "type": "AGG_MAX",
+   "field": "day",
+   "label": "day"
+  },
+  {
+   "type": "AGG_MAX",
+   "field": "months",
+   "label": "months"
+  },
+  {
+   "type": "AGG_MAX",
+   "field": "wk",
+   "label": "wk"
+  }
+ ]
+}

@@ -1,0 +1,9 @@
+{"sweep": {
+  "mode": "grid",
+  "axes": [{"name": "market", "values": ["north", "south"]}, {"name": "year", "values": ["2024", "2025"]}],
+  "label": "{{market}}_{{year}}",
+  "request": {"cohort": {"filename": "m.pulse"},
+    "filterers": [{"type": "FILTER_INCLUDE", "field": "market", "values": [{"$var": "market"}]},
+                  {"type": "FILTER_RANGE", "field": "year", "values": [{"$var": "year"}, {"$var": "year"}]}],
+    "aggregations": [{"type": "AGG_SUM", "field": "sales", "label": "sales"}, {"type": "AGG_SUM", "field": "tv", "label": "tv"}]}
+}}

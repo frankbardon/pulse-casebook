@@ -1,0 +1,369 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "avg_spend": 20.355,
+        "orders": 33,
+        "plan": "Basic",
+        "region": "East"
+      },
+      {
+        "avg_spend": 41.875882352941176,
+        "orders": 18,
+        "plan": "Plus",
+        "region": "East"
+      },
+      {
+        "avg_spend": 91.38111111111111,
+        "orders": 9,
+        "plan": "Pro",
+        "region": "East"
+      },
+      {
+        "avg_spend": 19.170980392156864,
+        "orders": 52,
+        "plan": "Basic",
+        "region": "North"
+      },
+      {
+        "avg_spend": 44.57703703703704,
+        "orders": 27,
+        "plan": "Plus",
+        "region": "North"
+      },
+      {
+        "avg_spend": 89.76866666666666,
+        "orders": 15,
+        "plan": "Pro",
+        "region": "North"
+      },
+      {
+        "avg_spend": 18.879411764705882,
+        "orders": 38,
+        "plan": "Basic",
+        "region": "South"
+      },
+      {
+        "avg_spend": 44.82153846153846,
+        "orders": 27,
+        "plan": "Plus",
+        "region": "South"
+      },
+      {
+        "avg_spend": 83.05818181818182,
+        "orders": 12,
+        "plan": "Pro",
+        "region": "South"
+      },
+      {
+        "avg_spend": 18.0340625,
+        "orders": 32,
+        "plan": "Basic",
+        "region": "West"
+      },
+      {
+        "avg_spend": 46.843333333333334,
+        "orders": 22,
+        "plan": "Plus",
+        "region": "West"
+      }
+    ],
+    "metadata": {
+      "total_rows": 300,
+      "filtered_rows": 300,
+      "cohort_file": "g.pulse"
+    },
+    "components": {
+      "aggregations": [
+        {
+          "label": "orders",
+          "n": 300,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "East",
+                "Basic"
+              ],
+              "n": 33,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "East",
+                "Plus"
+              ],
+              "n": 18,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "East",
+                "Pro"
+              ],
+              "n": 9,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "North",
+                "Basic"
+              ],
+              "n": 52,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "North",
+                "Plus"
+              ],
+              "n": 27,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "North",
+                "Pro"
+              ],
+              "n": 15,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "South",
+                "Basic"
+              ],
+              "n": 38,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "South",
+                "Plus"
+              ],
+              "n": 27,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "South",
+                "Pro"
+              ],
+              "n": 12,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "West",
+                "Basic"
+              ],
+              "n": 32,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "West",
+                "Plus"
+              ],
+              "n": 22,
+              "n_null": 0
+            }
+          ]
+        },
+        {
+          "label": "avg_spend",
+          "n": 288,
+          "n_null": 12,
+          "groups": [
+            {
+              "group_key": [
+                "East",
+                "Basic"
+              ],
+              "n": 30,
+              "n_null": 3,
+              "operator": {
+                "sum": 610.65
+              }
+            },
+            {
+              "group_key": [
+                "East",
+                "Plus"
+              ],
+              "n": 17,
+              "n_null": 1,
+              "operator": {
+                "sum": 711.89
+              }
+            },
+            {
+              "group_key": [
+                "East",
+                "Pro"
+              ],
+              "n": 9,
+              "n_null": 0,
+              "operator": {
+                "sum": 822.43
+              }
+            },
+            {
+              "group_key": [
+                "North",
+                "Basic"
+              ],
+              "n": 51,
+              "n_null": 1,
+              "operator": {
+                "sum": 977.72
+              }
+            },
+            {
+              "group_key": [
+                "North",
+                "Plus"
+              ],
+              "n": 27,
+              "n_null": 0,
+              "operator": {
+                "sum": 1203.58
+              }
+            },
+            {
+              "group_key": [
+                "North",
+                "Pro"
+              ],
+              "n": 15,
+              "n_null": 0,
+              "operator": {
+                "sum": 1346.53
+              }
+            },
+            {
+              "group_key": [
+                "South",
+                "Basic"
+              ],
+              "n": 34,
+              "n_null": 4,
+              "operator": {
+                "sum": 641.9
+              }
+            },
+            {
+              "group_key": [
+                "South",
+                "Plus"
+              ],
+              "n": 26,
+              "n_null": 1,
+              "operator": {
+                "sum": 1165.36
+              }
+            },
+            {
+              "group_key": [
+                "South",
+                "Pro"
+              ],
+              "n": 11,
+              "n_null": 1,
+              "operator": {
+                "sum": 913.64
+              }
+            },
+            {
+              "group_key": [
+                "West",
+                "Basic"
+              ],
+              "n": 32,
+              "n_null": 0,
+              "operator": {
+                "sum": 577.09
+              }
+            },
+            {
+              "group_key": [
+                "West",
+                "Plus"
+              ],
+              "n": 21,
+              "n_null": 1,
+              "operator": {
+                "sum": 983.71
+              }
+            }
+          ]
+        }
+      ],
+      "groupers": [
+        {
+          "field": "region",
+          "total_n": 290,
+          "n_null": 10,
+          "operator": {
+            "buckets": [
+              {
+                "count": 61,
+                "key": "East",
+                "label": "East"
+              },
+              {
+                "count": 95,
+                "key": "North",
+                "label": "North"
+              },
+              {
+                "count": 80,
+                "key": "South",
+                "label": "South"
+              },
+              {
+                "count": 54,
+                "key": "West",
+                "label": "West"
+              }
+            ],
+            "dict_size": 4
+          }
+        },
+        {
+          "field": "plan",
+          "total_n": 295,
+          "n_null": 5,
+          "operator": {
+            "buckets": [
+              {
+                "count": 162,
+                "key": "Basic",
+                "label": "Basic"
+              },
+              {
+                "count": 97,
+                "key": "Plus",
+                "label": "Plus"
+              },
+              {
+                "count": 36,
+                "key": "Pro",
+                "label": "Pro"
+              }
+            ],
+            "dict_size": 3
+          }
+        }
+      ],
+      "run": {
+        "total_records": 300,
+        "filtered_records": 300,
+        "null_records": 0
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

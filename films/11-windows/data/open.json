@@ -1,0 +1,1 @@
+{"cohort":{"filename":"s.pulse"},"windows":[{"type":"WIN_MOVING_AVG","field":"sales","label":"mavg","partition_by":["region"],"order_by":[{"field":"date"}],"frame":{"mode":"rows","preceding":null,"following":0}}]}

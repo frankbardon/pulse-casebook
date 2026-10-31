@@ -1,0 +1,195 @@
+1
+00:00:04,250 --> 00:00:09,549
+Pulse attributes. One derived value for every record, taken apart in depth.
+
+2
+00:00:10,349 --> 00:00:20,533
+By default, attributes run third, after the filters, so they see only the records that survived. Groups, aggregations and windows can all read the new column.
+
+3
+00:00:21,333 --> 00:00:26,632
+Each attribute names a type, a source and a label. The label becomes the new column.
+
+4
+00:00:27,432 --> 00:00:36,357
+The label must be new. Reusing a field name, a feature column or an earlier label is refused, and predict catches it before anything runs.
+
+5
+00:00:37,157 --> 00:00:50,626
+Features add columns before the filters, for every record. Attributes add them after, for the survivors. Two exceptions come later: previous state runs before the filters, and some formulas run after the windows.
+
+6
+00:00:51,426 --> 00:00:59,562
+Row-local attributes read only the record in front of them, so they finish in one pass and stream. So does any score of a bound fit.
+
+7
+00:01:00,362 --> 00:01:09,799
+Two-pass attributes score a row against the whole column or a model. Pulse makes one pass to learn the statistics, then a second to score every row.
+
+8
+00:01:10,599 --> 00:01:20,058
+Percentile rank and previous state are buffered. Percentile sorts the values first, and previous state orders each subject's records, so neither can stream.
+
+9
+00:01:20,858 --> 00:01:30,082
+A formula evaluates an expression for each row. Arithmetic on a null raises an error that stops the whole request, so guard it with a default.
+
+10
+00:01:30,882 --> 00:01:41,407
+Categories read as their labels and sets read as lists. True becomes one and false becomes zero. An expression that does not compile is refused, at predict too.
+
+11
+00:01:42,207 --> 00:01:49,682
+A formula can also call total, which sums an expression over every filtered row and hands the same figure to each one.
+
+12
+00:01:50,482 --> 00:01:54,117
+That makes shares easy: each income divided by the total.
+
+13
+00:01:54,917 --> 00:02:02,733
+A formula with total is two-pass, and total is only allowed in formula attributes, never in a filter or an overlay.
+
+14
+00:02:03,533 --> 00:02:13,461
+Total is weight-aware. Under a frequency weight it sums the weight times the value. A probability weight is refused, because the total would scale with the weights.
+
+15
+00:02:14,261 --> 00:02:23,101
+Attributes run in the order you list them, and a later one can read an earlier one's label: a formula, a z-score of it, then a formula of that.
+
+16
+00:02:23,901 --> 00:02:30,672
+Pulse plans the passes for you. Each layer of two-pass attributes that depend on each other adds one more scan.
+
+17
+00:02:31,472 --> 00:02:40,653
+A few attributes read source columns only, like code-in and the multivariate scores. To chain across requests, use Compose or ProcessChain.
+
+18
+00:02:41,453 --> 00:02:50,570
+Z-score measures how many standard deviations a value sits from the mean, using the population mean and standard deviation of the filtered rows.
+
+19
+00:02:51,370 --> 00:02:57,159
+T-score is the same idea on a friendlier scale: mean fifty, standard deviation ten.
+
+20
+00:02:57,959 --> 00:03:07,247
+Normalized squeezes values into zero to one. Watch the outlier: one income of one hundred and forty pushes everyone else toward the bottom.
+
+21
+00:03:08,047 --> 00:03:12,962
+Percentile gives each value its rank as a percentage. Ties never share a rank.
+
+22
+00:03:13,762 --> 00:03:22,815
+Member ten has no income, so all four scores are null, and an aggregation counts them as missing. A field that never varies scores null too.
+
+23
+00:03:23,615 --> 00:03:31,964
+Code-in flags whether a value is one of a set of codes, like the top two boxes of a rating scale. Its mean is the top-box share.
+
+24
+00:03:32,764 --> 00:03:39,620
+A null counts as no. And if you filter to the codes first, the base shrinks, and the share reads one hundred percent.
+
+25
+00:03:40,420 --> 00:03:47,276
+Date part pulls out one calendar part. I S O weekday counts from Monday as one. A missing date gives null.
+
+26
+00:03:48,076 --> 00:03:55,316
+Set-has and popcount read multi-select answers. A null set has no count, but an empty set counts zero.
+
+27
+00:03:56,116 --> 00:04:03,207
+Previous state reads a long panel. For each record it finds the same subject's state at the previous time point.
+
+28
+00:04:04,007 --> 00:04:10,842
+It is null on a subject's first time point and after a missing state. It never carries an older value forward.
+
+29
+00:04:11,642 --> 00:04:20,333
+Unlike every other attribute, it runs over all the records before the filters. So a date window still sees each subject's true previous plan.
+
+30
+00:04:21,133 --> 00:04:27,072
+That also means an expression filter can read it, here to keep only the customers who changed plan.
+
+31
+00:04:27,872 --> 00:04:36,179
+A row-local formula that reads a window label runs after the windows. Here an adstock window feeds a hill saturation curve.
+
+32
+00:04:36,979 --> 00:04:46,288
+Predict shows the plan: the formula moves to a post-window phase, and the windows run over the records first. A regression predict can sit there too.
+
+33
+00:04:47,088 --> 00:04:52,472
+Any other attribute that reads a window label is refused, at predict and at runtime.
+
+34
+00:04:53,272 --> 00:05:00,640
+Regression attributes fit a least-squares model and give every row a diagnostic. Fitted is the model's prediction.
+
+35
+00:05:01,440 --> 00:05:08,765
+Residual is the gap between the actual value and the prediction. Large residuals flag unusual responses.
+
+36
+00:05:09,565 --> 00:05:14,330
+Leverage flags unusual predictor values, which pull hardest on the fit.
+
+37
+00:05:15,130 --> 00:05:23,479
+Each slot refits its own model, or it can score a bound fit instead, without refitting. A null predictor gives null, never zero.
+
+38
+00:05:24,279 --> 00:05:31,967
+Mahalanobis distance measures how far a row sits from the centre of several fields at once, allowing for how they move together.
+
+39
+00:05:32,767 --> 00:05:39,794
+This member is tall but light. Each value looks ordinary on its own, but together they sit far outside the cloud.
+
+40
+00:05:40,594 --> 00:05:50,202
+Principal-component and factor scores place each row on a fitted dimension. All three fit across the whole cohort, never per group, or score a bound fit.
+
+41
+00:05:51,002 --> 00:06:00,290
+S E M score places each row on a latent variable of a structural equation model. With a group, each group scores with its own parameters.
+
+42
+00:06:01,090 --> 00:06:06,687
+Scale score averages a rating battery, and returns null when too few items were answered.
+
+43
+00:06:07,487 --> 00:06:12,551
+Vector distance and profile similarity compare each row with a reference profile.
+
+44
+00:06:13,351 --> 00:06:20,442
+Here's what a null input becomes. Almost every attribute returns null, so an aggregation counts it as missing.
+
+45
+00:06:21,242 --> 00:06:28,226
+Only the two membership flags, code-in and set-has, read zero, so their average counts a missing answer as no.
+
+46
+00:06:29,026 --> 00:06:38,741
+That's the attribute toolkit today: formulas, standard scores, recodes, previous state, regression diagnostics, and multivariate and battery scores.
+
+47
+00:06:39,541 --> 00:06:49,405
+More attributes are added over time, and embedders can register their own through Options dot Extensions. The manifest always shows what your instance offers.
+
+48
+00:06:50,205 --> 00:06:55,866
+Remember: check what a null becomes before you average it. Next up, the expression language.
+
+49
+00:06:56,666 --> 00:06:58,082
+Pulse attributes.

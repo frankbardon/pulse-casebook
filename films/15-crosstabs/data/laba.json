@@ -1,0 +1,3 @@
+{"cohort": {"filename": "t.pulse"},
+ "labels": [{"field": "intent", "table": "intent_names", "mode": "augment"}],
+ "crosstab": {"rows": [{"type": "GROUP_CATEGORY", "field": "intent"}], "columns": [{"type": "GROUP_CATEGORY", "field": "wave"}], "cell": {"type": "AGG_COUNT", "field": "id", "label": "n"}, "normalize": "column", "margins": {"rows": true, "columns": true, "grand": true}}}

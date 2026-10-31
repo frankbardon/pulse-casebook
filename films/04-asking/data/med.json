@@ -1,0 +1,3 @@
+{"cohort":{"filename":"s.pulse"},
+"groups":[{"type":"GROUP_CATEGORY","field":"region"}],
+"aggregations":[{"type":"AGG_MEDIAN","field":"spend","label":"median_spend"}]}

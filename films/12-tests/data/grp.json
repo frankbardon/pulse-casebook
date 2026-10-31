@@ -1,0 +1,4 @@
+{"cohort":{"filename":"t.pulse"},
+"groups":[{"field":"region"}],
+"aggregations":[{"type":"AGG_COUNT","field":"spend"}],
+"tests":[{"type":"TEST_T","field":"spend","split_by":"arm","params":{"reference":"A"}}]}

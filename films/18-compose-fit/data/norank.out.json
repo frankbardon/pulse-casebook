@@ -1,0 +1,16 @@
+{
+  "format_version": "1.1",
+  "data": null,
+  "errors": [
+    {
+      "code": "PULSE_FIT_INVALID",
+      "message": "fits[0]: fit request binds from_sweep, but the sweep has no rank; add sweep.rank so one slot is the winner",
+      "details": {
+        "fit": 0,
+        "name": "best",
+        "reason": "from_sweep_no_rank"
+      }
+    }
+  ],
+  "warnings": []
+}

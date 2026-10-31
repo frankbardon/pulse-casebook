@@ -1,0 +1,4 @@
+{"cohort":{"filename":"s.pulse"},
+"features":[{"type":"FEAT_TRAIN_TEST_SPLIT","params":{"ratios":[0.7,0.15,0.15],"seed":42,"stratify":"plan"}}],
+"groups":[{"type":"GROUP_CATEGORY","field":"id"}],
+"aggregations":[{"type":"AGG_MIN","field":"split","label":"split"}]}

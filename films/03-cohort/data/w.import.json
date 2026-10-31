@@ -1,0 +1,65 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "rows_imported": 80,
+    "schema": {
+      "fields": [
+        {
+          "name": "id",
+          "type": "u8",
+          "nullable": false,
+          "byte_offset": 0,
+          "bit_position": 0,
+          "csv_column_idx": 0,
+          "description": ""
+        },
+        {
+          "name": "visits",
+          "type": "u16",
+          "nullable": false,
+          "byte_offset": 1,
+          "bit_position": 0,
+          "csv_column_idx": 1,
+          "description": ""
+        },
+        {
+          "name": "age",
+          "type": "u8",
+          "nullable": true,
+          "byte_offset": 3,
+          "bit_position": 0,
+          "csv_column_idx": 2,
+          "description": ""
+        }
+      ]
+    },
+    "promoted_fields": [
+      "age"
+    ],
+    "width_warnings": [
+      {
+        "code": "PULSE_IMPORT_WIDTH_PROMOTED",
+        "message": "field \"visits\" promoted from u4 to u16: source row 64 holds a value the width inferred from the sample cannot",
+        "details": {
+          "field": "visits",
+          "from": "u4",
+          "source_row": 64,
+          "to": "u16"
+        }
+      }
+    ]
+  },
+  "errors": [],
+  "warnings": [
+    {
+      "code": "PULSE_IMPORT_WIDTH_PROMOTED",
+      "message": "field \"visits\" promoted from u4 to u16: source row 64 holds a value the width inferred from the sample cannot",
+      "details": {
+        "field": "visits",
+        "from": "u4",
+        "source_row": 64,
+        "to": "u16"
+      }
+    }
+  ]
+}

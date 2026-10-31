@@ -1,0 +1,3 @@
+{"cohort":{"filename":"s.pulse"},
+ "filterers":[{"type":"FILTER_INCLUDE","field":"region","values":["North","West"]}],
+ "tests":[{"type":"TEST_WELCH","field":"income","split_by":"region"}]}

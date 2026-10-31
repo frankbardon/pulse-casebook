@@ -1,0 +1,27 @@
+{
+ "cohort": {
+  "filename": "e.pulse"
+ },
+ "params": {
+  "min_score": 3
+ },
+ "filterers": [
+  {
+   "type": "FILTER_EXPRESSION",
+   "expression": "score >= params.min_scor"
+  }
+ ],
+ "groups": [
+  {
+   "type": "GROUP_CATEGORY",
+   "field": "id"
+  }
+ ],
+ "aggregations": [
+  {
+   "type": "AGG_COUNT",
+   "field": "id",
+   "label": "n"
+  }
+ ]
+}

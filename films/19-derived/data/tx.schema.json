@@ -1,0 +1,4 @@
+[{"name":"receipt","type":"u16","nullable":false,"description":"Receipt number, one row per sale"},
+{"name":"store_no","type":"u32","nullable":false,"description":"Store number that rang up the sale"},
+{"name":"at","type":"datetime","nullable":false,"description":"Instant the sale was rung up, stored in UTC"},
+{"name":"amount","type":"f64","nullable":false,"description":"Sale amount in dollars"}]

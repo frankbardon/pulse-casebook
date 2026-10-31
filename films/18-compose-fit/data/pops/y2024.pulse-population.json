@@ -1,0 +1,48 @@
+{
+  "population_format_version": 1,
+  "name": "y2024",
+  "operator": "MAT_COVARIANCE",
+  "labels": [
+    "tv",
+    "search",
+    "sales"
+  ],
+  "members": [
+    "tv",
+    "search",
+    "sales"
+  ],
+  "basis": "unweighted",
+  "n": 104,
+  "n_mass": 104,
+  "n_weight_invalid": 0,
+  "sum_weights": 104,
+  "sum_weights_sq": 104,
+  "mean": [
+    25.274038461538467,
+    9.56826923076923,
+    327.6240384615383
+  ],
+  "m2": [
+    [
+      51534.47990384611,
+      -1223.9256730769227,
+      82633.52490384613
+    ],
+    [
+      -1223.9256730769227,
+      1284.565288461539,
+      2811.659326923076
+    ],
+    [
+      82633.52490384613,
+      2811.659326923076,
+      363187.6099038455
+    ]
+  ],
+  "provenance": {
+    "cohort": "m.pulse",
+    "fingerprint": "sha256:0df978374969428ecf9597ace4cf3216b4ff81f64f238829050a8cd5a4e60d35",
+    "request_digest": "4fbb51a9a66b045af7cb75b35a03f72f"
+  }
+}

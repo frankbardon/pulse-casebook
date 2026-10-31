@@ -1,0 +1,38 @@
+{
+ "cohort": {
+  "filename": "m.pulse"
+ },
+ "populations": [
+  {
+   "name": "y2024",
+   "path": "pops/y2024.pulse-population.json"
+  }
+ ],
+ "attributes": [
+  {
+   "type": "ATTR_MAHALANOBIS",
+   "label": "d2",
+   "fields": [
+    "tv",
+    "search",
+    "sales"
+   ],
+   "params": {
+    "fit": "y2024"
+   }
+  }
+ ],
+ "groups": [
+  {
+   "type": "GROUP_CATEGORY",
+   "field": "year"
+  }
+ ],
+ "aggregations": [
+  {
+   "type": "AGG_AVERAGE",
+   "field": "d2",
+   "label": "mean_d2"
+  }
+ ]
+}

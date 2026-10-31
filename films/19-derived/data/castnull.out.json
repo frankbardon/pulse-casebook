@@ -1,0 +1,35 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "target": "o_castnull.pulse",
+    "records": 48,
+    "derived_columns": [],
+    "warnings": [
+      {
+        "code": "PULSE_MATERIALIZE_CAST_NULLED",
+        "message": "output column \"revenue\" nulled 41 value(s) its f64 → u16 cast could not represent (on_cast_error: null)",
+        "details": {
+          "column": "revenue",
+          "count": 41,
+          "first_row": 0,
+          "from_type": "f64",
+          "to_type": "u16"
+        }
+      }
+    ]
+  },
+  "errors": [],
+  "warnings": [
+    {
+      "code": "PULSE_MATERIALIZE_CAST_NULLED",
+      "message": "output column \"revenue\" nulled 41 value(s) its f64 → u16 cast could not represent (on_cast_error: null)",
+      "details": {
+        "column": "revenue",
+        "count": 41,
+        "first_row": 0,
+        "from_type": "f64",
+        "to_type": "u16"
+      }
+    }
+  ]
+}

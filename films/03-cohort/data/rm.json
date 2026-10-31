@@ -1,0 +1,42 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "archive": "sales.pulse",
+    "removed": "q4.pulse",
+    "shards": [
+      {
+        "filename": "q1.pulse",
+        "record_count": 30000
+      },
+      {
+        "filename": "q2.pulse",
+        "record_count": 30000
+      },
+      {
+        "filename": "q3.pulse",
+        "record_count": 30000
+      }
+    ]
+  },
+  "errors": [],
+  "warnings": [
+    {
+      "code": "PULSE_SHARD_INDEXES_UPDATED",
+      "message": "shard removed q4.pulse: 1 point-lookup index(es) pruned of the removed shard's sidecar and the index manifest updated",
+      "details": {
+        "action": "removed",
+        "archive": "sales.pulse",
+        "indexes": [
+          {
+            "index_path": "sales.pulse.08b72e07b55c3ac0.idx",
+            "keys": [
+              "id"
+            ],
+            "shard_index_path": "sales.pulse#q4.pulse.08b72e07b55c3ac0.idx"
+          }
+        ],
+        "shard": "q4.pulse"
+      }
+    }
+  ]
+}

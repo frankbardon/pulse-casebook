@@ -1,10 +1,11 @@
 const { chromium } = require('playwright');
 const fs = require('fs');
 (async () => {
-  const b = await chromium.launch({executablePath: process.env.CHROMIUM || undefined});
+  const b = await chromium.launch({executablePath: process.env.CHROMIUM || undefined, args: ['--enable-unsafe-swiftshader']});
   const p = await b.newPage({viewport:{width:1300,height:900}});
   const errs=[]; p.on('pageerror', e=>errs.push(e.message)); p.on('console', m=>{ if(m.type()==='error') errs.push(m.text()); });
   await p.goto('file://'+require('path').resolve(process.argv[2])); await p.waitForTimeout(1500);
+  await p.evaluate(()=>window.__film.ready);   // fonts and the kit's ring renderer
   await p.evaluate(()=>document.fonts.ready);
   await p.evaluate(()=>window.__film.capture(1280));
   const times = process.argv.slice(3).map(Number);

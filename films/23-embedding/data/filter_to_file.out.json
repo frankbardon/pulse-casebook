@@ -1,0 +1,30 @@
+[
+  {
+    "expression": "amount > 50",
+    "output_hash": "50f02afd2dd54f50a6bc5f3239db1d3e29cd42bfd708ae45a9a0a1b3c334afc0",
+    "output_name": "6aabf6867c9729e0_0345937ff897b099.pulse",
+    "reused": false,
+    "row_count": 15
+  },
+  {
+    "expression": "amount > 50",
+    "output_hash": "50f02afd2dd54f50a6bc5f3239db1d3e29cd42bfd708ae45a9a0a1b3c334afc0",
+    "output_name": "6aabf6867c9729e0_0345937ff897b099.pulse",
+    "reused": true,
+    "row_count": 15
+  },
+  {
+    "expression": "with_tax(amount, 0.1) > 55",
+    "output_hash": "50f02afd2dd54f50a6bc5f3239db1d3e29cd42bfd708ae45a9a0a1b3c334afc0",
+    "output_name": "6aabf6867c9729e0_9b6c20d54cb54126.pulse",
+    "reused": false,
+    "row_count": 15
+  },
+  {
+    "expression": "with_tax(amount, 0.1) > 55",
+    "output_hash": "50f02afd2dd54f50a6bc5f3239db1d3e29cd42bfd708ae45a9a0a1b3c334afc0",
+    "output_name": "6aabf6867c9729e0_9b6c20d54cb54126.pulse",
+    "reused": false,
+    "row_count": 15
+  }
+]

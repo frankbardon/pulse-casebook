@@ -1,0 +1,9 @@
+[{"name":"id","type":"u16","nullable":false,"description":"Respondent ID, one row per respondent"},
+{"name":"wave","type":"categorical_u8","nullable":false,"description":"Survey wave: W1 or W2"},
+{"name":"region","type":"categorical_u8","nullable":false,"description":"Region the respondent lives in"},
+{"name":"age","type":"categorical_u8","nullable":false,"description":"Age band: 18-34, 35-54 or 55+"},
+{"name":"aware","type":"categorical_u8","nullable":false,"description":"Aware of the category: yes or no"},
+{"name":"brand","type":"categorical_u8","nullable":true,"description":"Brand used most, asked only of those aware of the category"},
+{"name":"intent","type":"categorical_u8","nullable":false,"description":"Purchase intent code: 1 unlikely, 2 maybe, 3 likely"},
+{"name":"score","type":"f64","nullable":true,"description":"Satisfaction score, 0 to 10; null when skipped"},
+{"name":"wt","type":"f64","nullable":false,"description":"Survey design weight"}]

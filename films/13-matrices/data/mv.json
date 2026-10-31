@@ -1,0 +1,4 @@
+{"cohort":{"filename":"mv.pulse"},
+ "vectors":[{"name":"svc","fields":["items[1]","items[2]","items[3]"]}],
+ "matrices":[{"name":"cor","type":"MAT_CORRELATION","vector":"items"},
+             {"name":"svc","type":"MAT_CORRELATION","vector":"svc"}]}

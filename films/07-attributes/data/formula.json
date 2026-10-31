@@ -1,0 +1,7 @@
+{"cohort":{"filename":"m.pulse"},
+ "filterers":[{"type":"FILTER_RANGE","field":"age","values":["18","65"]}],
+ "attributes":[{"type":"ATTR_FORMULA","label":"per_age","expression":"(income ?? 0) / age"},
+               {"type":"ATTR_FORMULA","label":"north","expression":"region == \"North\""},
+               {"type":"ATTR_FORMULA","label":"food_sport","expression":"has_any(interests, \"food\", \"sport\")"}],
+ "groups":[{"type":"GROUP_CATEGORY","field":"id"}],
+ "aggregations":[{"type":"AGG_MAX","field":"per_age","label":"per_age"},{"type":"AGG_MAX","field":"north","label":"north"},{"type":"AGG_MAX","field":"food_sport","label":"food_sport"}]}

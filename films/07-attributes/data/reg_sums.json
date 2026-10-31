@@ -1,0 +1,3 @@
+{"cohort":{"filename":"reg.pulse"},
+ "attributes":[{"type":"ATTR_REG_FITTED","label":"fitted","target":"sales","predictors":["spend"]},{"type":"ATTR_REG_RESIDUAL","label":"resid","target":"sales","predictors":["spend"]},{"type":"ATTR_REG_LEVERAGE","label":"lev","target":"sales","predictors":["spend"]}],
+ "aggregations":[{"type":"AGG_COUNT","field":"id","label":"n"},{"type":"AGG_SUM","field":"resid","label":"sum_resid"},{"type":"AGG_SUM","field":"lev","label":"sum_lev"}]}

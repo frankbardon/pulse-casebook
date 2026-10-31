@@ -1,0 +1,16 @@
+{
+  "format_version": "1.1",
+  "data": null,
+  "errors": [
+    {
+      "code": "PROCESSING_CONFIG",
+      "message": "aggregations[0]: AGG_MAX is not weight-aware; drop the weight or set \"weight\": null on the slot",
+      "details": {
+        "field": "dwt",
+        "operator": "AGG_MAX",
+        "slot": "aggregations[0]"
+      }
+    }
+  ],
+  "warnings": []
+}

@@ -1,0 +1,54 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "mode": "request",
+    "root": "request",
+    "detail": "terse",
+    "summary": "This request reads `s.pulse` and runs 2 aggregations and 1 test.",
+    "valid": true,
+    "steps": [
+      {
+        "slot": "aggregations[0]",
+        "operator": "AGG_SUM",
+        "fields": [
+          "spend"
+        ],
+        "defaulted": true,
+        "text": "Aggregation 1 runs AGG_SUM on `spend`. AGG_SUM is inferred for `spend` from its type. Total of a numeric field, over all rows or per group."
+      },
+      {
+        "slot": "aggregations[1]",
+        "operator": "AGG_AVERAGE",
+        "fields": [
+          "spend"
+        ],
+        "text": "Aggregation 2 runs AGG_AVERAGE on `spend`. Average of a numeric field, over all rows or per group."
+      },
+      {
+        "slot": "tests[0]",
+        "operator": "TEST_T",
+        "fields": [
+          "spend",
+          "arm"
+        ],
+        "text": "Test 1 runs TEST_T on `spend` split by `arm`. Checks whether a numeric field's average differs from a target value, or between two groups (Welch's version)."
+      }
+    ],
+    "findings": [],
+    "defaults_applied": [
+      {
+        "path": [
+          "Aggregations",
+          "0",
+          "Type"
+        ],
+        "field": "spend",
+        "type": "AGG_SUM",
+        "category": "aggregation",
+        "reason": "f64 → AGG_SUM (rule: numeric default)"
+      }
+    ]
+  },
+  "errors": [],
+  "warnings": []
+}

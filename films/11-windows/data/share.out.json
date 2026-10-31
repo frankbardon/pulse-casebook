@@ -1,0 +1,128 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "carry": 33,
+        "cshare": 0.30434782608695654,
+        "date": "2026-03-01",
+        "month": 3,
+        "region": "North",
+        "sales": 30,
+        "share": 0.21739130434782608
+      },
+      {
+        "carry": 20,
+        "cshare": 0.11976047904191617,
+        "date": "2026-01-01",
+        "month": 1,
+        "region": "South",
+        "sales": 20,
+        "share": 0.11976047904191617
+      },
+      {
+        "carry": 12,
+        "cshare": 0.08695652173913043,
+        "date": "2026-01-01",
+        "month": 1,
+        "region": "North",
+        "sales": 12,
+        "share": 0.08695652173913043
+      },
+      {
+        "carry": 50.5,
+        "cshare": 0.6167664670658682,
+        "date": "2026-04-01",
+        "month": 4,
+        "region": "South",
+        "sales": 31,
+        "share": 0.18562874251497005
+      },
+      {
+        "carry": 6,
+        "cshare": 0.08695652173913043,
+        "date": "2026-02-01",
+        "month": 2,
+        "region": "North",
+        "sales": 0,
+        "share": 0
+      },
+      {
+        "carry": null,
+        "cshare": 0.30434782608695654,
+        "date": "2026-04-01",
+        "month": 4,
+        "region": "North",
+        "share": null
+      },
+      {
+        "carry": 36,
+        "cshare": 0.2754491017964072,
+        "date": "2026-02-01",
+        "month": 2,
+        "region": "South",
+        "sales": 26,
+        "share": 0.15568862275449102
+      },
+      {
+        "carry": 72,
+        "cshare": 1,
+        "date": "2026-06-01",
+        "month": 6,
+        "region": "North",
+        "sales": 48,
+        "share": 0.34782608695652173
+      },
+      {
+        "carry": 44,
+        "cshare": 0.4311377245508982,
+        "date": "2026-03-01",
+        "month": 3,
+        "region": "South",
+        "sales": 26,
+        "share": 0.15568862275449102
+      },
+      {
+        "carry": 55.5,
+        "cshare": 0.6521739130434783,
+        "date": "2026-05-01",
+        "month": 5,
+        "region": "North",
+        "sales": 48,
+        "share": 0.34782608695652173
+      },
+      {
+        "carry": 57.25,
+        "cshare": 1,
+        "date": "2026-06-01",
+        "month": 6,
+        "region": "South",
+        "sales": 35,
+        "share": 0.20958083832335328
+      },
+      {
+        "carry": 51,
+        "cshare": 0.7904191616766467,
+        "date": "2026-05-01",
+        "month": 5,
+        "region": "South",
+        "sales": 29,
+        "share": 0.17365269461077845
+      }
+    ],
+    "metadata": {
+      "total_rows": 12,
+      "filtered_rows": 12,
+      "cohort_file": "s.pulse"
+    },
+    "components": {
+      "run": {
+        "total_records": 12,
+        "filtered_records": 12,
+        "null_records": 0
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

@@ -1,0 +1,79 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "mean_d2": 2.9711538461538494,
+        "year": "2024"
+      },
+      {
+        "mean_d2": 2.9220718675666695,
+        "year": "2025"
+      }
+    ],
+    "metadata": {
+      "total_rows": 208,
+      "filtered_rows": 208,
+      "cohort_file": "m.pulse"
+    },
+    "components": {
+      "aggregations": [
+        {
+          "label": "mean_d2",
+          "n": 208,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "2024"
+              ],
+              "n": 104,
+              "n_null": 0,
+              "operator": {
+                "sum": 309.00000000000034
+              }
+            },
+            {
+              "group_key": [
+                "2025"
+              ],
+              "n": 104,
+              "n_null": 0,
+              "operator": {
+                "sum": 303.89547422693363
+              }
+            }
+          ]
+        }
+      ],
+      "groupers": [
+        {
+          "field": "year",
+          "total_n": 208,
+          "operator": {
+            "buckets": [
+              {
+                "count": 104,
+                "key": "2024",
+                "label": "2024"
+              },
+              {
+                "count": 104,
+                "key": "2025",
+                "label": "2025"
+              }
+            ],
+            "dict_size": 0
+          }
+        }
+      ],
+      "run": {
+        "total_records": 208,
+        "filtered_records": 208,
+        "null_records": 0
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

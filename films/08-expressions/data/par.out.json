@@ -1,0 +1,145 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "alloc": 348.7698986975398,
+        "id": "1",
+        "sum": 348.7698986975398
+      },
+      {
+        "alloc": 607.8147612156296,
+        "id": "4",
+        "sum": 607.8147612156296
+      },
+      {
+        "alloc": 43.41534008683068,
+        "id": "5",
+        "sum": 43.41534008683068
+      }
+    ],
+    "metadata": {
+      "total_rows": 6,
+      "filtered_rows": 3,
+      "cohort_file": "e.pulse"
+    },
+    "components": {
+      "aggregations": [
+        {
+          "label": "alloc",
+          "n": 3,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "1"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 348.7698986975398
+              }
+            },
+            {
+              "group_key": [
+                "4"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 607.8147612156296
+              }
+            },
+            {
+              "group_key": [
+                "5"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "max": 43.41534008683068
+              }
+            }
+          ]
+        },
+        {
+          "label": "sum",
+          "n": 3,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "1"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "sum": 348.7698986975398
+              }
+            },
+            {
+              "group_key": [
+                "4"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "sum": 607.8147612156296
+              }
+            },
+            {
+              "group_key": [
+                "5"
+              ],
+              "n": 1,
+              "n_null": 0,
+              "operator": {
+                "sum": 43.41534008683068
+              }
+            }
+          ]
+        }
+      ],
+      "groupers": [
+        {
+          "field": "id",
+          "total_n": 3,
+          "operator": {
+            "buckets": [
+              {
+                "count": 1,
+                "key": "1",
+                "label": "1"
+              },
+              {
+                "count": 1,
+                "key": "4",
+                "label": "4"
+              },
+              {
+                "count": 1,
+                "key": "5",
+                "label": "5"
+              }
+            ],
+            "dict_size": 0
+          }
+        }
+      ],
+      "filterers": [
+        {
+          "n_in": 6,
+          "n_out": 3,
+          "n_null_input": 0
+        }
+      ],
+      "run": {
+        "total_records": 6,
+        "filtered_records": 3,
+        "null_records": 0
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

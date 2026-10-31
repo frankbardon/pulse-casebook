@@ -1,0 +1,110 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "customer": "C1",
+        "moves": 1
+      },
+      {
+        "customer": "C2",
+        "moves": 1
+      },
+      {
+        "customer": "C3",
+        "moves": 1
+      }
+    ],
+    "metadata": {
+      "total_rows": 12,
+      "filtered_rows": 3,
+      "cohort_file": "p.pulse"
+    },
+    "components": {
+      "aggregations": [
+        {
+          "label": "moves",
+          "n": 3,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "C1"
+              ],
+              "n": 1,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "C2"
+              ],
+              "n": 1,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "C3"
+              ],
+              "n": 1,
+              "n_null": 0
+            }
+          ]
+        }
+      ],
+      "groupers": [
+        {
+          "field": "customer",
+          "total_n": 3,
+          "operator": {
+            "buckets": [
+              {
+                "count": 1,
+                "key": "C1",
+                "label": "C1"
+              },
+              {
+                "count": 1,
+                "key": "C2",
+                "label": "C2"
+              },
+              {
+                "count": 1,
+                "key": "C3",
+                "label": "C3"
+              }
+            ],
+            "dict_size": 4
+          }
+        }
+      ],
+      "filterers": [
+        {
+          "n_in": 12,
+          "n_out": 3,
+          "n_null_input": 0
+        }
+      ],
+      "run": {
+        "total_records": 12,
+        "filtered_records": 3,
+        "null_records": 0
+      },
+      "attributes": [
+        {
+          "label": "prev_plan",
+          "type": "ATTR_PREVIOUS_STATE",
+          "n": 7,
+          "n_null": 5,
+          "operator": {
+            "n_ambiguous": 0,
+            "n_first": 4,
+            "n_gap": 1,
+            "n_subjects": 4
+          }
+        }
+      ]
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

@@ -1,0 +1,130 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "valid": true,
+    "schema_info": {
+      "field_count": 9,
+      "fields": [
+        "store_no",
+        "store",
+        "region",
+        "format",
+        "opened",
+        "week",
+        "revenue",
+        "visits",
+        "promo"
+      ]
+    },
+    "columns": [
+      {
+        "name": "store",
+        "type": "categorical_u8",
+        "nullable": false,
+        "description": "Store name, S1 to S6",
+        "from": "store",
+        "derived": false,
+        "dictionary": {
+          "total_entries": 6,
+          "truncated": false,
+          "values": [
+            "S1",
+            "S2",
+            "S3",
+            "S4",
+            "S5",
+            "S6"
+          ]
+        }
+      },
+      {
+        "name": "week",
+        "type": "date",
+        "nullable": false,
+        "description": "Monday that starts the sales week",
+        "from": "week",
+        "derived": false
+      },
+      {
+        "name": "rev",
+        "type": "decimal128",
+        "nullable": true,
+        "description": "Store revenue for the week, in thousands of dollars",
+        "from": "revenue",
+        "derived": false,
+        "precision": 6,
+        "scale": 1
+      },
+      {
+        "name": "band",
+        "type": "categorical_u8",
+        "nullable": true,
+        "description": "Store revenue for the week, in thousands of dollars",
+        "from": "revenue",
+        "derived": false,
+        "dictionary": {
+          "total_entries": 3,
+          "truncated": false,
+          "values": [
+            "low",
+            "mid",
+            "high"
+          ]
+        }
+      },
+      {
+        "name": "promo_yn",
+        "type": "categorical_u8",
+        "nullable": true,
+        "description": "Whether a promotion ran that week, as the stores reported it",
+        "from": "promo",
+        "derived": false,
+        "dictionary": {
+          "total_entries": 2,
+          "truncated": false,
+          "values": [
+            "Yes",
+            "No"
+          ]
+        }
+      },
+      {
+        "name": "rank",
+        "type": "u8",
+        "nullable": true,
+        "description": "Week's revenue rank within its store, 1 = best week",
+        "from": "rank",
+        "derived": true
+      }
+    ],
+    "derived_columns": [
+      "rank"
+    ],
+    "risks": [
+      {
+        "column": "rev",
+        "path": "output.columns[2].type",
+        "code": "PULSE_MATERIALIZE_CAST_FAILED",
+        "check": "f64 → decimal128(6,1): finite, at most 1 fractional digits, |v| \u003c 1e5 — the run fails at the first value that does not and writes nothing"
+      },
+      {
+        "column": "band",
+        "path": "output.columns[3].bucket",
+        "code": "PULSE_MATERIALIZE_CAST_FAILED",
+        "check": "f64 → categorical_u8 bucket: every value must be a number (a NaN lies in no range) — the run fails at the first value that is not and writes nothing"
+      },
+      {
+        "column": "rank",
+        "path": "output.columns[5].type",
+        "code": "PULSE_MATERIALIZE_CAST_FAILED",
+        "check": "f64 → u8: integral, 0 ≤ v ≤ 255 — the run fails at the first value that does not and writes nothing"
+      }
+    ],
+    "container": {
+      "kind": "file",
+      "elide_constants": false
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

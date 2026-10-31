@@ -1,0 +1,3 @@
+{"cohort":{"filename":"c.pulse"},
+ "filterers":[{"type":"FILTER_RANGE","field":"age","values":["18","65"]}],
+ "aggregations":[{"type":"AGG_COUNT","field":"income","label":"n"},{"type":"AGG_AVERAGE","field":"income","label":"mean"},{"type":"AGG_STDDEV","field":"income","label":"sd"}]}

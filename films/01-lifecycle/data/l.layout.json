@@ -1,0 +1,10 @@
+{
+ "file_bytes": 2532,
+ "header_bytes": 9,
+ "magic": "PULSE\u0000\u0000\u0000",
+ "version": 1,
+ "record_count": 140,
+ "stride": 17,
+ "payload_bytes": 2380,
+ "before_records": 152
+}

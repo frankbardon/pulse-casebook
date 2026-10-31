@@ -1,0 +1,77 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "mode": "response",
+    "root": "response",
+    "detail": "full",
+    "summary": "This response reports 1 test and 2 aggregations from 800 of 800 records; 0 of 1 inferential finding shows evidence at its alpha.",
+    "findings": [
+      {
+        "slot": "tests[0]",
+        "subject": "`spend` split by `arm`",
+        "operator": "TEST_T",
+        "verdict": "no_evidence_of_difference",
+        "strength_band": "very small",
+        "convention": "Cohen (1988)",
+        "numbers": {
+          "alpha": 0.05,
+          "details.effect_size.cohens_d": 0.13121939837587349,
+          "df": 776.9994802739444,
+          "p_value": 0.06725219826950242,
+          "statistic": 1.8325490447718134
+        }
+      },
+      {
+        "slot": "aggregations[0]",
+        "subject": "total_spend",
+        "verdict": "descriptive",
+        "numbers": {
+          "n": 779,
+          "n_null": 21,
+          "value": 53477.83
+        }
+      },
+      {
+        "slot": "aggregations[1]",
+        "subject": "avg_spend",
+        "operator": "AGG_AVERAGE",
+        "verdict": "descriptive",
+        "numbers": {
+          "n": 779,
+          "n_null": 21,
+          "value": 68.64933247753531
+        }
+      }
+    ],
+    "sentences": [
+      "This response reports 1 test and 2 aggregations from 800 of 800 records; 0 of 1 inferential finding shows evidence at its alpha.",
+      "Test 1 (TEST_T) on `spend` split by `arm` finds no evidence of a difference at alpha 0.05 (p = 0.0673). Its effect size `cohens_d` is 0.131, very small by the convention of Cohen (1988).",
+      "Aggregation 1 `total_spend` runs the operator smart defaults chose on `spend`. Its value is 5.35e+04. It read 779 rows and left out 21 with no value.",
+      "Aggregation 2 `avg_spend` runs AGG_AVERAGE on `spend`. Average of a numeric field, over all rows or per group. Its value is 68.6. It read 779 rows and left out 21 with no value.",
+      "The run read 800 records; 800 passed the filters and 21 were left out for a missing value."
+    ],
+    "glossary_refs": [
+      "cohens-d",
+      "confidence-interval",
+      "homogeneity-of-variance",
+      "independence",
+      "normal-distribution",
+      "p-value",
+      "t-statistic",
+      "two-tailed",
+      "variance",
+      "mean",
+      "median",
+      "outlier",
+      "skew"
+    ],
+    "caveats": [
+      "TEST_T: Rows are independent of each other, within and across groups.",
+      "TEST_T: The two-group version uses Welch's correction, so the groups need not have equal variances.",
+      "TEST_T: The average is roughly normally distributed: safe for large groups, risky for small skewed ones.",
+      "TEST_T: The p-value is two-sided: it looks for a difference in either direction."
+    ]
+  },
+  "errors": [],
+  "warnings": []
+}

@@ -1,0 +1,55 @@
+{
+ "cohort": {
+  "filename": "sem.pulse"
+ },
+ "vectors": [
+  {
+   "name": "brand",
+   "fields": [
+    "s1",
+    "s2",
+    "s3",
+    "v1",
+    "v2",
+    "v3",
+    "recommend"
+   ]
+  }
+ ],
+ "matrices": [
+  {
+   "name": "configural",
+   "type": "MAT_SEM",
+   "vector": "brand",
+   "params": {
+    "model": "service =~ s1 + s2 + s3\nvalue =~ v1 + v2 + v3 + s3\nrecommend ~ service + value",
+    "group": "channel"
+   }
+  },
+  {
+   "name": "metric",
+   "type": "MAT_SEM",
+   "vector": "brand",
+   "params": {
+    "model": "service =~ s1 + s2 + s3\nvalue =~ v1 + v2 + v3 + s3\nrecommend ~ service + value",
+    "group": "channel",
+    "group_equal": [
+     "loadings"
+    ]
+   }
+  },
+  {
+   "name": "scalar",
+   "type": "MAT_SEM",
+   "vector": "brand",
+   "params": {
+    "model": "service =~ s1 + s2 + s3\nvalue =~ v1 + v2 + v3 + s3\nrecommend ~ service + value",
+    "group": "channel",
+    "group_equal": [
+     "loadings",
+     "intercepts"
+    ]
+   }
+  }
+ ]
+}

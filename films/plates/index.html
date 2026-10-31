@@ -36,6 +36,8 @@ body { background: var(--bg); color: var(--ink); font-family: var(--sans); font-
 .eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
 h1 { margin: 0; font-size: clamp(40px, 8vw, 84px); line-height: .95; font-weight: 800; font-stretch: 125%; letter-spacing: -.01em; text-transform: uppercase; text-wrap: balance; }
 h1 span { color: var(--teal); }
+.lockup { display: flex; align-items: center; gap: clamp(14px, 2.4vw, 28px); }
+.lockup .ring { width: clamp(56px, 10vw, 96px); height: auto; flex: none; }
 .hero p { margin: 0; max-width: 64ch; font-size: 17px; color: var(--ink); }
 .trace { width: 100%; height: 56px; display: block; }
 .trace path { fill: none; stroke: var(--teal); stroke-width: 2; stroke-linejoin: round; }
@@ -118,7 +120,7 @@ svg .tt { fill: var(--teal); } svg .ta { fill: var(--amber); } svg .tv { fill: v
 
 <header class="hero">
   <div class="eyebrow">github.com/frankbardon/pulse · engine anatomy · eight plates</div>
-  <h1>Pulse <span>Anatomy</span></h1>
+  <div class="lockup"><img class="ring" src="pulse-ring.svg" alt="" width="96" height="96"><h1>Pulse <span>Anatomy</span></h1></div>
   <svg class="trace" viewBox="0 0 1000 60" preserveAspectRatio="none" aria-hidden="true">
     <path class="base" d="M0 30 H1000"/>
     <path d="M0 30 H300 L318 30 L330 8 L344 50 L356 30 H520 L534 30 L546 14 L560 44 L572 30 H1000"/>
@@ -147,7 +149,7 @@ svg .tt { fill: var(--teal); } svg .ta { fill: var(--amber); } svg .tv { fill: v
   <div class="plate-head">
     <div class="plate-no">Plate<b>I</b></div>
     <div><h2>The .pulse file carries its own schema</h2>
-    <p class="lede">A cohort is one binary file: a 9-byte header, the schema, inline dictionaries, then fixed-width records. Every reader can tell what the bytes mean without any outside description.</p></div>
+    <p class="lede">A cohort is one binary file: a 9-byte header, the schema, an extension block when the format is <code>0x02</code>, inline dictionaries, then fixed-width records. Every reader can tell what the bytes mean without any outside description.</p></div>
   </div>
   <div class="figure">
   <svg viewBox="0 0 960 470" role="img" aria-label="Byte layout of a .pulse file with one record enlarged">
@@ -164,7 +166,8 @@ svg .tt { fill: var(--teal); } svg .ta { fill: var(--amber); } svg .tv { fill: v
     <rect x="174" y="50" width="170" height="56" class="b-a"/>
     <text x="259" y="83" class="h mid">schema block</text>
     <rect x="344" y="50" width="90" height="56" class="b-a" style="stroke-dasharray:4 3"/>
-    <text x="389" y="83" class="s mid">extensions</text>
+    <rect x="350" y="56" width="78" height="20" class="b-o" style="stroke-dasharray:3 2"/><text x="389" y="70" class="m mid">GROUPS</text>
+    <rect x="350" y="80" width="78" height="20" class="b-a" style="stroke-width:2"/><text x="389" y="94" class="m mid" style="fill:var(--ink)">VECTORS</text>
     <rect x="434" y="50" width="130" height="56" class="b-a" style="fill:var(--plate2)"/>
     <text x="499" y="83" class="h mid">dictionaries</text>
     <g>
@@ -183,7 +186,7 @@ svg .tt { fill: var(--teal); } svg .ta { fill: var(--amber); } svg .tv { fill: v
     <text x="259" y="124" class="m mid">name · type ·</text>
     <text x="259" y="138" class="m mid">nullable · offset</text>
     <text x="389" y="124" class="m mid">0x02 only</text>
-    <text x="389" y="138" class="m mid">groups</text>
+    <text x="389" y="138" class="m mid">groups · vectors</text>
     <text x="499" y="124" class="m mid">categorical_*</text>
     <text x="499" y="138" class="m mid">and set_*</text>
 
@@ -200,8 +203,10 @@ svg .tt { fill: var(--teal); } svg .ta { fill: var(--amber); } svg .tv { fill: v
     <text x="106.25" y="236" class="s mid">age</text><text x="106.25" y="258" class="mi mid">41</text>
     <rect x="135" y="210" width="230" height="64" class="b-t"/>
     <text x="250" y="236" class="s mid">signup</text><text x="250" y="258" class="mi mid">19874 → 2024-05-31</text>
-    <rect x="365" y="210" width="460" height="64" class="b-t"/>
-    <text x="595" y="236" class="s mid">income</text><text x="595" y="258" class="mi mid">62500.00</text>
+    <rect x="365" y="210" width="230" height="64" class="b-t"/>
+    <text x="480" y="236" class="s mid">taste[0]</text><text x="480" y="258" class="mi mid">0.62</text>
+    <rect x="595" y="210" width="230" height="64" class="b-t"/>
+    <text x="710" y="236" class="s mid">taste[1]</text><text x="710" y="258" class="mi mid">0.31</text>
     <rect x="825" y="210" width="57.5" height="64" class="b-t" style="stroke-width:2"/>
     <text x="853.75" y="236" class="s mid">flags</text><text x="853.75" y="258" class="mi mid">0x07</text>
     <rect x="882.5" y="210" width="57.5" height="64" class="b-c" style="stroke-width:2"/>
@@ -212,7 +217,7 @@ svg .tt { fill: var(--teal); } svg .ta { fill: var(--amber); } svg .tv { fill: v
     <text x="48.75" y="294" class="m mid">cat_u8</text>
     <text x="106.25" y="294" class="m mid">u8</text>
     <text x="250" y="294" class="m mid">date · int32 epoch DAYS</text>
-    <text x="595" y="294" class="m mid">f64 · 8 bytes</text>
+    <text x="595" y="294" class="m mid">vec_f32 · dim 2 (in VECTORS) · 4 B × 2</text>
     <text x="853.75" y="294" class="m mid">bits</text>
     <text x="911.25" y="294" class="m mid">bitmap</text>
 
@@ -254,13 +259,13 @@ svg .tt { fill: var(--teal); } svg .ta { fill: var(--amber); } svg .tv { fill: v
     </g>
     <text x="708.5" y="416" class="m mid">f0</text><text x="795.5" y="416" class="m mid">f3</text><text x="853.5" y="416" class="m mid">f5</text>
     <text x="694" y="436" class="m">field i → bit i, LSB-first, 1 = null</text>
-    <text x="694" y="452" class="m">income (f3) null → byte = 0x08</text>
+    <text x="694" y="452" class="m">taste (f3) null → byte = 0x08</text>
   </svg>
   </div>
   <div class="readings">
-    <div><h3>Version is earned</h3><p>Byte 8 is <code>0x01</code> unless the schema declares a parent group, which makes it <code>0x02</code>. Every <code>ReadSchema</code> call is handed the version that <code>ReadHeader</code> returned.</p></div>
-    <div><h3>Type sets the width</h3><p>Each field's type decides its width, and the widths together set the row's stride. <code>date</code> counts epoch days and <code>datetime</code> counts epoch seconds. Mixing them up rescales every value by 86,400.</p></div>
-    <div><h3>Null is its own bit</h3><p>The trailing bitmap exists only when some field is nullable. An empty <code>set_*</code> mask means "nothing selected", which is a different thing from null.</p></div>
+    <div><h3>Version is earned</h3><p>Byte 8 is <code>0x01</code> unless the schema declares a parent group or a vector field, either of which makes it <code>0x02</code>. Every <code>ReadSchema</code> call is handed the version that <code>ReadHeader</code> returned.</p></div>
+    <div><h3>Type sets the width</h3><p>Each field's type decides its width, and the widths together set the row's stride. A <code>vec_f32</code> or <code>vec_f64</code> field is element size × dim wide; its dim, kind, scale and labels live in the VECTORS section. <code>date</code> counts epoch days and <code>datetime</code> counts epoch seconds.</p></div>
+    <div><h3>Null is its own bit</h3><p>The trailing bitmap exists only when some field is nullable. A null vector is a zeroed stride plus its bit, with no sentinel. An empty <code>set_*</code> mask means "nothing selected", which is a different thing from null.</p></div>
   </div>
 </section>
 
@@ -347,86 +352,97 @@ svg .tt { fill: var(--teal); } svg .ta { fill: var(--amber); } svg .tv { fill: v
   <div class="plate-head">
     <div class="plate-no">Plate<b>III</b></div>
     <div><h2>A request's journey through the service</h2>
-    <p class="lede">The stages <code>Service.Process</code> runs, in the order the code runs them. Almost everything that can refuse a request runs before the first record is decoded, so a bad request fails fast and cheaply.</p></div>
+    <p class="lede">The stages <code>Service.Process</code> runs, in the order the code runs them, behind the strict decode every JSON request passes first. Almost everything that can refuse a request runs before the first record is decoded, so a bad request fails fast and cheaply.</p></div>
   </div>
   <div class="figure">
-  <svg viewBox="0 0 960 540" role="img" aria-label="Five phases of request processing with their steps">
+  <svg viewBox="0 0 960 690" role="img" aria-label="A strict decode gate, then five phases of request processing with their steps">
+    <!-- gate: strict decode, before Service.Process -->
+    <rect x="20" y="16" width="920" height="34" class="b-c"/>
+    <text x="32" y="38" class="cap tc">GATE</text>
+    <text x="80" y="38" class="s">Strict decode: every JSON request root refuses an unknown key at any depth</text>
+    <text x="928" y="38" class="m end">PULSE_REQUEST_UNKNOWN_FIELD</text>
+    <path d="M480 50 V60" class="l-i" marker-end="url(#ah)"/>
     <!-- phase headers -->
-    <rect x="20" y="20" width="176" height="58" class="b-a"/>
-    <text x="32" y="42" class="cap">PHASE 1</text><text x="32" y="64" class="hh">Admit</text>
-    <rect x="204" y="20" width="176" height="58" class="b-a"/>
-    <text x="216" y="42" class="cap">PHASE 2</text><text x="216" y="64" class="hh">Open</text>
-    <rect x="388" y="20" width="176" height="58" class="b-c"/>
-    <text x="400" y="42" class="cap">PHASE 3</text><text x="400" y="64" class="hh">Check</text>
-    <rect x="572" y="20" width="176" height="58" class="b-t"/>
-    <text x="584" y="42" class="cap">PHASE 4</text><text x="584" y="64" class="hh">Run</text>
-    <rect x="756" y="20" width="184" height="58" class="b-v"/>
-    <text x="768" y="42" class="cap">PHASE 5</text><text x="768" y="64" class="hh">Fold &amp; shape</text>
-    <path d="M196 49 H204" class="l-i" marker-end="url(#ah)"/><path d="M380 49 H388" class="l-i" marker-end="url(#ah)"/><path d="M564 49 H572" class="l-i" marker-end="url(#ah)"/><path d="M748 49 H756" class="l-i" marker-end="url(#ah)"/>
-    <text x="108" y="98" class="m mid">request only</text>
-    <text x="292" y="98" class="m mid">header + schema</text>
-    <text x="476" y="98" class="m mid">schema-aware, no rows</text>
-    <text x="660" y="98" class="m mid">records flow</text>
-    <text x="848" y="98" class="m mid">after the last record</text>
+    <rect x="20" y="62" width="176" height="58" class="b-a"/>
+    <text x="32" y="84" class="cap">PHASE 1</text><text x="32" y="106" class="hh">Admit</text>
+    <rect x="204" y="62" width="176" height="58" class="b-a"/>
+    <text x="216" y="84" class="cap">PHASE 2</text><text x="216" y="106" class="hh">Open</text>
+    <rect x="388" y="62" width="176" height="58" class="b-c"/>
+    <text x="400" y="84" class="cap">PHASE 3</text><text x="400" y="106" class="hh">Check</text>
+    <rect x="572" y="62" width="176" height="58" class="b-t"/>
+    <text x="584" y="84" class="cap">PHASE 4</text><text x="584" y="106" class="hh">Run</text>
+    <rect x="756" y="62" width="184" height="58" class="b-v"/>
+    <text x="768" y="84" class="cap">PHASE 5</text><text x="768" y="106" class="hh">Fold &amp; shape</text>
+    <path d="M196 91 H204" class="l-i" marker-end="url(#ah)"/><path d="M380 91 H388" class="l-i" marker-end="url(#ah)"/><path d="M564 91 H572" class="l-i" marker-end="url(#ah)"/><path d="M748 91 H756" class="l-i" marker-end="url(#ah)"/>
+    <text x="108" y="140" class="m mid">request only</text>
+    <text x="292" y="140" class="m mid">header + schema</text>
+    <text x="476" y="140" class="m mid">schema-aware, no rows</text>
+    <text x="660" y="140" class="m mid">records flow</text>
+    <text x="848" y="140" class="m mid">after the arm returns</text>
 
-    <!-- col 1 -->
     <g>
-      <rect x="20" y="110" width="176" height="44" class="b-o"/><text x="30" y="128" class="s">Feature-profile gate</text><text x="30" y="145" class="m">hidden slot = unknown</text>
-      <rect x="20" y="162" width="176" height="44" class="b-o"/><text x="30" y="180" class="s">Item fan-out</text><text x="30" y="197" class="m">for_each, in place</text>
-      <rect x="20" y="214" width="176" height="44" class="b-o"/><text x="30" y="232" class="s">Join &amp; matrix rules</text><text x="30" y="249" class="m">MatrixRefusal</text>
-      <rect x="20" y="266" width="176" height="44" class="b-o"/><text x="30" y="284" class="s">Bind saved models</text><text x="30" y="301" class="m">regression save / load</text>
-      <rect x="20" y="318" width="176" height="44" class="b-o"/><text x="30" y="336" class="s">Resolve multiplicity</text><text x="30" y="353" class="m">method · family · alpha</text>
-      <rect x="20" y="370" width="176" height="44" class="b-v"/><text x="30" y="388" class="s">Compile return plan</text><text x="30" y="405" class="m">→ ComputePlan on ctx</text>
+      <rect x="20" y="152" width="176" height="34" class="b-o"/><text x="30" y="167" class="s">Params fold</text><text x="30" y="181" class="m">forRequest · expressions</text>
+      <rect x="20" y="192" width="176" height="34" class="b-o"/><text x="30" y="207" class="s">Feature-profile gate</text><text x="30" y="221" class="m">hidden slot = unknown</text>
+      <rect x="20" y="232" width="176" height="34" class="b-o"/><text x="30" y="247" class="s">Item fan-out</text><text x="30" y="261" class="m">for_each, in place</text>
+      <rect x="20" y="272" width="176" height="34" class="b-o"/><text x="30" y="287" class="s">Join &amp; matrix rules</text><text x="30" y="301" class="m">one join · MatrixRefusal</text>
+      <rect x="20" y="312" width="176" height="34" class="b-o"/><text x="30" y="327" class="s">Save checks</text><text x="30" y="341" class="m">regression save paths</text>
+      <rect x="20" y="352" width="176" height="34" class="b-c"/><text x="30" y="367" class="s">Strict refusals</text><text x="30" y="381" class="m">metric · target leakage</text>
+      <rect x="20" y="392" width="176" height="34" class="b-o"/><text x="30" y="407" class="s">Bind models</text><text x="30" y="421" class="m">fits · SEM · populations</text>
+      <rect x="20" y="432" width="176" height="34" class="b-o"/><text x="30" y="447" class="s">Bind {record} refs</text><text x="30" y="461" class="m">looked up once, here</text>
+      <rect x="20" y="472" width="176" height="34" class="b-o"/><text x="30" y="487" class="s">Resolve multiplicity</text><text x="30" y="501" class="m">method · family · alpha</text>
+      <rect x="20" y="512" width="176" height="34" class="b-v"/><text x="30" y="527" class="s">Compile return plan</text><text x="30" y="541" class="m">→ ComputePlan on ctx</text>
     </g>
-    <!-- col 2 -->
     <g>
-      <rect x="204" y="110" width="176" height="44" class="b-o"/><text x="214" y="128" class="s">Sniff 4-byte magic</text><text x="214" y="145" class="m">zip magic = archive</text>
-      <rect x="204" y="162" width="176" height="44" class="b-a"/><text x="214" y="180" class="s">Read header + schema</text><text x="214" y="197" class="m">ReadSchema(r, version)</text>
-      <rect x="204" y="214" width="176" height="44" class="b-o"/><text x="214" y="232" class="s">Smart defaults</text><text x="214" y="249" class="m">inferred from schema</text>
-      <rect x="204" y="266" width="176" height="44" class="b-o"/><text x="214" y="284" class="s">Time zones</text><text x="214" y="301" class="m">internal/temporal only</text>
+      <rect x="204" y="152" width="176" height="34" class="b-o"/><text x="214" y="167" class="s">Sniff 4-byte magic</text><text x="214" y="181" class="m">zip magic = archive</text>
+      <rect x="204" y="192" width="176" height="34" class="b-a"/><text x="214" y="207" class="s">Read header + schema</text><text x="214" y="221" class="m">ReadSchema(r, version)</text>
+      <rect x="204" y="232" width="176" height="34" class="b-o"/><text x="214" y="247" class="s">Smart defaults</text><text x="214" y="261" class="m">inferred from schema</text>
+      <rect x="204" y="272" width="176" height="34" class="b-o"/><text x="214" y="287" class="s">Time zones</text><text x="214" y="301" class="m">request zone + tz_field</text>
     </g>
-    <!-- col 3 -->
     <g>
-      <rect x="388" y="110" width="176" height="44" class="b-o"/><text x="398" y="128" class="s">Field references</text><text x="398" y="145" class="m">instance-scoped</text>
-      <rect x="388" y="162" width="176" height="44" class="b-o"/><text x="398" y="180" class="s">Weight resolution</text><text x="398" y="197" class="m">ResolveWeights</text>
-      <rect x="388" y="214" width="176" height="44" class="b-c"/><text x="398" y="232" class="s">Limits preflight</text><text x="398" y="249" class="m">PULSE_LIMIT_EXCEEDED</text>
-      <rect x="388" y="266" width="176" height="44" class="b-o"/><text x="398" y="284" class="s">Label bindings</text><text x="398" y="301" class="m">auto labels + validation</text>
-      <rect x="388" y="318" width="176" height="44" class="b-o"/><text x="398" y="336" class="s">Strict checks</text><text x="398" y="353" class="m">warnings become errors</text>
+      <rect x="388" y="152" width="176" height="34" class="b-o"/><text x="398" y="167" class="s">Field references</text><text x="398" y="181" class="m">instance-scoped</text>
+      <rect x="388" y="192" width="176" height="34" class="b-o"/><text x="398" y="207" class="s">Weight resolution</text><text x="398" y="221" class="m">ResolveWeights</text>
+      <rect x="388" y="232" width="176" height="34" class="b-c"/><text x="398" y="247" class="s">Limits preflight</text><text x="398" y="261" class="m">PULSE_LIMIT_EXCEEDED</text>
+      <rect x="388" y="272" width="176" height="34" class="b-o"/><text x="398" y="287" class="s">Label bindings</text><text x="398" y="301" class="m">auto labels + validation</text>
     </g>
-    <!-- col 4 -->
     <g>
-      <rect x="572" y="110" width="176" height="44" class="b-t"/><text x="582" y="128" class="s">Pick the arm</text><text x="582" y="145" class="m">shard · decode · serial</text>
-      <rect x="572" y="162" width="176" height="44" class="b-o"/><text x="582" y="180" class="s">Project columns</text><text x="582" y="197" class="m">NeededFields</text>
-      <rect x="572" y="214" width="176" height="44" class="b-o"/><text x="582" y="232" class="s">Prepare</text><text x="582" y="249" class="m">vectors · weights</text>
-      <rect x="572" y="266" width="176" height="44" class="b-t" style="stroke-width:2"/><text x="582" y="284" class="s">Run the processor</text><text x="582" y="301" class="m">stream or buffer (IV)</text>
+      <rect x="572" y="152" width="176" height="34" class="b-t"/><text x="582" y="167" class="s">Pick the arm</text><text x="582" y="181" class="m">shard · decode · serial</text>
+      <rect x="572" y="192" width="176" height="34" class="b-o"/><text x="582" y="207" class="s">Project columns</text><text x="582" y="221" class="m">NeededFields</text>
+      <rect x="572" y="232" width="176" height="34" class="b-o"/><text x="582" y="247" class="s">Prepare</text><text x="582" y="261" class="m">vectors · weights</text>
+      <rect x="572" y="272" width="176" height="34" class="b-t"/><text x="582" y="287" class="s">Run the processor</text><text x="582" y="301" class="m">stream or buffer (IV)</text>
+      <rect x="572" y="312" width="176" height="34" class="b-o"/><text x="582" y="327" class="s">Labels</text><text x="582" y="341" class="m">codes → display text</text>
     </g>
-    <!-- col 5 -->
     <g>
-      <rect x="756" y="110" width="184" height="44" class="b-o"/><text x="766" y="128" class="s">Labels</text><text x="766" y="145" class="m">codes → display text</text>
-      <rect x="756" y="162" width="184" height="44" class="b-o"/><text x="766" y="180" class="s">Row counters</text><text x="766" y="197" class="m">Run components</text>
-      <rect x="756" y="214" width="184" height="44" class="b-v"/><text x="766" y="232" class="s">Multiplicity fold</text><text x="766" y="249" class="m">p_adjusted beside raw p</text>
-      <rect x="756" y="266" width="184" height="44" class="b-v"/><text x="766" y="284" class="s">Return shaping</text><text x="766" y="301" class="m">at the facade</text>
-      <rect x="756" y="318" width="184" height="44" class="b-o"/><text x="766" y="336" class="s">Envelope</text><text x="766" y="353" class="m">NewEnvelope (CLI --json)</text>
+      <rect x="756" y="152" width="184" height="34" class="b-c"/><text x="766" y="167" class="s">Escalate warnings</text><text x="766" y="181" class="m">Strict: warning → error</text>
+      <rect x="756" y="192" width="184" height="34" class="b-c"/><text x="766" y="207" class="s">Per-slot partial success</text><text x="766" y="221" class="m">PULSE_SLOT_FAILED</text>
+      <rect x="756" y="232" width="184" height="34" class="b-o"/><text x="766" y="247" class="s">Lift slot warnings</text><text x="766" y="261" class="m">regression · matrix</text>
+      <rect x="756" y="272" width="184" height="34" class="b-o"/><text x="766" y="287" class="s">Advisories</text><text x="766" y="301" class="m">regression, not warnings</text>
+      <rect x="756" y="312" width="184" height="34" class="b-o"/><text x="766" y="327" class="s">Row counters</text><text x="766" y="341" class="m">observability</text>
+      <rect x="756" y="352" width="184" height="34" class="b-v"/><text x="766" y="367" class="s">Multiplicity fold</text><text x="766" y="381" class="m">p_adjusted beside raw p</text>
+      <rect x="756" y="392" width="184" height="34" class="b-v"/><text x="766" y="407" class="s">MATRIX_RESULT overlays</text><text x="766" y="421" class="m">read p_adjusted</text>
+      <rect x="756" y="432" width="184" height="34" class="b-o"/><text x="766" y="447" class="s">Vector + leakage notes</text><text x="766" y="461" class="m">coded warnings</text>
+      <rect x="756" y="472" width="184" height="34" class="b-o"/><text x="766" y="487" class="s">Save models</text><text x="766" y="501" class="m">regression save</text>
+      <rect x="756" y="512" width="184" height="34" class="b-v"/><text x="766" y="527" class="s">Return shaping</text><text x="766" y="541" class="m">at the facade</text>
+      <rect x="756" y="552" width="184" height="34" class="b-o"/><text x="766" y="567" class="s">Envelope</text><text x="766" y="581" class="m">NewEnvelope (CLI --json)</text>
     </g>
     <!-- plan thread: compiled in phase 1, applied in phase 5 -->
-    <path d="M196 392 H232 Q240 392 240 400 V432 Q240 440 248 440 H940 Q948 440 948 432 V296 Q948 288 942 288" class="l-v dash" marker-end="url(#ah-v)"/>
-    <text x="540" y="458" class="m mid tv">the return plan travels on ctx: excluded parts are never computed, then pruned at the facade</text>
+    <path d="M196 529 H232 Q240 529 240 537 V584 Q240 592 248 592 H740 Q748 592 748 584 V537 Q748 529 754 529" class="l-v dash" marker-end="url(#ah-v)"/>
+    <text x="494" y="610" class="m mid tv">the return plan travels on ctx: excluded parts are never computed, then pruned at the facade</text>
 
     <!-- bytes touched band -->
-    <text x="20" y="494" class="cap">FILE BYTES TOUCHED</text>
-    <line x1="20" y1="514" x2="940" y2="514" class="l"/>
-    <rect x="204" y="506" width="60" height="16" class="b-a"/>
-    <rect x="572" y="506" width="176" height="16" class="b-hatch"/>
-    <text x="270" y="519" class="m">9 B + schema</text>
-    <text x="476" y="530" class="m mid">nothing new</text>
-    <text x="108" y="530" class="m mid">nothing</text>
-    <text x="848" y="530" class="m mid">nothing new</text>
+    <text x="20" y="642" class="cap">FILE BYTES TOUCHED</text>
+    <line x1="20" y1="662" x2="940" y2="662" class="l"/>
+    <rect x="204" y="654" width="60" height="16" class="b-a"/>
+    <rect x="572" y="654" width="176" height="16" class="b-hatch"/>
+    <text x="270" y="667" class="m">9 B + schema</text>
+    <text x="476" y="682" class="m mid">nothing new</text>
+    <text x="108" y="682" class="m mid">nothing</text>
+    <text x="848" y="682" class="m mid">nothing new</text>
   </svg>
   </div>
   <div class="readings">
     <div><h3>Defaults need the file</h3><p>A slot that names a field but no <code>Type</code> gets its operator from the schema type, so smart defaults run only after the header and schema are open.</p></div>
-    <div><h3>Refuse before reading</h3><p>Field references, weights, limits and labels are all checked against the schema alone. A request that will fail never pays for a decode.</p></div>
-    <div><h3>One fold, every arm</h3><p>Multiplicity correction runs once after dispatch returns, so the serial, streaming, fused, sharded and parallel arms all get corrected in the same place.</p></div>
+    <div><h3>Refuse before reading</h3><p>Unknown keys, field references, weights, limits and labels are all checked before the first record is decoded. Strict mode refuses an unsuited metric or a leakage risk in Phase 1, and after the run turns warnings and failed slots into errors.</p></div>
+    <div><h3>One fold, every arm</h3><p>Slot failures, warning lifts and the multiplicity fold run once after dispatch returns, so the serial, streaming, fused, sharded and parallel arms are all handled in the same place. A failed slot fails alone unless strict.</p></div>
   </div>
 </section>
 
@@ -438,28 +454,33 @@ svg .tt { fill: var(--teal); } svg .ta { fill: var(--amber); } svg .tv { fill: v
     <p class="lede">The buffered arm loads every record and sweeps the whole set stage by stage. The streaming arm keeps only running state and pushes each record through all stages before reading the next. Both arms produce the same result.</p></div>
   </div>
   <div class="figure">
-  <svg viewBox="0 0 960 580" role="img" aria-label="Buffered stage order beside the streaming per-record loop">
+  <svg viewBox="0 0 960 680" role="img" aria-label="Buffered stage order, with its previous-state, windows-first and post-window branches, beside the streaming per-record loop">
     <text x="20" y="28" class="hh">Buffered</text><text x="112" y="28" class="m">memory O(rows) · the only arm with windows and sort</text>
     <text x="520" y="28" class="hh">Streaming</text><text x="625" y="28" class="m">memory O(state) · record reused</text>
-    <line x1="490" y1="16" x2="490" y2="566" class="l"/>
+    <line x1="490" y1="16" x2="490" y2="610" class="l"/>
 
     <g>
       <rect x="20" y="48" width="440" height="28" class="b-t"/><text x="32" y="67" class="m">01</text><text x="62" y="67" class="s">Materialize every record</text><text x="450" y="67" class="m end">decode once, keep all</text>
       <rect x="20" y="81" width="440" height="28" class="b-o"/><text x="32" y="100" class="m">02</text><text x="62" y="100" class="s">Features</text><text x="450" y="100" class="m end">all rows, before filters</text>
-      <rect x="20" y="114" width="440" height="28" class="b-o"/><text x="32" y="133" class="m">03</text><text x="62" y="133" class="s">Filters</text><text x="450" y="133" class="m end">pass counters kept</text>
-      <rect x="20" y="147" width="440" height="28" class="b-o"/><text x="32" y="166" class="m">04</text><text x="62" y="166" class="s">Attributes</text><text x="450" y="166" class="m end">declared order</text>
-      <rect x="20" y="180" width="440" height="28" class="b-o"/><text x="32" y="199" class="m">05</text><text x="62" y="199" class="s">Group + aggregate</text><text x="450" y="199" class="m end">+ per-bucket matrices</text>
-      <rect x="20" y="213" width="440" height="28" class="b-o"/><text x="32" y="232" class="m">06</text><text x="62" y="232" class="s">Windows</text><text x="450" y="232" class="m end">WIN_* · buffered only</text>
-      <rect x="20" y="246" width="440" height="28" class="b-o"/><text x="32" y="265" class="m">07</text><text x="62" y="265" class="s">Sort</text><text x="450" y="265" class="m end">buffered only</text>
-      <rect x="20" y="279" width="440" height="28" class="b-o"/><text x="32" y="298" class="m">08</text><text x="62" y="298" class="s">Row tests</text><text x="450" y="298" class="m end">tier 1</text>
-      <rect x="20" y="312" width="440" height="28" class="b-o"/><text x="32" y="331" class="m">09</text><text x="62" y="331" class="s">Post-tests</text><text x="450" y="331" class="m end">over the result rows</text>
-      <rect x="20" y="345" width="440" height="28" class="b-o"/><text x="32" y="364" class="m">10</text><text x="62" y="364" class="s">Regressions</text><text x="450" y="364" class="m end">REG_OLS · REG_GLM · REG_BAYES_LINEAR</text>
-      <rect x="20" y="378" width="440" height="28" class="b-o"/><text x="32" y="397" class="m">11</text><text x="62" y="397" class="s">Matrices</text><text x="450" y="397" class="m end">MAT_* over vectors</text>
-      <rect x="20" y="411" width="440" height="28" class="b-v"/><text x="32" y="430" class="m">12</text><text x="62" y="430" class="s">Components</text><text x="450" y="430" class="m end">aggs · groupers · filters · run · matrices</text>
-      <rect x="20" y="444" width="440" height="28" class="b-v"/><text x="32" y="463" class="m">13</text><text x="62" y="463" class="s">Series overlays</text><text x="450" y="463" class="m end">grouped exit</text>
-      <rect x="20" y="477" width="440" height="28" class="b-o"/><text x="32" y="496" class="m">14</text><text x="62" y="496" class="s">Weight tally</text><text x="450" y="496" class="m end">low n_eff warnings</text>
-      <text x="20" y="534" class="m">Stages 02–07 each sweep the full set.</text>
-      <text x="20" y="550" class="m">Attribute i sees the final output of attributes 0…i−1.</text>
+      <rect x="20" y="114" width="440" height="28" class="b-o"/><text x="32" y="133" class="m">03</text><text x="62" y="133" class="s">Previous-state attributes</text><text x="450" y="133" class="m end">ATTR_PREVIOUS_STATE · every record</text>
+      <rect x="20" y="147" width="440" height="28" class="b-o"/><text x="32" y="166" class="m">04</text><text x="62" y="166" class="s">Filters</text><text x="450" y="166" class="m end">pass counters kept</text>
+      <rect x="20" y="180" width="440" height="28" class="b-o"/><text x="32" y="199" class="m">05</text><text x="62" y="199" class="s">Attributes</text><text x="450" y="199" class="m end">declared order · window readers wait</text>
+      <rect x="44" y="213" width="416" height="28" class="b-t" style="fill:none;stroke-dasharray:4 3"/><text x="56" y="232" class="m tt">↳</text><text x="74" y="232" class="s tt">Windows-first branch</text><text x="450" y="232" class="m end tt">WIN_* + post-window attributes here</text>
+      <path d="M32 208 V227 H42" class="l-t"/>
+      <rect x="20" y="246" width="440" height="28" class="b-o"/><text x="32" y="265" class="m">06</text><text x="62" y="265" class="s">Group + aggregate</text><text x="450" y="265" class="m end">+ per-bucket matrices</text>
+      <rect x="20" y="279" width="440" height="28" class="b-o"/><text x="32" y="298" class="m">07</text><text x="62" y="298" class="s">Windows</text><text x="450" y="298" class="m end">WIN_* · unless windows-first ran them</text>
+      <rect x="20" y="312" width="440" height="28" class="b-o"/><text x="32" y="331" class="m">08</text><text x="62" y="331" class="s">Post-window attributes</text><text x="450" y="331" class="m end">record rows · unless windows-first</text>
+      <rect x="20" y="345" width="440" height="28" class="b-o"/><text x="32" y="364" class="m">09</text><text x="62" y="364" class="s">Sort</text><text x="450" y="364" class="m end">buffered only</text>
+      <rect x="20" y="378" width="440" height="28" class="b-o"/><text x="32" y="397" class="m">10</text><text x="62" y="397" class="s">Row tests</text><text x="450" y="397" class="m end">tier 1</text>
+      <rect x="20" y="411" width="440" height="28" class="b-o"/><text x="32" y="430" class="m">11</text><text x="62" y="430" class="s">Post-tests</text><text x="450" y="430" class="m end">over the result rows</text>
+      <rect x="20" y="444" width="440" height="28" class="b-o"/><text x="32" y="463" class="m">12</text><text x="62" y="463" class="s">Regressions</text><text x="450" y="463" class="m end">REG_* engines</text>
+      <rect x="20" y="477" width="440" height="28" class="b-o"/><text x="32" y="496" class="m">13</text><text x="62" y="496" class="s">Matrices</text><text x="450" y="496" class="m end">MAT_* over vectors</text>
+      <rect x="20" y="510" width="440" height="28" class="b-v"/><text x="32" y="529" class="m">14</text><text x="62" y="529" class="s">Components</text><text x="450" y="529" class="m end">the counts behind each figure</text>
+      <rect x="20" y="543" width="440" height="28" class="b-v"/><text x="32" y="562" class="m">15</text><text x="62" y="562" class="s">Series overlays</text><text x="450" y="562" class="m end">grouped exit</text>
+      <rect x="20" y="576" width="440" height="28" class="b-o"/><text x="32" y="595" class="m">16</text><text x="62" y="595" class="s">Weight tally</text><text x="450" y="595" class="m end">low n_eff warnings</text>
+      <text x="20" y="627" class="m">Windows-first: a group, aggregation or crosstab axis reads a window</text>
+      <text x="20" y="643" class="m">label, so 07 and 08 run before 06, over the filtered records.</text>
+      <text x="20" y="665" class="m">Attribute i sees the final output of attributes 0…i−1.</text>
     </g>
 
     <g>
@@ -489,12 +510,13 @@ svg .tt { fill: var(--teal); } svg .ta { fill: var(--amber); } svg .tv { fill: v
       <rect x="606" y="494" width="104" height="26" class="b-v"/><text x="658" y="511" class="s mid">components</text>
       <rect x="716" y="494" width="124" height="26" class="b-o"/><text x="778" y="511" class="s mid">weights · n_eff</text>
       <text x="520" y="550" class="m">Two-pass attributes add a prepass layer per dependency depth.</text>
+      <text x="520" y="572" class="m">Windows and previous-state never stream.</text>
     </g>
   </svg>
   </div>
   <div class="readings">
     <div><h3>Features see everything</h3><p>On both arms, feature engineering runs before any filter. Streaming pays for that with a first pass and an iterator reset.</p></div>
-    <div><h3>Order is semantics</h3><p>On both arms the filter decides first, row-local attributes land next, and only then do floors and null tallies read the row. An attribute label used as a field is always read after it has been written.</p></div>
+    <div><h3>Order bends, never guesses</h3><p>The default order is features, filters, attributes, groups, aggregations, windows, sort. It moves only where a stage reads a label: previous-state runs before filters, windows run first when a group, aggregation or crosstab axis reads one, and an attribute that reads a window runs after it.</p></div>
     <div><h3><code>ProcessStream</code> is a view</h3><p><code>ProcessStream</code> is not a separate engine. It runs <code>Process</code>, wraps the rows in an iterator, and applies the return plan to each row. Streaming is a choice the engine makes internally.</p></div>
   </div>
 </section>
@@ -507,7 +529,7 @@ svg .tt { fill: var(--teal); } svg .ta { fill: var(--amber); } svg .tv { fill: v
     <p class="lede">The same request can run on any of five arms. Each check below picks one, and every arm returns the same bytes. What decides it is mostly one property of the request: whether its operator state can be merged.</p></div>
   </div>
   <div class="figure">
-  <svg viewBox="0 0 960 540" role="img" aria-label="Decision tree for execution arm selection">
+  <svg viewBox="0 0 960 640" role="img" aria-label="Decision tree for execution arm selection">
     <rect x="40" y="16" width="260" height="40" rx="20" class="b-n"/>
     <text x="170" y="41" class="h mid">Request passed every check</text>
     <path d="M170 56 V76" class="l-i" marker-end="url(#ah)"/>
@@ -530,7 +552,7 @@ svg .tt { fill: var(--teal); } svg .ta { fill: var(--amber); } svg .tv { fill: v
     <rect x="358" y="168" width="252" height="64" class="b-t"/>
     <text x="370" y="190" class="h">Shard-parallel</text>
     <text x="370" y="208" class="m">a worker per shard</text>
-    <text x="370" y="224" class="m">partials merged in shard order</text>
+    <text x="370" y="224" class="m">shard order · window of 2 × workers</text>
 
     <path d="M170 232 V256" class="l-i" marker-end="url(#ah)"/><text x="178" y="248" class="m">no</text>
     <rect x="40" y="258" width="260" height="64" class="b-o"/>
@@ -557,31 +579,35 @@ svg .tt { fill: var(--teal); } svg .ta { fill: var(--amber); } svg .tv { fill: v
     <text x="54" y="480" class="m">every record materialized; the universal fallback, always correct</text>
 
     <!-- right panels -->
-    <rect x="640" y="78" width="300" height="200" class="b-o"/>
+    <rect x="640" y="78" width="300" height="262" class="b-o"/>
     <text x="656" y="102" class="cap tt">MERGEABLE MEANS</text>
-    <text x="656" y="128" class="s">• at least one aggregation or matrix</text>
-    <text x="656" y="150" class="s">• no windows, features, regressions</text>
-    <text x="666" y="168" class="s">or tests</text>
-    <text x="656" y="190" class="s">• only row-local attributes</text>
-    <text x="656" y="212" class="s">• mergeable groupers + aggregators</text>
-    <text x="656" y="234" class="s">• streamable filterers</text>
-    <text x="656" y="256" class="s">• no built-in aggregator on decimal128</text>
+    <text x="656" y="126" class="s">• at least one aggregation or matrix</text>
+    <text x="656" y="147" class="s">• no windows, features, regressions,</text>
+    <text x="666" y="168" class="s">tests or post-tests</text>
+    <text x="656" y="189" class="s">• only row-local or tally attributes,</text>
+    <text x="666" y="210" class="s">an ungrouped total(), or a score</text>
+    <text x="666" y="231" class="s">bound to a prebuilt fit</text>
+    <text x="656" y="252" class="s">• mergeable groupers, aggregators</text>
+    <text x="666" y="273" class="s">and matrices</text>
+    <text x="656" y="294" class="s">• streamable filterers</text>
+    <text x="656" y="315" class="s">• no built-in aggregator on decimal128</text>
 
-    <rect x="640" y="292" width="300" height="200" class="b-o"/>
-    <text x="656" y="316" class="cap tc">FORCES BUFFERED</text>
-    <text x="656" y="342" class="s">• any WIN_* window</text>
-    <text x="656" y="364" class="s">• median, percentile, z-score aggregators</text>
-    <text x="656" y="386" class="s">• GROUP_QUANTILE · _DATE · _KMEANS</text>
-    <text x="656" y="408" class="s">• ATTR_PERCENTILE</text>
-    <text x="656" y="430" class="s">• built-in decimal paths</text>
-    <text x="656" y="452" class="s">• rank-method matrices</text>
-    <text x="656" y="474" class="s">• non-streamable overlays or tests</text>
-    <text x="40" y="524" class="m">Predict reports this decision ahead of time: PredictResult.Streamable, CrosstabFusable and CrosstabFusionReasons.</text>
+    <rect x="640" y="352" width="300" height="214" class="b-o"/>
+    <text x="656" y="376" class="cap tc">FORCES BUFFERED</text>
+    <text x="656" y="400" class="s">• any WIN_* window, windows-first too</text>
+    <text x="656" y="421" class="s">• median, percentile, z-score aggregators</text>
+    <text x="656" y="442" class="s">• GROUP_QUANTILE · _DATE · _KMEANS</text>
+    <text x="656" y="463" class="s">• ATTR_PERCENTILE · ATTR_PREVIOUS_STATE</text>
+    <text x="656" y="484" class="s">• built-in decimal paths</text>
+    <text x="656" y="505" class="s">• rank-method matrices</text>
+    <text x="656" y="526" class="s">• non-streamable overlays or tests</text>
+    <text x="656" y="547" class="s">• a crosstab with regressions (unfused)</text>
+    <text x="40" y="600" class="m">Predict reports this decision ahead of time: PredictResult.Streamable, CrosstabFusable and CrosstabFusionReasons.</text>
   </svg>
   </div>
   <div class="readings">
-    <div><h3>Merge order is fixed</h3><p>Partials fold in shard or worker order, never in the order they finish. That keeps Welford variance results within one ULP of the serial run on every run.</p></div>
-    <div><h3>Fusion is mostly memory</h3><p>The fused crosstab skips materializing records and the recursive partition. Peak heap falls 8.8× to 20.8× in the fan-out benchmarks.</p></div>
+    <div><h3>Sums are reproducible</h3><p>Partials fold in shard or worker order, never in the order they finish, and each merges as soon as the ones before it are done. Float sums are binned, so they carry the same bits on every worker count and shard split; Welford variances stay within one ULP.</p></div>
+    <div><h3>Fusion is mostly memory</h3><p>The fused crosstab folds each record into per-cell and per-margin state as it decodes, so it holds <code>O(cells + margins)</code> instead of every record. Predict reports <code>crosstab_fusable</code> before the run.</p></div>
     <div><h3>Extensions declare, not detect</h3><p>An embedder operator streams or merges only if its registration declares it. A probe at <code>pulse.New</code> refuses a declaration the code cannot honour.</p></div>
   </div>
 </section>
@@ -591,15 +617,15 @@ svg .tt { fill: var(--teal); } svg .ta { fill: var(--amber); } svg .tv { fill: v
   <div class="plate-head">
     <div class="plate-no">Plate<b>VI</b></div>
     <div><h2>Crosstab: who counts where</h2>
-    <p class="lede">Margins are recomputed from raw rows instead of summed from cells, so a record with only one axis resolved still counts in that axis's margin. Auxiliary margin figures follow a stricter admission rule.</p></div>
+    <p class="lede">Margins are recomputed from raw rows instead of summed from cells, and a record reaches a margin only if it reached a cell. A record with an axis left unresolved moves no cell, no margin and no denominator, so a column % reads as "% of those asked".</p></div>
   </div>
   <div class="figure">
-  <svg viewBox="0 0 960 400" role="img" aria-label="A 3 by 3 crosstab showing where two example records land">
-    <text x="20" y="22" class="cap">COUNT OF RECORDS · ROWS = REGION · COLUMNS = PLAN</text>
-    <text x="155" y="50" class="h mid">Basic</text><text x="245" y="50" class="h mid">Plus</text><text x="335" y="50" class="h mid">Pro</text><text x="440" y="50" class="h mid">row margin</text>
+  <svg viewBox="0 0 960 440" role="img" aria-label="A 3 by 3 crosstab showing where three example records land under the margin rule">
+    <text x="20" y="22" class="cap">AGG_COUNT OF spend · ROWS = REGION · COLUMNS = PLAN · AUX base = AGG_COUNT OF id</text>
+    <text x="155" y="50" class="h mid">Basic</text><text x="245" y="50" class="h mid">Plus</text><text x="335" y="50" class="h mid">Pro</text><text x="452" y="50" class="h mid">row margin</text>
     <text x="100" y="88" class="h end">North</text><text x="100" y="136" class="h end">South</text><text x="100" y="184" class="h end">East</text><text x="100" y="240" class="h end">col margin</text>
     <g>
-      <rect x="110" y="60" width="90" height="46" class="b-o"/><text x="155" y="89" class="big mid">12</text>
+      <rect x="110" y="60" width="90" height="46" class="b-o" style="stroke:var(--violet);stroke-width:2"/><text x="155" y="85" class="big mid">12</text><text x="155" y="100" class="m mid tv">n_null 1</text>
       <rect x="200" y="60" width="90" height="46" class="b-o"/><text x="245" y="89" class="big mid">7</text>
       <rect x="290" y="60" width="90" height="46" class="b-o"/><text x="335" y="89" class="big mid">3</text>
       <rect x="110" y="108" width="90" height="46" class="b-o"/><text x="155" y="137" class="big mid">9</text>
@@ -610,51 +636,60 @@ svg .tt { fill: var(--teal); } svg .ta { fill: var(--amber); } svg .tv { fill: v
       <rect x="290" y="156" width="90" height="46" class="b-o"/><text x="335" y="185" class="big mid">8</text>
     </g>
     <g>
-      <rect x="390" y="60" width="100" height="46" class="b-n"/><text x="440" y="83" class="big mid">22</text><text x="440" y="99" class="m mid">aux over 22</text>
-      <rect x="390" y="108" width="100" height="46" class="b-n"/><text x="440" y="131" class="big mid">28</text><text x="440" y="147" class="m mid">aux over 28</text>
-      <rect x="390" y="156" width="100" height="46" class="b-n" style="stroke:var(--amber);stroke-width:2"/><text x="440" y="179" class="big mid">19</text><text x="440" y="195" class="m mid ta">aux over 18</text>
-      <rect x="110" y="214" width="90" height="46" class="b-n"/><text x="155" y="243" class="big mid">25</text>
-      <rect x="200" y="214" width="90" height="46" class="b-n"/><text x="245" y="243" class="big mid">27</text>
-      <rect x="290" y="214" width="90" height="46" class="b-n"/><text x="335" y="243" class="big mid">16</text>
-      <rect x="390" y="214" width="100" height="46" class="b-n" style="stroke:var(--ink);stroke-width:1.6"/><text x="440" y="237" class="big mid">69</text><text x="440" y="253" class="m mid">grand</text>
+      <rect x="390" y="60" width="124" height="46" class="b-n" style="stroke:var(--violet);stroke-width:2"/><text x="452" y="83" class="big mid">22</text><text x="452" y="99" class="m mid tv">base 22 · n_null 1</text>
+      <rect x="390" y="108" width="124" height="46" class="b-n"/><text x="452" y="131" class="big mid">28</text><text x="452" y="147" class="m mid">base 28</text>
+      <rect x="390" y="156" width="124" height="46" class="b-n" style="stroke:var(--coral);stroke-width:2"/><text x="452" y="179" class="big mid">18</text><text x="452" y="195" class="m mid tc">base 18 · no ②</text>
+      <rect x="110" y="214" width="90" height="46" class="b-n"/><text x="155" y="237" class="big mid">25</text><text x="155" y="253" class="m mid">base 25</text>
+      <rect x="200" y="214" width="90" height="46" class="b-n"/><text x="245" y="237" class="big mid">27</text><text x="245" y="253" class="m mid">base 27</text>
+      <rect x="290" y="214" width="90" height="46" class="b-n"/><text x="335" y="237" class="big mid">16</text><text x="335" y="253" class="m mid">base 16</text>
+      <rect x="390" y="214" width="124" height="46" class="b-n" style="stroke:var(--ink);stroke-width:1.6"/><text x="452" y="237" class="big mid">68</text><text x="452" y="253" class="m mid">grand · base 68</text>
     </g>
-    <!-- record markers -->
-    <circle cx="280" cy="118" r="5" class="dot-t"/><circle cx="480" cy="118" r="5" class="dot-t"/><circle cx="280" cy="224" r="5" class="dot-t"/><circle cx="464" cy="224" r="5" class="dot-t"/>
-    <circle cx="480" cy="166" r="5" class="dot-a"/><circle cx="480" cy="224" r="5" class="dot-a"/>
+    <!-- record markers: 1 reaches its cell and every margin; 3 reaches them as n_null; 2 reaches nothing, so it has none -->
+    <circle cx="280" cy="118" r="5" class="dot-t"/><circle cx="504" cy="118" r="5" class="dot-t"/><circle cx="280" cy="224" r="5" class="dot-t"/><circle cx="504" cy="224" r="5" class="dot-t"/>
+    <circle cx="190" cy="70" r="5" class="mk-v"/><circle cx="504" cy="70" r="5" class="mk-v"/><circle cx="190" cy="224" r="5" class="mk-v"/><circle cx="488" cy="224" r="5" class="mk-v"/>
 
-    <text x="20" y="296" class="s">Cells sum to 68. The East margin reads 19 and the grand total 69,</text>
-    <text x="20" y="314" class="s">because record ② has a region but no plan. It never reaches a cell.</text>
-    <text x="20" y="344" class="m">Under fan-out (a set_* axis), one record counts once per selected label in</text>
-    <text x="20" y="360" class="m">the row margins but once in the grand total, so margins are non-additive.</text>
+    <text x="20" y="296" class="s">Cells sum to 68, and so does the grand total. Record ② has a region</text>
+    <text x="20" y="314" class="s">but no plan: it reaches no cell, so no margin and no base counts it.</text>
+    <text x="20" y="344" class="m">Record ③ reaches its cell with a null spend: every margin counts it as n_null</text>
+    <text x="20" y="360" class="m">(North: 23 records, 22 values), while the auxiliary base drops it.</text>
+    <text x="20" y="390" class="m">Under fan-out (a set_* axis), one record counts once per selected label in</text>
+    <text x="20" y="406" class="m">the row margins but once in the grand total, so margins are non-additive.</text>
 
     <!-- right: records + table -->
-    <rect x="540" y="44" width="400" height="52" class="b-o"/>
-    <circle cx="560" cy="70" r="7" class="dot-t"/><text x="560" y="74" class="m mid" style="fill:var(--plate)">1</text>
-    <text x="578" y="66" class="h">Record ①</text><text x="578" y="84" class="m">region South · plan Plus · spend 40</text>
-    <rect x="540" y="104" width="400" height="52" class="b-o"/>
-    <circle cx="560" cy="130" r="7" class="dot-a"/><text x="560" y="134" class="m mid" style="fill:var(--plate)">2</text>
-    <text x="578" y="126" class="h">Record ②</text><text x="578" y="144" class="m">region East · plan null · spend 25</text>
+    <rect x="540" y="44" width="400" height="40" class="b-o"/>
+    <circle cx="560" cy="64" r="7" class="dot-t"/><text x="560" y="68" class="m mid" style="fill:var(--plate)">1</text>
+    <text x="578" y="61" class="h">Record ①</text><text x="578" y="77" class="m">region South · plan Plus · spend 40</text>
+    <rect x="540" y="90" width="400" height="40" class="b-o"/>
+    <circle cx="560" cy="110" r="7" class="b-c"/><text x="560" y="114" class="m mid tc">2</text>
+    <text x="578" y="107" class="h">Record ②</text><text x="578" y="123" class="m">region East · plan null · spend 25</text>
+    <rect x="540" y="136" width="400" height="40" class="b-o"/>
+    <circle cx="560" cy="156" r="7" class="mk-v"/><text x="560" y="160" class="m mid" style="fill:var(--plate)">3</text>
+    <text x="578" y="153" class="h">Record ③</text><text x="578" y="169" class="m">region North · plan Basic · spend null</text>
 
     <g>
-      <text x="640" y="186" class="m mid">cell</text><text x="700" y="186" class="m mid">row m.</text><text x="760" y="186" class="m mid">col m.</text><text x="820" y="186" class="m mid">grand</text><text x="890" y="186" class="m mid tv">aux m.</text>
-      <line x1="540" y1="194" x2="940" y2="194" class="l"/>
-      <text x="556" y="216" class="s">①</text>
-      <text x="640" y="216" class="mi mid tt">✓</text><text x="700" y="216" class="mi mid tt">✓</text><text x="760" y="216" class="mi mid tt">✓</text><text x="820" y="216" class="mi mid tt">✓</text><text x="890" y="216" class="mi mid tt">✓</text>
-      <line x1="540" y1="226" x2="940" y2="226" class="l"/>
-      <text x="556" y="248" class="s">②</text>
-      <text x="640" y="248" class="mi mid tm">—</text><text x="700" y="248" class="mi mid ta">✓</text><text x="760" y="248" class="mi mid tm">—</text><text x="820" y="248" class="mi mid ta">✓</text><text x="890" y="248" class="mi mid tm">—</text>
-      <line x1="540" y1="258" x2="940" y2="258" class="l"/>
+      <text x="640" y="200" class="m mid">cell</text><text x="700" y="200" class="m mid">row m.</text><text x="760" y="200" class="m mid">col m.</text><text x="820" y="200" class="m mid">grand</text><text x="890" y="200" class="m mid tv">aux base</text>
+      <line x1="540" y1="208" x2="940" y2="208" class="l"/>
+      <text x="556" y="230" class="s">①</text>
+      <text x="640" y="230" class="mi mid tt">✓</text><text x="700" y="230" class="mi mid tt">✓</text><text x="760" y="230" class="mi mid tt">✓</text><text x="820" y="230" class="mi mid tt">✓</text><text x="890" y="230" class="mi mid tt">✓</text>
+      <line x1="540" y1="240" x2="940" y2="240" class="l"/>
+      <text x="556" y="262" class="s">②</text>
+      <text x="640" y="262" class="mi mid tc">—</text><text x="700" y="262" class="mi mid tc">—</text><text x="760" y="262" class="mi mid tc">—</text><text x="820" y="262" class="mi mid tc">—</text><text x="890" y="262" class="mi mid tc">—</text>
+      <line x1="540" y1="272" x2="940" y2="272" class="l"/>
+      <text x="556" y="294" class="s">③</text>
+      <text x="640" y="294" class="m mid tv">n_null</text><text x="700" y="294" class="m mid tv">n_null</text><text x="760" y="294" class="m mid tv">n_null</text><text x="820" y="294" class="m mid tv">n_null</text><text x="890" y="294" class="mi mid tm">—</text>
+      <line x1="540" y1="304" x2="940" y2="304" class="l"/>
     </g>
-    <rect x="540" y="280" width="400" height="80" class="b-v"/>
-    <text x="556" y="304" class="cap tv">THE ADMISSION RULE</text>
-    <text x="556" y="326" class="h">A record reaches an auxiliary margin</text>
-    <text x="556" y="346" class="h">only if it reached a cell.</text>
+    <rect x="540" y="322" width="400" height="96" class="b-v"/>
+    <text x="556" y="346" class="cap tv">THE MARGIN RULE</text>
+    <text x="556" y="368" class="h">A record reaches any margin only if it reached</text>
+    <text x="556" y="388" class="h">a cell. An auxiliary also drops a null cell field.</text>
+    <text x="556" y="408" class="m">null, empty and include-excluded keys reach no cell</text>
   </svg>
   </div>
   <div class="readings">
-    <div><h3>Per-axis nullity</h3><p>A record with a row key but a null column key updates the row margin and the grand margin. Cells exist only where both axes resolve.</p></div>
-    <div><h3>Auxiliary margins</h3><p><code>margin_aggregations</code> excludes three kinds of record: those with a null cell field, those with an unresolved row key, and those with an unresolved column key. The cell aggregator's own margins are unaffected.</p></div>
-    <div><h3>Both arms agree</h3><p>The fused arm folds each record into its cell and margin accumulators as it decodes. It is byte-for-byte equal to the buffered <code>RunCrosstab</code>, overlays included.</p></div>
+    <div><h3>Every margin needs a cell</h3><p>A record with a row key but a null column key reaches no cell, so it moves no row margin, column margin, grand total or normalize denominator. Margins are still recomputed from raw rows, so mean and median margins stay correct.</p></div>
+    <div><h3>Auxiliary margins</h3><p><code>margin_aggregations</code> see exactly the records the cells saw, minus those with a null cell field. The cell aggregator's own margins keep that record and count it as <code>n_null</code>, so read an auxiliary's <code>n</code> as a base, never as a cohort count.</p></div>
+    <div><h3>Both arms agree</h3><p>The fused arm folds each record into its cell and margin accumulators as it decodes. It is byte-for-byte equal to the buffered <code>RunCrosstab</code>, overlays included. Distinct-count margins are unions on both.</p></div>
   </div>
 </section>
 
@@ -663,11 +698,11 @@ svg .tt { fill: var(--teal); } svg .ta { fill: var(--amber); } svg .tv { fill: v
   <div class="plate-head">
     <div class="plate-no">Plate<b>VII</b></div>
     <div><h2>Anatomy of the answer</h2>
-    <p class="lede">Every slot of the response traces back to a stage of the run. Derived layers sit next to the base result and never overwrite it. Overlays are read-only siblings, and multiplicity adds an adjusted p beside the raw one.</p></div>
+    <p class="lede">Every slot of the response traces back to a stage of the run. Derived layers sit next to the base result and never overwrite it. Overlays are read-only siblings, multiplicity adds an adjusted p beside the raw one, and a failed slot fails alone.</p></div>
   </div>
   <div class="figure">
-  <svg viewBox="0 0 960 500" role="img" aria-label="Envelope and Response fields mapped to the stages that produce them">
-    <rect x="20" y="20" width="420" height="470" class="b-o" style="stroke:var(--ink)"/>
+  <svg viewBox="0 0 960 560" role="img" aria-label="Envelope and Response fields mapped to the stages that produce them">
+    <rect x="20" y="20" width="420" height="530" class="b-o" style="stroke:var(--ink)"/>
     <text x="34" y="42" class="cap">descriptor.Envelope</text>
     <text x="600" y="42" class="cap">WRITTEN BY</text>
 
@@ -676,44 +711,48 @@ svg .tt { fill: var(--teal); } svg .ta { fill: var(--amber); } svg .tv { fill: v
     <text x="40" y="114" class="mi tc">errors</text><text x="420" y="114" class="m end">[] never null</text>
     <text x="40" y="138" class="mi tc">warnings</text><text x="420" y="138" class="m end">[] never null</text>
     <path d="M420 62 H596" class="l dash"/><path d="M420 86 H596" class="l dash"/><path d="M420 110 H596" class="l dash"/><path d="M420 134 H596" class="l dash"/>
-    <text x="600" y="66" class="s">bumped only on a breaking shape change</text>
+    <text x="600" y="66" class="s">names the envelope shape; additive fields never move it</text>
     <text x="600" y="90" class="s">normalized request · --echo-request</text>
     <text x="600" y="114" class="s">CodedError keeps its own code → errors lookup</text>
-    <text x="600" y="138" class="s">validation, categorical and import notes</text>
+    <text x="600" y="138" class="s">every run-time warning; data keeps its copy</text>
 
     <text x="40" y="164" class="mi">data</text><text x="420" y="164" class="m end">types.Response</text>
-    <rect x="34" y="172" width="392" height="306" class="b-n"/>
+    <rect x="34" y="172" width="392" height="310" class="b-n"/>
 
     <g>
-      <text x="48" y="196" class="mi tt">data</text><text x="412" y="196" class="m end">[]row</text>
-      <text x="48" y="221" class="mi">metadata</text><text x="412" y="221" class="m end">cohort file, shards</text>
-      <text x="48" y="246" class="mi">tests</text><text x="412" y="246" class="m end">TEST_*</text>
-      <text x="48" y="271" class="mi">post_tests</text><text x="412" y="271" class="m end">over data</text>
-      <text x="48" y="296" class="mi">regressions</text><text x="412" y="296" class="m end">REG_*</text>
-      <text x="48" y="321" class="mi">matrices</text><text x="412" y="321" class="m end">MAT_*</text>
-      <text x="48" y="346" class="mi">crosstab</text><text x="412" y="346" class="m end">grid + margins</text>
-      <text x="48" y="371" class="mi tc">warnings</text><text x="412" y="371" class="m end">coded</text>
-      <text x="48" y="396" class="mi tv">overlays</text><text x="412" y="396" class="m end">OVERLAY_*</text>
-      <text x="48" y="421" class="mi tv">components</text><text x="412" y="421" class="m end">counts behind figures</text>
-      <text x="48" y="446" class="mi tv">returned</text><text x="412" y="446" class="m end">shaping marker</text>
+      <text x="48" y="196" class="mi tm">label</text><text x="412" y="196" class="m end">Compose slot</text>
+      <text x="48" y="220" class="mi tt">data</text><text x="412" y="220" class="m end">[]row</text>
+      <text x="48" y="244" class="mi">metadata</text><text x="412" y="244" class="m end">cohort file, shards</text>
+      <text x="48" y="268" class="mi">tests</text><text x="412" y="268" class="m end">TEST_* · error</text>
+      <text x="48" y="292" class="mi">post_tests</text><text x="412" y="292" class="m end">over data</text>
+      <text x="48" y="316" class="mi">regressions</text><text x="412" y="316" class="m end">REG_* · error</text>
+      <text x="48" y="340" class="mi">matrices</text><text x="412" y="340" class="m end">MAT_* · error</text>
+      <text x="48" y="364" class="mi">crosstab</text><text x="412" y="364" class="m end">grid + margins</text>
+      <text x="48" y="388" class="mi tc">warnings</text><text x="412" y="388" class="m end">coded</text>
+      <text x="48" y="412" class="mi tv">overlays</text><text x="412" y="412" class="m end">OVERLAY_*</text>
+      <text x="48" y="436" class="mi tv">components</text><text x="412" y="436" class="m end">counts behind figures</text>
+      <text x="48" y="460" class="mi tv">returned</text><text x="412" y="460" class="m end">shaping marker</text>
     </g>
     <g>
-      <path d="M426 192 H596" class="l-t"/><path d="M426 217 H596" class="l"/><path d="M426 242 H596" class="l"/><path d="M426 267 H596" class="l"/><path d="M426 292 H596" class="l"/><path d="M426 317 H596" class="l"/><path d="M426 342 H596" class="l"/><path d="M426 367 H596" class="l-c"/><path d="M426 392 H596" class="l-v"/><path d="M426 417 H596" class="l-v"/><path d="M426 442 H596" class="l-v"/>
-      <text x="600" y="196" class="s">group + aggregate, windows, sort</text>
-      <text x="600" y="221" class="s">cohort open · stampShardCount</text>
-      <text x="600" y="246" class="s">row tests (tier 1) <tspan class="tv">+ p_adjusted</tspan></text>
-      <text x="600" y="271" class="s">post-tests over the result <tspan class="tv">+ p_adjusted</tspan></text>
-      <text x="600" y="296" class="s">regression engines · optional vcov</text>
-      <text x="600" y="321" class="s">MAT_* over virtual vectors</text>
-      <text x="600" y="346" class="s">fused or buffered crosstab arm</text>
-      <text x="600" y="371" class="s">weights, vectors, strict-mode demotions</text>
-      <text x="600" y="396" class="s">post-finalize fold, read-only <tspan class="tv">+ p_adjusted</tspan></text>
-      <text x="600" y="421" class="s">floors from every slot (see below)</text>
-      <text x="600" y="446" class="s">return shaping at the facade</text>
+      <path d="M426 192 H596" class="l"/><path d="M426 216 H596" class="l-t"/><path d="M426 240 H596" class="l"/><path d="M426 264 H596" class="l"/><path d="M426 288 H596" class="l"/><path d="M426 312 H596" class="l"/><path d="M426 336 H596" class="l"/><path d="M426 360 H596" class="l"/><path d="M426 384 H596" class="l-c"/><path d="M426 408 H596" class="l-v"/><path d="M426 432 H596" class="l-v"/><path d="M426 456 H596" class="l-v"/>
+      <text x="600" y="196" class="s">the slot's label echoed back</text>
+      <text x="600" y="220" class="s">group + aggregate, windows, sort</text>
+      <text x="600" y="244" class="s">cohort open · stampShardCount</text>
+      <text x="600" y="268" class="s">row tests (tier 1) <tspan class="tv">+ p_adjusted</tspan></text>
+      <text x="600" y="292" class="s">post-tests over the result <tspan class="tv">+ p_adjusted</tspan></text>
+      <text x="600" y="316" class="s">fits · advisories · optional vcov <tspan class="tv">+ p_adjusted</tspan></text>
+      <text x="600" y="340" class="s">virtual or vec_f* vectors · p-values <tspan class="tv">+ p_adjusted</tspan></text>
+      <text x="600" y="364" class="s">fused or buffered crosstab arm</text>
+      <text x="600" y="388" class="s">PULSE_SLOT_FAILED · lifted slot warnings</text>
+      <text x="600" y="412" class="s">post-finalize fold, read-only <tspan class="tv">+ p_adjusted</tspan></text>
+      <text x="600" y="436" class="s">floors from every slot (see below)</text>
+      <text x="600" y="460" class="s">return shaping at the facade</text>
     </g>
     <g>
-      <text x="600" y="474" class="m">components: aggregations · groupers ·</text>
-      <text x="600" y="490" class="m">crosstab · filterers · run · matrices</text>
+      <text x="40" y="506" class="m tc">a failed test, regression or matrix slot keeps</text>
+      <text x="40" y="522" class="m tc">its place with an error; the rest survives</text>
+      <text x="600" y="506" class="m">components: aggregations · groupers · crosstab ·</text>
+      <text x="600" y="522" class="m">filterers · run · matrices · attributes</text>
     </g>
   </svg>
   </div>
@@ -732,7 +771,7 @@ svg .tt { fill: var(--teal); } svg .ta { fill: var(--amber); } svg .tv { fill: v
     <p class="lede"><code>pulse.New</code> merges built-ins, extensions and an optional feature profile into one instance. That instance describes exactly what it supports, and an agent can learn to use it from the manifest and skills alone.</p></div>
   </div>
   <div class="figure">
-  <svg viewBox="0 0 960 520" role="img" aria-label="Inputs to pulse.New, the descriptive outputs, and the agent loop">
+  <svg viewBox="0 0 960 590" role="img" aria-label="Inputs to pulse.New, the descriptive outputs, and the agent loop">
     <text x="20" y="24" class="cap">INPUTS</text>
     <rect x="20" y="34" width="250" height="150" class="b-t"/>
     <text x="34" y="56" class="h">Built-in registry</text>
@@ -742,39 +781,45 @@ svg .tt { fill: var(--teal); } svg .ta { fill: var(--amber); } svg .tv { fill: v
     <text x="34" y="131" class="m">tests · regressions</text>
     <text x="34" y="148" class="m">matrix ops · overlay kinds</text>
     <text x="34" y="170" class="m tt">every catalog grows over time</text>
-    <rect x="20" y="194" width="250" height="96" class="b-o"/>
-    <text x="34" y="216" class="h">Extensions</text>
-    <text x="34" y="238" class="m">custom operators</text>
-    <text x="34" y="255" class="m">expr functions · lookup / label /</text>
-    <text x="34" y="272" class="m">range tables · skills · examples</text>
-    <rect x="20" y="300" width="250" height="76" class="b-c"/>
-    <text x="34" y="322" class="h">Feature profile</text>
-    <text x="34" y="344" class="m">closed allowlist · a hidden</text>
-    <text x="34" y="361" class="m">feature acts never-registered</text>
+    <rect x="20" y="194" width="250" height="148" class="b-o"/>
+    <text x="34" y="216" class="h">Extensions</text><text x="256" y="216" class="m end">Options.Extensions</text>
+    <text x="34" y="238" class="m">operators for every extensible</text>
+    <text x="34" y="255" class="m">category, regressions and matrix</text>
+    <text x="34" y="272" class="m">ops included · expr functions ·</text>
+    <text x="34" y="289" class="m">lookup / label / range tables ·</text>
+    <text x="34" y="306" class="m">reference vectors · populations ·</text>
+    <text x="34" y="323" class="m">skills · examples</text>
+    <rect x="20" y="352" width="250" height="76" class="b-c"/>
+    <text x="34" y="374" class="h">Feature profile</text>
+    <text x="34" y="396" class="m">closed allowlist · a hidden</text>
+    <text x="34" y="413" class="m">feature acts never-registered</text>
 
-    <path d="M270 109 H318" class="l-i" marker-end="url(#ah)"/><path d="M270 242 H318" class="l-i" marker-end="url(#ah)"/><path d="M270 338 H318" class="l-i" marker-end="url(#ah)"/>
+    <path d="M270 109 H318" class="l-i" marker-end="url(#ah)"/><path d="M270 268 H318" class="l-i" marker-end="url(#ah)"/><path d="M270 390 H318" class="l-i" marker-end="url(#ah)"/>
 
-    <rect x="320" y="34" width="250" height="342" class="b-n" style="stroke:var(--ink);stroke-width:1.6"/>
+    <rect x="320" y="34" width="250" height="394" class="b-n" style="stroke:var(--ink);stroke-width:1.6"/>
     <text x="445" y="64" class="hh mid">pulse.New(Options)</text>
     <text x="445" y="84" class="m mid">→ *Pulse instance</text>
     <line x1="340" y1="100" x2="550" y2="100" class="l"/>
-    <text x="340" y="128" class="s">1. probe each extension factory</text>
-    <text x="340" y="152" class="s">2. check declarations: Streamable,</text>
-    <text x="356" y="170" class="s">Mergeable, FansOut</text>
-    <text x="340" y="194" class="s">3. validate DependsOn + Purpose</text>
-    <text x="340" y="218" class="s">4. load extension skills + examples</text>
-    <text x="340" y="242" class="s">5. resolve profile dependencies</text>
-    <text x="340" y="266" class="s">6. build the read-only snapshot</text>
-    <text x="340" y="300" class="m">predict, manifest, MCP and runtime</text>
-    <text x="340" y="316" class="m">all read the same snapshot, so an</text>
-    <text x="340" y="332" class="m">extension behaves exactly like a</text>
-    <text x="340" y="348" class="m">built-in</text>
+    <text x="340" y="124" class="s">1. probe each extension factory;</text>
+    <text x="356" y="142" class="s">a nil factory is refused</text>
+    <text x="340" y="166" class="s">2. check declarations: Streamable,</text>
+    <text x="356" y="184" class="s">Mergeable, FansOut</text>
+    <text x="340" y="208" class="s">3. check component schemas and</text>
+    <text x="356" y="226" class="s">params: Required, ExactlyOneOf</text>
+    <text x="340" y="250" class="s">4. validate DependsOn + Purpose</text>
+    <text x="340" y="274" class="s">5. load extension skills + examples</text>
+    <text x="340" y="298" class="s">6. resolve profile dependencies</text>
+    <text x="340" y="322" class="s">7. build the read-only snapshot</text>
+    <text x="340" y="356" class="m">predict, manifest, MCP and</text>
+    <text x="340" y="372" class="m">runtime all read the same</text>
+    <text x="340" y="388" class="m">snapshot, so an extension</text>
+    <text x="340" y="404" class="m">behaves exactly like a built-in</text>
 
     <path d="M570 70 H618" class="l-i" marker-end="url(#ah)"/><path d="M570 140 H618" class="l-i" marker-end="url(#ah)"/><path d="M570 210 H618" class="l-i" marker-end="url(#ah)"/><path d="M570 280 H618" class="l-i" marker-end="url(#ah)"/><path d="M570 346 H618" class="l-i" marker-end="url(#ah)"/>
     <text x="620" y="24" class="cap">WHAT IT TELLS A CALLER</text>
     <rect x="620" y="40" width="320" height="58" class="b-a"/>
     <text x="634" y="62" class="h">Manifest</text>
-    <text x="634" y="82" class="m">key: version · feature_set_digest · limits</text>
+    <text x="926" y="62" class="m end">cache key</text><text x="634" y="82" class="m">version · feature_set_digest · limits_digest</text>
     <rect x="620" y="110" width="320" height="58" class="b-a"/>
     <text x="634" y="132" class="h">Payload schema</text>
     <text x="634" y="152" class="m">JSON Schema 2020-12 · the instance's view</text>
@@ -789,18 +834,18 @@ svg .tt { fill: var(--teal); } svg .ta { fill: var(--amber); } svg .tv { fill: v
     <text x="634" y="360" class="m">tools, prompts, pulse:// resources</text>
 
     <!-- agent loop -->
-    <text x="20" y="418" class="cap">HOW AN AGENT USES IT</text>
+    <text x="20" y="470" class="cap">HOW AN AGENT USES IT</text>
     <g>
-      <rect x="20" y="430" width="120" height="40" class="b-a"/><text x="80" y="455" class="s mid">fetch manifest</text>
-      <rect x="156" y="430" width="120" height="40" class="b-a"/><text x="216" y="455" class="s mid">read skills</text>
-      <rect x="292" y="430" width="120" height="40" class="b-o"/><text x="352" y="455" class="s mid">author request</text>
-      <rect x="428" y="430" width="120" height="40" class="b-a"/><text x="488" y="455" class="s mid">predict</text>
-      <rect x="564" y="430" width="120" height="40" class="b-t"/><text x="624" y="455" class="s mid">process</text>
-      <rect x="700" y="430" width="120" height="40" class="b-v"/><text x="760" y="455" class="s mid">read envelope</text>
-      <rect x="836" y="430" width="104" height="40" class="b-c"/><text x="888" y="455" class="s mid">errors lookup</text>
-      <path d="M140 450 H154" class="l-i" marker-end="url(#ah)"/><path d="M276 450 H290" class="l-i" marker-end="url(#ah)"/><path d="M412 450 H426" class="l-i" marker-end="url(#ah)"/><path d="M548 450 H562" class="l-i" marker-end="url(#ah)"/><path d="M684 450 H698" class="l-i" marker-end="url(#ah)"/><path d="M820 450 H834" class="l-i" marker-end="url(#ah)"/>
-      <path d="M888 470 V496 H352 V472" class="l-c dash" marker-end="url(#ah)"/>
-      <text x="620" y="512" class="m mid">on a coded error, apply its fixup and revise the request</text>
+      <rect x="20" y="482" width="120" height="40" class="b-a"/><text x="80" y="507" class="s mid">fetch manifest</text>
+      <rect x="156" y="482" width="120" height="40" class="b-a"/><text x="216" y="507" class="s mid">read skills</text>
+      <rect x="292" y="482" width="120" height="40" class="b-o"/><text x="352" y="507" class="s mid">author request</text>
+      <rect x="428" y="482" width="120" height="40" class="b-a"/><text x="488" y="507" class="s mid">predict</text>
+      <rect x="564" y="482" width="120" height="40" class="b-t"/><text x="624" y="507" class="s mid">process</text>
+      <rect x="700" y="482" width="120" height="40" class="b-v"/><text x="760" y="507" class="s mid">read envelope</text>
+      <rect x="836" y="482" width="104" height="40" class="b-c"/><text x="888" y="507" class="s mid">errors lookup</text>
+      <path d="M140 502 H154" class="l-i" marker-end="url(#ah)"/><path d="M276 502 H290" class="l-i" marker-end="url(#ah)"/><path d="M412 502 H426" class="l-i" marker-end="url(#ah)"/><path d="M548 502 H562" class="l-i" marker-end="url(#ah)"/><path d="M684 502 H698" class="l-i" marker-end="url(#ah)"/><path d="M820 502 H834" class="l-i" marker-end="url(#ah)"/>
+      <path d="M888 522 V548 H352 V524" class="l-c dash" marker-end="url(#ah)"/>
+      <text x="620" y="564" class="m mid">on a coded error, apply its fixup and revise the request</text>
     </g>
   </svg>
   </div>
@@ -811,6 +856,6 @@ svg .tt { fill: var(--teal); } svg .ta { fill: var(--amber); } svg .tv { fill: v
   </div>
 </section>
 
-<p class="foot">Drawn from the Pulse source and its <code>.claude/reference</code> contracts (October 2026). Pulse adds operators over time, so these plates name categories rather than counting them; the instance manifest is the authority. The stage order follows <code>internal/service/service.go</code> and <code>internal/processing/processor.go</code>. The cohort, its fields and its values in Plates I and VI are illustrative.</p>
+<p class="foot">Drawn from the Pulse source and its skill pack at <code>v1.0.0-alpha.33</code>. Pulse adds operators and extension categories over time, so these plates name categories rather than counting them; the instance manifest is the authority. The stage order follows <code>internal/service/service.go</code> and <code>internal/processing/processor.go</code>. The cohort in Plate I is illustrative. Plate VI's figures come from a real alpha.33 run, kept in <code>plates/data/</code> as <code>crosstab.json</code> and <code>crosstab.out.json</code>.</p>
 
 </main>

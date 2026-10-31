@@ -1,0 +1,200 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "field_count": 10,
+    "fields": [
+      {
+        "name": "store_no",
+        "type": "u64",
+        "nullable": false,
+        "byte_offset": 0,
+        "bit_position": 0,
+        "description": "Store number, the key the store table shares",
+        "description_source": "schema",
+        "categorical": false
+      },
+      {
+        "name": "store",
+        "type": "categorical_u8",
+        "nullable": false,
+        "byte_offset": 8,
+        "bit_position": 0,
+        "description": "Store name, S1 to S6",
+        "description_source": "schema",
+        "categorical": true,
+        "dictionary": {
+          "total_entries": 6,
+          "truncated": false,
+          "values": [
+            "S1",
+            "S2",
+            "S3",
+            "S4",
+            "S5",
+            "S6"
+          ]
+        }
+      },
+      {
+        "name": "region",
+        "type": "categorical_u8",
+        "nullable": false,
+        "byte_offset": 9,
+        "bit_position": 0,
+        "description": "Sales region of the store: North or South",
+        "description_source": "schema",
+        "categorical": true,
+        "dictionary": {
+          "total_entries": 2,
+          "truncated": false,
+          "values": [
+            "North",
+            "South"
+          ]
+        },
+        "group": {
+          "group": 0,
+          "key": true,
+          "kind": "constant"
+        }
+      },
+      {
+        "name": "format",
+        "type": "categorical_u8",
+        "nullable": false,
+        "byte_offset": 10,
+        "bit_position": 0,
+        "description": "Store format: Mall or Street",
+        "description_source": "schema",
+        "categorical": true,
+        "dictionary": {
+          "total_entries": 2,
+          "truncated": false,
+          "values": [
+            "Mall",
+            "Street"
+          ]
+        },
+        "group": {
+          "group": 0,
+          "key": true,
+          "kind": "constant"
+        }
+      },
+      {
+        "name": "opened",
+        "type": "date",
+        "nullable": false,
+        "byte_offset": 11,
+        "bit_position": 0,
+        "description": "Date the store opened",
+        "description_source": "schema",
+        "categorical": false
+      },
+      {
+        "name": "week",
+        "type": "date",
+        "nullable": false,
+        "byte_offset": 15,
+        "bit_position": 0,
+        "description": "Monday that starts the sales week",
+        "description_source": "schema",
+        "categorical": false
+      },
+      {
+        "name": "revenue",
+        "type": "f64",
+        "nullable": true,
+        "byte_offset": 19,
+        "bit_position": 0,
+        "description": "Store revenue for the week, in thousands of dollars",
+        "description_source": "schema",
+        "categorical": false
+      },
+      {
+        "name": "visits",
+        "type": "u32",
+        "nullable": false,
+        "byte_offset": 27,
+        "bit_position": 0,
+        "description": "Customer visits to the store that week",
+        "description_source": "schema",
+        "categorical": false
+      },
+      {
+        "name": "promo",
+        "type": "categorical_u8",
+        "nullable": false,
+        "byte_offset": 31,
+        "bit_position": 0,
+        "description": "Whether a promotion ran that week, as the stores reported it",
+        "description_source": "schema",
+        "categorical": true,
+        "dictionary": {
+          "total_entries": 4,
+          "truncated": false,
+          "values": [
+            "No",
+            "Yes",
+            "Y",
+            "Unsure"
+          ]
+        }
+      },
+      {
+        "name": "rank",
+        "type": "f64",
+        "nullable": true,
+        "byte_offset": 32,
+        "bit_position": 0,
+        "description": "WIN_ROW_NUMBER (partition store; order revenue desc) — derived from w.pulse",
+        "description_source": "schema",
+        "categorical": false
+      }
+    ],
+    "shards": [
+      {
+        "filename": "part-00001.pulse",
+        "record_count": 10
+      },
+      {
+        "filename": "part-00002.pulse",
+        "record_count": 6
+      }
+    ],
+    "record_count": 16,
+    "layout": {
+      "pulse_format_version": 2,
+      "physical_record_stride": 39,
+      "logical_record_stride": 42
+    },
+    "groups": [
+      {
+        "group": 0,
+        "label": "group 1 [region,format]",
+        "kind": "constant",
+        "members": [
+          "region",
+          "format"
+        ],
+        "fields": [
+          "region",
+          "format"
+        ],
+        "entry_count": 1,
+        "entry_width": 2,
+        "dictionary_bytes": 2,
+        "member_row_bytes": 2,
+        "index_width": 0,
+        "ratio": 16,
+        "break_even_ratio": 0,
+        "ratio_floor": 2,
+        "byte_delta": -11,
+        "grows_file": false,
+        "verdict": "admitted"
+      }
+    ]
+  },
+  "errors": [],
+  "warnings": []
+}

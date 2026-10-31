@@ -1,0 +1,1 @@
+{"cohort":{"filename":"s.pulse"},"windows":[{"type":"WIN_ROW_NUMBER","label":"rn","partition_by":["region"],"order_by":[{"field":"sales","desc":true}]}]}

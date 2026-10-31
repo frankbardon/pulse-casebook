@@ -1,0 +1,109 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "arm": "control",
+        "avg_spend": 39.8424,
+        "shoppers": 76
+      },
+      {
+        "arm": "variant",
+        "avg_spend": 45.49061538461538,
+        "shoppers": 67
+      }
+    ],
+    "metadata": {
+      "total_rows": 800,
+      "filtered_rows": 143,
+      "cohort_file": "s.pulse"
+    },
+    "components": {
+      "aggregations": [
+        {
+          "label": "shoppers",
+          "n": 143,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "control"
+              ],
+              "n": 76,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "variant"
+              ],
+              "n": 67,
+              "n_null": 0
+            }
+          ]
+        },
+        {
+          "label": "avg_spend",
+          "n": 140,
+          "n_null": 3,
+          "groups": [
+            {
+              "group_key": [
+                "control"
+              ],
+              "n": 75,
+              "n_null": 1,
+              "operator": {
+                "sum": 2988.18
+              }
+            },
+            {
+              "group_key": [
+                "variant"
+              ],
+              "n": 65,
+              "n_null": 2,
+              "operator": {
+                "sum": 2956.89
+              }
+            }
+          ]
+        }
+      ],
+      "groupers": [
+        {
+          "field": "arm",
+          "total_n": 143,
+          "operator": {
+            "buckets": [
+              {
+                "count": 76,
+                "key": "control",
+                "label": "control"
+              },
+              {
+                "count": 67,
+                "key": "variant",
+                "label": "variant"
+              }
+            ],
+            "dict_size": 2
+          }
+        }
+      ],
+      "filterers": [
+        {
+          "n_in": 800,
+          "n_out": 143,
+          "n_null_input": 0
+        }
+      ],
+      "run": {
+        "total_records": 800,
+        "filtered_records": 143,
+        "null_records": 0
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

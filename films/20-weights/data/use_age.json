@@ -1,0 +1,7 @@
+{"cohort":{"filename":"raked.pulse"},
+ "weight":{"field":"rake_weight"},
+ "groups":[{"type":"GROUP_CATEGORY","field":"age"}],
+ "aggregations":[
+  {"type":"AGG_COUNT","field":"id","label":"weighted"},
+  {"type":"AGG_COUNT","field":"id","label":"base","weight":null},
+  {"type":"AGG_AVERAGE","field":"satisfied","label":"satisfied"}]}

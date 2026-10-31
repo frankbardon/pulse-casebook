@@ -1,0 +1,1 @@
+{"cohort":{"filename":"g.pulse"},"groups":[{"type":"GROUP_QUANTILE","field":"spend","interval":4}],"aggregations":[{"type":"AGG_COUNT","field":"id","label":"orders"},{"type":"AGG_MIN","field":"spend","label":"lo"},{"type":"AGG_MAX","field":"spend","label":"hi"}]}

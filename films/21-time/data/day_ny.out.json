@@ -1,0 +1,180 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "data": [
+      {
+        "at": "2026-03-15",
+        "n": 4
+      },
+      {
+        "at": "2026-03-16",
+        "n": 35
+      },
+      {
+        "at": "2026-03-17",
+        "n": 26
+      },
+      {
+        "at": "2026-03-18",
+        "n": 33
+      },
+      {
+        "at": "2026-03-19",
+        "n": 30
+      },
+      {
+        "at": "2026-03-20",
+        "n": 32
+      },
+      {
+        "at": "2026-03-21",
+        "n": 35
+      },
+      {
+        "at": "2026-03-22",
+        "n": 24
+      }
+    ],
+    "metadata": {
+      "total_rows": 219,
+      "filtered_rows": 219,
+      "cohort_file": "o.pulse"
+    },
+    "components": {
+      "aggregations": [
+        {
+          "label": "n",
+          "n": 219,
+          "n_null": 0,
+          "groups": [
+            {
+              "group_key": [
+                "2026-03-15"
+              ],
+              "n": 4,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "2026-03-16"
+              ],
+              "n": 35,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "2026-03-17"
+              ],
+              "n": 26,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "2026-03-18"
+              ],
+              "n": 33,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "2026-03-19"
+              ],
+              "n": 30,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "2026-03-20"
+              ],
+              "n": 32,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "2026-03-21"
+              ],
+              "n": 35,
+              "n_null": 0
+            },
+            {
+              "group_key": [
+                "2026-03-22"
+              ],
+              "n": 24,
+              "n_null": 0
+            }
+          ]
+        }
+      ],
+      "groupers": [
+        {
+          "field": "at",
+          "total_n": 219,
+          "operator": {
+            "buckets": [
+              {
+                "count": 4,
+                "key": "2026-03-15",
+                "period_end": "2026-03-15",
+                "period_start": "2026-03-15"
+              },
+              {
+                "count": 35,
+                "key": "2026-03-16",
+                "period_end": "2026-03-16",
+                "period_start": "2026-03-16"
+              },
+              {
+                "count": 26,
+                "key": "2026-03-17",
+                "period_end": "2026-03-17",
+                "period_start": "2026-03-17"
+              },
+              {
+                "count": 33,
+                "key": "2026-03-18",
+                "period_end": "2026-03-18",
+                "period_start": "2026-03-18"
+              },
+              {
+                "count": 30,
+                "key": "2026-03-19",
+                "period_end": "2026-03-19",
+                "period_start": "2026-03-19"
+              },
+              {
+                "count": 32,
+                "key": "2026-03-20",
+                "period_end": "2026-03-20",
+                "period_start": "2026-03-20"
+              },
+              {
+                "count": 35,
+                "key": "2026-03-21",
+                "period_end": "2026-03-21",
+                "period_start": "2026-03-21"
+              },
+              {
+                "count": 24,
+                "key": "2026-03-22",
+                "period_end": "2026-03-22",
+                "period_start": "2026-03-22"
+              }
+            ],
+            "granularity": "day",
+            "n_buckets": 8,
+            "range_end": "2026-03-22",
+            "range_start": "2026-03-15"
+          }
+        }
+      ],
+      "run": {
+        "total_records": 219,
+        "filtered_records": 219,
+        "null_records": 0
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

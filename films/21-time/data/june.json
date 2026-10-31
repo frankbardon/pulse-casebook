@@ -1,0 +1,42 @@
+{
+ "cohort": {
+  "filename": "p.pulse"
+ },
+ "attributes": [
+  {
+   "type": "ATTR_PREVIOUS_STATE",
+   "field": "plan",
+   "subject_field": "subject",
+   "order_field": "month",
+   "label": "prev"
+  }
+ ],
+ "filterers": [
+  {
+   "type": "FILTER_DATE_RANGES",
+   "field": "month",
+   "params": {
+    "ranges": [
+     {
+      "label": "june",
+      "start": "2026-06-01",
+      "end": "2026-06-30"
+     }
+    ]
+   }
+  }
+ ],
+ "groups": [
+  {
+   "type": "GROUP_CATEGORY",
+   "field": "prev"
+  }
+ ],
+ "aggregations": [
+  {
+   "type": "AGG_COUNT",
+   "field": "subject",
+   "label": "n"
+  }
+ ]
+}

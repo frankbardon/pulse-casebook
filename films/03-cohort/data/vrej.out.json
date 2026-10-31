@@ -1,0 +1,18 @@
+{
+  "format_version": "1.1",
+  "data": null,
+  "errors": [
+    {
+      "code": "PULSE_VECTOR_FIELD_NOT_SCALAR",
+      "message": "aggregations[0] (AGG_AVERAGE) field: field \"sat\" is a vec_f64 vector field (dim 4) and has no single value to read; aggregate the whole vector with AGG_VEC_MEAN, AGG_VEC_SUM or AGG_VEC_SD naming it under `vector`",
+      "details": {
+        "dim": 4,
+        "field": "sat",
+        "field_type": "vec_f64",
+        "slot": "aggregations[0] (AGG_AVERAGE) field",
+        "suggest": "AGG_VEC_MEAN"
+      }
+    }
+  ],
+  "warnings": []
+}

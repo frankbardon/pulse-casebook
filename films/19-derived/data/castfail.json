@@ -1,0 +1,2 @@
+{"cohort":{"filename":"w.pulse"},
+ "output":{"columns":[{"from":"store"},{"from":"week"},{"from":"revenue","type":"u16"}]}}

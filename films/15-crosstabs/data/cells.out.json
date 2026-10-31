@@ -1,0 +1,373 @@
+{
+  "format_version": "1.1",
+  "data": {
+    "metadata": {
+      "total_rows": 600,
+      "filtered_rows": 600,
+      "cohort_file": "t.pulse"
+    },
+    "crosstab": {
+      "shape": "matrix",
+      "matrix": {
+        "row_header": {
+          "fields": [
+            "brand",
+            "_measure"
+          ],
+          "types": [
+            "GROUP_CATEGORY",
+            "MEASURE"
+          ]
+        },
+        "column_header": {
+          "fields": [
+            "wave"
+          ],
+          "types": [
+            "GROUP_CATEGORY"
+          ]
+        },
+        "row_keys": [
+          [
+            "Acorn",
+            "base"
+          ],
+          [
+            "Acorn",
+            "mean_score"
+          ],
+          [
+            "Birch",
+            "base"
+          ],
+          [
+            "Birch",
+            "mean_score"
+          ],
+          [
+            "Cedar",
+            "base"
+          ],
+          [
+            "Cedar",
+            "mean_score"
+          ]
+        ],
+        "column_keys": [
+          [
+            "W1"
+          ],
+          [
+            "W2"
+          ]
+        ],
+        "cells": [
+          [
+            {
+              "value": 65,
+              "present": true
+            },
+            {
+              "value": 87,
+              "present": true
+            }
+          ],
+          [
+            {
+              "value": 6.609375,
+              "present": true
+            },
+            {
+              "value": 7.204819277108434,
+              "present": true
+            }
+          ],
+          [
+            {
+              "value": 68,
+              "present": true
+            },
+            {
+              "value": 77,
+              "present": true
+            }
+          ],
+          [
+            {
+              "value": 6.2153846153846155,
+              "present": true
+            },
+            {
+              "value": 6.454545454545454,
+              "present": true
+            }
+          ],
+          [
+            {
+              "value": 57,
+              "present": true
+            },
+            {
+              "value": 66,
+              "present": true
+            }
+          ],
+          [
+            {
+              "value": 6.107142857142857,
+              "present": true
+            },
+            {
+              "value": 6.265625,
+              "present": true
+            }
+          ]
+        ],
+        "grand_total": {
+          "present": false
+        },
+        "cell_label": "",
+        "normalize_applied": "none",
+        "cell_labels": [
+          "base",
+          "mean_score",
+          "base",
+          "mean_score",
+          "base",
+          "mean_score"
+        ],
+        "measures": [
+          {
+            "label": "base",
+            "column_margins": [
+              {
+                "value": 190,
+                "present": true
+              },
+              {
+                "value": 230,
+                "present": true
+              }
+            ],
+            "grand_total": {
+              "value": 420,
+              "present": true
+            }
+          },
+          {
+            "label": "mean_score",
+            "column_margins": [
+              {
+                "value": 6.318918918918919,
+                "present": true
+              },
+              {
+                "value": 6.678571428571429,
+                "present": true
+              }
+            ],
+            "grand_total": {
+              "value": 6.515892420537897,
+              "present": true
+            }
+          }
+        ]
+      }
+    },
+    "components": {
+      "crosstab": {
+        "cell_counts": [
+          [
+            65,
+            87
+          ],
+          [
+            65,
+            87
+          ],
+          [
+            68,
+            77
+          ],
+          [
+            68,
+            77
+          ],
+          [
+            57,
+            66
+          ],
+          [
+            57,
+            66
+          ]
+        ],
+        "cell_components": [
+          [
+            {
+              "n": 65,
+              "n_null": 0
+            },
+            {
+              "n": 87,
+              "n_null": 0
+            }
+          ],
+          [
+            {
+              "n": 64,
+              "n_null": 1,
+              "sum": 423
+            },
+            {
+              "n": 83,
+              "n_null": 4,
+              "sum": 598
+            }
+          ],
+          [
+            {
+              "n": 68,
+              "n_null": 0
+            },
+            {
+              "n": 77,
+              "n_null": 0
+            }
+          ],
+          [
+            {
+              "n": 65,
+              "n_null": 3,
+              "sum": 404
+            },
+            {
+              "n": 77,
+              "n_null": 0,
+              "sum": 497
+            }
+          ],
+          [
+            {
+              "n": 57,
+              "n_null": 0
+            },
+            {
+              "n": 66,
+              "n_null": 0
+            }
+          ],
+          [
+            {
+              "n": 56,
+              "n_null": 1,
+              "sum": 342
+            },
+            {
+              "n": 64,
+              "n_null": 2,
+              "sum": 401
+            }
+          ]
+        ],
+        "row_key_components": [
+          {
+            "count": 152,
+            "key": "Acorn",
+            "label": "Acorn"
+          },
+          {
+            "count": 152,
+            "key": "Acorn",
+            "label": "Acorn"
+          },
+          {
+            "count": 145,
+            "key": "Birch",
+            "label": "Birch"
+          },
+          {
+            "count": 145,
+            "key": "Birch",
+            "label": "Birch"
+          },
+          {
+            "count": 123,
+            "key": "Cedar",
+            "label": "Cedar"
+          },
+          {
+            "count": 123,
+            "key": "Cedar",
+            "label": "Cedar"
+          }
+        ],
+        "column_key_components": [
+          {
+            "count": 300,
+            "key": "W1",
+            "label": "W1"
+          },
+          {
+            "count": 300,
+            "key": "W2",
+            "label": "W2"
+          }
+        ],
+        "included_records": 420,
+        "excluded_records": 180,
+        "measures": [
+          {
+            "label": "base",
+            "column_margin_counts": [
+              190,
+              230
+            ],
+            "column_margin_components": [
+              {
+                "n": 190,
+                "n_null": 0
+              },
+              {
+                "n": 230,
+                "n_null": 0
+              }
+            ],
+            "grand_total_count": 420,
+            "grand_total_components": {
+              "n": 420,
+              "n_null": 0
+            }
+          },
+          {
+            "label": "mean_score",
+            "column_margin_counts": [
+              190,
+              230
+            ],
+            "column_margin_components": [
+              {
+                "n": 185,
+                "n_null": 5,
+                "sum": 1169
+              },
+              {
+                "n": 224,
+                "n_null": 6,
+                "sum": 1496
+              }
+            ],
+            "grand_total_count": 420,
+            "grand_total_components": {
+              "n": 409,
+              "n_null": 11,
+              "sum": 2665
+            }
+          }
+        ]
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

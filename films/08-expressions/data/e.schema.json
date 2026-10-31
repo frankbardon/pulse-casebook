@@ -1,0 +1,16 @@
+[
+ {"name": "id", "type": "u8", "nullable": false, "description": "Member number, one to six"},
+ {"name": "region", "type": "categorical_u8", "nullable": false, "description": "Sales region of the member"},
+ {"name": "tags", "type": "set_u8", "nullable": true, "description": "Interests picked by the member, a multi-select"},
+ {"name": "score", "type": "u8", "nullable": true, "description": "Satisfaction score from one to five"},
+ {"name": "q1", "type": "u8", "nullable": false, "description": "Battery item one, rated one to five"},
+ {"name": "q2", "type": "u8", "nullable": true, "description": "Battery item two, rated one to five"},
+ {"name": "q3", "type": "u8", "nullable": false, "description": "Battery item three, rated one to five"},
+ {"name": "price", "type": "decimal128", "precision": 18, "scale": 2, "nullable": false, "description": "Unit price in dollars, exact"},
+ {"name": "cost", "type": "decimal128", "precision": 18, "scale": 2, "nullable": false, "description": "Unit cost in dollars, exact"},
+ {"name": "spend", "type": "f64", "nullable": false, "description": "Media spend in dollars for the week"},
+ {"name": "week", "type": "u8", "nullable": false, "description": "Week number of the year"},
+ {"name": "signup_day", "type": "date", "nullable": false, "description": "Day the member signed up"},
+ {"name": "order_day", "type": "date", "nullable": false, "description": "Day of the member's first order"},
+ {"name": "created_at", "type": "datetime", "nullable": false, "description": "Instant the member's account was created"}
+]

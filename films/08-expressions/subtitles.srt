@@ -1,0 +1,187 @@
+1
+00:00:04,250 --> 00:00:09,442
+Pulse expressions. One small language for formulas and filters, taken apart.
+
+2
+00:00:10,242 --> 00:00:18,698
+The formula attribute writes a new column. The expression filter keeps a row when the answer is true. Both read one per-row language.
+
+3
+00:00:19,498 --> 00:00:25,394
+The filters and attributes films cover the two operators. This film is the language they share.
+
+4
+00:00:26,194 --> 00:00:36,463
+Each expression compiles once, before the first row, and predict runs the same compile. A filter must answer true or false, so week plus one is refused.
+
+5
+00:00:37,263 --> 00:00:45,036
+A field is named bare, and binds by its type. A number is a number. A category binds as its label, never its index.
+
+6
+00:00:45,836 --> 00:00:54,420
+A set binds as a sorted list of labels. A decimal stays exact. A date is a count of days, and a datetime a count of seconds.
+
+7
+00:00:55,220 --> 00:01:03,036
+One formula per type, on six members. Member four's price over cost is exact: decimal division keeps four places.
+
+8
+00:01:03,836 --> 00:01:09,071
+Arithmetic on a category is refused at compile, by predict and the run alike.
+
+9
+00:01:09,871 --> 00:01:19,308
+Today's operators cover arithmetic, comparison, logic, membership, string tests, ranges, a ternary, and the null guard: two question marks.
+
+10
+00:01:20,108 --> 00:01:24,596
+Built-ins cover numbers, casts, collections, strings, JSON and time.
+
+11
+00:01:25,396 --> 00:01:31,612
+Float modulo keeps the dividend's sign: minus seven and a half mod two is minus one and a half.
+
+12
+00:01:32,412 --> 00:01:37,391
+Divide by zero gives infinity, and a non-finite result arrives as null.
+
+13
+00:01:38,191 --> 00:01:45,580
+A null field binds as nil. In a formula, arithmetic on nil stops the request, as the attributes film showed.
+
+14
+00:01:46,380 --> 00:01:52,063
+In a filter, member three has no score. Score equals three is false, so the row is dropped.
+
+15
+00:01:52,863 --> 00:01:56,711
+But score not-equal-to three is true, so the null row is kept.
+
+16
+00:01:57,511 --> 00:02:03,300
+Greater-than on nil is unknown, so the row is dropped. To keep it, say so, or give a default.
+
+17
+00:02:04,100 --> 00:02:08,012
+Set helpers test a multi-select answer, or build a new set.
+
+18
+00:02:08,812 --> 00:02:15,625
+Jaccard, Dice, overlap and Hamming compare two sets by label. Member six scores two thirds on Jaccard.
+
+19
+00:02:16,425 --> 00:02:23,430
+A null set reads as empty: popcount zero, has none true. A similarity of a null set arrives as null.
+
+20
+00:02:24,230 --> 00:02:30,062
+A vector is a list, like q one, q two, q three. The reductions skip a null element.
+
+21
+00:02:30,862 --> 00:02:34,326
+Member three skipped q two, so its mean is three and a half.
+
+22
+00:02:35,126 --> 00:02:42,494
+Shape functions, like the vector z-score, sit inside a reduction. Member six has no spread, so its z-score is null.
+
+23
+00:02:43,294 --> 00:02:48,998
+Distance and cosine compare two vectors, pairwise-complete, rescaled for a missing item.
+
+24
+00:02:49,798 --> 00:02:54,201
+The maths covers roots, logs, powers, trigonometry and the hill curve.
+
+25
+00:02:55,001 --> 00:02:59,894
+It runs on Pulse's own portable maths, so every machine gets the same bits.
+
+26
+00:03:00,694 --> 00:03:06,035
+A seasonal Fourier term is one line. The square root of minus one arrives as null.
+
+27
+00:03:06,835 --> 00:03:12,283
+Hill bends spend into a saturation curve. The attributes film runs it after the windows.
+
+28
+00:03:13,083 --> 00:03:21,880
+A decimal binds exactly, and a number joins as written. Ten cents plus twenty cents equals thirty cents, so the filter keeps member three.
+
+29
+00:03:22,680 --> 00:03:26,037
+Cast to float first, and the same test keeps nobody.
+
+30
+00:03:26,837 --> 00:03:34,888
+Division keeps at least four places, and rounding is half to even: two and a half rounds to two as a decimal, and three as a float.
+
+31
+00:03:35,688 --> 00:03:43,013
+Modulo on a decimal is refused at compile. Dividing by a zero decimal is a run error, never a null.
+
+32
+00:03:43,813 --> 00:03:48,152
+A formula column is a float. A filter reads the exact verdict.
+
+33
+00:03:48,952 --> 00:03:55,253
+Month index differences count calendar months: January the thirty-first to March the first is two.
+
+34
+00:03:56,053 --> 00:04:01,416
+Date trunc finds the day a week, month, quarter or year starts. Weeks start on Monday.
+
+35
+00:04:02,216 --> 00:04:11,995
+To-day reads an instant's local day in the request time zone. Three-thirty UTC on March the tenth is Sunday in UTC, but Saturday in New York.
+
+36
+00:04:12,795 --> 00:04:17,390
+A bare datetime in a day helper is refused, as the filters film showed.
+
+37
+00:04:18,190 --> 00:04:24,235
+Params are read-only constants, read as params dot name, in formulas, filters and total.
+
+38
+00:04:25,035 --> 00:04:32,766
+A filter keeps scores of at least the minimum. A formula splits the budget by share of total spend, over the three survivors.
+
+39
+00:04:33,566 --> 00:04:38,374
+A misspelt param, or total in a filter, is refused. Predict catches both.
+
+40
+00:04:39,174 --> 00:04:45,219
+Embedders add their own functions through Options dot Extensions, in formulas and filters alike.
+
+41
+00:04:46,019 --> 00:04:50,720
+A function that claims a reserved name, like total, is refused at startup.
+
+42
+00:04:51,520 --> 00:04:58,717
+Lookup tables are read with lookup, and reference vectors with ref. A missing table or key has its own error code.
+
+43
+00:04:59,517 --> 00:05:05,904
+With no table registered, lookup is an unknown name. The manifest lists what your instance registered.
+
+44
+00:05:06,704 --> 00:05:10,595
+That's the expression language today, from binding to extensions.
+
+45
+00:05:11,395 --> 00:05:20,427
+Pulse adds built-ins over time, and embedders register their own through Options dot Extensions. The manifest lists what your instance adds.
+
+46
+00:05:21,227 --> 00:05:25,352
+Remember: know what a null becomes in each host. Next up, groupers.
+
+47
+00:05:26,152 --> 00:05:27,568
+Pulse expressions.

@@ -1,0 +1,5 @@
+{"cohort":{"filename":"p.pulse"},
+ "filterers":[{"type":"FILTER_DATE_RANGES","field":"wave","params":{"ranges":[{"label":"mar","start":"2026-03-01","end":"2026-03-31"}]}}],
+ "attributes":[{"type":"ATTR_PREVIOUS_STATE","label":"prev_plan","field":"plan","subject_field":"customer","order_field":"wave"}],
+ "crosstab":{"rows":[{"type":"GROUP_CATEGORY","field":"prev_plan"}],"columns":[{"type":"GROUP_CATEGORY","field":"plan"}],
+   "cell":{"type":"AGG_COUNT","field":"row","label":"n"}}}
