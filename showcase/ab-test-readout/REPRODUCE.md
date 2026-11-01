@@ -7,10 +7,9 @@ committed. The commands use `jq` only to pull numbers out of the Pulse JSON enve
 
 ```bash
 # Needs a Pulse build that includes the synth-realism work (pulse roadmap U52): the spec's
-# `"output": false` helper fields and sampler-less rule-determined categoricals. That is the first alpha
-# after v1.0.0-alpha.33; the casebook Makefile still pins alpha.33, so until the pin moves build from a
-# pulse checkout that has U52 (a later tag/main works the same way):
-(cd /path/to/pulse && go build -o /tmp/pulse ./cmd/pulse)
+# `"output": false` helper fields and sampler-less rule-determined categoricals. That is
+# v1.0.0-alpha.35, which the casebook Makefile pins; from the casebook repo root:
+make pulse && cp bin/pulse /tmp/pulse
 rm -rf /tmp/ab-test-readout && cp -r showcase/ab-test-readout /tmp/ab-test-readout
 cd /tmp/ab-test-readout
 ```

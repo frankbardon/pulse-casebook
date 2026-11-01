@@ -7,9 +7,8 @@ Everything runs through the `pulse` CLI. The cohort is regenerated from its synt
 ```sh
 # Needs a Pulse build that includes the synth-realism work (pulse roadmap U52): the cohort spec draws the
 # outcome with `bernoulli()` / `uniform()` inside rules and keeps its true-PD helper out of the file with
-# `"output": false`. That is the first alpha after v1.0.0-alpha.33; the casebook Makefile still pins alpha.33,
-# so until the pin moves build from a pulse checkout that has U52 (a later tag/main works the same way):
-(cd /path/to/pulse && go build -o /tmp/pulse ./cmd/pulse)
+# `"output": false`. That is v1.0.0-alpha.35, which the casebook Makefile pins; from the casebook repo root:
+make pulse && cp bin/pulse /tmp/pulse
 ```
 
 ## 2. Copy the example to a scratch location

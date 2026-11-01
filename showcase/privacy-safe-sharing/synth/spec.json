@@ -1518,25 +1518,25 @@
           "kind": "categorical_level",
           "field": "contract",
           "level": "Monthly",
-          "coefficient": -10.149769488886713
+          "coefficient": -10.149769488886712
         },
         {
           "kind": "set_option",
           "field": "products_held",
           "level": "mobile",
-          "coefficient": -0.26234190420216447
+          "coefficient": -0.2623419042021645
         },
         {
           "kind": "set_option",
           "field": "products_held",
           "level": "broadband",
-          "coefficient": 0.015894249715455697
+          "coefficient": 0.01589424971545596
         },
         {
           "kind": "set_option",
           "field": "products_held",
           "level": "tv",
-          "coefficient": 0.18285814634795144
+          "coefficient": 0.18285814634795122
         },
         {
           "kind": "set_option",
@@ -1558,52 +1558,52 @@
     },
     {
       "field": "tenure_months",
-      "intercept": 52.899385702444874,
+      "intercept": 52.89938570244489,
       "predictors": [
         {
           "kind": "numeric",
           "field": "age",
           "level": "",
-          "coefficient": 0.0011156415318086435
+          "coefficient": 0.0011156415318085932
         },
         {
           "kind": "categorical_level",
           "field": "contract",
           "level": "One-Year",
-          "coefficient": -17.80812153637395
+          "coefficient": -17.808121536373964
         },
         {
           "kind": "categorical_level",
           "field": "contract",
           "level": "Monthly",
-          "coefficient": -36.471134931606066
+          "coefficient": -36.47113493160608
         }
       ],
-      "residual_std": 26.582306327922225,
+      "residual_std": 26.58230632792222,
       "max": 142,
       "has_clamp": true
     },
     {
       "field": "monthly_spend",
-      "intercept": 37.25062916665387,
+      "intercept": 37.25062916665389,
       "predictors": [
         {
           "kind": "categorical_level",
           "field": "plan",
           "level": "Basic",
-          "coefficient": -24.59405558530275
+          "coefficient": -24.594055585302755
         },
         {
           "kind": "categorical_level",
           "field": "plan",
           "level": "Unlimited",
-          "coefficient": 15.175051254123343
+          "coefficient": 15.175051254123321
         },
         {
           "kind": "categorical_level",
           "field": "plan",
           "level": "Standard",
-          "coefficient": -15.32625052530075
+          "coefficient": -15.326250525300763
         },
         {
           "kind": "set_option",
@@ -1621,34 +1621,34 @@
           "kind": "set_option",
           "field": "products_held",
           "level": "tv",
-          "coefficient": 24.167489749237525
+          "coefficient": 24.16748974923753
         },
         {
           "kind": "set_option",
           "field": "products_held",
           "level": "landline",
-          "coefficient": 13.679344420839564
+          "coefficient": 13.67934442083956
         },
         {
           "kind": "set_option",
           "field": "products_held",
           "level": "protection",
-          "coefficient": 11.694737777062262
+          "coefficient": 11.694737777062269
         }
       ],
-      "residual_std": 9.67833453097715,
+      "residual_std": 9.67833453097714,
       "max": 165.84,
       "has_clamp": true
     },
     {
       "field": "frequent_caller",
-      "intercept": -0.060427890380621525,
+      "intercept": -0.06042789038062154,
       "predictors": [
         {
           "kind": "numeric",
           "field": "support_contacts",
           "level": "",
-          "coefficient": 0.09582494771854898
+          "coefficient": 0.09582494771854899
         }
       ],
       "residual_std": 0.14890048333220116,
@@ -1772,17 +1772,17 @@
     {
       "a": "age",
       "b": "frequent_caller",
-      "rho": 0.0010705559548292599
+      "rho": 0.0010705559548292432
     },
     {
       "a": "age",
       "b": "monthly_spend",
-      "rho": 0.012286159526425665
+      "rho": 0.01228615952642559
     },
     {
       "a": "age",
       "b": "tenure_months",
-      "rho": -0.000016184314064052938
+      "rho": -0.00001618431406406377
     },
     {
       "a": "autopay",
@@ -1792,27 +1792,27 @@
     {
       "a": "autopay",
       "b": "frequent_caller",
-      "rho": -0.001874911827084683
+      "rho": -0.001874911827084632
     },
     {
       "a": "autopay",
       "b": "monthly_spend",
-      "rho": -0.009468539186698793
+      "rho": -0.009468539186698792
     },
     {
       "a": "autopay",
       "b": "tenure_months",
-      "rho": -0.00009356817831599745
+      "rho": -0.0000935681783159981
     },
     {
       "a": "churned",
       "b": "frequent_caller",
-      "rho": -0.013480418901922565
+      "rho": -0.013480418901922564
     },
     {
       "a": "churned",
       "b": "monthly_spend",
-      "rho": 0.005930632824615105
+      "rho": 0.005930632824615094
     },
     {
       "a": "churned",
@@ -1822,17 +1822,17 @@
     {
       "a": "frequent_caller",
       "b": "monthly_spend",
-      "rho": -0.006461960833135856
+      "rho": -0.0064619608331358885
     },
     {
       "a": "frequent_caller",
       "b": "tenure_months",
-      "rho": 0.0049751563013382145
+      "rho": 0.004975156301338225
     },
     {
       "a": "monthly_spend",
       "b": "tenure_months",
-      "rho": -0.0007828207878693954
+      "rho": -0.0007828207878693899
     }
   ],
   "rules": [

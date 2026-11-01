@@ -16,12 +16,11 @@ the source and 0.176 on the twin, a fit ratio of 1.04, and every driver's coeffi
 7% of its source value. The twin's weak spot is the plan effect on churn, which it carries at under
 half its source strength.
 
-> **Pulse version.** This walkthrough needs the Pulse alpha after v1.0.0-alpha.33, the release that
+> **Pulse version.** This walkthrough needs Pulse v1.0.0-alpha.35 or later, the release that
 > carries the synth-realism work (roadmap U52): rule draws (`bernoulli()`, `uniform()`), `"output":
 > false` helper fields, numeric predictors in `--fit-models`, within-set dependency capture, and
 > `synth from-profile --synthetic-only` / `--fidelity-model` with the fidelity report's `utility` and
-> `disclosure` sections. The casebook's `Makefile` still pins alpha.33; build Pulse from a checkout
-> that has U52 until the pin moves (see [REPRODUCE.md](REPRODUCE.md)).
+> `disclosure` sections. The casebook's `Makefile` pins alpha.35 (see [REPRODUCE.md](REPRODUCE.md)).
 
 ---
 

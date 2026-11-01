@@ -2,7 +2,7 @@
 
 **Audience:** risk-analytics lead. **Everything below was computed by Pulse** (`pulse api predict`, `pulse api process`, `pulse api compose`, `pulse explain`, `pulse synth`). Every figure is copied from a response in [`results/`](results/); the request that produced it is in [`req/`](req/).
 
-> **Pulse version.** The cohort spec uses rule draws (`bernoulli()`, `uniform()`) and `"output": false` helper fields, which arrive in the Pulse alpha after v1.0.0-alpha.33 (the synth-realism work, roadmap U52). The casebook `Makefile` still pins alpha.33; build Pulse from a checkout that has U52 until the pin moves (see [REPRODUCE.md](REPRODUCE.md)).
+> **Pulse version.** The cohort spec uses rule draws (`bernoulli()`, `uniform()`) and `"output": false` helper fields, which arrive in Pulse v1.0.0-alpha.35 (the synth-realism work, roadmap U52). The casebook `Makefile` pins alpha.35 (see [REPRODUCE.md](REPRODUCE.md)).
 
 ## The business question
 

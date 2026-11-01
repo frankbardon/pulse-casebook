@@ -11,9 +11,9 @@ generated from [`data/ab_test.synth.json`](data/ab_test.synth.json). [`REPRODUCE
 has the commands and the expected values.
 
 > **Pulse version.** The spec keeps its working columns out of the file with `"output": false` helper
-> fields and lets rule-determined categoricals omit their sampler. Both arrive in the Pulse alpha after
-> v1.0.0-alpha.33 (the synth-realism work, roadmap U52). The casebook `Makefile` still pins alpha.33;
-> build Pulse from a checkout that has U52 until the pin moves (see [`REPRODUCE.md`](REPRODUCE.md)).
+> fields and lets rule-determined categoricals omit their sampler. Both arrive in Pulse
+> v1.0.0-alpha.35 (the synth-realism work, roadmap U52). The casebook `Makefile` pins alpha.35 (see
+> [`REPRODUCE.md`](REPRODUCE.md)).
 
 ## The business question
 

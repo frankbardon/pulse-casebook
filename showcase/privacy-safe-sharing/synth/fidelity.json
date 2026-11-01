@@ -93,7 +93,10 @@
             40000,
             40000
           ]
-        }
+        },
+        "warnings": [
+          "PULSE_TEST_TIES_DOMINATE: ≥ 50% of values are tied; the test then mostly compares the share of tied values, not their order, and the asymptotic p-value is unreliable"
+        ]
       },
       "effect_size": {
         "measure": "cohens_d",
@@ -111,7 +114,7 @@
         "variant": "independence",
         "statistic": 4.394535222102685,
         "df": 3,
-        "p_value": 0.22189263428305084,
+        "p_value": 0.22189263428305073,
         "alpha": 0.05,
         "reject_null": false,
         "details": {
@@ -246,7 +249,10 @@
             40000,
             40000
           ]
-        }
+        },
+        "warnings": [
+          "PULSE_TEST_TIES_DOMINATE: ≥ 50% of values are tied; the test then mostly compares the share of tied values, not their order, and the asymptotic p-value is unreliable"
+        ]
       },
       "effect_size": {
         "measure": "cohens_d",
@@ -304,7 +310,10 @@
             40000,
             40000
           ]
-        }
+        },
+        "warnings": [
+          "PULSE_TEST_TIES_DOMINATE: ≥ 50% of values are tied; the test then mostly compares the share of tied values, not their order, and the asymptotic p-value is unreliable"
+        ]
       },
       "effect_size": {
         "measure": "cohens_d",
@@ -441,7 +450,10 @@
             40000,
             40000
           ]
-        }
+        },
+        "warnings": [
+          "PULSE_TEST_TIES_DOMINATE: ≥ 50% of values are tied; the test then mostly compares the share of tied values, not their order, and the asymptotic p-value is unreliable"
+        ]
       },
       "effect_size": {
         "measure": "cohens_d",
@@ -470,7 +482,10 @@
             7716,
             7438
           ]
-        }
+        },
+        "warnings": [
+          "PULSE_TEST_TIES_DOMINATE: ≥ 50% of values are tied; the test then mostly compares the share of tied values, not their order, and the asymptotic p-value is unreliable"
+        ]
       },
       "effect_size": {
         "measure": "cohens_d",
@@ -488,7 +503,7 @@
         "variant": "independence",
         "statistic": 6.2917158993937825,
         "df": 1,
-        "p_value": 0.012130356047403859,
+        "p_value": 0.012130356047403855,
         "alpha": 0.05,
         "reject_null": true,
         "details": {
@@ -713,8 +728,8 @@
       "field": "age",
       "latent_scale": 14.457550135137087,
       "captured_intercept": 0.48191081612252096,
-      "recovered_intercept": 0.47277317866117147,
-      "intercept_delta": 0.00913763746134949,
+      "recovered_intercept": 0.4727731786611714,
+      "intercept_delta": 0.009137637461349546,
       "predictors": [
         {
           "kind": "categorical_level",
@@ -722,7 +737,7 @@
           "level": "One-Year",
           "captured_coefficient": -0.34058332451311757,
           "recovered_coefficient": -0.33214272939863243,
-          "std_error": 0.031232366554133233,
+          "std_error": 0.031232366554133237,
           "delta": 0.008440595114485139,
           "n_fired": 2524
         },
@@ -730,8 +745,8 @@
           "kind": "categorical_level",
           "field": "contract",
           "level": "Monthly",
-          "captured_coefficient": -0.7020393769355913,
-          "recovered_coefficient": -0.687053137424311,
+          "captured_coefficient": -0.7020393769355912,
+          "recovered_coefficient": -0.6870531374243108,
           "std_error": 0.02787722809212279,
           "delta": 0.014986239511280308,
           "n_fired": 6118
@@ -740,8 +755,8 @@
           "kind": "set_option",
           "field": "products_held",
           "level": "mobile",
-          "captured_coefficient": -0.018145667955498115,
-          "recovered_coefficient": -0.025326248089743552,
+          "captured_coefficient": -0.01814566795549812,
+          "recovered_coefficient": -0.025326248089743555,
           "std_error": 0.03198923057064356,
           "delta": 0.007180580134245437,
           "n_fired": 9073
@@ -750,20 +765,20 @@
           "kind": "set_option",
           "field": "products_held",
           "level": "broadband",
-          "captured_coefficient": 0.0010993736536888715,
-          "recovered_coefficient": 0.0013774920636038738,
-          "std_error": 0.02383246799857283,
-          "delta": 0.0002781184099150023,
+          "captured_coefficient": 0.0010993736536888898,
+          "recovered_coefficient": 0.001377492063603891,
+          "std_error": 0.023832467998572825,
+          "delta": 0.0002781184099150012,
           "n_fired": 4465
         },
         {
           "kind": "set_option",
           "field": "products_held",
           "level": "tv",
-          "captured_coefficient": 0.012647934445237709,
-          "recovered_coefficient": 0.0008746351173024619,
+          "captured_coefficient": 0.012647934445237694,
+          "recovered_coefficient": 0.0008746351173024357,
           "std_error": 0.027827303017716073,
-          "delta": 0.011773299327935248,
+          "delta": 0.011773299327935258,
           "n_fired": 2377
         },
         {
@@ -771,9 +786,9 @@
           "field": "products_held",
           "level": "landline",
           "captured_coefficient": 0.47320851772745753,
-          "recovered_coefficient": 0.5037405627107735,
+          "recovered_coefficient": 0.5037405627107734,
           "std_error": 0.027434515720829618,
-          "delta": 0.030532044983315965,
+          "delta": 0.030532044983315854,
           "n_fired": 1323
         },
         {
@@ -781,93 +796,93 @@
           "field": "products_held",
           "level": "protection",
           "captured_coefficient": -0.027821983711421184,
-          "recovered_coefficient": -0.013467014755764254,
+          "recovered_coefficient": -0.01346701475576425,
           "std_error": 0.021634502490810986,
-          "delta": 0.01435496895565693,
+          "delta": 0.014354968955656935,
           "n_fired": 2431
         }
       ],
       "n_obs": 10000,
       "r2": 0.1013406103951151,
-      "max_delta": 0.030532044983315965
+      "max_delta": 0.030532044983315854
     },
     {
       "field": "tenure_months",
       "latent_scale": 29.727964337304073,
-      "captured_intercept": 0.8890614036857845,
-      "recovered_intercept": 0.9200946347005732,
-      "intercept_delta": 0.03103323101478872,
+      "captured_intercept": 0.889061403685785,
+      "recovered_intercept": 0.920094634700573,
+      "intercept_delta": 0.031033231014787943,
       "predictors": [
         {
           "kind": "numeric",
           "field": "age",
           "level": "",
-          "captured_coefficient": 0.00003752835273717962,
-          "recovered_coefficient": -0.0003746742614171979,
+          "captured_coefficient": 0.00003752835273717793,
+          "recovered_coefficient": -0.0003746742614171967,
           "std_error": 0.0006016848430585362,
-          "delta": 0.00041220261415437755,
+          "delta": 0.0004122026141543747,
           "n_fired": 10000
         },
         {
           "kind": "categorical_level",
           "field": "contract",
           "level": "One-Year",
-          "captured_coefficient": -0.5990360232647166,
-          "recovered_coefficient": -0.5959325899833559,
-          "std_error": 0.027968067172995475,
-          "delta": 0.003103433281360757,
+          "captured_coefficient": -0.5990360232647172,
+          "recovered_coefficient": -0.5959325899833556,
+          "std_error": 0.02796806717299548,
+          "delta": 0.003103433281361534,
           "n_fired": 2524
         },
         {
           "kind": "categorical_level",
           "field": "contract",
           "level": "Monthly",
-          "captured_coefficient": -1.2268292076037086,
-          "recovered_coefficient": -1.1822909812656819,
+          "captured_coefficient": -1.226829207603709,
+          "recovered_coefficient": -1.1822909812656817,
           "std_error": 0.025566972514960224,
-          "delta": 0.04453822633802673,
+          "delta": 0.0445382263380274,
           "n_fired": 6118
         }
       ],
       "n_obs": 10000,
-      "r2": 0.2090544810108831,
-      "max_delta": 0.04453822633802673
+      "r2": 0.20905448101088298,
+      "max_delta": 0.0445382263380274
     },
     {
       "field": "monthly_spend",
       "latent_scale": 32.51688273403835,
-      "captured_intercept": -1.0161418947689735,
-      "recovered_intercept": -1.534060980159304,
-      "intercept_delta": 0.5179190853903304,
+      "captured_intercept": -1.0161418947689733,
+      "recovered_intercept": -1.5340609801593033,
+      "intercept_delta": 0.5179190853903299,
       "predictors": [
         {
           "kind": "categorical_level",
           "field": "plan",
           "level": "Basic",
-          "captured_coefficient": -0.7563472730907855,
-          "recovered_coefficient": -0.7194467680220904,
-          "std_error": 0.009870829528889971,
-          "delta": 0.03690050506869513,
+          "captured_coefficient": -0.7563472730907856,
+          "recovered_coefficient": -0.7194467680220907,
+          "std_error": 0.009870829528889992,
+          "delta": 0.03690050506869491,
           "n_fired": 2902
         },
         {
           "kind": "categorical_level",
           "field": "plan",
           "level": "Unlimited",
-          "captured_coefficient": 0.466682227144678,
-          "recovered_coefficient": 0.4609115810776552,
-          "std_error": 0.012397347800936931,
-          "delta": 0.005770646067022822,
+          "captured_coefficient": 0.4666822271446774,
+          "recovered_coefficient": 0.46091158107765473,
+          "std_error": 0.01239734780093696,
+          "delta": 0.005770646067022656,
           "n_fired": 1223
         },
         {
           "kind": "categorical_level",
           "field": "plan",
           "level": "Standard",
-          "captured_coefficient": -0.4713320969496681,
-          "recovered_coefficient": -0.4511513964800459,
-          "std_error": 0.009360605342734758,
-          "delta": 0.020180700469622226,
+          "captured_coefficient": -0.4713320969496685,
+          "recovered_coefficient": -0.4511513964800462,
+          "std_error": 0.009360605342734777,
+          "delta": 0.02018070046962228,
           "n_fired": 3584
         },
         {
@@ -876,7 +891,7 @@
           "level": "mobile",
           "captured_coefficient": 0.6226297517934836,
           "recovered_coefficient": 1.0670683929690776,
-          "std_error": 0.012041030241338489,
+          "std_error": 0.012041030241338516,
           "delta": 0.44443864117559406,
           "n_fired": 9073,
           "flagged": true
@@ -886,44 +901,44 @@
           "field": "products_held",
           "level": "broadband",
           "captured_coefficient": 1.0116964638227295,
-          "recovered_coefficient": 1.0936856874725902,
-          "std_error": 0.009045918528429767,
-          "delta": 0.08198922364986072,
+          "recovered_coefficient": 1.0936856874725895,
+          "std_error": 0.009045918528429788,
+          "delta": 0.08198922364986005,
           "n_fired": 4465
         },
         {
           "kind": "set_option",
           "field": "products_held",
           "level": "tv",
-          "captured_coefficient": 0.7432289849832142,
-          "recovered_coefficient": 0.7446247902311179,
-          "std_error": 0.010470776844683167,
-          "delta": 0.0013958052479037253,
+          "captured_coefficient": 0.7432289849832143,
+          "recovered_coefficient": 0.7446247902311186,
+          "std_error": 0.01047077684468319,
+          "delta": 0.0013958052479042804,
           "n_fired": 2377
         },
         {
           "kind": "set_option",
           "field": "products_held",
           "level": "landline",
-          "captured_coefficient": 0.4206843728756374,
-          "recovered_coefficient": 0.4654816592473117,
-          "std_error": 0.010302822558017798,
-          "delta": 0.044797286371674294,
+          "captured_coefficient": 0.42068437287563726,
+          "recovered_coefficient": 0.4654816592473114,
+          "std_error": 0.010302822558017823,
+          "delta": 0.04479728637167413,
           "n_fired": 1323
         },
         {
           "kind": "set_option",
           "field": "products_held",
           "level": "protection",
-          "captured_coefficient": 0.35965125786243735,
+          "captured_coefficient": 0.35965125786243757,
           "recovered_coefficient": 0.41254357001881403,
-          "std_error": 0.008198247616153967,
-          "delta": 0.052892312156376686,
+          "std_error": 0.008198247616153986,
+          "delta": 0.052892312156376464,
           "n_fired": 2431
         }
       ],
       "n_obs": 10000,
-      "r2": 0.8941876305434098,
+      "r2": 0.8941876305434093,
       "max_delta": 0.44443864117559406,
       "flagged": true
     },
@@ -938,9 +953,9 @@
           "field": "contract",
           "level": "One-Year",
           "captured_coefficient": -0.2731448293581016,
-          "recovered_coefficient": -0.2591598329918992,
+          "recovered_coefficient": -0.25915983299189904,
           "std_error": 0.05081482328176246,
-          "delta": 0.013984996366202374,
+          "delta": 0.01398499636620254,
           "score_retention": 0.44486637715382704,
           "n_fired": 2524
         },
@@ -949,9 +964,9 @@
           "field": "contract",
           "level": "Monthly",
           "captured_coefficient": -0.8756234733236766,
-          "recovered_coefficient": -0.8822853632900178,
-          "std_error": 0.04365611902462376,
-          "delta": 0.006661889966341206,
+          "recovered_coefficient": -0.8822853632900177,
+          "std_error": 0.04365611902462377,
+          "delta": 0.006661889966341095,
           "score_retention": 0.4982561239760047,
           "n_fired": 6118
         },
@@ -960,15 +975,15 @@
           "field": "tenure_months",
           "level": "",
           "captured_coefficient": -0.00042848333618881047,
-          "recovered_coefficient": -0.001230391773271945,
-          "std_error": 0.0005236204036287629,
-          "delta": 0.0008019084370831345,
-          "score_retention": 0.48069787689262805,
+          "recovered_coefficient": -0.0012303917732719438,
+          "std_error": 0.000523620403628763,
+          "delta": 0.0008019084370831334,
+          "score_retention": 0.48069787689262794,
           "n_fired": 9181
         }
       ],
       "n_obs": 10000,
-      "max_delta": 0.013984996366202374
+      "max_delta": 0.01398499636620254
     },
     {
       "field": "churned",
@@ -989,10 +1004,10 @@
           "field": "contract",
           "level": "Monthly",
           "captured_coefficient": 1.0158357395406967,
-          "recovered_coefficient": 0.9678092459322741,
-          "std_error": 0.07735226281042766,
-          "delta": 0.048026493608422594,
-          "score_retention": 0.2450341653884698,
+          "recovered_coefficient": 0.9678092459322751,
+          "std_error": 0.07735226281042769,
+          "delta": 0.048026493608421594,
+          "score_retention": 0.24503416538846975,
           "n_fired": 6118
         },
         {
@@ -1000,9 +1015,9 @@
           "field": "tenure_months",
           "level": "",
           "captured_coefficient": -0.010961833667383574,
-          "recovered_coefficient": -0.010763766560319112,
-          "std_error": 0.0009554190881657709,
-          "delta": 0.00019806710706446289,
+          "recovered_coefficient": -0.010763766560319106,
+          "std_error": 0.000955419088165771,
+          "delta": 0.0001980671070644681,
           "score_retention": 0.22471175260416185,
           "n_fired": 9181
         },
@@ -1011,9 +1026,9 @@
           "field": "products_held",
           "level": "mobile",
           "captured_coefficient": -0.24455041571494687,
-          "recovered_coefficient": -0.23508040927779253,
-          "std_error": 0.06130456834590727,
-          "delta": 0.009470006437154344,
+          "recovered_coefficient": -0.23508040927779317,
+          "std_error": 0.061304568345907286,
+          "delta": 0.009470006437153705,
           "score_retention": 0.34944220754511274,
           "n_fired": 9073
         },
@@ -1022,10 +1037,10 @@
           "field": "products_held",
           "level": "broadband",
           "captured_coefficient": -0.24728270990916454,
-          "recovered_coefficient": -0.28366437484110113,
-          "std_error": 0.06039839038110883,
-          "delta": 0.03638166493193659,
-          "score_retention": 0.33103431893502694,
+          "recovered_coefficient": -0.28366437484110163,
+          "std_error": 0.06039839038110877,
+          "delta": 0.03638166493193709,
+          "score_retention": 0.33103431893502744,
           "n_fired": 4465
         },
         {
@@ -1033,10 +1048,10 @@
           "field": "products_held",
           "level": "tv",
           "captured_coefficient": -0.17363380863660866,
-          "recovered_coefficient": -0.21727356483889196,
-          "std_error": 0.07642071582231633,
-          "delta": 0.0436397562022833,
-          "score_retention": 0.24702517628601453,
+          "recovered_coefficient": -0.21727356483889332,
+          "std_error": 0.07642071582231659,
+          "delta": 0.04363975620228466,
+          "score_retention": 0.24702517628601375,
           "n_fired": 2377
         },
         {
@@ -1044,10 +1059,10 @@
           "field": "products_held",
           "level": "landline",
           "captured_coefficient": -0.24066742973664731,
-          "recovered_coefficient": -0.23948595754816882,
-          "std_error": 0.05808736024373729,
-          "delta": 0.0011814721884784996,
-          "score_retention": 0.2947497875330528,
+          "recovered_coefficient": -0.23948595754816895,
+          "std_error": 0.05808736024373728,
+          "delta": 0.0011814721884783608,
+          "score_retention": 0.29474978753305286,
           "n_fired": 1323
         },
         {
@@ -1055,10 +1070,10 @@
           "field": "products_held",
           "level": "protection",
           "captured_coefficient": -0.3403205955112567,
-          "recovered_coefficient": -0.214275459684861,
-          "std_error": 0.04497009190003909,
-          "delta": 0.1260451358263957,
-          "score_retention": 0.31245544448339135,
+          "recovered_coefficient": -0.21427545968486147,
+          "std_error": 0.044970091900039116,
+          "delta": 0.12604513582639523,
+          "score_retention": 0.31245544448339124,
           "n_fired": 2431,
           "flagged": true
         },
@@ -1067,10 +1082,10 @@
           "field": "monthly_spend",
           "level": "",
           "captured_coefficient": -0.0015536565639083233,
-          "recovered_coefficient": -0.0009552198044661161,
-          "std_error": 0.0007591146127586927,
-          "delta": 0.0005984367594422072,
-          "score_retention": 0.454986060750439,
+          "recovered_coefficient": -0.0009552198044660995,
+          "std_error": 0.0007591146127586935,
+          "delta": 0.0005984367594422238,
+          "score_retention": 0.45498606075043885,
           "n_fired": 9655
         },
         {
@@ -1078,9 +1093,9 @@
           "field": "support_contacts",
           "level": "",
           "captured_coefficient": 0.23727221104799506,
-          "recovered_coefficient": 0.22895553506817332,
+          "recovered_coefficient": 0.22895553506817334,
           "std_error": 0.012549841696382921,
-          "delta": 0.008316675979821747,
+          "delta": 0.00831667597982172,
           "score_retention": 0.3793840926757391,
           "n_fired": 5995
         },
@@ -1089,15 +1104,15 @@
           "field": "autopay",
           "level": "",
           "captured_coefficient": -0.29134525727796134,
-          "recovered_coefficient": -0.26032799099168596,
+          "recovered_coefficient": -0.26032799099168585,
           "std_error": 0.03213920112662815,
-          "delta": 0.03101726628627538,
-          "score_retention": 0.35990841661471795,
+          "delta": 0.03101726628627549,
+          "score_retention": 0.359908416614718,
           "n_fired": 5594
         }
       ],
       "n_obs": 10000,
-      "max_delta": 0.1260451358263957,
+      "max_delta": 0.12604513582639523,
       "flagged": true
     }
   ],
@@ -1110,31 +1125,31 @@
       "churned"
     ],
     "compared": 3,
-    "mean_delta": 0.0015032632893286913,
-    "max_delta": 0.003007251478460627,
+    "mean_delta": 0.0015032632893287213,
+    "max_delta": 0.0030072514784606954,
     "pairs": [
       {
         "a": "monthly_spend",
         "b": "tenure_months",
-        "captured_rho": -0.0007828207878693954,
-        "recovered_rho": 0.0022244306905912317,
-        "delta": 0.003007251478460627,
+        "captured_rho": -0.0007828207878693899,
+        "recovered_rho": 0.0022244306905913054,
+        "delta": 0.0030072514784606954,
         "n": 10000
       },
       {
         "a": "age",
         "b": "tenure_months",
-        "captured_rho": -0.000016184314064052938,
-        "recovered_rho": -0.0009856023035061273,
-        "delta": 0.0009694179894420744,
+        "captured_rho": -0.00001618431406406377,
+        "recovered_rho": -0.0009856023035061516,
+        "delta": 0.0009694179894420878,
         "n": 10000
       },
       {
         "a": "age",
         "b": "monthly_spend",
-        "captured_rho": 0.012286159526425665,
-        "recovered_rho": 0.012819279926509037,
-        "delta": 0.0005331204000833725,
+        "captured_rho": 0.01228615952642559,
+        "recovered_rho": 0.012819279926508971,
+        "delta": 0.0005331204000833811,
         "n": 10000
       }
     ],
@@ -1149,14 +1164,14 @@
       {
         "a": "autopay",
         "b": "monthly_spend",
-        "captured_rho": -0.009468539186698793,
+        "captured_rho": -0.009468539186698792,
         "n": 0,
         "reason": "no_model_fit"
       },
       {
         "a": "churned",
         "b": "monthly_spend",
-        "captured_rho": 0.005930632824615105,
+        "captured_rho": 0.005930632824615094,
         "n": 0,
         "reason": "no_model_fit"
       },
@@ -1184,7 +1199,7 @@
       {
         "a": "autopay",
         "b": "tenure_months",
-        "captured_rho": -0.00009356817831599745,
+        "captured_rho": -0.0000935681783159981,
         "n": 0,
         "reason": "no_model_fit"
       }
@@ -1267,14 +1282,14 @@
             "source_n": 9015,
             "source_mean": 84.91005768164163,
             "synthetic_n": 8969,
-            "synthetic_mean": 83.57796115477542
+            "synthetic_mean": 83.57796115477545
           },
           {
             "level": "Basic",
             "source_n": 11804,
             "source_mean": 50.40295831921383,
             "synthetic_n": 11752,
-            "synthetic_mean": 49.67671492848384
+            "synthetic_mean": 49.67671492848387
           },
           {
             "level": "Unlimited",
@@ -1288,14 +1303,14 @@
             "source_n": 14052,
             "source_mean": 65.16434528892678,
             "synthetic_n": 14295,
-            "synthetic_mean": 63.894295086984386
+            "synthetic_mean": 63.8942950869844
           }
         ],
         "source_spread": 54.14538248796098,
-        "synthetic_spread": 53.90581988157438,
-        "spread_ratio": 0.9955755671974454,
+        "synthetic_spread": 53.90581988157435,
+        "spread_ratio": 0.9955755671974449,
         "source_epsilon_squared": 0.307041907682141,
-        "synthetic_epsilon_squared": 0.2616776301221645,
+        "synthetic_epsilon_squared": 0.2616776301221642,
         "verdict": "preserved"
       },
       {
@@ -1371,75 +1386,75 @@
         "type": "REG_GLM",
         "target": "churned",
         "statistic": "pseudo_r2",
-        "source_fit": 0.1697838002609532,
-        "synthetic_fit": 0.17599242117435643,
-        "fit_ratio": 1.0365678050783453,
+        "source_fit": 0.16978380026095274,
+        "synthetic_fit": 0.17599242117435654,
+        "fit_ratio": 1.0365678050783487,
         "source_n_obs": 40000,
         "synthetic_n_obs": 40000,
         "coefficients": [
           {
             "term": "(intercept)",
-            "source": -0.12961778815935662,
-            "synthetic": -0.15571421452705167,
-            "source_std_error": 0.05346908440489004,
-            "synthetic_std_error": 0.05550351544322252,
-            "ratio": 1.2013336806489183
+            "source": -0.12961778815937938,
+            "synthetic": -0.15571421452705478,
+            "source_std_error": 0.0534690844048899,
+            "synthetic_std_error": 0.055503515443221886,
+            "ratio": 1.2013336806487314
           },
           {
             "term": "age",
-            "source": 0.0024277508282496037,
-            "synthetic": 0.0030210683214454193,
-            "source_std_error": 0.0009974450502656556,
-            "synthetic_std_error": 0.0010440788048841066,
-            "ratio": 1.2443897809824225
+            "source": 0.0024277508282499857,
+            "synthetic": 0.003021068321445482,
+            "source_std_error": 0.0009974450502656536,
+            "synthetic_std_error": 0.001044078804884095,
+            "ratio": 1.2443897809822524
           },
           {
             "term": "autopay",
-            "source": -0.5216381461444748,
-            "synthetic": -0.5002667651682877,
-            "source_std_error": 0.028273503935846576,
-            "synthetic_std_error": 0.02876094659818415,
-            "ratio": 0.9590302566364309
+            "source": -0.5216381461444732,
+            "synthetic": -0.5002667651682899,
+            "source_std_error": 0.028273503935846565,
+            "synthetic_std_error": 0.028760946598184144,
+            "ratio": 0.959030256636438
           },
           {
             "term": "contract_One-Year",
-            "source": -1.181367095715614,
-            "synthetic": -1.2372153167936362,
-            "source_std_error": 0.04198378150934283,
-            "synthetic_std_error": 0.04292843293684234,
-            "ratio": 1.0472742310841086
+            "source": -1.1813670957156164,
+            "synthetic": -1.2372153167936328,
+            "source_std_error": 0.04198378150934284,
+            "synthetic_std_error": 0.04292843293684232,
+            "ratio": 1.0472742310841037
           },
           {
             "term": "contract_Two-Year",
-            "source": -2.104194765883212,
-            "synthetic": -2.0063838704158545,
-            "source_std_error": 0.08871224989417942,
-            "synthetic_std_error": 0.08979823067279119,
-            "ratio": 0.9535162347833792
+            "source": -2.1041947658832143,
+            "synthetic": -2.006383870415854,
+            "source_std_error": 0.08871224989417933,
+            "synthetic_std_error": 0.08979823067279122,
+            "ratio": 0.953516234783378
           },
           {
             "term": "n_products",
-            "source": -0.4700985956778959,
-            "synthetic": -0.49135039611472725,
-            "source_std_error": 0.014500680222470646,
-            "synthetic_std_error": 0.014892453687578454,
-            "ratio": 1.045207113214592
+            "source": -0.4700985956778944,
+            "synthetic": -0.4913503961147262,
+            "source_std_error": 0.01450068022247065,
+            "synthetic_std_error": 0.014892453687578449,
+            "ratio": 1.045207113214593
           },
           {
             "term": "support_contacts",
-            "source": 0.4294014514887005,
-            "synthetic": 0.4246876653756131,
+            "source": 0.4294014514887014,
+            "synthetic": 0.42468766537561314,
             "source_std_error": 0.01145435491256643,
-            "synthetic_std_error": 0.011561421051709389,
-            "ratio": 0.9890224262243523
+            "synthetic_std_error": 0.011561421051709384,
+            "ratio": 0.9890224262243503
           },
           {
             "term": "tenure_months",
-            "source": -0.020203911560572257,
-            "synthetic": -0.0210487157558078,
-            "source_std_error": 0.0008544346107041182,
-            "synthetic_std_error": 0.0008286131953870493,
-            "ratio": 1.04181389295349
+            "source": -0.02020391156057216,
+            "synthetic": -0.02104871575580786,
+            "source_std_error": 0.0008544346107041168,
+            "synthetic_std_error": 0.0008286131953870496,
+            "ratio": 1.0418138929534977
           }
         ]
       }
@@ -1453,8 +1468,8 @@
     "exact_matches": 0,
     "exact_match_rate": 0,
     "sample_rows": 10000,
-    "dcr_median": 0.017017656912871895,
-    "dcr_p5": 0.004482188468898871
+    "dcr_median": 0.017017656912871902,
+    "dcr_p5": 0.004482188468898868
   },
   "warnings": [
     "model for numeric field \"support_contacts\" carries no predictors: no candidate explained at least 1.0% of its variance",

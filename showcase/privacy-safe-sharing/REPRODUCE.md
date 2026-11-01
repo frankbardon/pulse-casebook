@@ -6,13 +6,12 @@ step is a Pulse CLI call; `jq` only checks the envelopes.
 
 ## From a fresh checkout
 
-The showcase needs the Pulse alpha after v1.0.0-alpha.33, the release that carries the
-synth-realism work (roadmap U52). Until the casebook `Makefile` pin moves to that release, build
-Pulse from a checkout that has it:
+The showcase needs Pulse v1.0.0-alpha.35 or later, the release that carries the synth-realism
+work (roadmap U52). The casebook `Makefile` pins it. From the casebook repo root:
 
 ```bash
-# 1. build the CLI (a pulse checkout with U52; `make pulse` once the pin carries it)
-(cd /path/to/pulse && go build -o /tmp/pulse ./cmd/pulse)
+# 1. build the CLI at the pinned tag (root Makefile)
+make pulse && cp bin/pulse /tmp/pulse
 
 # 2. work on a scratch copy so nothing is written into the repo
 rm -rf /tmp/pss && cp -r showcase/privacy-safe-sharing /tmp/pss && cd /tmp/pss
