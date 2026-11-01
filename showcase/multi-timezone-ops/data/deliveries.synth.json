@@ -1,0 +1,468 @@
+{
+  "row_count": 17160,
+  "fields": [
+    {
+      "name": "delivery_id",
+      "type": "u32",
+      "distribution": "monotonic_from",
+      "params": {
+        "start": 100001
+      },
+      "description": "Unique delivery identifier."
+    },
+    {
+      "name": "delivered_at",
+      "type": "datetime",
+      "distribution": "uniform_datetime",
+      "params": {
+        "start": "2026-02-02",
+        "end": "2026-08-02",
+        "time_zone_field": "zone",
+        "hour_weights": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0
+        ],
+        "weekday_weights": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          0.5,
+          0
+        ]
+      },
+      "description": "Instant the parcel was handed over, stored as UTC epoch seconds. Read it in the warehouse's own zone for business-day questions."
+    },
+    {
+      "name": "warehouse",
+      "type": "categorical_u8",
+      "description": "Dispatching warehouse code: LAX, ORD, NYC, LON, BLR or SYD."
+    },
+    {
+      "name": "zone",
+      "type": "categorical_u8",
+      "distribution": "weighted_categorical",
+      "params": {
+        "values": [
+          "America/Los_Angeles",
+          "America/Chicago",
+          "America/New_York",
+          "Europe/London",
+          "Asia/Kolkata",
+          "Australia/Sydney"
+        ],
+        "weights": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "description": "IANA time zone of the dispatching warehouse, e.g. America/Chicago."
+    },
+    {
+      "name": "route",
+      "type": "categorical_u8",
+      "description": "Delivery route within the warehouse, e.g. ORD-R3 (eight routes per site)."
+    },
+    {
+      "name": "service_level",
+      "type": "categorical_u8",
+      "distribution": "weighted_categorical",
+      "params": {
+        "values": [
+          "standard",
+          "express"
+        ],
+        "weights": [
+          0.75,
+          0.25
+        ]
+      },
+      "description": "Promised service tier for the parcel: standard or express."
+    },
+    {
+      "name": "duration_min",
+      "type": "f64",
+      "distribution": "normal",
+      "params": {
+        "mean": 44,
+        "std": 11,
+        "min": 12,
+        "max": 110
+      },
+      "description": "Minutes from van departure to hand-over for this delivery."
+    },
+    {
+      "name": "on_time",
+      "type": "packed_bool",
+      "distribution": "constant",
+      "params": {
+        "value": 0
+      },
+      "description": "True when the parcel was handed over inside its promised delivery window."
+    },
+    {
+      "name": "weight_kg",
+      "type": "f64",
+      "distribution": "lognormal",
+      "params": {
+        "mu": 1.1,
+        "sigma": 0.7
+      },
+      "description": "Billed parcel weight in kilograms."
+    },
+    {
+      "name": "local_lax",
+      "type": "datetime",
+      "output": false,
+      "distribution": "uniform_datetime",
+      "params": {
+        "start": "2026-02-02",
+        "end": "2026-08-02",
+        "time_zone": "America/Los_Angeles",
+        "hour_weights": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          47,
+          98,
+          152,
+          185,
+          224,
+          294,
+          319,
+          345,
+          378,
+          294,
+          237,
+          137,
+          90,
+          45,
+          0,
+          0,
+          0
+        ],
+        "weekday_weights": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          0.5,
+          0
+        ]
+      },
+      "description": "Helper: a hand-over instant on LAX's business clock (its hour-of-day profile, Monday-Saturday, closed Sundays)."
+    },
+    {
+      "name": "local_ord",
+      "type": "datetime",
+      "output": false,
+      "distribution": "uniform_datetime",
+      "params": {
+        "start": "2026-02-02",
+        "end": "2026-08-02",
+        "time_zone": "America/Chicago",
+        "hour_weights": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          157,
+          291,
+          375,
+          366,
+          282,
+          194,
+          211,
+          261,
+          227,
+          209,
+          163,
+          98,
+          46,
+          53,
+          0,
+          0,
+          0
+        ],
+        "weekday_weights": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          0.5,
+          0
+        ]
+      },
+      "description": "Helper: a hand-over instant on ORD's business clock (its hour-of-day profile, Monday-Saturday, closed Sundays)."
+    },
+    {
+      "name": "local_nyc",
+      "type": "datetime",
+      "output": false,
+      "distribution": "uniform_datetime",
+      "params": {
+        "start": "2026-02-02",
+        "end": "2026-08-02",
+        "time_zone": "America/New_York",
+        "hour_weights": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          100,
+          215,
+          341,
+          413,
+          385,
+          291,
+          234,
+          222,
+          205,
+          155,
+          107,
+          82,
+          37,
+          62,
+          0,
+          0,
+          0
+        ],
+        "weekday_weights": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          0.5,
+          0
+        ]
+      },
+      "description": "Helper: a hand-over instant on NYC's business clock (its hour-of-day profile, Monday-Saturday, closed Sundays)."
+    },
+    {
+      "name": "local_lon",
+      "type": "datetime",
+      "output": false,
+      "distribution": "uniform_datetime",
+      "params": {
+        "start": "2026-02-02",
+        "end": "2026-08-02",
+        "time_zone": "Europe/London",
+        "hour_weights": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          86,
+          188,
+          283,
+          335,
+          315,
+          245,
+          292,
+          309,
+          275,
+          186,
+          180,
+          92,
+          39,
+          40,
+          0,
+          0,
+          0
+        ],
+        "weekday_weights": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          0.5,
+          0
+        ]
+      },
+      "description": "Helper: a hand-over instant on LON's business clock (its hour-of-day profile, Monday-Saturday, closed Sundays)."
+    },
+    {
+      "name": "local_blr",
+      "type": "datetime",
+      "output": false,
+      "distribution": "uniform_datetime",
+      "params": {
+        "start": "2026-02-02",
+        "end": "2026-08-02",
+        "time_zone": "Asia/Kolkata",
+        "hour_weights": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          51,
+          165,
+          295,
+          349,
+          228,
+          149,
+          100,
+          91,
+          161,
+          273,
+          302,
+          331,
+          250,
+          102,
+          0,
+          0,
+          0
+        ],
+        "weekday_weights": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          0.5,
+          0
+        ]
+      },
+      "description": "Helper: a hand-over instant on BLR's business clock (its hour-of-day profile, Monday-Saturday, closed Sundays)."
+    },
+    {
+      "name": "local_syd",
+      "type": "datetime",
+      "output": false,
+      "distribution": "uniform_datetime",
+      "params": {
+        "start": "2026-02-02",
+        "end": "2026-08-02",
+        "time_zone": "Australia/Sydney",
+        "hour_weights": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          265,
+          454,
+          435,
+          311,
+          210,
+          173,
+          143,
+          206,
+          209,
+          171,
+          107,
+          54,
+          46,
+          70,
+          0,
+          0,
+          0
+        ],
+        "weekday_weights": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          0.5,
+          0
+        ]
+      },
+      "description": "Helper: a hand-over instant on SYD's business clock (its hour-of-day profile, Monday-Saturday, closed Sundays)."
+    },
+    {
+      "name": "p_on_time",
+      "type": "f64",
+      "output": false,
+      "distribution": "constant",
+      "params": {
+        "value": 0
+      },
+      "description": "Helper: the planted on-time probability of this delivery."
+    }
+  ],
+  "rules": [
+    {
+      "set_expr": {
+        "warehouse": "zone == \"America/Los_Angeles\" ? \"LAX\" : zone == \"America/Chicago\" ? \"ORD\" : zone == \"America/New_York\" ? \"NYC\" : zone == \"Europe/London\" ? \"LON\" : zone == \"Asia/Kolkata\" ? \"BLR\" : \"SYD\""
+      }
+    },
+    {
+      "set_expr": {
+        "delivered_at": "warehouse == \"LAX\" ? local_lax : warehouse == \"ORD\" ? local_ord : warehouse == \"NYC\" ? local_nyc : warehouse == \"LON\" ? local_lon : warehouse == \"BLR\" ? local_blr : local_syd"
+      }
+    },
+    {
+      "set_expr": {
+        "route": "warehouse + \"-R\" + string(int(1 + floor(8 * uniform())))",
+        "duration_min": "round(10 * duration_min * (service_level == \"express\" ? 0.8 : 1) * (warehouse == \"SYD\" && between(delivered_at, \"2026-05-12\", \"2026-05-14\") ? 1.8 : 1)) / 10",
+        "weight_kg": "round(100 * weight_kg) / 100"
+      }
+    },
+    {
+      "set_expr": {
+        "p_on_time": "(warehouse == \"BLR\" ? 0.80 + trend(delivered_at, 0.15 / 182) : warehouse == \"LAX\" ? 0.91 : warehouse == \"ORD\" ? 0.92 : warehouse == \"NYC\" ? 0.90 : warehouse == \"LON\" ? 0.91 : 0.93) + 0.06 * (abs(sin(floor(trend(delivered_at, 1)) * 12.9898 + {\"LAX\": 1, \"ORD\": 2, \"NYC\": 3, \"LON\": 4, \"BLR\": 5, \"SYD\": 6}[warehouse] * 78.233) * 43758.5453) % 1) - 0.03"
+      }
+    },
+    {
+      "when": "warehouse == \"SYD\" && between(delivered_at, \"2026-05-12\", \"2026-05-14\")",
+      "set": {
+        "p_on_time": 0.45
+      }
+    },
+    {
+      "set_expr": {
+        "on_time": "bernoulli(min(1, max(0, p_on_time)))"
+      }
+    }
+  ]
+}

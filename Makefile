@@ -4,8 +4,8 @@
 # is left alone) while v1 is in flux. `make pulse-release` installs the same pinned
 # PULSE_VERSION from GitHub instead. Keep PULSE_REF and PULSE_VERSION on one tag.
 PULSE_SRC     ?= $(abspath ../pulse)
-PULSE_REF     ?= v1.0.0-alpha.33
-PULSE_VERSION ?= v1.0.0-alpha.33
+PULSE_REF     ?= v1.0.0-alpha.35
+PULSE_VERSION ?= v1.0.0-alpha.35
 
 BIN     := bin
 PULSE   := $(abspath $(BIN)/pulse)

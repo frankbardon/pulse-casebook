@@ -42,7 +42,7 @@
             },
             {
               "type": "AGG_AVERAGE",
-              "field": "gt_true_pd",
+              "field": "true_pd",
               "label": "mean_true_pd"
             },
             {
@@ -87,6 +87,12 @@
               "field": "",
               "label": "revol_util_filled",
               "expression": "revol_util ?? 50"
+            },
+            {
+              "type": "ATTR_FORMULA",
+              "field": "",
+              "label": "true_pd",
+              "expression": "1 / (1 + exp(-(-2.55 + ({\"A\": -1.3, \"B\": -0.7, \"C\": 0.0, \"D\": 0.45, \"E\": 0.85, \"F\": 1.2, \"G\": 1.5}[credit_band]) + 0.035 * (dti - 18) + (term_months \u003e= 48 ? 0.4 : 0) + 0.3 * delinq_2yrs + (emp_length_years == nil ? 0.35 : -0.03 * emp_length_years) + (home_ownership == \"RENT\" ? 0.2 : home_ownership == \"OWN\" ? -0.05 : 0) + 2.0 * (loan_amount / annual_income - 0.2) + (revol_util == nil ? 0 : 0.008 * (revol_util - 50)) + ({\"small_business\": 0.7, \"franchise_fee\": 0.6, \"timeshare\": 0.5, \"tax_bill\": 0.45, \"legal_fees\": 0.4, \"medical\": 0.35, \"moving\": 0.3, \"funeral\": 0.2, \"vacation\": 0.15, \"other\": 0.15, \"debt_consolidation\": 0.1, \"credit_card\": -0.1, \"major_purchase\": -0.1, \"house\": -0.15, \"home_improvement\": -0.2, \"wedding\": -0.2, \"car\": -0.25}[purpose] ?? 0.0))))"
             },
             {
               "type": "ATTR_REG_PREDICT",
@@ -255,7 +261,7 @@
             },
             {
               "type": "AGG_AVERAGE",
-              "field": "gt_true_pd",
+              "field": "true_pd",
               "label": "mean_true_pd"
             },
             {
@@ -300,6 +306,12 @@
               "field": "",
               "label": "revol_util_filled",
               "expression": "revol_util ?? 50"
+            },
+            {
+              "type": "ATTR_FORMULA",
+              "field": "",
+              "label": "true_pd",
+              "expression": "1 / (1 + exp(-(-2.55 + ({\"A\": -1.3, \"B\": -0.7, \"C\": 0.0, \"D\": 0.45, \"E\": 0.85, \"F\": 1.2, \"G\": 1.5}[credit_band]) + 0.035 * (dti - 18) + (term_months \u003e= 48 ? 0.4 : 0) + 0.3 * delinq_2yrs + (emp_length_years == nil ? 0.35 : -0.03 * emp_length_years) + (home_ownership == \"RENT\" ? 0.2 : home_ownership == \"OWN\" ? -0.05 : 0) + 2.0 * (loan_amount / annual_income - 0.2) + (revol_util == nil ? 0 : 0.008 * (revol_util - 50)) + ({\"small_business\": 0.7, \"franchise_fee\": 0.6, \"timeshare\": 0.5, \"tax_bill\": 0.45, \"legal_fees\": 0.4, \"medical\": 0.35, \"moving\": 0.3, \"funeral\": 0.2, \"vacation\": 0.15, \"other\": 0.15, \"debt_consolidation\": 0.1, \"credit_card\": -0.1, \"major_purchase\": -0.1, \"house\": -0.15, \"home_improvement\": -0.2, \"wedding\": -0.2, \"car\": -0.25}[purpose] ?? 0.0))))"
             },
             {
               "type": "ATTR_REG_PREDICT",
@@ -463,7 +475,7 @@
             },
             {
               "type": "AGG_AVERAGE",
-              "field": "gt_true_pd",
+              "field": "true_pd",
               "label": "mean_true_pd"
             },
             {
@@ -489,7 +501,7 @@
             },
             {
               "type": "AGG_AUC",
-              "field": "gt_true_pd",
+              "field": "true_pd",
               "label": "auc_true_pd_ceiling",
               "params": {
                 "outcome": "default_12m"
@@ -540,6 +552,12 @@
               "field": "",
               "label": "revol_util_filled",
               "expression": "revol_util ?? 50"
+            },
+            {
+              "type": "ATTR_FORMULA",
+              "field": "",
+              "label": "true_pd",
+              "expression": "1 / (1 + exp(-(-2.55 + ({\"A\": -1.3, \"B\": -0.7, \"C\": 0.0, \"D\": 0.45, \"E\": 0.85, \"F\": 1.2, \"G\": 1.5}[credit_band]) + 0.035 * (dti - 18) + (term_months \u003e= 48 ? 0.4 : 0) + 0.3 * delinq_2yrs + (emp_length_years == nil ? 0.35 : -0.03 * emp_length_years) + (home_ownership == \"RENT\" ? 0.2 : home_ownership == \"OWN\" ? -0.05 : 0) + 2.0 * (loan_amount / annual_income - 0.2) + (revol_util == nil ? 0 : 0.008 * (revol_util - 50)) + ({\"small_business\": 0.7, \"franchise_fee\": 0.6, \"timeshare\": 0.5, \"tax_bill\": 0.45, \"legal_fees\": 0.4, \"medical\": 0.35, \"moving\": 0.3, \"funeral\": 0.2, \"vacation\": 0.15, \"other\": 0.15, \"debt_consolidation\": 0.1, \"credit_card\": -0.1, \"major_purchase\": -0.1, \"house\": -0.15, \"home_improvement\": -0.2, \"wedding\": -0.2, \"car\": -0.25}[purpose] ?? 0.0))))"
             },
             {
               "type": "ATTR_REG_PREDICT",
@@ -632,7 +650,7 @@
             },
             {
               "type": "TEST_KS",
-              "field": "gt_true_pd",
+              "field": "true_pd",
               "split_by": "outcome",
               "label": "ks_true_pd_ceiling"
             },
@@ -1082,10 +1100,21 @@
         "streamable": false,
         "streamable_reasons": [
           "group GROUP_QUANTILE requires the buffered path",
-          "windows run over the post-aggregate row set",
+          "windows run over the whole row set (every filtered record, or the post-aggregate rows when grouped)",
           "aggregation on decimal field loan_amount forces buffered path",
           "feature FEAT_TARGET_ENCODE reads a column an earlier feature derives (field, target or fit_on), which the streaming pre-pass does not see"
-        ]
+        ],
+        "post_window": {
+          "windows_first": false,
+          "window_labels": [
+            "share_of_defaults",
+            "lift",
+            "cum_defaults",
+            "cum_capture",
+            "cum_lift"
+          ],
+          "attributes": []
+        }
       },
       {
         "request": 1,
@@ -1093,10 +1122,21 @@
         "streamable": false,
         "streamable_reasons": [
           "group GROUP_QUANTILE requires the buffered path",
-          "windows run over the post-aggregate row set",
+          "windows run over the whole row set (every filtered record, or the post-aggregate rows when grouped)",
           "aggregation on decimal field loan_amount forces buffered path",
           "feature FEAT_TARGET_ENCODE reads a column an earlier feature derives (field, target or fit_on), which the streaming pre-pass does not see"
-        ]
+        ],
+        "post_window": {
+          "windows_first": false,
+          "window_labels": [
+            "share_of_defaults",
+            "lift",
+            "cum_defaults",
+            "cum_capture",
+            "cum_lift"
+          ],
+          "attributes": []
+        }
       },
       {
         "request": 2,

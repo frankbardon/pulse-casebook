@@ -5,12 +5,10 @@ Everything runs through the `pulse` CLI. The cohort is regenerated from its synt
 ## 1. Build Pulse
 
 ```sh
-# Needs a Pulse build that includes the model-workbench work (pulse roadmap U49): FEAT_TARGET_ENCODE
-# `fit_on` / `folds`, AGG_AUC, WIN_SHARE / WIN_LIFT, GROUP_NUMERIC_RANGES, bucket-ordered GROUP_QUANTILE keys,
-# REG_GLM `penalty`, `jackknife_groups`, and GLM fits that converge on the collections flag. That is the U49
-# effort branch or the first alpha after v1.0.0-alpha.16. Build it from a pulse checkout (a later tag/main
-# works the same way):
-(cd /path/to/pulse && go build -o /tmp/pulse ./cmd/pulse)
+# Needs a Pulse build that includes the synth-realism work (pulse roadmap U52): the cohort spec draws the
+# outcome with `bernoulli()` / `uniform()` inside rules and keeps its true-PD helper out of the file with
+# `"output": false`. That is v1.0.0-alpha.35, which the casebook Makefile pins; from the casebook repo root:
+make pulse && cp bin/pulse /tmp/pulse
 ```
 
 ## 2. Copy the example to a scratch location
@@ -45,7 +43,7 @@ pulse explain --root composed --request req/13_holdout_validation.compose.json \
   --response results/13_holdout_validation.json                                    # -> results/15_explain_response.txt
 ```
 
-Wall time is about 2.5 minutes on a laptop-class machine. Step 12 accounts for most of it (three stepwise searches, then 1,000 bootstrap refits of the selected 14-parameter logistic model on 42,000 rows, ~2 min). Step 11 and the step-13 batch each run one stepwise search (~12–14 s). Every other step takes under a second.
+Wall time is about 2.5 minutes on a laptop-class machine. Step 12 accounts for most of it (three stepwise searches, then 1,000 bootstrap refits of the selected 12-parameter logistic model on 42,000 rows, ~2 min). Step 11 and the step-13 batch each run one stepwise search (~12–14 s). Every other step takes under a second.
 
 To run one step by hand:
 
@@ -60,34 +58,34 @@ The committed `results/` directory holds the responses from the reference run. A
 
 | Step | Response file → path | Expected |
 |---|---|---|
-| synth | stdout | `Generated 60000 rows -> loans.pulse (rejected 5289)`; `loans.pulse` SHA-256 `d5476127b84bb2dc7386f6cf1c0307501bc56ba519d917e4d70f1b2c6aaae2be` |
+| synth | stdout | `Generated 60000 rows -> loans.pulse (rejected 5316)`; `loans.pulse` SHA-256 `70be6c850db76768eb5bbe367953908e3c23f5262efd2947378ca9d0e822d960`; `results/00_inspect.txt` lists 20 fields, none of them simulation-only |
 | all | every `results/*.json` | `errors: []`; `warnings: []` everywhere except step 7's leakage warning |
-| 1 | `01_profile.json` → `data.data[0]` | `applications` 60000, `defaults` 7162, `default_rate` 0.11936666…, `total_principal_usd` `"724730103.82"`, `mean_principal_usd` `"12078.8351"`, `median_fico` 694, `null_emp_length` 3603, `null_revol_util` 1798 |
-| 1 | `01_profile.json` → `components` `mean_dti_pct.operator.sum` | 1082182.2600000112 |
-| 2 | `02a` / `02b` → `default_rate` | 0.16985845… (3603 rows) / 0.11614092… (56397 rows) |
-| 3 | `03_rate_by_band.json` | A 0.027623… (7204) … G 0.296603… (2532) |
-| 5 | `05_leak_check.json` | defaulted: `mean_fico_at_month_12` 607.33…, `collections_rate` 0.848506…; performing: 704.04…, 0.009671… |
-| 6 | `06_features_split.json` | split 0: 42000 loans, rate 0.119357…, `"508110479.20"`; split 1: 18000, 0.119388…, `"216619624.62"` |
-| 6b | `06b_dti_buckets.json` | `under 10%` 9476 / 0.082313…, `10-20%` 26388, `20-30%` 20162, `30% and over` 3974 / 0.177654…, in that order |
+| 1 | `01_profile.json` → `data.data[0]` | `applications` 60000, `defaults` 7359, `default_rate` 0.12265, `total_principal_usd` `"724849873.00"`, `mean_principal_usd` `"12080.8312"`, `median_fico` 695, `null_emp_length` 3693, `null_revol_util` 1810 |
+| 1 | `01_profile.json` → `components` `mean_dti_pct.operator.sum` | 1082157.02 |
+| 2 | `02a` / `02b` → `default_rate` | 0.18711075… (3693 rows) / 0.11842222… (56307 rows) |
+| 3 | `03_rate_by_band.json` | A 0.028503… (7192) … G 0.319595… (2475) |
+| 5 | `05_leak_check.json` | defaulted: `mean_fico_at_month_12` 606.87…, `collections_rate` 0.857861…; performing: 704.22…, 0.008947… |
+| 6 | `06_features_split.json` | split 0: 42000 loans, rate 0.122642…, `"508475160.00"`; split 1: 18000, 0.122666…, `"216374713.00"` |
+| 6b | `06b_dti_buckets.json` | `under 10%` 9499 / 0.083271…, `10-20%` 26488, `20-30%` 19969, `30% and over` 4044 / 0.189910…, in that order |
 | 7 | `07_target_encode_predict.predict.json` → `warnings[0].code` | `PULSE_FEAT_TARGET_LEAKAGE_RISK` |
-| 8 | `08_leaky_vs_clean_fit.json` → `pseudo_r2` | clean 0.10546631…, `with_post_outcome_fields` 0.84754528… (`collections_flag` 6.5200718…, 10 iterations) |
-| 8b | `08b_in_sample_fitted_ks.json` → `tests[].statistic` | clean 0.33133877…, leaky 0.93468800… |
-| 8c | `08c_side_notes.json` | `collections_flag_only`: intercept −3.8699458…, `collections_flag` 6.3355068…, `pseudo_r2` 0.67477061…; ridge (`penalty` `l2`, `alpha` 0.01): `collections_flag` 2.0293111…, `pseudo_r2` 0.74749391… |
-| 9 | `09_stepwise_bic.json` → `selected_features` | 12 predictors, `pseudo_r2` 0.10356824… |
+| 8 | `08_leaky_vs_clean_fit.json` → `pseudo_r2` | clean 0.11398123…, `with_post_outcome_fields` 0.86058117… (`collections_flag` 6.7496300…, 10 iterations) |
+| 8b | `08b_in_sample_fitted_ks.json` → `tests[].statistic` | clean 0.35079315…, leaky 0.93867329… |
+| 8c | `08c_side_notes.json` | `collections_flag_only`: intercept −3.9083600…, `collections_flag` 6.4936599…, `pseudo_r2` 0.69218854…; ridge (`penalty` `l2`, `alpha` 0.01): `collections_flag` 2.0620450…, `pseudo_r2` 0.75851721… |
+| 9 | `09_stepwise_bic.json` → `selected_features` | 10 predictors, `pseudo_r2` 0.11185196… |
 | 10 | `10_purpose_te_train_only.predict.json` → `warnings` | `[]` |
-| 10 | `10_purpose_te_train_only.json` | small_business holdout: `min_purpose_te` = `max_purpose_te` = 0.19302191…; training 175 of 899 |
-| 11 | `11_stepwise_bic_with_safe_te.json` | 13 predictors incl. `purpose_te` (sixth), `pseudo_r2` 0.10667469… |
-| 12 | `12_final_model_bootstrap.json` → `pd_final.coefficients` | `lti` 2.0785888…, `dti` 0.0325797…, `purpose_te` 7.3872079…; SE of `lti`: Wald 0.13838…, bootstrap 0.14505… (1000 of 1000 succeeded), jackknife 0.15996… (`jackknife_groups` 50) |
-| 13 | `13_holdout_validation.json` → `responses[0].data` | D1 … D10 in order; D1 `observed_rate` 0.012222…, D10 0.336666…, D10 `lift` 2.8199162…; `cum_defaults` 2149 … 990, 606; D9 `cum_capture` 0.4606793… |
-| 13b | `responses[1].data` | D10 `observed_rate` 0.980555…, `mean_true_pd` 0.204313…, `cum_capture` 0.821312… |
-| 14 | `responses[2].data[0]` | `mean_predicted_pd` 0.11877157…, `observed_default_rate` 0.11938888…; AUC: final 0.74351369…, all-22 0.74101770…, true-PD 0.74608671…, leaky 0.99077372… |
-| 14 | `responses[2].components.aggregations` → `auc_final_model.operator` | `gini` 0.48702738…, `ci_lower` 0.73293794…, `ci_upper` 0.75408944… |
-| 14 | `responses[2].tests[].statistic` | KS: final 0.36496663…, all-22 0.35628477…, true-PD 0.36846524…, leaky 0.93543177… |
-| 15 | `15_explain_request.txt` line 2 / `15_explain_response.txt` line 1 | `valid: true`; "3 responses side by side and 3 regression fits; 48 of 63 inferential findings show evidence at their alpha" |
+| 10 | `10_purpose_te_train_only.json` | small_business holdout: `min_purpose_te` = `max_purpose_te` = 0.22801311…; training 221 of 960 |
+| 11 | `11_stepwise_bic_with_safe_te.json` | 11 predictors incl. `purpose_te` (fifth), `pseudo_r2` 0.11646291… |
+| 12 | `12_final_model_bootstrap.json` → `pd_final.coefficients` | `lti` 2.2211897…, `dti` 0.0371102…, `purpose_te` 7.3672539…; SE of `lti`: Wald 0.13822…, bootstrap 0.13489… (1000 of 1000 succeeded), jackknife 0.11979… (`jackknife_groups` 50) |
+| 13 | `13_holdout_validation.json` → `responses[0].data` | D1 … D10 in order; D1 `observed_rate` 0.018333…, D10 0.326111…, D10 `lift` 2.6585144…; `cum_defaults` 2208 … 976, 587; D9 `cum_capture` 0.4420289… |
+| 13b | `responses[1].data` | D10 `observed_rate` 0.986111…, `mean_true_pd` 0.201742…, `cum_capture` 0.803894… |
+| 14 | `responses[2].data[0]` | `mean_predicted_pd` 0.12205853…, `observed_default_rate` 0.12266666…, `mean_true_pd` 0.11940215…; AUC: final 0.73602817…, all-22 0.73412466…, true-PD 0.73980952…, leaky 0.99331097… |
+| 14 | `responses[2].components.aggregations` → `auc_final_model.operator` | `gini` 0.47205634…, `ci_lower` 0.72556286…, `ci_upper` 0.74649348… |
+| 14 | `responses[2].tests[].statistic` | KS: final 0.35105694…, all-22 0.34985105…, true-PD 0.36006260…, leaky 0.93641799… |
+| 15 | `15_explain_request.txt` line 2 / `15_explain_response.txt` line 1 | `valid: true`; "3 responses side by side and 3 regression fits; 45 of 61 inferential findings show evidence at their alpha" |
 
-Reference run (pulse `v1.0.0-alpha.16-48-g40554cf9`, the U49 effort branch), from a fresh copy of the directory: every value above matched.
+Reference run (pulse built from the synth-realism effort branch at fc253466, before the alpha that carries it), from a fresh copy of the directory: every value above matched.
 
 ## Notes
 
-- `loans.pulse` (≈ 6.6 MB) is not committed (`*.pulse` is gitignored); `run.sh` regenerates it.
-- `gt_true_pd` and `gt_uniform_draw` are simulation ground-truth columns. They are used only for evaluation in steps 13–14, never as model inputs.
+- `loans.pulse` (≈ 5.8 MB) is not committed (`*.pulse` is gitignored); `run.sh` regenerates it.
+- The spec's true PD and its shared post-outcome draw are `"output": false` helper fields, so the file has no simulation-only column. Steps 13–14 rebuild the true PD in the request (`ATTR_FORMULA` `true_pd`) from application-time columns, only for the evaluation rows; it is never a model input.

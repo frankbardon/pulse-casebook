@@ -129,7 +129,17 @@
       "groups": [
         {
           "type": "GROUP_CATEGORY",
-          "field": "support_contacts"
+          "field": "support_contacts",
+          "include": [
+            "0",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7"
+          ]
         }
       ],
       "aggregations": [
@@ -149,7 +159,17 @@
       "groups": [
         {
           "type": "GROUP_CATEGORY",
-          "field": "support_contacts"
+          "field": "support_contacts",
+          "include": [
+            "0",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7"
+          ]
         }
       ],
       "aggregations": [

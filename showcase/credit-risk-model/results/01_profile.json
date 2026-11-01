@@ -4,21 +4,21 @@
     "data": [
       {
         "applications": 60000,
-        "collections_rate": 0.1098,
-        "default_rate": 0.11936666666666666,
-        "defaults": 7162,
+        "collections_rate": 0.11306666666666666,
+        "default_rate": 0.12265,
+        "defaults": 7359,
         "distinct_purposes": 40,
         "max_principal_usd": "39995.70",
-        "mean_dti_pct": 18.036371000000187,
-        "mean_income_usd": "72283.7685",
-        "mean_principal_usd": "12078.8351",
-        "mean_rate_pct": 15.616547833333266,
-        "median_fico": 694,
-        "min_principal_usd": "1292.14",
-        "nonnull_recovery_amount": 7162,
-        "null_emp_length": 3603,
-        "null_revol_util": 1798,
-        "total_principal_usd": "724730103.82"
+        "mean_dti_pct": 18.035950333333332,
+        "mean_income_usd": "72212.5627",
+        "mean_principal_usd": "12080.8312",
+        "mean_rate_pct": 15.587689,
+        "median_fico": 695,
+        "min_principal_usd": "1102.55",
+        "nonnull_recovery_amount": 7359,
+        "null_emp_length": 3693,
+        "null_revol_util": 1810,
+        "total_principal_usd": "724849873.00"
       }
     ],
     "metadata": {
@@ -38,7 +38,7 @@
           "n": 60000,
           "n_null": 0,
           "operator": {
-            "sum": 7162
+            "sum": 7359
           }
         },
         {
@@ -46,7 +46,7 @@
           "n": 60000,
           "n_null": 0,
           "operator": {
-            "sum": 7162
+            "sum": 7359
           }
         },
         {
@@ -79,7 +79,7 @@
           "n": 60000,
           "n_null": 0,
           "operator": {
-            "median": 694,
+            "median": 695,
             "position_high": 30000,
             "position_low": 29999
           }
@@ -89,7 +89,7 @@
           "n": 60000,
           "n_null": 0,
           "operator": {
-            "sum": 936992.8699999959
+            "sum": 935261.34
           }
         },
         {
@@ -97,23 +97,23 @@
           "n": 60000,
           "n_null": 0,
           "operator": {
-            "sum": 1082182.2600000112
+            "sum": 1082157.02
           }
         },
         {
           "label": "null_revol_util",
-          "n": 58202,
-          "n_null": 1798
+          "n": 58190,
+          "n_null": 1810
         },
         {
           "label": "null_emp_length",
-          "n": 56397,
-          "n_null": 3603
+          "n": 56307,
+          "n_null": 3693
         },
         {
           "label": "nonnull_recovery_amount",
-          "n": 7162,
-          "n_null": 52838
+          "n": 7359,
+          "n_null": 52641
         },
         {
           "label": "distinct_purposes",
@@ -128,7 +128,7 @@
           "n": 60000,
           "n_null": 0,
           "operator": {
-            "sum": 6588
+            "sum": 6784
           }
         }
       ],

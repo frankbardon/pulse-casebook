@@ -3,53 +3,53 @@
   "data": {
     "data": [
       {
-        "applications": 7204,
+        "applications": 7192,
         "credit_band": "A",
-        "default_rate": 0.027623542476402,
-        "mean_rate_pct": 7.520377568017748,
-        "principal_usd": "86756547.77"
+        "default_rate": 0.028503893214682982,
+        "mean_rate_pct": 7.488179922135706,
+        "principal_usd": "86136478.44"
       },
       {
-        "applications": 12226,
+        "applications": 12413,
         "credit_band": "B",
-        "default_rate": 0.04858498282349092,
-        "mean_rate_pct": 10.508220186487815,
-        "principal_usd": "147549620.97"
+        "default_rate": 0.05091436397325385,
+        "mean_rate_pct": 10.474066704261661,
+        "principal_usd": "149971293.94"
       },
       {
-        "applications": 12737,
+        "applications": 12625,
         "credit_band": "C",
-        "default_rate": 0.09130878542827982,
-        "mean_rate_pct": 14.021441469733821,
-        "principal_usd": "154679143.74"
+        "default_rate": 0.09401980198019802,
+        "mean_rate_pct": 14.005396435643565,
+        "principal_usd": "152701272.41"
       },
       {
-        "applications": 12205,
+        "applications": 12059,
         "credit_band": "D",
-        "default_rate": 0.13740270380991396,
-        "mean_rate_pct": 17.504732486685867,
-        "principal_usd": "147427911.63"
+        "default_rate": 0.14329546396881998,
+        "mean_rate_pct": 17.510669209718884,
+        "principal_usd": "145166145.78"
       },
       {
-        "applications": 8511,
+        "applications": 8633,
         "credit_band": "E",
-        "default_rate": 0.1899894254494184,
-        "mean_rate_pct": 21.006832334625756,
-        "principal_usd": "102462670.34"
+        "default_rate": 0.1940229352484652,
+        "mean_rate_pct": 21.002096606046567,
+        "principal_usd": "105209246.44"
       },
       {
-        "applications": 4585,
+        "applications": 4603,
         "credit_band": "F",
-        "default_rate": 0.25321701199563795,
-        "mean_rate_pct": 24.5110359869138,
-        "principal_usd": "55732919.25"
+        "default_rate": 0.24788181620682165,
+        "mean_rate_pct": 24.519567673256574,
+        "principal_usd": "55544078.21"
       },
       {
-        "applications": 2532,
+        "applications": 2475,
         "credit_band": "G",
-        "default_rate": 0.29660347551342814,
-        "mean_rate_pct": 28.01499210110582,
-        "principal_usd": "30121290.12"
+        "default_rate": 0.3195959595959596,
+        "mean_rate_pct": 27.97486868686869,
+        "principal_usd": "30121357.78"
       }
     ],
     "metadata": {
@@ -68,49 +68,49 @@
               "group_key": [
                 "A"
               ],
-              "n": 7204,
+              "n": 7192,
               "n_null": 0
             },
             {
               "group_key": [
                 "B"
               ],
-              "n": 12226,
+              "n": 12413,
               "n_null": 0
             },
             {
               "group_key": [
                 "C"
               ],
-              "n": 12737,
+              "n": 12625,
               "n_null": 0
             },
             {
               "group_key": [
                 "D"
               ],
-              "n": 12205,
+              "n": 12059,
               "n_null": 0
             },
             {
               "group_key": [
                 "E"
               ],
-              "n": 8511,
+              "n": 8633,
               "n_null": 0
             },
             {
               "group_key": [
                 "F"
               ],
-              "n": 4585,
+              "n": 4603,
               "n_null": 0
             },
             {
               "group_key": [
                 "G"
               ],
-              "n": 2532,
+              "n": 2475,
               "n_null": 0
             }
           ]
@@ -124,70 +124,70 @@
               "group_key": [
                 "A"
               ],
-              "n": 7204,
+              "n": 7192,
               "n_null": 0,
               "operator": {
-                "sum": 199
+                "sum": 205
               }
             },
             {
               "group_key": [
                 "B"
               ],
-              "n": 12226,
+              "n": 12413,
               "n_null": 0,
               "operator": {
-                "sum": 594
+                "sum": 632
               }
             },
             {
               "group_key": [
                 "C"
               ],
-              "n": 12737,
+              "n": 12625,
               "n_null": 0,
               "operator": {
-                "sum": 1163
+                "sum": 1187
               }
             },
             {
               "group_key": [
                 "D"
               ],
-              "n": 12205,
+              "n": 12059,
               "n_null": 0,
               "operator": {
-                "sum": 1677
+                "sum": 1728
               }
             },
             {
               "group_key": [
                 "E"
               ],
-              "n": 8511,
+              "n": 8633,
               "n_null": 0,
               "operator": {
-                "sum": 1617
+                "sum": 1675
               }
             },
             {
               "group_key": [
                 "F"
               ],
-              "n": 4585,
+              "n": 4603,
               "n_null": 0,
               "operator": {
-                "sum": 1161
+                "sum": 1141
               }
             },
             {
               "group_key": [
                 "G"
               ],
-              "n": 2532,
+              "n": 2475,
               "n_null": 0,
               "operator": {
-                "sum": 751
+                "sum": 791
               }
             }
           ]
@@ -201,70 +201,70 @@
               "group_key": [
                 "A"
               ],
-              "n": 7204,
+              "n": 7192,
               "n_null": 0,
               "operator": {
-                "sum": 54176.79999999986
+                "sum": 53854.99
               }
             },
             {
               "group_key": [
                 "B"
               ],
-              "n": 12226,
+              "n": 12413,
               "n_null": 0,
               "operator": {
-                "sum": 128473.50000000003
+                "sum": 130014.59
               }
             },
             {
               "group_key": [
                 "C"
               ],
-              "n": 12737,
+              "n": 12625,
               "n_null": 0,
               "operator": {
-                "sum": 178591.0999999997
+                "sum": 176818.13
               }
             },
             {
               "group_key": [
                 "D"
               ],
-              "n": 12205,
+              "n": 12059,
               "n_null": 0,
               "operator": {
-                "sum": 213645.26000000103
+                "sum": 211161.16
               }
             },
             {
               "group_key": [
                 "E"
               ],
-              "n": 8511,
+              "n": 8633,
               "n_null": 0,
               "operator": {
-                "sum": 178789.14999999982
+                "sum": 181311.1
               }
             },
             {
               "group_key": [
                 "F"
               ],
-              "n": 4585,
+              "n": 4603,
               "n_null": 0,
               "operator": {
-                "sum": 112383.09999999977
+                "sum": 112863.57
               }
             },
             {
               "group_key": [
                 "G"
               ],
-              "n": 2532,
+              "n": 2475,
               "n_null": 0,
               "operator": {
-                "sum": 70933.95999999993
+                "sum": 69237.8
               }
             }
           ]
@@ -278,49 +278,49 @@
               "group_key": [
                 "A"
               ],
-              "n": 7204,
+              "n": 7192,
               "n_null": 0
             },
             {
               "group_key": [
                 "B"
               ],
-              "n": 12226,
+              "n": 12413,
               "n_null": 0
             },
             {
               "group_key": [
                 "C"
               ],
-              "n": 12737,
+              "n": 12625,
               "n_null": 0
             },
             {
               "group_key": [
                 "D"
               ],
-              "n": 12205,
+              "n": 12059,
               "n_null": 0
             },
             {
               "group_key": [
                 "E"
               ],
-              "n": 8511,
+              "n": 8633,
               "n_null": 0
             },
             {
               "group_key": [
                 "F"
               ],
-              "n": 4585,
+              "n": 4603,
               "n_null": 0
             },
             {
               "group_key": [
                 "G"
               ],
-              "n": 2532,
+              "n": 2475,
               "n_null": 0
             }
           ]
@@ -333,37 +333,37 @@
           "operator": {
             "buckets": [
               {
-                "count": 7204,
+                "count": 7192,
                 "key": "A",
                 "label": "A"
               },
               {
-                "count": 12226,
+                "count": 12413,
                 "key": "B",
                 "label": "B"
               },
               {
-                "count": 12737,
+                "count": 12625,
                 "key": "C",
                 "label": "C"
               },
               {
-                "count": 12205,
+                "count": 12059,
                 "key": "D",
                 "label": "D"
               },
               {
-                "count": 8511,
+                "count": 8633,
                 "key": "E",
                 "label": "E"
               },
               {
-                "count": 4585,
+                "count": 4603,
                 "key": "F",
                 "label": "F"
               },
               {
-                "count": 2532,
+                "count": 2475,
                 "key": "G",
                 "label": "G"
               }

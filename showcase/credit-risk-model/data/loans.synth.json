@@ -171,19 +171,7 @@
     {
       "name": "credit_band",
       "type": "categorical_u8",
-      "description": "Internal risk band A (best) to G (worst), cut from fico_score.",
-      "distribution": "weighted_categorical",
-      "params": {
-        "values": [
-          "A",
-          "B",
-          "C",
-          "D",
-          "E",
-          "F",
-          "G"
-        ]
-      }
+      "description": "Internal risk band A (best) to G (worst), cut from fico_score."
     },
     {
       "name": "term_months",
@@ -327,23 +315,23 @@
       }
     },
     {
-      "name": "gt_true_pd",
+      "name": "true_pd",
       "type": "f64",
-      "description": "GROUND TRUTH (simulation only): the true 12-month default probability used to draw the outcome. Never a model input.",
-      "distribution": "uniform",
+      "output": false,
+      "description": "Helper (never written): the true 12-month default probability the outcome is drawn against.",
+      "distribution": "constant",
       "params": {
-        "min": 0,
-        "max": 1
+        "value": 0
       }
     },
     {
-      "name": "gt_uniform_draw",
+      "name": "draw",
       "type": "f64",
-      "description": "GROUND TRUTH (simulation only): the uniform draw compared against gt_true_pd. Never a model input.",
-      "distribution": "uniform",
+      "output": false,
+      "description": "Helper (never written): one uniform draw, shared by the post-outcome rules of a defaulted loan.",
+      "distribution": "constant",
       "params": {
-        "min": 0,
-        "max": 1
+        "value": 0
       }
     },
     {
@@ -358,14 +346,7 @@
     {
       "name": "outcome",
       "type": "categorical_u8",
-      "description": "Outcome as a label (performing / defaulted); mirrors default_12m so it can stratify a split and split a two-sample test.",
-      "distribution": "weighted_categorical",
-      "params": {
-        "values": [
-          "performing",
-          "defaulted"
-        ]
-      }
+      "description": "Outcome as a label (performing / defaulted); mirrors default_12m so it can stratify a split and split a two-sample test."
     },
     {
       "name": "fico_at_month_12",
@@ -434,12 +415,18 @@
     },
     {
       "set_expr": {
-        "gt_true_pd": "1 / (1 + 2.718281828459045 ** (-(-2.55 + ({\"A\": -1.3, \"B\": -0.7, \"C\": 0.0, \"D\": 0.45, \"E\": 0.85, \"F\": 1.2, \"G\": 1.5}[credit_band]) + 0.035 * (dti - 18) + (term_months >= 48 ? 0.4 : 0) + 0.3 * delinq_2yrs + (isnull(emp_length_years) ? 0.35 : -0.03 * emp_length_years) + (home_ownership == \"RENT\" ? 0.2 : home_ownership == \"OWN\" ? -0.05 : 0) + 2.0 * (loan_amount / annual_income - 0.2) + (isnull(revol_util) ? 0 : 0.008 * (revol_util - 50)) + ({\"small_business\": 0.7, \"franchise_fee\": 0.6, \"timeshare\": 0.5, \"tax_bill\": 0.45, \"legal_fees\": 0.4, \"medical\": 0.35, \"moving\": 0.3, \"funeral\": 0.2, \"vacation\": 0.15, \"other\": 0.15, \"debt_consolidation\": 0.1, \"credit_card\": -0.1, \"major_purchase\": -0.1, \"house\": -0.15, \"home_improvement\": -0.2, \"wedding\": -0.2, \"car\": -0.25}[purpose] ?? 0.0))))"
+        "true_pd": "1 / (1 + exp(-(-2.55 + ({\"A\": -1.3, \"B\": -0.7, \"C\": 0.0, \"D\": 0.45, \"E\": 0.85, \"F\": 1.2, \"G\": 1.5}[credit_band]) + 0.035 * (dti - 18) + (term_months >= 48 ? 0.4 : 0) + 0.3 * delinq_2yrs + (isnull(emp_length_years) ? 0.35 : -0.03 * emp_length_years) + (home_ownership == \"RENT\" ? 0.2 : home_ownership == \"OWN\" ? -0.05 : 0) + 2.0 * (loan_amount / annual_income - 0.2) + (isnull(revol_util) ? 0 : 0.008 * (revol_util - 50)) + ({\"small_business\": 0.7, \"franchise_fee\": 0.6, \"timeshare\": 0.5, \"tax_bill\": 0.45, \"legal_fees\": 0.4, \"medical\": 0.35, \"moving\": 0.3, \"funeral\": 0.2, \"vacation\": 0.15, \"other\": 0.15, \"debt_consolidation\": 0.1, \"credit_card\": -0.1, \"major_purchase\": -0.1, \"house\": -0.15, \"home_improvement\": -0.2, \"wedding\": -0.2, \"car\": -0.25}[purpose] ?? 0.0))))"
       }
     },
     {
       "set_expr": {
-        "default_12m": "gt_uniform_draw < gt_true_pd"
+        "default_12m": "bernoulli(true_pd)"
+      }
+    },
+    {
+      "when": "default_12m == 1",
+      "set_expr": {
+        "draw": "uniform()"
       }
     },
     {
@@ -454,7 +441,7 @@
     },
     {
       "set_expr": {
-        "collections_flag": "default_12m == 1 ? gt_uniform_draw < 0.85 * gt_true_pd : gt_uniform_draw > 0.992"
+        "collections_flag": "default_12m == 1 ? draw < 0.85 : bernoulli(0.008 / (1 - true_pd))"
       }
     },
     {
@@ -466,7 +453,7 @@
     {
       "when": "default_12m == 1",
       "set_expr": {
-        "recovery_amount": "round(loan_amount * (0.10 + 0.35 * gt_uniform_draw / gt_true_pd) * 100) / 100"
+        "recovery_amount": "round(loan_amount * (0.10 + 0.35 * draw) * 100) / 100"
       }
     }
   ]

@@ -11,7 +11,7 @@
         "label": "ks_clean_in_sample",
         "type": "TEST_KS",
         "variant": "two_sample",
-        "statistic": 0.3313387787259654,
+        "statistic": 0.35079315096841013,
         "p_value": 0,
         "alpha": 0.05,
         "reject_null": true,
@@ -21,8 +21,8 @@
             "performing"
           ],
           "n": [
-            5013,
-            36987
+            5151,
+            36849
           ]
         }
       },
@@ -30,7 +30,7 @@
         "label": "ks_leaky_in_sample",
         "type": "TEST_KS",
         "variant": "two_sample",
-        "statistic": 0.9346880040680022,
+        "statistic": 0.9386732989690347,
         "p_value": 0,
         "alpha": 0.05,
         "reject_null": true,
@@ -40,8 +40,8 @@
             "performing"
           ],
           "n": [
-            5013,
-            36987
+            5151,
+            36849
           ]
         }
       }

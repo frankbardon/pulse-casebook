@@ -4,7 +4,7 @@
 set -euo pipefail
 cd out
 r4() { awk '{printf "%.4f\n", $1}'; }
-echo "rows imported:                 $(jq '.data.rows_imported' 00_import_deliveries.json)"
+echo "rows generated:                $(jq '.data.rows_generated' 00_synth_deliveries.json)"
 echo "UTC Sunday deliveries (all):   $(jq '.data.crosstab.matrix as $m | ($m.column_keys|map(.[0])|index("Sunday")) as $i | $m.column_margins[$i].value' 01_weekday_volume_utc.json)"
 echo "UTC Sunday deliveries SYD:     $(jq '.data.crosstab.matrix as $m | ($m.column_keys|map(.[0])|index("Sunday")) as $i | ($m.row_keys|map(.[0])|index("SYD")) as $r | $m.cells[$r][$i].value' 01_weekday_volume_utc.json)"
 echo "local Sunday columns present:  $(jq '[.data.crosstab.matrix.column_keys[][0] | select(.=="Sunday")] | length' 02_weekday_volume_local.json)"

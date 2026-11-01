@@ -10,6 +10,11 @@ Every number below was returned by a Pulse request in [`req/`](req/), run agains
 generated from [`data/ab_test.synth.json`](data/ab_test.synth.json). [`REPRODUCE.md`](REPRODUCE.md)
 has the commands and the expected values.
 
+> **Pulse version.** The spec keeps its working columns out of the file with `"output": false` helper
+> fields and lets rule-determined categoricals omit their sampler. Both arrive in Pulse
+> v1.0.0-alpha.35 (the synth-realism work, roadmap U52). The casebook `Makefile` pins alpha.35 (see
+> [`REPRODUCE.md`](REPRODUCE.md)).
+
 ## The business question
 
 > Should we ship the redesigned pricing page (`new_page`) in place of the current one (`old_page`)?
@@ -30,14 +35,14 @@ below 0.05.
 
 ## The dataset
 
-The cohort is synthetic. `pulse synth from-schema` builds it from a spec with marginal distributions, one
-Gaussian-copula correlation and seven structural rules. A fixed seed (`--seed 64`) makes the file
-byte-identical on every run. It has 40,000 rows, one per user, and 19 fields:
+The cohort is synthetic. `pulse synth from-schema` builds it from a spec with marginal distributions and
+structural rules that plant every effect exactly (see below). A fixed seed (`--seed 2026`) makes the file
+byte-identical on every run. It has 40,000 rows, one per user, and 15 fields:
 
 | Field | Pulse type | What it is |
 |---|---|---|
 | `user_id` | `u32` | Pseudonymous id (100001…140000) |
-| `arm` | `categorical_u8` | `old_page` (control) or `new_page` (variant), 50/50 |
+| `arm` | `categorical_u8` | `old_page` (control) or `new_page` (variant), randomized in matched pairs: exactly 50/50 |
 | `is_variant` | `u8` | 1 if `new_page`, else 0 (numeric copy of `arm` for regression) |
 | `assign_week` | `categorical_u8` | `w1`…`w4`, week of first assignment |
 | `device` | `categorical_u8` | desktop 50% / mobile 40% / tablet 10% |
@@ -45,13 +50,12 @@ byte-identical on every run. It has 40,000 rows, one per user, and 19 fields:
 | `region` | `categorical_u8` | NA 40% / EMEA 30% / APAC 20% / LATAM 10% |
 | `user_type` | `categorical_u8` | new 60% / returning 40% |
 | `prior_sessions` | `u16` | **Pre-period covariate**: sessions in the 30 days before assignment (normal, mean 10, sd 4) |
-| `pages_viewed` | `u16` | Pages viewed after assignment (normal, mean 8, sd 4; correlation 0.78 with `prior_sessions`) |
+| `pages_viewed` | `u16` | Pages viewed after assignment: 8 + 0.78 × (`prior_sessions` − 10) + noise (sd 2.5), so mean 8, sd 4 and correlation 0.78 with `prior_sessions` |
 | `trial_started` | `categorical_u8` | `yes` / `no` |
 | `paid_converted` | `categorical_u8` | `yes` / `no` (only trial starters can convert) |
 | `revenue` | `f64` | First-invoice revenue in USD; 0 for non-payers |
 | `days_to_convert` | `f32`, nullable | Days from assignment to paid conversion; null for non-payers |
 | `retained_30d` | `categorical_u8` | `yes` / `no` |
-| `u_trial`, `u_paid`, `u_ret`, `order_value` | `f32` / `f64` | Generator latents that the rules turn into outcomes. Not metrics, and never analysed. |
 
 ### Ground truth built into the generator
 
@@ -66,9 +70,27 @@ The rules in the spec plant these effects, so the readout can be checked against
 | Days to convert, retention | No effect. |
 | Plan tier, region, user type | No true difference in effect. Any segment "win" on these is the overall lift or noise. |
 
-These are the parameters the rules use. A finite sample adds noise on top of them. Seed 64 was chosen,
-by generating and testing candidate seeds with these same requests, as a realization where each lesson
-shows up clearly. Other seeds give the same truths with different noise.
+**The effects are planted exactly, so no seed was searched for.** Three design choices make each
+realized effect equal its planted value, whatever the seed:
+
+* **Matched-pair randomization.** Users arrive in consecutive pairs that share their device, their
+  prior sessions and the noise in their page views; one of each pair gets each page. The arms are
+  therefore exactly 20,000 each, identical on device and prior activity, and the page-view difference
+  is the planted +0.07 up to the rounding to whole pages. Assignment week, plan, region and user type
+  are still drawn independently, so their balance checks carry ordinary randomization noise.
+* **Systematic allocation of the binary outcomes.** Within each arm × device cell, trial starts are
+  allocated in arrival order at the cell's planted rate: a running count in an `"output": false`
+  helper field (read back with `lag()`) gives each user its position k, and the user starts a trial
+  when ⌊k × rate + ½⌋ steps up. Each cell's trial rate is then its planted rate to within one user. Paid conversion takes exactly 30% of each arm's trial starters the same way, and retention
+  spreads each user's planted probability over the arm with a running sum.
+* **Helpers stay out of the file.** The counters, running sums, the shared page-view noise and the
+  invoice value a payer would book are `"output": false` fields: the rules read them, the cohort never
+  carries them.
+
+What stays random is what should: who is in which segment, invoice sizes and days to convert. So the
+segment-level lifts, the revenue figures and the days-to-convert test carry real noise, and a different
+seed moves them while leaving every planted lift where it is. With seeds 1, 7 and 99 the trial lift is
++1.35 to +1.36 pp and paid conversion +0.40 to +0.41 pp, with the same Holm verdicts.
 
 The binary outcomes are categorical `yes`/`no` rather than `packed_bool`, because the two-proportion
 z-test in this build accepts only categorical fields.
@@ -81,26 +103,28 @@ Every request names its cohort as `{"filename": "ab_test.pulse", "data_dir": "."
 ### Step 0 — Generate the cohorts
 
 ```bash
-pulse synth from-schema -s data/ab_test.synth.json -o ab_test.pulse --seed 64
+pulse synth from-schema -s data/ab_test.synth.json -o ab_test.pulse --seed 2026
 pulse cohort inspect ab_test.pulse
 ```
 
-Excerpt of the spec, showing how the treatment effects are encoded as structural rules:
+Excerpt of the spec, showing how the treatment effects are encoded as structural rules (the
+`n_cell` and `p_trial` helpers hold the user's position in its arm × device cell and that cell's
+planted rate):
 
 ```json
-"correlations": [{"a": "prior_sessions", "b": "pages_viewed", "correlation": 0.78}],
 "rules": [
-  {"set_expr": {"is_variant": "arm == \"new_page\" ? 1 : 0"}},
-  {"when": "arm == \"new_page\"", "set_expr": {"pages_viewed": "pages_viewed + 0.07"}},
-  {"set_expr": {"trial_started": "u_trial < (arm == \"old_page\" ? 0.100 : (device == \"mobile\" ? 0.130 : (device == \"desktop\" ? 0.103 : 0.100))) ? \"yes\" : \"no\""}},
-  {"set_expr": {"paid_converted": "trial_started == \"yes\" && u_paid < 0.30 ? \"yes\" : \"no\""}},
+  {"when": "row() % 2 == 1", "set_expr": {"arm": "lag(\"arm\", 1) == \"old_page\" ? \"new_page\" : \"old_page\"",
+                                          "device": "lag(\"device\", 1)", "prior_sessions": "lag(\"prior_sessions\", 1)",
+                                          "pages_noise": "lag(\"pages_noise\", 1)"}},
+  {"set_expr": {"pages_viewed": "max(0, min(60, round(8 + 0.78 * (prior_sessions - 10) + pages_noise + (arm == \"new_page\" ? 0.07 : 0))))"}},
+  {"set_expr": {"p_trial": "arm == \"old_page\" ? 0.100 : (device == \"mobile\" ? 0.130 : (device == \"desktop\" ? 0.103 : 0.100))"}},
+  {"set_expr": {"trial_started": "floor(n_cell * p_trial + 0.5) > floor((n_cell - 1) * p_trial + 0.5) ? \"yes\" : \"no\""}},
   {"set_expr": {"revenue": "paid_converted == \"yes\" ? (arm == \"new_page\" ? order_value * 0.85 : order_value) : 0"}},
-  {"when": "paid_converted == \"no\"", "set_null": ["days_to_convert"]},
-  {"set_expr": {"retained_30d": "u_ret < 0.35 + 0.015 * min(prior_sessions, 20) / 2 ? \"yes\" : \"no\""}}
+  {"when": "paid_converted == \"no\"", "set_null": ["days_to_convert"]}
 ]
 ```
 
-Result: `rows_generated: 40000`, `rows_rejected: 0`, no warnings. The cohort file is 2,121,853 bytes.
+Result: `rows_generated: 40000`, `rows_rejected: 0`, no warnings. The cohort file is 1,281,594 bytes.
 The planned 50/50 split needs no second cohort: Step 2 states it as a parameter of the test.
 
 ### Step 1 — Predict before running
@@ -149,12 +173,14 @@ pulse api process -r req/02_srm_gof.json --json
 
 | Arm | Users | Expected under 50/50 |
 |---|---|---|
-| new_page | 20,087 | 20,000 |
-| old_page | 19,913 | 20,000 |
+| new_page | 20,000 | 20,000 |
+| old_page | 20,000 | 20,000 |
 
-**χ² = 0.757, df = 1, p = 0.384. No sample-ratio mismatch.** A 174-user gap on 40,000 users is
-ordinary randomization noise. A one-sample `TEST_PROP_Z` on `arm` with `params.success = "new_page"` and
-`params.p0 = 0.5` asks the same question for a two-arm split (z = 0.87, the same p = 0.384).
+**χ² = 0, df = 1, p = 1. No sample-ratio mismatch.** Pair randomization makes the split exact here, so
+the check passes trivially. On a live test, where assignment logs can drop or duplicate users, it is
+the first check to run: a gap of a few hundred users on 40,000 is ordinary noise, a gap of a few
+thousand is a broken pipeline. A one-sample `TEST_PROP_Z` on `arm` with `params.success = "new_page"` and
+`params.p0 = 0.5` asks the same question for a two-arm split.
 
 ### Step 3 — SRM over time and covariate balance
 
@@ -181,22 +207,23 @@ corrects across the six:
 
 | Check | Statistic | df | p | Holm p |
 |---|---|---|---|---|
-| arm × assign_week (SRM by week) | χ² = 3.09 | 3 | 0.378 | 1.000 |
-| arm × device | χ² = 2.47 | 2 | 0.290 | 1.000 |
-| arm × plan_tier | χ² = 1.72 | 2 | 0.422 | 1.000 |
-| arm × region | χ² = 1.39 | 3 | 0.708 | 1.000 |
-| arm × user_type | χ² = 0.39 | 1 | 0.535 | 1.000 |
-| prior_sessions, Welch | t = 0.25 | 39,997.6 | 0.802 | 1.000 |
+| arm × assign_week (SRM by week) | χ² = 1.50 | 3 | 0.682 | 1.000 |
+| arm × device | χ² = 0 | 2 | 1.000 | 1.000 |
+| arm × plan_tier | χ² = 0.52 | 2 | 0.770 | 1.000 |
+| arm × region | χ² = 2.66 | 3 | 0.446 | 1.000 |
+| arm × user_type | χ² = 0.13 | 1 | 0.720 | 1.000 |
+| prior_sessions, Welch | t = 0 | 39,998 | 1.000 | 1.000 |
 
 Weekly assignment counts (from the contingency table in the response):
 
 | | w1 | w2 | w3 | w4 |
 |---|---|---|---|---|
-| new_page | 5,035 | 5,110 | 4,977 | 4,965 |
-| old_page | 4,870 | 5,022 | 5,026 | 4,995 |
+| new_page | 5,044 | 5,058 | 4,888 | 5,010 |
+| old_page | 4,982 | 5,078 | 4,979 | 4,961 |
 
 **Every guardrail passes.** The test can be trusted, and the arms are comparable on device, plan,
-region, user type and prior activity.
+region, user type and prior activity. Device and prior sessions balance exactly, because the pairs are
+matched on them; the other four checks show what independent randomization looks like.
 
 ### Step 4 — The six-metric scorecard, raw and Holm-corrected
 
@@ -231,18 +258,18 @@ is higher; no figure below is sign-flipped.
 
 | Metric | new_page | old_page | Diff (new − old) | 95% CI | Raw p | Holm p (m = 6) | Verdict |
 |---|---|---|---|---|---|---|---|
-| Trial start | 11.29% (2,267 / 20,087) | 10.27% (2,045 / 19,913) | **+1.02 pp** | +0.41 to +1.62 pp | 0.00105 | **0.0063** | **significant** |
-| Paid conversion | 3.40% (683) | 3.00% (598) | +0.40 pp | +0.05 to +0.74 pp | **0.024** | **0.096** | not significant after correction |
-| Revenue per user | $4.46 | $4.62 | −$0.16 | −$0.93 to +$0.61 | 0.681 | 1.000 | no difference |
-| Pages viewed | 8.119 | 8.025 | +0.094 pages | +0.017 to +0.171 | **0.017** | **0.086** | not significant after correction |
-| Days to convert (payers) | 8.69 days (n = 683) | 9.37 days (n = 598) | −0.68 days | −1.71 to +0.36 | 0.201 | 0.604 | no difference |
-| 30-day retention | 42.48% | 42.61% | −0.13 pp | −1.10 to +0.84 pp | 0.792 | 1.000 | no difference |
+| Trial start | 11.36% (2,271 / 20,000) | 10.00% (2,000 / 20,000) | **+1.36 pp** | +0.75 to +1.96 pp | 0.0000115 | **0.000069** | **significant** |
+| Paid conversion | 3.41% (681) | 3.00% (600) | +0.41 pp | +0.06 to +0.75 pp | **0.021** | **0.107** | not significant after correction |
+| Revenue per user | $4.35 | $4.15 | +$0.20 | −$0.48 to +$0.88 | 0.569 | 1.000 | no difference |
+| Pages viewed | 8.127 | 8.059 | +0.068 pages | −0.009 to +0.145 | 0.084 | 0.335 | no difference without the covariate (Step 8) |
+| Days to convert (payers) | 8.93 days (n = 681) | 8.88 days (n = 600) | +0.05 days | −0.91 to +1.00 | 0.924 | 1.000 | no difference |
+| 30-day retention | 42.52% | 42.52% | 0.00 pp | −0.97 to +0.97 pp | 1.000 | 1.000 | no difference |
 
-Three metrics clear p < 0.05 uncorrected. **Only trial start survives the correction.** Paid conversion
-is the metric a growth team would most like to announce, and its uncorrected p of 0.024 becomes 0.096.
-Holm ranks it third of six, so its p-value is multiplied by 4 (0.0241 × 4 = 0.096). Pages viewed loses
-significance the same way. The days-to-convert test uses only the 1,281 payers, because the null rows
-for non-payers drop out of the test.
+Two metrics clear p < 0.05 uncorrected. **Only trial start survives the correction.** Paid conversion
+is the metric a growth team would most like to announce, and its uncorrected p of 0.021 becomes 0.107.
+Holm ranks it second of six, so its p-value is multiplied by 5 (0.0214 × 5 = 0.107). The planted page-view
+lift of +0.07 is real but too small for the raw test to see (p = 0.084). The days-to-convert test uses
+only the 1,281 payers, because the null rows for non-payers drop out of the test.
 
 ### Step 5 — Revenue is mostly zeros with a long tail
 
@@ -256,16 +283,17 @@ pulse api compose -r req/05_revenue_shape.compose.json --json
 
 | Arm | Users | Mean | SD | Median | Skewness | Max |
 |---|---|---|---|---|---|---|
-| new_page | 20,087 | $4.46 | $37.10 | $0 | 18.5 | $1,813 |
-| old_page | 19,913 | $4.62 | $41.12 | $0 | 22.1 | $2,250 |
+| new_page | 20,000 | $4.35 | $35.38 | $0 | 17.1 | $1,671 |
+| old_page | 20,000 | $4.15 | $34.01 | $0 | 14.3 | $1,226 |
 
 | Arm (payers only) | Payers | Revenue per payer | Median | p95 |
 |---|---|---|---|---|
-| new_page | 683 | $131.04 | $88.56 | $373.41 |
-| old_page | 598 | $153.73 | $108.29 | $386.91 |
+| new_page | 681 | $127.74 | $88.06 | $359.99 |
+| old_page | 600 | $138.40 | $93.57 | $419.89 |
 
-The redesign brings in **85 more payers** who book **smaller first invoices**: $131 against $154 per
-payer, and a median of $89 against $108.
+The redesign brings in **81 more payers** who book **smaller first invoices**: $128 against $138 per
+payer, and a median of $88 against $94. The planted cut is 15%; invoice sizes are the one input drawn at
+random per payer, so the realized cut is 8% and noisy (the payer means have standard errors of about $6).
 
 ### Step 6 — Revenue: the t-test and the rank test disagree
 
@@ -280,18 +308,18 @@ payer, and a median of $89 against $108.
 
 | Test | Statistic | p | Effect size | Reading |
 |---|---|---|---|---|
-| Welch t (difference in means) | t = −0.41 | **0.681** | Cohen's d = −0.004 | mean revenue per user is unchanged; the CI spans −$0.93 to +$0.61 |
-| Mann-Whitney U (rank) | z = +2.19 | **0.029** | rank-biserial = +0.004 (new_page tends higher) | "new_page users tend to rank higher" |
+| Welch t (difference in means) | t = +0.57 | **0.569** | Cohen's d = +0.006 | mean revenue per user is unchanged; the CI spans −$0.48 to +$0.88 |
+| Mann-Whitney U (rank) | z = +2.26 | **0.024** | rank-biserial = +0.004 (new_page tends higher) | "new_page users tend to rank higher" |
 
 Pulse attaches `PULSE_TEST_TIES_DOMINATE` to the Mann-Whitney result: "≥ 50% of values are tied; the
 asymptotic p-value is unreliable." That is the key to reading the disagreement. About 97% of users
 have revenue exactly 0, so the rank test is mostly asking whether more users moved from zero to
-non-zero. That is the paid-conversion question again, and both give p ≈ 0.024–0.029. It says nothing
+non-zero. That is the paid-conversion question again, and both give p ≈ 0.021–0.024. It says nothing
 about dollars. The Welch test answers the dollar question, and the extra payers' smaller invoices
 offset each other: no detectable change in revenue per user.
 
 **Read revenue from the Welch test and the payer breakdown, not the rank test.** Do not report the
-rank test's p = 0.029 as "revenue went up".
+rank test's p = 0.024 as "revenue went up".
 
 ### Step 7 — Regression adjustment with the pre-period covariate
 
@@ -312,11 +340,12 @@ is a regression-only request:
 
 | Model | Treatment effect (pages) | Std. error | 95% CI | p | R² |
 |---|---|---|---|---|---|
-| `pages ~ is_variant` | +0.0938 | 0.0394 | +0.017 to +0.171 | 0.0172 | 0.0001 |
-| `pages ~ is_variant + prior_sessions` | +0.0862 | **0.0249** | **+0.037 to +0.135** | **0.00054** | 0.600 |
+| `pages ~ is_variant` | +0.0680 | 0.0393 | −0.009 to +0.145 | 0.0839 | 0.0001 |
+| `pages ~ is_variant + prior_sessions` | +0.0680 | **0.0247** | **+0.020 to +0.116** | **0.0059** | 0.605 |
 
-Adding the covariate cuts the standard error of the treatment effect from 0.0394 to 0.0249 pages, about
-37% smaller. The regression's `ci_lower` / `ci_upper` are Student-t intervals on the residual degrees
+Adding the covariate cuts the standard error of the treatment effect from 0.0393 to 0.0247 pages, about
+37% smaller. The estimate does not move, because the pairs are matched on prior sessions: the arms have
+the same covariate mean, so the adjustment removes noise and no imbalance. The regression's `ci_lower` / `ci_upper` are Student-t intervals on the residual degrees
 of freedom (39,997 here), the same inference the p-values use.
 
 ### Step 8 — The same adjustment as a CUPED test, in one call
@@ -337,16 +366,16 @@ hand-built formula attribute ([`req/08_cuped_welch.json`](req/08_cuped_welch.jso
 
 | Version | Diff (pages) | 95% CI | Per-arm variance (new / old) | p |
 |---|---|---|---|---|
-| Raw | +0.094 | +0.017 to +0.171 | 15.56 / 15.42 | 0.0171 |
-| CUPED-adjusted | +0.086 | **+0.037 to +0.135** | 6.25 / 6.13 | **0.00054** |
+| Raw | +0.068 | −0.009 to +0.145 | 15.50 / 15.45 | 0.0839 |
+| CUPED-adjusted | +0.068 | **+0.020 to +0.116** | 6.12 / 6.10 | **0.0059** |
 
-The adjusted result carries its own working in `details`: `theta` = **0.7601**, `covariate_mean` =
-10.0076, `variance_reduction` = **0.600**, and `diff_unadjusted` = 0.0938 beside the adjusted `diff`.
-They match the Step 7 regression: the same +0.0862 estimate, the same interval, the same p.
+The adjusted result carries its own working in `details`: `theta` = **0.7672**, `covariate_mean` =
+10.0347, `variance_reduction` = **0.605**, and `diff_unadjusted` = 0.068 beside the adjusted `diff`.
+They match the Step 7 regression: the same +0.0680 estimate, the same interval, the same p.
 
-**The covariate cuts the per-arm variance by 60% and narrows the 95% CI from 0.154 to 0.098 pages
-wide.** The estimate barely moves (+0.094 → +0.086 pages; the planted truth is +0.07). Only the
-uncertainty shrinks. This is the legitimate way to recover the power that the correction in Step 4 took
+**The covariate cuts the per-arm variance by 60% and narrows the 95% CI from 0.154 to 0.097 pages
+wide.** The estimate stays at +0.068 pages (the planted truth is +0.07; the rest is rounding to whole
+pages). Only the uncertainty shrinks. This is the legitimate way to recover the power that the correction in Step 4 took
 away. Pre-register the covariate before the test starts; do not pick it after seeing results.
 
 ### Step 9 — Segments: most "wins" vanish after correction
@@ -392,23 +421,24 @@ Trial-start lift by segment:
 
 | Segment | Users | new_page | old_page | Lift | 95% CI | Raw p | Holm p (m = 12) |
 |---|---|---|---|---|---|---|---|
-| device = desktop | 19,992 | 10.4% | 10.6% | −0.22 pp | −1.07 to +0.63 | 0.614 | 1.000 |
-| **device = mobile** | 16,072 | 12.8% | 9.8% | **+2.97 pp** | +2.00 to +3.95 | 2.6 × 10⁻⁹ | **3.1 × 10⁻⁸** ✔ |
-| device = tablet | 3,936 | 9.7% | 10.4% | −0.71 pp | −2.59 to +1.16 | 0.457 | 1.000 |
-| plan = individual | 21,921 | 11.0% | 10.4% | +0.57 pp | −0.25 to +1.39 | 0.171 | 0.852 |
-| plan = team | 13,272 | 11.5% | 10.0% | +1.49 pp | +0.44 to +2.55 | **0.0055** | 0.055 |
-| plan = business | 4,807 | 12.0% | 10.3% | +1.71 pp | −0.06 to +3.49 | 0.059 | 0.388 |
-| region = NA | 16,109 | 11.4% | 10.2% | +1.26 pp | +0.30 to +2.21 | **0.010** | 0.082 |
-| **region = EMEA** | 11,813 | 11.7% | 10.0% | +1.65 pp | +0.53 to +2.77 | **0.0040** | **0.044** ✔ |
-| region = APAC | 8,168 | 10.9% | 10.6% | +0.26 pp | −1.08 to +1.61 | 0.703 | 1.000 |
-| region = LATAM | 3,910 | 10.3% | 10.6% | −0.30 pp | −2.22 to +1.62 | 0.758 | 1.000 |
-| user = new | 23,933 | 11.4% | 10.3% | +1.07 pp | +0.28 to +1.86 | **0.0077** | 0.069 |
-| user = returning | 16,067 | 11.2% | 10.2% | +0.93 pp | −0.02 to +1.89 | 0.055 | 0.388 |
+| device = desktop | 19,822 | 10.3% | 10.0% | +0.30 pp | −0.54 to +1.14 | 0.480 | 1.000 |
+| **device = mobile** | 16,058 | 13.0% | 10.0% | **+3.00 pp** | +2.02 to +3.99 | 2.5 × 10⁻⁹ | **3.0 × 10⁻⁸** ✔ |
+| device = tablet | 4,120 | 10.0% | 10.0% | 0.00 pp | −1.83 to +1.83 | 1.000 | 1.000 |
+| plan = individual | 21,864 | 11.4% | 10.2% | +1.12 pp | +0.30 to +1.95 | **0.0074** | 0.059 |
+| plan = team | 13,256 | 11.2% | 9.9% | +1.35 pp | +0.30 to +2.39 | **0.012** | 0.070 |
+| plan = business | 4,880 | 11.7% | 9.3% | +2.41 pp | +0.69 to +4.13 | **0.0061** | 0.055 |
+| **region = NA** | 15,994 | 11.8% | 9.9% | +1.82 pp | +0.86 to +2.79 | **0.00021** | **0.0023** ✔ |
+| region = EMEA | 11,919 | 11.0% | 9.8% | +1.17 pp | +0.08 to +2.26 | **0.036** | 0.182 |
+| region = APAC | 8,014 | 10.8% | 10.3% | +0.47 pp | −0.88 to +1.82 | 0.493 | 1.000 |
+| region = LATAM | 4,073 | 12.0% | 10.2% | +1.83 pp | −0.10 to +3.76 | 0.062 | 0.250 |
+| **user = new** | 24,167 | 11.5% | 10.1% | +1.41 pp | +0.63 to +2.19 | **0.00039** | **0.0039** ✔ |
+| user = returning | 15,833 | 11.2% | 9.9% | +1.27 pp | +0.31 to +2.22 | **0.0094** | 0.066 |
 
-Five of twelve segments "win" uncorrected. After Holm correction across the 12 tests, two remain:
-mobile, overwhelmingly, and EMEA, just under the line at 0.044. A segment lift that survives correction
-is still not evidence that the segment *differs*. EMEA's lift could simply be the overall lift. That
-calls for a different test.
+The device rows are the planted cell rates exactly (desktop 10.3%, mobile 13.0%, tablet 10.0% against
+10.0%). Eight of twelve segments "win" uncorrected. After Holm correction across the 12 tests, three
+remain: mobile, overwhelmingly, NA and new users. A segment lift that survives correction is still not
+evidence that the segment *differs*. NA's lift could simply be the overall lift, which every large
+segment carries. That calls for a different test.
 
 ### Step 10 — Heterogeneity: is the effect really different in a segment?
 
@@ -421,15 +451,15 @@ segment interaction. The 0/1 columns are built in-request with `ATTR_FORMULA`
   {"type": "ATTR_FORMULA", "field": "trial_started", "label": "trial", "expression": "trial_started == \"yes\" ? 1 : 0"},
   {"type": "ATTR_FORMULA", "field": "device", "label": "mobile", "expression": "device == \"mobile\" ? 1 : 0"},
   {"type": "ATTR_FORMULA", "field": "device", "label": "new_page_x_mobile", "expression": "(device == \"mobile\" && arm == \"new_page\") ? 1 : 0"},
-  {"type": "ATTR_FORMULA", "field": "region", "label": "emea", "expression": "region == \"EMEA\" ? 1 : 0"},
-  {"type": "ATTR_FORMULA", "field": "region", "label": "new_page_x_emea", "expression": "(region == \"EMEA\" && arm == \"new_page\") ? 1 : 0"}
+  {"type": "ATTR_FORMULA", "field": "region", "label": "na", "expression": "region == \"NA\" ? 1 : 0"},
+  {"type": "ATTR_FORMULA", "field": "region", "label": "new_page_x_na", "expression": "(region == \"NA\" && arm == \"new_page\") ? 1 : 0"}
 ],
 "multiplicity": {"method": "holm", "family": "request"},
 "regressions": [
   {"type": "REG_OLS", "name": "trial_by_mobile", "target": "trial", "predictors": ["is_variant", "mobile", "new_page_x_mobile"],
    "multiplicity": {"method": "holm", "coefficients": ["new_page_x_mobile"]}},
-  {"type": "REG_OLS", "name": "trial_by_emea",   "target": "trial", "predictors": ["is_variant", "emea", "new_page_x_emea"],
-   "multiplicity": {"method": "holm", "coefficients": ["new_page_x_emea"]}}
+  {"type": "REG_OLS", "name": "trial_by_na",     "target": "trial", "predictors": ["is_variant", "na", "new_page_x_na"],
+   "multiplicity": {"method": "holm", "coefficients": ["new_page_x_na"]}}
 ]
 ```
 
@@ -439,15 +469,16 @@ makes its named coefficient a member of it. The two interaction hypotheses form 
 
 | Model | Lift outside the segment (`is_variant`) | Extra lift inside the segment (interaction) | SE | 95% CI | Interaction p | Holm p (m = 2) |
 |---|---|---|---|---|---|---|
-| mobile vs. not mobile | −0.30 pp (p = 0.449) | **+3.28 pp** | 0.63 pp | +2.04 to +4.52 pp | **2.2 × 10⁻⁷** | **4.4 × 10⁻⁷** |
-| EMEA vs. not EMEA | +0.75 pp (p = 0.042) | +0.89 pp | 0.68 pp | −0.44 to +2.23 pp | 0.188 | 0.188 |
+| mobile vs. not mobile | +0.25 pp (p = 0.530) | **+2.75 pp** | 0.63 pp | +1.52 to +3.99 pp | **1.2 × 10⁻⁵** | **2.5 × 10⁻⁵** |
+| NA vs. not NA | +1.05 pp (p = 0.0087) | +0.78 pp | 0.63 pp | −0.46 to +2.01 pp | 0.217 | 0.217 |
 
-**The redesign works on mobile and does nothing measurable elsewhere.** Outside mobile the lift is
-−0.30 pp and indistinguishable from zero; on mobile it is about 3.3 pp higher. EMEA's lift is not
-distinguishable from other regions' (p = 0.19). It survived Step 9 only because EMEA is large and
-carries its share of mobile users. Plan tier, region and user type show no real heterogeneity, which
-matches the planted truth. The mobile interaction survives the two-hypothesis Holm correction with
-room to spare (4.4 × 10⁻⁷).
+**The redesign works on mobile and does almost nothing elsewhere.** Outside mobile the lift is
++0.25 pp and indistinguishable from zero (the planted desktop lift is +0.3 pp on desktop, none on
+tablet); on mobile it is 2.75 pp higher, which is the planted 13.0% − 10.0% less that small desktop
+lift. NA's lift is not distinguishable from other regions' (p = 0.22). It survived Step 9 only because
+NA is the largest region and carries its share of mobile users. Plan tier, region and user type show no
+real heterogeneity, which matches the planted truth. The mobile interaction survives the two-hypothesis
+Holm correction with room to spare (2.5 × 10⁻⁵).
 
 ### Step 11 — The whole readout in one Compose call
 
@@ -467,39 +498,39 @@ Final scorecard (slot `scorecard`, Holm across 6):
 
 | Metric | Diff (new − old) | 95% CI | Raw p | Holm p | Moved? |
 |---|---|---|---|---|---|
-| Trial start | +1.02 pp | +0.41 to +1.62 pp | 0.00105 | **0.0052** | **yes** |
-| Pages viewed (CUPED) | +0.086 pages | +0.037 to +0.135 | 0.00054 | **0.0032** | **yes**, but tiny |
-| Paid conversion | +0.40 pp | +0.05 to +0.74 pp | 0.024 | 0.096 | no |
-| Revenue per user | −$0.16 | −$0.93 to +$0.61 | 0.681 | 1.000 | no |
-| Days to convert | −0.68 days | −1.71 to +0.36 | 0.201 | 0.604 | no |
-| 30-day retention | −0.13 pp | −1.10 to +0.84 pp | 0.792 | 1.000 | no |
+| Trial start | +1.36 pp | +0.75 to +1.96 pp | 0.0000115 | **0.000069** | **yes** |
+| Pages viewed (CUPED) | +0.068 pages | +0.020 to +0.116 | 0.0059 | **0.030** | **yes**, but tiny |
+| Paid conversion | +0.41 pp | +0.06 to +0.75 pp | 0.021 | 0.086 | no |
+| Revenue per user | +$0.20 | −$0.48 to +$0.88 | 0.569 | 1.000 | no |
+| Days to convert | +0.05 days | −0.91 to +1.00 | 0.924 | 1.000 | no |
+| 30-day retention | 0.00 pp | −0.97 to +0.97 pp | 1.000 | 1.000 | no |
 
-The `guardrails` slot repeats Steps 2 and 3: the SRM p of 0.384 stays out of the family, and the six balance Holm p-values are all 1.000. `revenue_sensitivity` repeats the
-Mann-Whitney p = 0.029. `regression_adjustment` repeats the SE drop from 0.0394 to 0.0249. Serial and
+The `guardrails` slot repeats Steps 2 and 3: the SRM p of 1 stays out of the family, and the six balance Holm p-values are all 1.000. `revenue_sensitivity` repeats the
+Mann-Whitney p = 0.024. `regression_adjustment` repeats the SE drop from 0.0393 to 0.0247. Serial and
 `--parallel 0` runs return identical `data`.
 
 ## Findings
 
-1. **The test is clean.** Assignment matches the 50/50 design (χ² = 0.76, p = 0.38), holds week by week
-   (p = 0.38), and the arms are balanced on device, plan, region, user type and prior activity (every
-   Holm p = 1.00).
-2. **The redesign lifts trial starts by about 1 point**: 11.29% against 10.27%, +1.02 pp with a 95% CI
-   of +0.41 to +1.62 pp. It survives Holm correction across the six metrics (p = 0.005).
-3. **Do not claim a paid-conversion win.** +0.40 pp at p = 0.024 looks like one, but it does not survive
-   correction for six metrics (Holm p = 0.096). It is consistent with the trial lift flowing through,
-   but this test cannot confirm it. Extend the test or make paid conversion the sole primary metric of
-   a follow-up.
-4. **Revenue per user did not change** ($4.46 vs. $4.62, p = 0.68). The rank test's p = 0.029 reflects
-   the 85 extra payers, not extra dollars: new-page payers book about $23 less on their first invoice
-   ($131 vs. $154). Check whether the new page steers buyers toward cheaper plans before shipping.
-5. **The lift is a mobile effect.** Mobile trial starts rise +2.97 pp (9.8% → 12.8%). The interaction
-   with mobile is +3.28 pp (p = 2 × 10⁻⁷), and outside mobile the effect is about zero. Of five segment
-   "wins" before correction, only mobile and, marginally, EMEA survive. EMEA shows no real difference
-   (interaction p = 0.19).
+1. **The test is clean.** Assignment matches the 50/50 design exactly (χ² = 0, p = 1), holds week by
+   week (p = 0.68), and the arms are balanced on device, plan, region, user type and prior activity
+   (every Holm p = 1.00).
+2. **The redesign lifts trial starts by about 1.4 points**: 11.36% against 10.00%, +1.36 pp with a 95% CI
+   of +0.75 to +1.96 pp. It survives Holm correction across the six metrics (p = 0.00007).
+3. **Do not claim a paid-conversion win.** +0.41 pp at p = 0.021 looks like one, but it does not survive
+   correction for six metrics (Holm p = 0.107). It is exactly the trial lift flowing through at the
+   planted 30%, but this test cannot confirm it. Extend the test or make paid conversion the sole
+   primary metric of a follow-up.
+4. **Revenue per user did not change** ($4.35 vs. $4.15, p = 0.57). The rank test's p = 0.024 reflects
+   the 81 extra payers, not extra dollars: new-page payers book about $11 less on their first invoice
+   ($128 vs. $138). Check whether the new page steers buyers toward cheaper plans before shipping.
+5. **The lift is a mobile effect.** Mobile trial starts rise +3.00 pp (10.0% → 13.0%). The interaction
+   with mobile is +2.75 pp (p = 1 × 10⁻⁵), and outside mobile the effect is about zero. Of eight segment
+   "wins" before correction, mobile, NA and new users survive. NA shows no real difference
+   (interaction p = 0.22).
 6. **Use pre-period covariates by default.** Adjusting pages viewed for prior sessions cut its variance
-   by 60% and narrowed the CI from 0.154 to 0.098 pages wide. That turned a result that failed
-   correction (Holm p = 0.086) into one that passes (Holm p = 0.003). The effect itself is +0.09 pages
-   per user, which is real but commercially irrelevant.
+   by 60% and narrowed the CI from 0.154 to 0.097 pages wide. That turned a result the raw test could
+   not see (p = 0.084, Holm p = 0.335) into one that passes correction (Holm p = 0.030). The effect itself
+   is +0.07 pages per user, which is real but commercially irrelevant.
 
 **Recommendation:** Ship the redesign on mobile, where it clearly works. Before shipping it more
 broadly, investigate the smaller first invoices: on the current evidence the page does not increase
@@ -510,7 +541,7 @@ activity as a covariate.
 
 | Feature | Where | What it did here |
 |---|---|---|
-| `pulse synth from-schema` (distributions, `correlations`, `rules` with `when` / `set_expr` / `set_null`, fixed `--seed`) | Step 0 | Deterministic 40,000-user cohort with planted effects |
+| `pulse synth from-schema` (distributions, `rules` with `when` / `set_expr` / `set_null`, `row()` / `lag()`, `"output": false` helper fields, fixed `--seed`) | Step 0 | Deterministic 40,000-user cohort with exactly planted effects |
 | `pulse cohort inspect` | Step 0 | Self-describing schema with field descriptions |
 | `pulse api predict` / `predict-facet` / `predict-compose` | Steps 1, 11 | Validation, streamability and reasons, p-value accounting without reading records |
 | `TEST_CHISQ` with `params.expected` | Step 2 | χ² goodness-of-fit SRM check against the planned split |

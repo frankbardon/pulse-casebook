@@ -6,9 +6,10 @@ set -euo pipefail
 ROOT=$(cd "$(dirname "$0")/../.." && pwd); PULSE=${PULSE:-$([ -x "$ROOT/bin/pulse" ] && echo "$ROOT/bin/pulse" || echo pulse)}   # `make pulse` builds bin/pulse
 mkdir -p out
 
-# Step 0 - import the delivery feed (UTC instants with a Z suffix, so no source zone is needed).
-"$PULSE" import csv -i data/deliveries.csv -o deliveries.pulse \
-  --schema schemas/deliveries.schema.json --json > out/00_import_deliveries.json
+# Step 0 - generate the delivery cohort from its synth spec: each warehouse's local business hours,
+# Sunday closures, the SYD outage and the BLR trend are planted in data/deliveries.synth.json.
+"$PULSE" synth from-schema -s data/deliveries.synth.json -o deliveries.pulse --seed 20260202 \
+  --json > out/00_synth_deliveries.json
 
 # Step 7a - the overnight sorter feeds arrive as NAIVE local wall-clock times.
 # Default policy (error) refuses the DST-affected rows and writes nothing.

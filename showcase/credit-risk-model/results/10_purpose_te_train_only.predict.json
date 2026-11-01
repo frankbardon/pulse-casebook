@@ -77,7 +77,7 @@
       ]
     },
     "schema_info": {
-      "field_count": 22,
+      "field_count": 20,
       "fields": [
         "loan_id",
         "application_date",
@@ -94,8 +94,6 @@
         "emp_length_years",
         "home_ownership",
         "delinq_2yrs",
-        "gt_true_pd",
-        "gt_uniform_draw",
         "default_12m",
         "outcome",
         "fico_at_month_12",
