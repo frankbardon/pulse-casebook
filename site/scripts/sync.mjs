@@ -96,7 +96,13 @@ const films = fs.readdirSync(FILMS).filter(d => /^\d\d-/.test(d)).sort().map(dir
   const intro = decode((html.match(/<p class="intro">([\s\S]*?)<\/p>/) || [, ''])[1].replace(/<[^>]+>/g, ''));
   const dataDir = path.join(FILMS, dir, 'data');
   const dataFiles = fs.existsSync(dataDir) ? walk(dataDir, rel => rel.endsWith('.pulse')) : [];
-  return { dir, num, topic, title, intro, dataFiles, part: partOf(num) };
+  // The inline player's text, as HTML (intro and note can hold <span>/<code>); empty if absent.
+  const inner = re => (html.match(re) || [, ''])[1].trim();
+  const player = {
+    eyebrow: inner(/<div class="eyebrow">([\s\S]*?)<\/div>/), intro: inner(/<p class="intro">([\s\S]*?)<\/p>/),
+    note: inner(/<p class="note">([\s\S]*?)<\/p>/), label: decode(inner(/<canvas id="film"[^>]*aria-label="([^"]*)"/)),
+  };
+  return { dir, num, topic, title, intro, player, dataFiles, part: partOf(num) };
 });
 // Each topic's film: the first of its `films` that has a folder.
 for (const t of TOPICS) {
@@ -200,6 +206,17 @@ ${sections}
 }
 
 // ---------- film pages ----------
+// Films with a scenes.js play inline; one that inlines its scenes in index.html stays an iframe.
+// Props are JSON string literals in MDX expressions, so extracted HTML needs no MDX escaping.
+function filmPlayer(f) {
+  const base = `/films/${f.dir}/`, title = yaml(`Pulse film: ${f.title}`);
+  if (!f.published.includes('scenes.js'))
+    return `import FilmEmbed from '../../../components/FilmEmbed.astro';\n\n<FilmEmbed src="${base}index.html" title=${title} />`;
+  const props = { title: `Pulse film: ${f.title}`, ...f.player, scenes: `${base}scenes.js`, href: `${base}index.html`,
+    ...(f.published.includes('narration.mp3') && { narration: `${base}narration.mp3` }) };
+  return `import FilmPlayer from '../../../components/FilmPlayer.astro';\n\n<FilmPlayer\n${
+    Object.entries(props).map(([k, v]) => `  ${k}={${JSON.stringify(v)}}`).join('\n')}\n/>`;
+}
 for (const f of films) {
   const lines = fs.existsSync(path.join(FILMS, f.dir, 'subtitles.srt')) ? transcript(read(path.join(FILMS, f.dir, 'subtitles.srt'))) : [];
   const related = TOPICS.filter(t => t.film === f || t.alsoFilms.includes(f));
@@ -211,9 +228,7 @@ description: ${yaml(clip(f.intro))}
 sidebar:
   order: ${f.num}
 ---
-import FilmEmbed from '../../../components/FilmEmbed.astro';
-
-<FilmEmbed src="/films/${f.dir}/index.html" title=${yaml(`Pulse film: ${f.title}`)} />
+${filmPlayer(f)}
 ${related.length ? `
 ## See it in a real case
 
