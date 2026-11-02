@@ -1,0 +1,106 @@
+/* Film look for the whole site: the film palette, fonts and title treatment mapped onto
+   Starlight's tokens. Starlight's own styles sit in cascade layers, so these unlayered
+   rules win without !important. `:root` is dark; Starlight always sets data-theme on
+   <html> (resolving "auto" from the system preference), so light keys off that. */
+
+:root {
+	/* Film palette (dark). --pf-* are the names the film player reads. */
+	--pf-bg: #070d0f;
+	--pf-plate: #111c20;
+	--pf-plate2: #17252a;
+	--pf-ink: #dce6e8;
+	--pf-muted: #8c9fa6;
+	--pf-rule: #304449;
+	--pf-teal: #45c1b3;
+	--pf-teal-soft: #12352f;
+	--pf-stage: #0b1316;
+	--pf-sans: 'Archivo', system-ui, sans-serif;
+	--pf-mono: 'IBM Plex Mono', ui-monospace, monospace;
+
+	--sl-font: var(--pf-sans);
+	--sl-font-mono: var(--pf-mono);
+
+	/* Gray ramp runs ink → bg; gray-4 sits between muted and rule. */
+	--sl-color-white: #f2f7f8;
+	--sl-color-gray-1: var(--pf-ink);
+	--sl-color-gray-2: #c3d0d3;
+	--sl-color-gray-3: var(--pf-muted);
+	--sl-color-gray-4: #5e7278;
+	--sl-color-gray-5: var(--pf-rule);
+	--sl-color-gray-6: var(--pf-plate);
+	--sl-color-gray-7: #0c1518;
+	--sl-color-black: var(--pf-bg);
+
+	--sl-color-accent-low: var(--pf-teal-soft);
+	--sl-color-accent: #2e9e91;
+	--sl-color-accent-high: var(--pf-teal);
+
+	--sl-color-text: var(--sl-color-gray-2);
+	--sl-color-text-accent: var(--pf-teal);
+	--sl-color-bg: var(--pf-bg);
+	--sl-color-bg-nav: var(--pf-plate);
+	--sl-color-bg-sidebar: var(--pf-plate);
+	--sl-color-bg-inline-code: var(--pf-plate2);
+	--sl-color-hairline-light: var(--pf-rule);
+	--sl-color-hairline: #1f2f34;
+	--sl-color-hairline-shade: var(--pf-bg);
+}
+
+:root[data-theme='light'] {
+	--pf-bg: #e9eeef;
+	--pf-plate: #f7f9f9;
+	--pf-plate2: #eef2f3;
+	--pf-ink: #13242b;
+	--pf-muted: #56676e;
+	--pf-rule: #b9c6ca;
+	--pf-teal: #0b7a71;
+	--pf-teal-soft: #d3ece8;
+
+	/* Inverted ramp. gray-6 is darker than bg on purpose: Starlight uses it for code
+	   frames and hairlines on the bg; gray-7 (plate) is for raised surfaces. */
+	--sl-color-white: #0a161b;
+	--sl-color-gray-1: var(--pf-ink);
+	--sl-color-gray-2: #2b3d44;
+	--sl-color-gray-3: var(--pf-muted);
+	--sl-color-gray-4: #87979c;
+	--sl-color-gray-5: var(--pf-rule);
+	--sl-color-gray-6: #dbe3e5;
+	--sl-color-gray-7: var(--pf-plate);
+	--sl-color-black: var(--pf-bg);
+
+	--sl-color-accent-low: var(--pf-teal-soft);
+	--sl-color-accent: var(--pf-teal);
+	--sl-color-accent-high: #075a53;
+
+	--sl-color-text-accent: var(--pf-teal);
+	--sl-color-bg-nav: var(--pf-plate);
+	--sl-color-bg-sidebar: var(--pf-bg);
+	--sl-color-bg-inline-code: #dbe3e5;
+	--sl-color-hairline-light: var(--pf-rule);
+	--sl-color-hairline: var(--pf-rule);
+	--sl-color-hairline-shade: var(--pf-rule);
+}
+
+/* Film h1: wide, heavy, uppercase. Sized down from the film's 60px to fit the content column. */
+h1#_top,
+.sl-markdown-content h1:not(:where(.not-content *)) {
+	font-size: clamp(1.75rem, 1rem + 2.6vw, 2.75rem);
+	line-height: 1;
+	font-weight: 800;
+	font-stretch: 125%;
+	text-transform: uppercase;
+	text-wrap: balance;
+	color: var(--sl-color-white);
+}
+
+.hero h1#_top {
+	font-size: clamp(2rem, 0.5rem + 4.5vw, 3.75rem);
+}
+
+.eyebrow {
+	font-family: var(--__sl-font-mono);
+	font-size: 12px;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	color: var(--pf-muted);
+}

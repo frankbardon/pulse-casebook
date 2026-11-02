@@ -27,7 +27,12 @@ export default defineConfig({
 				{ tag: 'link', attrs: { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' } },
 				{ tag: 'link', attrs: { rel: 'icon', type: 'image/png', sizes: '32x32', href: '/favicon-32.png' } },
 				{ tag: 'link', attrs: { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' } },
+				// Film fonts (Archivo, IBM Plex Mono); src/styles/theme.css points Starlight at them.
+				{ tag: 'link', attrs: { rel: 'preconnect', href: 'https://fonts.googleapis.com' } },
+				{ tag: 'link', attrs: { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: true } },
+				{ tag: 'link', attrs: { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=IBM+Plex+Mono:wght@400;500;600&display=swap' } },
 			],
+			customCss: ['./src/styles/theme.css'],
 			social: [{ icon: 'github', label: 'Pulse on GitHub', href: 'https://github.com/frankbardon/pulse' }],
 			sidebar: [
 				{ label: 'Start here', items: [{ slug: 'paths/analyst' }, { slug: 'paths/developer' }, { slug: 'paths/running-examples' }] },
