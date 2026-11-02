@@ -45,6 +45,7 @@ const topicOf = op => TOPICS.find(t => op.startsWith(t.prefix + '_'));
 // ---------- helpers ----------
 const read = p => fs.readFileSync(p, 'utf8');
 const write = (p, s) => { fs.mkdirSync(path.dirname(p), { recursive: true }); fs.writeFileSync(p, s); };
+const fail = msg => { console.error(`sync: ${msg}`); process.exit(1); };
 const reset = p => { fs.rmSync(p, { recursive: true, force: true }); fs.mkdirSync(p, { recursive: true }); };
 const yaml = s => JSON.stringify(s); // JSON strings are valid YAML scalars
 const plain = md => md.replace(/\[([^\]]*)\]\([^)]*\)/g, '$1').replace(/[*_`>]/g, '').replace(/\s+/g, ' ').trim();
@@ -96,7 +97,25 @@ const films = fs.readdirSync(FILMS).filter(d => /^\d\d-/.test(d)).sort().map(dir
   const intro = decode((html.match(/<p class="intro">([\s\S]*?)<\/p>/) || [, ''])[1].replace(/<[^>]+>/g, ''));
   const dataDir = path.join(FILMS, dir, 'data');
   const dataFiles = fs.existsSync(dataDir) ? walk(dataDir, rel => rel.endsWith('.pulse')) : [];
-  return { dir, num, topic, title, intro, dataFiles, part: partOf(num) };
+  // The inline player's text, as HTML (intro and note can hold <span>/<code>). A page missing
+  // a piece would render a broken player, so the sync fails instead.
+  const need = (what, re) => {
+    const m = html.match(re);
+    if (!m || !m[1].trim()) fail(`films/${dir}/index.html: missing ${what}`);
+    return m[1].trim();
+  };
+  const player = {
+    eyebrow: need('<div class="eyebrow">', /<div class="eyebrow">([\s\S]*?)<\/div>/),
+    intro: need('<p class="intro">', /<p class="intro">([\s\S]*?)<\/p>/),
+    note: need('<p class="note">', /<p class="note">([\s\S]*?)<\/p>/),
+    label: decode(need('<canvas id="film" aria-label>', /<canvas id="film"[^>]*aria-label="([^"]*)"/)),
+  };
+  // Scenes live in scenes.js, or in an inline <script> (no src) that mounts the film; the
+  // inline one is written out to public/films/<dir>/scenes.js after the copy below.
+  const inlineScenes = fs.existsSync(path.join(FILMS, dir, 'scenes.js')) ? null
+    : [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m => m[1]).find(js => js.includes('PulseFilm.mount('));
+  if (inlineScenes === undefined) fail(`films/${dir}: missing scene script (no scenes.js, no inline PulseFilm.mount script)`);
+  return { dir, num, topic, title, intro, player, inlineScenes, dataFiles, part: partOf(num) };
 });
 // Each topic's film: the first of its `films` that has a folder.
 for (const t of TOPICS) {
@@ -111,6 +130,7 @@ for (const f of films) {
   const keep = ['index.html', 'scenes.js', 'narration.mp3', 'subtitles.srt'].filter(n => fs.existsSync(path.join(FILMS, f.dir, n)));
   f.published = [...keep, ...f.dataFiles.map(d => `data/${d}`)];
   copyFiles(path.join(FILMS, f.dir), path.join(PUBLIC, 'films', f.dir), f.published);
+  if (f.inlineScenes) write(path.join(PUBLIC, 'films', f.dir, 'scenes.js'), f.inlineScenes.trim() + '\n');
   f.topics = recordUsage('film', f.dir, `Film ${f.num}: ${f.title}`, `/films/${f.topic}/`,
     f.dataFiles.filter(isRequest).map(d => path.join(FILMS, f.dir, 'data', d)));
 }
@@ -200,6 +220,14 @@ ${sections}
 }
 
 // ---------- film pages ----------
+// Props are JSON string literals in MDX expressions, so extracted HTML needs no MDX escaping.
+function filmPlayer(f) {
+  const base = `/films/${f.dir}/`;
+  const props = { title: `Pulse film: ${f.title}`, ...f.player, scenes: `${base}scenes.js`, href: `${base}index.html`,
+    ...(f.published.includes('narration.mp3') && { narration: `${base}narration.mp3` }) };
+  return `import FilmPlayer from '../../../components/FilmPlayer.astro';\n\n<FilmPlayer\n${
+    Object.entries(props).map(([k, v]) => `  ${k}={${JSON.stringify(v)}}`).join('\n')}\n/>`;
+}
 for (const f of films) {
   const lines = fs.existsSync(path.join(FILMS, f.dir, 'subtitles.srt')) ? transcript(read(path.join(FILMS, f.dir, 'subtitles.srt'))) : [];
   const related = TOPICS.filter(t => t.film === f || t.alsoFilms.includes(f));
@@ -211,9 +239,7 @@ description: ${yaml(clip(f.intro))}
 sidebar:
   order: ${f.num}
 ---
-import FilmEmbed from '../../../components/FilmEmbed.astro';
-
-<FilmEmbed src="/films/${f.dir}/index.html" title=${yaml(`Pulse film: ${f.title}`)} />
+${filmPlayer(f)}
 ${related.length ? `
 ## See it in a real case
 

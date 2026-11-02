@@ -1,7 +1,9 @@
 /* Pulse film kit: drawing helpers, a narration-driven timeline, chrome and the player.
  *
  * A film page provides markup with these ids: film (canvas), bigplay, voice (audio),
- * play, playIcon, restart, sound, scrub, time, chapters. It then calls
+ * play, playIcon, restart, sound, scrub, time, chapters. The ids are looked up inside the first
+ * [data-pulse-film] element when there is one (a player embedded in a docs page, where heading
+ * ids like "time" can collide), else in the whole document (the standalone film pages). It then calls
  *   PulseFilm.mount({ series, scenes, narr })
  * where each scene is { name, dur, draw(t), caps: [[animTime, subtitle, spoken?, hideSubtitle?], ...] }.
  * draw(t) must be a pure function of animation time t, so the same t always yields the same frame;
@@ -26,7 +28,9 @@ window.PulseFilm = (() => {
   let cv = null, ctx = null, scale = 1;
 
   /* ---------- the ring (kit/pulse-ring.js, loaded next to this file) ---------- */
-  const KIT = (document.currentScript && document.currentScript.src || '').replace(/[^/]*$/, '') || '../kit/';
+  // currentScript is null if the kit is evaluated late; fall back to finding its own <script> tag.
+  const kitSrc = (document.currentScript && document.currentScript.src) || ((document.querySelector('script[src*="film-kit.js"]') || {}).src) || '';
+  const KIT = kitSrc.replace(/[^/]*$/, '') || '../kit/';
   const ringReady = new Promise(done => {
     if (window.PulseRing) return done();
     const s = document.createElement('script'); s.src = KIT + 'pulse-ring.js';
@@ -105,7 +109,11 @@ window.PulseFilm = (() => {
 
   /* ---------- mount ---------- */
   function mount(cfg) {
-    cv = document.getElementById('film'); ctx = cv.getContext('2d');
+    /* Root contract: the player is the first [data-pulse-film] element, else the document. Every
+     * kit id is resolved with root.querySelector('#id'), so only the root's subtree is searched. */
+    const root = document.querySelector('[data-pulse-film]') || document;
+    const $ = id => root.querySelector('#' + id);
+    cv = $('film'); ctx = cv.getContext('2d');
     const FILM = cfg.scenes, NARR = cfg.narr || null, SERIES = cfg.series || 'PULSE';
     const TITLE = cfg.title || FILM[0].name;
     const SCENES = [{ kit: 'intro', name: TITLE, dur: INTRO_DUR, draw: t => introFrame(TITLE, t), caps: [] },
@@ -165,7 +173,6 @@ window.PulseFilm = (() => {
     }
 
     /* ---------- player ---------- */
-    const $ = id => document.getElementById(id);
     /* The page styles .bigplay with display, which beats the hidden attribute, so set both. */
     const showBig = on => { big.hidden = !on; big.style.display = on ? '' : 'none'; };
     const playBtn = $('play'), icon = $('playIcon'), scrub = $('scrub'), timeEl = $('time'), list = $('chapters'), voice = $('voice'), soundBtn = $('sound'), big = $('bigplay');
