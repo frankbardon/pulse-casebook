@@ -13,10 +13,6 @@ interface Props {
 }
 const { title, label, eyebrow, intro, note, scenes, narration, href } = Astro.props;
 ---
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" />
-
 <section class="pulse-film not-content" data-pulse-film aria-label={title}>
 	<div class="eyebrow" set:html={eyebrow} />
 	<p class="intro" set:html={intro} />
@@ -46,53 +42,39 @@ const { title, label, eyebrow, intro, note, scenes, narration, href } = Astro.pr
 
 <style is:global>
 	/* Global but scoped under .pulse-film: the kit builds the chapter buttons, so Astro's scoped
-	 * styles would miss them. Tokens are the film page's own; the stage stays dark in both themes. */
-	.pulse-film {
-		--bg: #E9EEEF; --plate: #F7F9F9; --plate2: #EEF2F3; --ink: #13242B; --muted: #56676E; --rule: #B9C6CA;
-		--teal: #0B7A71; --teal-soft: #D3ECE8; --stage: #0B1316;
-		--sans: "Archivo", "Helvetica Neue", Arial, sans-serif;
-		--mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
-	}
-	@media (prefers-color-scheme: dark) {
-		:root:not([data-theme="light"]) .pulse-film {
-			--bg: #070D0F; --plate: #111C20; --plate2: #17252A; --ink: #DCE6E8; --muted: #8C9FA6; --rule: #304449;
-			--teal: #45C1B3; --teal-soft: #12352F; color-scheme: dark;
-		}
-	}
-	:root[data-theme="dark"] .pulse-film {
-		--bg: #070D0F; --plate: #111C20; --plate2: #17252A; --ink: #DCE6E8; --muted: #8C9FA6; --rule: #304449;
-		--teal: #45C1B3; --teal-soft: #12352F; color-scheme: dark;
-	}
+	 * styles would miss them. Colours and fonts are the site's --pf-* tokens (src/styles/theme.css),
+	 * which follow Starlight's theme; the stage and big-play stay dark in both themes. */
 	/* Sized by the content column, not the viewport, so container queries replace the page's media queries. */
-	.pulse-film { container-type: inline-size; display: grid; gap: 22px; color: var(--ink); font-family: var(--sans); font-size: 15px; line-height: 1.55; }
-	.pulse-film .eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+	.pulse-film { container-type: inline-size; display: grid; gap: 22px; color: var(--pf-ink); font-family: var(--pf-sans); font-size: 15px; line-height: 1.55; }
 	.pulse-film .intro { margin: 0; max-width: 66ch; font-size: 16px; }
-	.pulse-film .intro span { color: var(--teal); }
-	.pulse-film .screen { position: relative; background: var(--stage); border-radius: 6px; overflow: hidden; border: 1px solid var(--rule); }
-	.pulse-film .bigplay { position: absolute; left: 50%; top: 72%; transform: translate(-50%, -50%); display: inline-flex; align-items: center; gap: 10px; padding: 12px 22px; border-radius: 999px; border: 1.5px solid #45C1B3; background: rgba(11,19,22,.82); color: #DCE6E8; font-size: 16px; font-weight: 600; }
-	.pulse-film .bigplay svg { width: 14px; height: 14px; fill: #45C1B3; }
+	.pulse-film .intro span { color: var(--pf-teal); }
+	.pulse-film .screen { position: relative; background: var(--pf-stage); border-radius: 6px; overflow: hidden; border: 1px solid var(--pf-rule); }
+	/* Below the title card's film name (~66% down the canvas) and sized with the column, so the
+	 * narrower inline player never covers it. */
+	.pulse-film .bigplay { position: absolute; left: 50%; top: 85%; transform: translate(-50%, -50%); display: inline-flex; align-items: center; gap: .6em; padding: .6em 1.3em; border-radius: 999px; border: 1.5px solid #45C1B3; background: rgba(11,19,22,.82); color: #DCE6E8; font-size: clamp(12px, 2.6cqi, 16px); line-height: 1.2; white-space: nowrap; font-weight: 600; }
+	.pulse-film .bigplay svg { width: .9em; height: .9em; fill: #45C1B3; }
 	.pulse-film .bigplay:hover, .pulse-film .bigplay:focus-visible { background: #12352F; outline: none; }
 	.pulse-film canvas { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; max-width: 100%; }
-	.pulse-film .transport { display: grid; grid-template-columns: auto auto auto minmax(0, 1fr) auto; align-items: center; gap: 14px; padding: 12px 16px; background: var(--plate); border: 1px solid var(--rule); border-radius: 6px; }
+	.pulse-film .transport { display: grid; grid-template-columns: auto auto auto minmax(0, 1fr) auto; align-items: center; gap: 14px; padding: 12px 16px; background: var(--pf-plate); border: 1px solid var(--pf-rule); border-radius: 6px; }
 	.pulse-film button { font: inherit; color: inherit; cursor: pointer; margin: 0; }
-	.pulse-film .play { width: 44px; height: 44px; padding: 0; border-radius: 50%; border: 1.5px solid var(--teal); background: var(--teal-soft); color: var(--teal); display: grid; place-items: center; }
+	.pulse-film .play { width: 44px; height: 44px; padding: 0; border-radius: 50%; border: 1.5px solid var(--pf-teal); background: var(--pf-teal-soft); color: var(--pf-teal); display: grid; place-items: center; }
 	.pulse-film .play svg { width: 16px; height: 16px; fill: currentColor; }
-	.pulse-film .play:focus-visible, .pulse-film .chap:focus-visible, .pulse-film input[type=range]:focus-visible, .pulse-film .ghost:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
-	.pulse-film .ghost { border: 1px solid var(--rule); background: transparent; border-radius: 999px; padding: 6px 12px; font-size: 13px; }
+	.pulse-film .play:focus-visible, .pulse-film .chap:focus-visible, .pulse-film input[type=range]:focus-visible, .pulse-film .ghost:focus-visible { outline: 2px solid var(--pf-teal); outline-offset: 2px; }
+	.pulse-film .ghost { border: 1px solid var(--pf-rule); background: transparent; border-radius: 999px; padding: 6px 12px; font-size: 13px; }
 	.pulse-film .ghost[hidden] { display: none; }
-	.pulse-film .time { font-family: var(--mono); font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; min-width: 9ch; text-align: right; }
-	.pulse-film input[type=range] { width: 100%; margin: 0; accent-color: var(--teal); }
+	.pulse-film .time { font-family: var(--pf-mono); font-size: 13px; color: var(--pf-muted); font-variant-numeric: tabular-nums; min-width: 9ch; text-align: right; }
+	.pulse-film input[type=range] { width: 100%; margin: 0; accent-color: var(--pf-teal); }
 	.pulse-film .chapters { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
 	.pulse-film .chapters li { margin: 0; }
-	.pulse-film .chap { width: 100%; text-align: left; background: var(--plate); border: 1px solid var(--rule); border-radius: 6px; padding: 10px 12px; display: grid; gap: 2px; min-width: 0; }
-	.pulse-film .chap b { font-family: var(--mono); font-weight: 500; font-size: 11.5px; color: var(--muted); letter-spacing: .06em; }
+	.pulse-film .chap { width: 100%; text-align: left; background: var(--pf-plate); border: 1px solid var(--pf-rule); border-radius: 6px; padding: 10px 12px; display: grid; gap: 2px; min-width: 0; }
+	.pulse-film .chap b { font-family: var(--pf-mono); font-weight: 500; font-size: 11.5px; color: var(--pf-muted); letter-spacing: .06em; }
 	.pulse-film .chap span { font-size: 14px; font-weight: 600; }
-	.pulse-film .chap[aria-current="true"] { border-color: var(--teal); background: var(--teal-soft); }
-	.pulse-film .chap[aria-current="true"] b { color: var(--teal); }
-	.pulse-film .note { font-size: 13px; color: var(--muted); max-width: 72ch; margin: 0; }
-	.pulse-film .note code { font-family: var(--mono); font-size: .95em; }
+	.pulse-film .chap[aria-current="true"] { border-color: var(--pf-teal); background: var(--pf-teal-soft); }
+	.pulse-film .chap[aria-current="true"] b { color: var(--pf-teal); }
+	.pulse-film .note { font-size: 13px; color: var(--pf-muted); max-width: 72ch; margin: 0; }
+	.pulse-film .note code { font-family: var(--pf-mono); font-size: .95em; }
 	.pulse-film .standalone { margin: 0; font-size: 13px; }
-	.pulse-film .standalone a { color: var(--teal); }
+	.pulse-film .standalone a { color: var(--pf-teal); }
 	@container (max-width: 760px) { .pulse-film .chapters { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 	@container (max-width: 520px) { .pulse-film .transport { grid-template-columns: auto minmax(0, 1fr) auto; } .pulse-film .ghost { display: none; } }
 </style>

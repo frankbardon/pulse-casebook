@@ -44,6 +44,24 @@
 	--sl-color-hairline-light: var(--pf-rule);
 	--sl-color-hairline: #1f2f34;
 	--sl-color-hairline-shade: var(--pf-bg);
+
+	/* Starlight's hues (asides, badges, cards) drawn from the film kit's palette (PulseFilm.C):
+	   note/blue → teal, tip/purple → violet, caution/orange → amber, danger/red → coral. */
+	--sl-color-blue-low: var(--pf-teal-soft);
+	--sl-color-blue: var(--pf-teal);
+	--sl-color-blue-high: #a6e6dd;
+	--sl-color-purple-low: #261f44;
+	--sl-color-purple: #a893f0;
+	--sl-color-purple-high: #d6cdfa;
+	--sl-color-orange-low: #3a2c12;
+	--sl-color-orange: #e3a94b;
+	--sl-color-orange-high: #f3d6a2;
+	--sl-color-red-low: #3d1e18;
+	--sl-color-red: #f0806b;
+	--sl-color-red-high: #f8c3b8;
+	--sl-color-green-low: #17321e;
+	--sl-color-green: #7cc68b;
+	--sl-color-green-high: #c4e9cb;
 }
 
 :root[data-theme='light'] {
@@ -53,7 +71,8 @@
 	--pf-ink: #13242b;
 	--pf-muted: #56676e;
 	--pf-rule: #b9c6ca;
-	--pf-teal: #0b7a71;
+	/* A shade under the film's #0b7a71, which misses AA (4.4:1) as text on bg and teal-soft. */
+	--pf-teal: #0a716a;
 	--pf-teal-soft: #d3ece8;
 
 	/* Inverted ramp. gray-6 is darker than bg on purpose: Starlight uses it for code
@@ -79,6 +98,23 @@
 	--sl-color-hairline-light: var(--pf-rule);
 	--sl-color-hairline: var(--pf-rule);
 	--sl-color-hairline-shade: var(--pf-rule);
+
+	/* -high is title/link text on -low and the badge fill under white text: all AA. */
+	--sl-color-blue-low: var(--pf-teal-soft);
+	--sl-color-blue: var(--pf-teal);
+	--sl-color-blue-high: #075a53;
+	--sl-color-purple-low: #e7e1fa;
+	--sl-color-purple: #6f55d0;
+	--sl-color-purple-high: #4a3399;
+	--sl-color-orange-low: #f5e7c9;
+	--sl-color-orange: #a8721a;
+	--sl-color-orange-high: #6b4708;
+	--sl-color-red-low: #f8ded7;
+	--sl-color-red: #c4503a;
+	--sl-color-red-high: #8a2b1b;
+	--sl-color-green-low: #dbefdf;
+	--sl-color-green: #3a8a4b;
+	--sl-color-green-high: #1f5a2b;
 }
 
 /* Film h1: wide, heavy, uppercase. Sized down from the film's 60px to fit the content column. */
