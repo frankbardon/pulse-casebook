@@ -10,7 +10,8 @@
     "astro": "astro",
     "sync": "node scripts/sync.mjs",
     "predev": "npm run sync",
-    "prebuild": "npm run sync"
+    "prebuild": "npm run sync",
+    "check:films": "node scripts/check-films.mjs"
   },
   "dependencies": {
     "@astrojs/starlight": "0.42.6",
