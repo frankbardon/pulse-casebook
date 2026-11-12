@@ -11,9 +11,11 @@ Every figure below was returned by Pulse. Timings are wall-clock seconds from
 RAM, macOS). Every scan is pinned to 4 workers (`--shard-workers 4
 --decode-workers 4`) to stand in for a 4-vCPU machine. Peak memory is the
 process's maximum resident set size from `/usr/bin/time -l`. `run-all.sh` sets
-no `GOMEMLIMIT`; step 6 shows what the retention chain needs without one and
-with one. Other jobs were running on the same host, with about 12 GB of swap
-already in use, so treat timings as ±20 % (more for the chains). Counts and sums
+no `GOMEMLIMIT`. Other jobs were running on the same host, with about 12 GB of
+swap already in use, so treat timings as ±20 %. The step 6 chain figures were
+re-measured in a 16 GiB, 4-CPU Linux container with the pre-release build of
+Pulse `v1.0.0-alpha.40`, the first release in which the retention chain fits 16 GB without
+a memory limit; every other figure is from the alpha.22 run. Counts and sums
 are deterministic.
 
 ## The business questions
@@ -269,7 +271,8 @@ Stage 1 reads those rows as a new cohort.
 year_month) and twelve `active_mMM` flags (`AGG_MAX` of an `ATTR_FORMULA` such as
 `order_date >= 20120 && order_date < 20148 ? 1 : 0`; the bounds are epoch days).
 Stage 1 groups by `first_month` and averages each flag, which gives the share of
-the cohort active in each month. Run time: **181–187 s** (see the note below the tables).
+the cohort active in each month. Run time: **162–191 s** in the 16 GiB container
+(see the note below the tables).
 
 | First month | customers | avg 2025 spend (USD) | avg orders | M+1 | M+3 | M+6 | Dec-25 |
 |---|---:|---:|---:|---:|---:|---:|---:|
@@ -295,7 +298,7 @@ than as January acquisitions.
 per-customer `spend`, `orders` and `is_member` (`AGG_MAX loyalty_member`). Stage 1
 buckets spend with an `ATTR_FORMULA` band, groups by band, and adds
 `OVERLAY_SHARE_OF_TOTAL` (`params.field: "spend"`) for each band's share of
-total spend. Run time: **40.7–42.4 s, 10.6 GiB peak footprint**.
+total spend. Run time: **52.5 s, 9.3 GiB peak** in the 16 GiB container.
 
 | 2025 spend band | customers | spend (USD) | share of spend | avg orders | loyalty members |
 |---|---:|---:|---:|---:|---:|
@@ -310,29 +313,29 @@ total spend. Run time: **40.7–42.4 s, 10.6 GiB peak footprint**.
 **How to read the cost.** Both chains hold one group per customer, so their
 memory follows the 2.6 M-row customer table, not the archive. The retention
 chain carries 15 aggregators and 13 derived columns per customer against the
-spend chain's 3 aggregators. Resident memory understates what it needs on a
-busy machine, so the peak memory footprint (which counts compressed and
-swapped pages) is the figure to budget by:
+spend chain's 3 aggregators. Both were measured in `docker run --cpus=4
+--memory=16g --memory-swap=16g` (linux/arm64, no swap past the cap), with no
+`GOMEMLIMIT` and no `--memory-limit`. "Anon peak" is the container's peak
+anonymous memory, i.e. Pulse's own memory; `memory.peak` also counts the page
+cache of the 2.5 GB archive, which the kernel reclaims under pressure rather than
+killing the process:
 
-| Chain | Time | Peak RSS | Peak footprint | Go heap, peak / live |
+| Chain | Time | Anon peak | `memory.peak` | OOM kills |
 |---|---:|---:|---:|---:|
-| Spend | 40.7–42.4 s | 11.2–11.6 GiB | 10.6 GiB | 9.5–10.0 / 5.6–5.9 GiB |
-| Retention | 181–187 s | 13.0–14.6 GiB | 17.3–23.1 GiB | 15.1–15.6 / 8.3 GiB |
-| Retention, `GOMEMLIMIT=14GiB` | 117 s | 14.7 GiB | 14.8 GiB | 11.9 / 7.9 GiB |
+| Spend | 52.5 s | 9.3 GiB | 11.7 GiB | 0 |
+| Retention (3 runs) | 162–191 s | 13.1–15.0 GiB | 15.6–16.0 GiB | 0 |
 
-**The retention chain needs more than 16 GB without a memory limit.** Its peak
-footprint is 17.3–23.1 GiB across runs. Most of that is heap the Go runtime lets
-grow to about twice the live set (8.3 GiB live, 15.6 GiB peak) before it
-collects. On a 16 GB machine, run this step with `GOMEMLIMIT=14GiB`:
+**Both chains fit a 16 GB machine without a memory limit** on Pulse
+`v1.0.0-alpha.40` or later, and return the same data as an unconstrained run.
+Before alpha.40 the retention chain's heap grew to about twice its live set
+before each collection, past 16 GB, and the run was killed. If other work shares
+the machine, `--memory-limit` is an optional Go soft limit for the run (a size,
+or a share of the machine's or container's memory):
 
 ```sh
-GOMEMLIMIT=14GiB pulse --shard-workers 4 --decode-workers 4 api process-chain \
+pulse --memory-limit 85% --shard-workers 4 --decode-workers 4 api process-chain \
   -r req/05_retention_chain.json --json --no-components
 ```
-
-With the limit the chain peaks at a 14.8 GiB footprint, finishes in 117 s
-instead of 181–187 s (less paging) and returns byte-identical data. The spend
-chain (10.6 GiB) and every other step fit without a limit.
 
 ### Step 7 — Customer 360: point lookup vs. scan
 
@@ -445,9 +448,9 @@ or re-imported, and the existing sidecars stay valid.
 - **Plan the archive for appends:** a new month is a single `shard add` bounded
   by the new month's size, and the index follows it.
 - **`process-chain` runs per-customer rollups over every customer** in one
-  request. Its memory follows the per-customer group table: 10.6 GiB (spend) and
-  17.3–23.1 GiB (retention) peak footprint for 2.6 M customers here. On a 16 GB
-  machine, give the retention chain `GOMEMLIMIT=14GiB` (14.8 GiB, same answer).
+  request. Its memory follows the per-customer group table: a 9.3 GiB (spend)
+  and 13.1–15.0 GiB (retention) peak for 2.6 M customers here, inside a 16 GiB
+  container with no memory limit (Pulse `v1.0.0-alpha.40` or later).
 
 ## Pulse features used
 

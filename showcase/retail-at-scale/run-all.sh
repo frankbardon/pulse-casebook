@@ -10,7 +10,9 @@ ROOT=$(cd "$(dirname "$0")/../.." && pwd); PULSE=${PULSE:-$([ -x "$ROOT/bin/puls
 # Worker count for every scan (--shard-workers / --decode-workers). The reference
 # run pins 4 to match a 4-vCPU machine; 0 means one per CPU.
 WORKERS=${WORKERS:-4}
-P=("$PULSE" --shard-workers "$WORKERS" --decode-workers "$WORKERS")
+# Optional Go soft memory limit for every scan, e.g. MEMORY_LIMIT=85% or 12GiB
+# (pulse --memory-limit, Pulse v1.0.0-alpha.40+). Unset by default: not needed.
+P=("$PULSE" --shard-workers "$WORKERS" --decode-workers "$WORKERS" ${MEMORY_LIMIT:+--memory-limit "$MEMORY_LIMIT"})
 mkdir -p out
 : > out/timings.tsv
 
@@ -92,9 +94,9 @@ step "compose 04 (--parallel 4)" 05_dashboard_parallel.json "${P[@]}" api compos
 same "dashboard: serial vs --parallel 4" 05_dashboard.json 05_dashboard_parallel.json .data
 
 # 6. Customer-level rollups with process-chain, over every customer.
-#    Without a memory limit the retention chain peaks above 16 GB (17-23 GiB
-#    footprint); on a 16 GB machine run this script with GOMEMLIMIT=14GiB
-#    (14.8 GiB peak, identical output). See README step 6.
+#    Needs Pulse v1.0.0-alpha.40 or later to fit 16 GB with no memory limit
+#    (retention 13.1-15.0 GiB, spend 9.3 GiB peak in a 16 GiB container).
+#    See README step 6.
 step "process-chain 05 retention" 06_retention_chain.json "${P[@]}" api process-chain -r req/05_retention_chain.json --json --no-components
 step "process-chain 06 spend bands" 06_spend_chain.json "${P[@]}" api process-chain -r req/06_spend_distribution_chain.json --json --no-components
 

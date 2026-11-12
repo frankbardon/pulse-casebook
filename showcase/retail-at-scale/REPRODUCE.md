@@ -2,21 +2,22 @@
 
 Requirements: Go (to build Pulse), `bash` and `jq` (the run script uses jq to
 point a request at a different cohort file and to compare outputs), about
-5.5 GB of free disk, and RAM for the customer chains in step 6. Without a
-memory limit the retention chain peaks at a 17–23 GiB footprint, more than a
-16 GB machine has; there, run it with `GOMEMLIMIT=14GiB` (it peaks at 14.8 GiB
-and returns identical data). The spend chain needs about 11 GiB and every other
-step peaks under 2 GB. A full run took about 12 minutes with 4 workers.
+5.5 GB of free disk, and RAM for the customer chains in step 6: in a 16 GiB,
+4-CPU container with no memory limit the retention chain peaks at 13.1–15.0 GiB
+and the spend chain at 9.3 GiB (Pulse `v1.0.0-alpha.40` or later; see README
+step 6), and every other step peaks under 2 GB. No `GOMEMLIMIT` is needed;
+`pulse --memory-limit <size|N%>` is an optional soft limit. A full run took about 12 minutes with 4 workers.
 
 ## 1. Build Pulse
 
-The showcase needs Pulse `v1.0.0-alpha.22` or later: archive-wide lookups,
+The showcase needs Pulse `v1.0.0-alpha.40` or later. Archive-wide lookups,
 section-opened archives and the `--shard-workers` / `--decode-workers` flags
-ship there.
+ship in `v1.0.0-alpha.22`, but before alpha.40 the retention chain does not fit
+16 GB without a memory limit.
 
 ```sh
 cd <casebook repo root>
-make pulse PULSE_REF=v1.0.0-alpha.22 && cp bin/pulse /tmp/pulse
+make pulse PULSE_REF=v1.0.0-alpha.40 && cp bin/pulse /tmp/pulse
 ```
 
 There is no separate bench program. The worker-count comparisons the old
@@ -82,7 +83,9 @@ workers, while other jobs were running and the system was swapping.
 | Index after append | `08_index_verify.json` | `fresh: true` |
 | Worker comparisons | `byte_equal.tsv` | five lines, all `identical` |
 
-Indicative timings from the reference run (seconds / peak RSS):
+Indicative timings from the reference run (seconds / peak RSS; Pulse
+`v1.0.0-alpha.22` on the host, except the chains, re-measured with alpha.40 in a
+16 GiB, 4-CPU container — anon peak there):
 
 | Command | Time | RSS |
 |---|---:|---:|
@@ -95,8 +98,7 @@ Indicative timings from the reference run (seconds / peak RSS):
 | KPIs on the December file, decode workers 4 / 1 | 0.95 / 2.28 | 343 / 335 MB |
 | Monthly trend, shard workers 4 / 1 / `--stream` | 13.95 / 37.94 / 14.02 | 59–64 MB |
 | Compose dashboard (December), serial / `--parallel 4` | 4.71 / 2.76 | 527 MB / 1.40 GB |
-| Retention chain / spend chain | 181–187 / 40.7–42.4 | 17.3–23.1 / 10.6 GiB footprint |
-| Retention chain, `GOMEMLIMIT=14GiB` | 117 | 14.8 GiB footprint |
+| Retention chain / spend chain (16 GiB container) | 162–191 / 52.5 | 13.1–15.0 / 9.3 GiB |
 | Index build on the archive | 496 | 819 MB |
 | Lookup on the archive (12 / 13 shards) | 0.15 / 0.19 | 51 MB |
 | Customer scan, archive / December | 6.21 / 1.08 | 67 / 343 MB |
@@ -104,8 +106,8 @@ Indicative timings from the reference run (seconds / peak RSS):
 | inspect / verify / index verify, 13 shards | 0.29 / 1.32 / 1.88 | 51 MB |
 | KPIs on 13 months, shard workers 4 / 1 | 11.31 / 20.50 | 79 / 56 MB |
 
-The retention chain and the index build are the two steps most affected by
-machine load: both ran while the system was swapping.
+The index build is the step most affected by machine load: it ran while the
+system was swapping.
 
 ## Cleanup
 
