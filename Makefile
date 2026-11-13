@@ -15,7 +15,7 @@ ARCHIVE := pulse_$(PULSE_VERSION)_$(OS)_$(ARCH).tar.gz
 RELEASE := https://github.com/frankbardon/pulse/releases/download/$(PULSE_VERSION)
 SHA256  := $(shell command -v sha256sum >/dev/null 2>&1 && echo sha256sum || echo shasum -a 256)
 
-.PHONY: help pulse pulse-release retail-bench data site site-dev
+.PHONY: help pulse pulse-release data site site-dev
 
 help: ## List targets
 	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  %-14s %s\n", $$1, $$2}'
@@ -42,15 +42,6 @@ pulse-release: ## Install the pinned Pulse release (PULSE_VERSION) into bin/
 	tar -xzf "$$tmp/$(ARCHIVE)" -C "$$tmp" pulse; \
 	mkdir -p $(BIN); mv "$$tmp/pulse" $(PULSE); echo "$(PULSE_VERSION)" > $(BIN)/.pulse-version; \
 	echo "· installed $(BIN)/pulse $(PULSE_VERSION)"
-
-retail-bench: ## Build the retail-at-scale bench helper against PULSE_REF into bin/
-	@set -e; ver=$$(git -C "$(PULSE_SRC)" describe --tags --always $(PULSE_REF)); \
-	tmp=$$(mktemp -d); trap 'rm -rf "$$tmp"' EXIT; \
-	echo "· building retail-bench against pulse $$ver"; \
-	git -C "$(PULSE_SRC)" archive $(PULSE_REF) | tar -x -C "$$tmp"; \
-	mkdir -p "$$tmp/casebook-bench" $(BIN); cp showcase/retail-at-scale/bench/main.go "$$tmp/casebook-bench/"; \
-	(cd "$$tmp" && CGO_ENABLED=0 go build -trimpath -o $(abspath $(BIN))/retail-bench ./casebook-bench/main.go); \
-	echo "· installed $(BIN)/retail-bench"
 
 data: pulse ## Rebuild film data with bin/pulse (FILM=overlays for one film)
 	PULSE=$(PULSE) films/build/data.sh $(FILM)
