@@ -1,0 +1,45 @@
+{
+  "cohort": {
+    "filename": "twin_tagged.pulse",
+    "data_dir": "."
+  },
+  "attributes": [
+    {
+      "type": "ATTR_SET_POPCOUNT",
+      "field": "products_held",
+      "label": "n_products"
+    }
+  ],
+  "groups": [
+    {
+      "field": "_synthetic"
+    }
+  ],
+  "aggregations": [
+    {
+      "type": "AGG_COUNT",
+      "field": "age",
+      "label": "customers"
+    },
+    {
+      "type": "AGG_AVERAGE",
+      "field": "churned",
+      "label": "churn_rate"
+    },
+    {
+      "type": "AGG_AVERAGE",
+      "field": "monthly_spend",
+      "label": "avg_monthly_spend_usd"
+    },
+    {
+      "type": "AGG_AVERAGE",
+      "field": "tenure_months",
+      "label": "avg_tenure_months"
+    },
+    {
+      "type": "AGG_AVERAGE",
+      "field": "n_products",
+      "label": "avg_products"
+    }
+  ]
+}

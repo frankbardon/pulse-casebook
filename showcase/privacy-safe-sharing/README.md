@@ -21,6 +21,11 @@ half its source strength.
 > false` helper fields, numeric predictors in `--fit-models`, within-set dependency capture, and
 > `synth from-profile --synthetic-only` / `--fidelity-model` with the fidelity report's `utility` and
 > `disclosure` sections. The casebook's `Makefile` pins alpha.35 (see [REPRODUCE.md](REPRODUCE.md)).
+>
+> **Cohort union.** The twin-vs-source comparisons below are single `union` requests (roadmap U76),
+> which need a Pulse that carries `capability:union`. The responses in `out/` were recorded with a
+> pre-release build of the U76 branch (v1.0.0-alpha.45 plus the union and fidelity-report changes);
+> the pin moves to the released alpha when the casebook is re-recorded on it.
 
 ---
 
@@ -35,7 +40,7 @@ Governance needs four answers before signing off:
 |---|---|---|
 | G1 | Does the twin look like the source, field by field, and does it support the same analysis? | Pulse fidelity report: KS / χ² per field with effect sizes, set-option frequencies, model recovery, and a `utility` section that refits the agency's churn model on both tables |
 | G2 | Does it obey our business logic, with no impossible customers? | Violation counts with Pulse expression attributes, with and without structural rules |
-| G3 | Would the agency reach the same conclusions? | The same Compose requests run on both cohorts, with `OVERLAY_DELTA_VS_REF` / `OVERLAY_INDEX_VS_REF` comparing twin to source |
+| G3 | Would the agency reach the same conclusions? | One `union` request per question reads the source and the twin as one record stream and groups by the virtual `_source` field, so each figure sits beside its twin counterpart |
 | G4 | Is any real customer in the twin? | The fidelity report's `disclosure` section (exact-match rate, Gower distance to closest record), exact-record joins, and a profile-match rate compared against the rate between two halves of the real table |
 
 ## 2. The source table
@@ -114,7 +119,7 @@ customers.synth.json ──synth from-schema──► customers.pulse ──prof
                                                                                         │
                                       fidelity.json  ◄──────────  twin.pulse (shared)    spec.json
                                                                                         │
-             same Compose requests on customers.pulse vs twin.pulse, overlays = twin − source
+             one union request per question: customers.pulse + twin.pulse, grouped by _source
 ```
 
 * The profile is the only thing that leaves the secure zone and reaches the generator. It holds
@@ -126,8 +131,13 @@ customers.synth.json ──synth from-schema──► customers.pulse ──prof
 * `--fidelity-model` hands the fidelity report the agency's churn model (a `pulse api process`
   request). The report fits it on the source and on the twin and puts the two fits side by side in
   `utility.model_fits`.
-* Every comparison is one Compose call: matching slots over `customers.pulse` and `twin.pulse`,
-  with Compose overlays computing twin − source (percentage points) and twin ÷ source × 100.
+* Every comparison is one request over a **cohort union**: `"union": [{"cohort": {"filename":
+  "customers.pulse"}, "label": "source"}, {"cohort": {"filename": "twin.pulse"}, "label": "twin"}]`
+  reads both files as one record stream, each row tagged in the virtual categorical field `_source`.
+  Grouping, crosstabbing or testing by `_source` puts the two cohorts side by side in one response,
+  with no per-cohort slots and no overlays to stitch them. The twin carries the source's schema, so
+  the members always merge. Twin − source and twin ÷ source × 100 are read straight off the two
+  groups. (The regression, the correlation matrix and the record-level joins stay as separate requests, with the reasons given in steps 7e, 7f and 8.)
 
 All commands run from this directory. The full sequence is in `run.sh`. Responses land in `out/`.
 
@@ -243,8 +253,8 @@ carries an effect size beside its test, so a large-n rejection of a trivial gap 
 | age | KS | D = 0.020 | 1.1e−7 | d −0.012 (very small) | rejects; max CDF gap 2.0 points |
 | monthly_spend | KS | D = 0.056 | 6.2e−54 | d −0.037 (very small) | rejects; max CDF gap 5.6 points |
 | tenure_months | KS | D = 0.063 | 1.4e−69 | d 0.003 (very small) | rejects; max CDF gap 6.3 points, same mean |
-| start_date | KS | D = 0.044 | 1.0e−34 | d −0.001 | follows tenure |
-| end_date | KS | D = 0.017 | 0.206 | d −0.012 | indistinguishable (closed accounts) |
+| start_date | KS | D = 0.044 | 8.7e−35 | d −0.0003 | follows tenure |
+| end_date | KS | D = 0.009 | 0.885 | d 0.006 | indistinguishable (closed accounts) |
 
 With 80,000 rows a KS test rejects for very small gaps, so read D and the effect size rather than
 p. Every effect size is "very small". The headline table in step 7 shows what the gaps mean in
@@ -300,11 +310,13 @@ a byte-identical file, so anyone holding the spec can reproduce or audit the rel
 ### Step 6: Business-rule violations (G2)
 
 ```bash
-pulse api compose -r req/03_business_rule_violations.json --json
+pulse api process -r req/03_business_rule_violations.json --json
 ```
 
-Each check is an `ATTR_FORMULA` that yields 1 on a violating row, summed with `AGG_SUM`, in three
-Compose slots:
+Each check is an `ATTR_FORMULA` that yields 1 on a violating row, summed with `AGG_SUM`. One
+request unions the source, the twin without rules and the twin with rules (three members, labels
+`source`, `twin_without_rules`, `twin_with_rules`) and groups by `_source`, so the three columns below
+are three rows of one response:
 
 | Violation (rows) | Source | Twin, no rules | Twin, with rules |
 |---|---|---|---|
@@ -323,10 +335,10 @@ it, so even the twin without rules has no tv-only customer.
 
 ### Step 7: The agency's analysis, run on both tables (G3)
 
-#### 7a. Headline metrics (`req/04_headline_metrics.json`, `req/04b_headline_twin_vs_source.json`)
+#### 7a. Headline metrics (`req/04_headline_metrics.json`)
 
-Request 04 puts the figures side by side. Request 04b repeats each metric as a source/twin slot pair
-with one all-customer bucket and adds `OVERLAY_INDEX_VS_REF` and `OVERLAY_DELTA_VS_REF`:
+One union request (source + twin), grouped by `_source`, with eleven aggregations. Two rows come
+back, one per cohort; index is twin ÷ source × 100 and Δ is twin − source:
 
 | Metric | Source | Twin | Index (source = 100) | Δ |
 |---|---|---|---|---|
@@ -340,11 +352,11 @@ with one all-customer bucket and adds `OVERLAY_INDEX_VS_REF` and `OVERLAY_DELTA_
 | Autopay | 56.27% | 56.10% | 99.7 | −0.17 pp |
 | Products per customer | 1.973 | 1.976 | 100.2 | +0.003 |
 
-#### 7b. Segments, with Compose overlays (`req/05_segments_twin_vs_source.json`)
+#### 7b. Segments (`req/05_segments_twin_vs_source.json`)
 
-Fourteen slots (seven source/twin pairs), each with one grouped aggregation, plus 14 overlays:
-`OVERLAY_DELTA_VS_REF` (twin − source) and `OVERLAY_INDEX_VS_REF` (twin ÷ source × 100), both
-`scope: "group"`, with the source slot as reference.
+Seven Compose slots, one per segmentation (not one per cohort). Each is a union request grouped by
+`_source` and the segment, so a segment's source and twin figures arrive together. Δ (twin − source)
+and index (twin ÷ source × 100) below are read off those pairs.
 
 **Churn rate by contract**
 
@@ -366,8 +378,7 @@ Fourteen slots (seven source/twin pairs), each with one grouped aggregation, plu
 | Unlimited | 18.8% | 16.1% | −2.7 |
 
 **Churn rate by support contacts and by tenure band.** The contacts slots list buckets 0–7
-(`include`), so the rare 8+ levels, which only one table may have, cannot make the overlay's key
-sets diverge.
+(`include`), so the rare 8+ levels, which are thin in either table, stay out of the comparison.
 
 | Support contacts | 0 | 1 | 2 | 3 | 4 | 5 | 6 |
 |---|---|---|---|---|---|---|---|
@@ -395,7 +406,9 @@ sets diverge.
 
 #### 7c. Plan × contract churn crosstab (`req/06_churn_crosstab_twin_vs_source.json`)
 
-Two crosstab slots (cell = `AGG_AVERAGE churned`) and a cell-scope `OVERLAY_DELTA_VS_REF`:
+One crosstab over the union: rows are `_source` then plan, columns are contract, cell is
+`AGG_AVERAGE churned`. The matrix has eight rows (source's four plans, then the twin's); Δ is the
+twin row minus the source row:
 
 | Plan | Source M / 1Y / 2Y | Twin M / 1Y / 2Y | Δ pp M / 1Y / 2Y |
 |---|---|---|---|
@@ -410,7 +423,8 @@ the source and 4.8 in the twin.
 
 #### 7d. Independence tests (`req/07_chisq_tests.json`)
 
-Ten crosstab slots (field × churned counts), each with `OVERLAY_CHISQ_MATRIX`:
+Five union requests, each a `TEST_CHISQ` of the field × churned grouped by `_source`: one result
+per cohort, in one response (the contingency tables are in each result's `details`):
 
 | Field × churned | Source χ² (df) | p | Twin χ² | p | Same conclusion at α = 0.05? |
 |---|---|---|---|---|---|
@@ -424,24 +438,34 @@ Ten crosstab slots (field × churned counts), each with `OVERLAY_CHISQ_MATRIX`:
 
 `REG_GLM` (binomial, logit) on `FEAT_ONE_HOT(contract)` dummies plus `ATTR_SET_POPCOUNT(products_held)`.
 The same model is the `--fidelity-model` request, so these figures are also in the fidelity report's
-`utility.model_fits`:
+`utility.model_fits`, where each coefficient carries a ready-made comparison against the source:
+`difference` (twin − source), `z` (that gap in standard errors, from the two fits' standard errors),
+`ratio` (twin ÷ source) and `ratio_reliable` (`false` when the source coefficient is no larger than
+its own standard error, so the ratio of two near-zero numbers is not a measure of anything).
 
-| Predictor | Planted | Source β | p | Twin β | p | Twin ÷ source |
-|---|---|---|---|---|---|---|
-| contract One-Year | −1.2 | −1.181 | 3e−174 | −1.237 | 1e−182 | 1.05 |
-| contract Two-Year | −2.1 | −2.104 | 2e−124 | −2.006 | 1e−110 | 0.95 |
-| support_contacts (per contact) | +0.43 | +0.429 | 1e−307 | +0.425 | 2e−295 | 0.99 |
-| autopay | −0.54 | −0.522 | 5e−76 | −0.500 | 9e−68 | 0.96 |
-| tenure_months (per month) | −0.0206 | −0.0202 | 1e−123 | −0.0210 | 2e−142 | 1.04 |
-| products held (per product) | −0.46 | −0.470 | 1e−230 | −0.491 | 1e−238 | 1.05 |
-| age | 0 | +0.0024 | 0.015 | +0.0030 | 0.004 | — |
-| McFadden pseudo-R² | | 0.170 | | 0.176 | | 1.04 |
+| Predictor | Planted | Source β | Twin β | `difference` | `z` | `ratio` | `ratio_reliable` |
+|---|---|---|---|---|---|---|---|
+| contract One-Year | −1.2 | −1.181 | −1.237 | −0.056 | −0.93 | 1.05 | yes |
+| contract Two-Year | −2.1 | −2.104 | −2.006 | +0.098 | +0.77 | 0.95 | yes |
+| support_contacts (per contact) | +0.43 | +0.429 | +0.425 | −0.005 | −0.29 | 0.99 | yes |
+| autopay | −0.54 | −0.522 | −0.500 | +0.021 | +0.53 | 0.96 | yes |
+| tenure_months (per month) | −0.0206 | −0.0202 | −0.0210 | −0.0008 | −0.71 | 1.04 | yes |
+| products held (per product) | −0.46 | −0.470 | −0.491 | −0.021 | −1.02 | 1.05 | yes |
+| age | 0 | +0.0024 | +0.0030 | +0.0006 | +0.41 | 1.24 | yes |
+| McFadden pseudo-R² | | 0.170 | 0.176 | +0.006 | | 1.04 | |
 
-Every driver keeps its sign and lands within 7% of its source size, and the source recovers the
-planted coefficients. Age has no planted effect, yet its coefficient is under the 0.05 line in the
-source (p = 0.015): a chance finding of the kind a 0.05 threshold allows, worth +0.07 on the logit
-over a 30-year age gap. The twin reproduces it, as it should: a twin copies the source's quirks
-along with its signal.
+Read `z`, not `ratio`: every driver's twin coefficient is within 1.1 standard errors of the source's
+(|z| ≤ 1.02), so no gap is distinguishable from the sampling noise of the two fits, and every driver
+keeps its sign. The ratios stay within 5% for the drivers, and the source recovers the planted
+coefficients. Age has no planted effect, yet its source coefficient is under the 0.05 line
+(p = 0.015, worth +0.07 on the logit over a 30-year age gap) and its ratio is the largest, 1.24. It is
+flagged reliable only because 0.0024 exceeds its standard error of 0.0010; with `z` = 0.41 the 24%
+is noise on a tiny coefficient, not a distortion. The twin reproduces the quirk, as it should: a twin
+copies the source's quirks along with its signal.
+
+This comparison stays a pair of requests (`req/08_churn_logistic_model.json`): a regression takes
+no `groups`, so over a union it would fit one pooled model across source and twin rather than one
+per cohort. The fidelity report fits the pair for you.
 
 #### 7f. Correlation matrix (`req/09_correlation_matrix.json`)
 
@@ -459,12 +483,16 @@ along with its signal.
 | age – churned | −0.061 | −0.062 |
 | determinant | 0.869 | 0.865 |
 
-Every pair keeps its sign and size, and the determinant is unchanged to two decimals.
+Every pair keeps its sign and size, and the determinant is unchanged to two decimals. Like the
+regression, this stays a source/twin pair of slots: a matrix over a union is one pooled matrix, not
+one per `_source`.
 
 ### Step 8: Is any real customer in the twin? (G4)
 
 The fidelity report's disclosure section (step 4) already answers this at the row level: no exact
 copies, and a closest-record distance well above zero. Two joins check it the way an auditor would.
+These stay pairs of slots rather than unions: a union is never a join's right side, and what is being
+asked is a record-level match between the two files, not a distribution comparison.
 
 **Exact copies** (`req/10_exact_record_match.json`). Each slot runs an inner join to
 `customers.pulse` on all 11 non-null scalar columns. A post-join `FILTER_EXPRESSION` then compares
@@ -499,6 +527,29 @@ pseudo-R² **0.084** against the source's 0.170, and tenure, support contacts, a
 held are all non-significant (p ≥ 0.31). Read the generation warnings before trusting a twin; each
 dropped relationship is named there.
 
+### Step 10: Inside the secure zone, the tagged output needs no union
+
+The union is the recipe once the twin is its own, shareable file. Inside the zone, `synth
+from-profile` run **without** `--synthetic-only` writes ONE cohort that holds the 40,000 source rows
+and the 40,000 generated rows, told apart by a boolean `_synthetic` column. Grouping by it answers the
+same question as the union with no second file to open (and it is the split the fidelity report is
+built on):
+
+```bash
+pulse synth from-profile -p synth/profile.json --source customers.pulse -o twin_tagged.pulse \
+  --rows 40000 --seed 11 --rules synth/rules.json --json
+pulse api process -r req/13_tagged_zone_check.json --json     # groups: [{"field": "_synthetic"}]
+```
+
+| `_synthetic` | Customers | Churn rate | Avg monthly spend | Avg tenure | Avg products |
+|---|---|---|---|---|---|
+| 0 (source) | 40,000 | 19.29% | $70.31 | 26.48 months | 1.973 |
+| 1 (generated) | 40,000 | 18.60% | $69.08 | 26.58 months | 1.976 |
+
+The figures equal step 7a's, as they must: same seed, same rules. **`twin_tagged.pulse` contains
+real rows and never leaves the secure zone**; only the separate `twin.pulse` is shared. Use the tagged
+output for in-zone checks and the union (steps 6-7) for anything run against the shared file.
+
 ---
 
 ## 5. Findings
@@ -509,7 +560,8 @@ dropped relationship is named there.
    The agency can describe the customer base from the twin.
 2. **The churn analysis carries over, effect sizes included.** The agency's logistic model fits the
    twin as well as the source (pseudo-R² 0.176 vs 0.170, fit ratio 1.04), with every driver's
-   coefficient within 7% of its source value and the same signs and significance. Churn by contract,
+   coefficient within 5% of its source value (every `z` under 1.1 standard errors) and the same signs
+   and significance. Churn by contract,
    autopay, support contacts and tenure band all land within a few points, and the correlation
    matrix keeps every pair's size. This needs `--fit-models`: without it the twin keeps contract only
    (pseudo-R² 0.084).
@@ -550,9 +602,11 @@ dropped relationship is named there.
 | `pulse synth from-profile` with `--synthetic-only`, `--fidelity-report`, `--fidelity-model` and `--emit-spec` | Step 4 |
 | Fidelity report: per-field effect sizes, `utility` (`target_rates`, `model_fits`), `disclosure` | Step 4 |
 | `pulse synth from-schema` for seed-deterministic, byte-identical regeneration | Step 5 |
-| `pulse api compose` with labelled slots | Steps 6–8 |
-| `OVERLAY_DELTA_VS_REF`, `OVERLAY_INDEX_VS_REF` (group and cell scope) | Steps 7b, 7c |
-| Crosstab with margins + `OVERLAY_CHISQ_MATRIX` | Steps 7c, 7d |
+| Cohort `union` (labels, virtual `_source` field) grouped, crosstabbed and tested by source | Steps 6, 7a–7d |
+| `pulse api compose` with labelled slots | Steps 7b, 7e–8 |
+| `_synthetic` tagged output (`synth from-profile` without `--synthetic-only`) | Step 10 |
+| Fidelity `model_fits` coefficient comparison (`difference`, `z`, `ratio_reliable`) | Steps 4, 7e |
+| Crosstab with margins; `TEST_CHISQ` grouped by `_source` | Steps 7c, 7d |
 | `ATTR_FORMULA`, `ATTR_SET_POPCOUNT`, `FEAT_ONE_HOT` | Steps 6, 7e |
 | `AGG_AVERAGE`, `AGG_MEDIAN`, `AGG_SUM`, `AGG_SET_FREQUENCY`, `AGG_NULL_COUNT` | Steps 1, 7a |
 | `GROUP_CATEGORY` (with `include`), `GROUP_RANGE`, `GROUP_SET_PER_ELEMENT` | Step 7b |
