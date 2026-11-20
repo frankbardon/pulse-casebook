@@ -394,6 +394,152 @@
           5838,
           4520,
           7076
+        ],
+        "month_start": "2014-08",
+        "months": [
+          654,
+          14,
+          14,
+          15,
+          17,
+          16,
+          19,
+          20,
+          18,
+          22,
+          24,
+          10,
+          16,
+          26,
+          22,
+          14,
+          25,
+          20,
+          17,
+          26,
+          27,
+          25,
+          24,
+          27,
+          32,
+          31,
+          33,
+          29,
+          24,
+          33,
+          26,
+          32,
+          29,
+          26,
+          34,
+          24,
+          31,
+          45,
+          40,
+          34,
+          35,
+          31,
+          28,
+          36,
+          44,
+          39,
+          50,
+          41,
+          41,
+          51,
+          54,
+          62,
+          53,
+          58,
+          71,
+          56,
+          69,
+          45,
+          45,
+          56,
+          67,
+          78,
+          69,
+          69,
+          77,
+          87,
+          85,
+          90,
+          79,
+          94,
+          96,
+          94,
+          100,
+          88,
+          110,
+          114,
+          116,
+          108,
+          111,
+          141,
+          129,
+          131,
+          113,
+          154,
+          153,
+          170,
+          153,
+          173,
+          170,
+          183,
+          173,
+          221,
+          215,
+          194,
+          233,
+          259,
+          288,
+          257,
+          257,
+          281,
+          319,
+          299,
+          290,
+          344,
+          367,
+          378,
+          362,
+          422,
+          396,
+          470,
+          499,
+          508,
+          489,
+          545,
+          608,
+          584,
+          593,
+          671,
+          664,
+          712,
+          742,
+          740,
+          790,
+          774,
+          810,
+          821,
+          856,
+          910,
+          899,
+          893,
+          967,
+          966,
+          966,
+          983,
+          1065,
+          1046,
+          1175,
+          1069,
+          1189,
+          1205,
+          1273,
+          1310,
+          671
         ]
       }
     },
@@ -413,6 +559,33 @@
           1126,
           1035,
           1100
+        ],
+        "month_start": "2024-07",
+        "months": [
+          310,
+          327,
+          338,
+          322,
+          293,
+          350,
+          338,
+          282,
+          328,
+          320,
+          318,
+          313,
+          290,
+          321,
+          332,
+          291,
+          329,
+          368,
+          354,
+          313,
+          313,
+          327,
+          314,
+          325
         ]
       }
     },
@@ -2984,49 +3157,49 @@
   "models": [
     {
       "field": "age",
-      "intercept": 50.83254978475652,
+      "intercept": 50.832549784756594,
       "predictors": [
         {
           "kind": "categorical_level",
           "field": "contract",
           "level": "One-Year",
-          "coefficient": -4.924000489340061
+          "coefficient": -4.92400048934024
         },
         {
           "kind": "categorical_level",
           "field": "contract",
           "level": "Monthly",
-          "coefficient": -10.149769488886712
+          "coefficient": -10.149769488886802
         },
         {
           "kind": "set_option",
           "field": "products_held",
           "level": "mobile",
-          "coefficient": -0.2623419042021645
+          "coefficient": -0.26234190420216286
         },
         {
           "kind": "set_option",
           "field": "products_held",
           "level": "broadband",
-          "coefficient": 0.01589424971545596
+          "coefficient": 0.01589424971545341
         },
         {
           "kind": "set_option",
           "field": "products_held",
           "level": "tv",
-          "coefficient": 0.18285814634795122
+          "coefficient": 0.18285814634795602
         },
         {
           "kind": "set_option",
           "field": "products_held",
           "level": "landline",
-          "coefficient": 6.841435869418624
+          "coefficient": 6.841435869418778
         },
         {
           "kind": "set_option",
           "field": "products_held",
           "level": "protection",
-          "coefficient": -0.4022377243668392
+          "coefficient": -0.40223772436683725
         }
       ],
       "references": [
@@ -3036,30 +3209,30 @@
         }
       ],
       "n_obs": 10000,
-      "r2": 0.09387478911147451,
-      "residual_std": 13.71885422497773
+      "r2": 0.09387478911147788,
+      "residual_std": 13.718854224977578
     },
     {
       "field": "tenure_months",
-      "intercept": 52.89938570244489,
+      "intercept": 52.8993857024455,
       "predictors": [
         {
           "kind": "numeric",
           "field": "age",
           "level": "",
-          "coefficient": 0.0011156415318085932
+          "coefficient": 0.001115641531804539
         },
         {
           "kind": "categorical_level",
           "field": "contract",
           "level": "One-Year",
-          "coefficient": -17.808121536373964
+          "coefficient": -17.80812153637443
         },
         {
           "kind": "categorical_level",
           "field": "contract",
           "level": "Monthly",
-          "coefficient": -36.47113493160608
+          "coefficient": -36.4711349316066
         }
       ],
       "references": [
@@ -3069,60 +3242,60 @@
         }
       ],
       "n_obs": 10000,
-      "r2": 0.19805671886679288,
-      "residual_std": 26.58230632792222
+      "r2": 0.1980567188667978,
+      "residual_std": 26.582306327921945
     },
     {
       "field": "monthly_spend",
-      "intercept": 37.25062916665389,
+      "intercept": 37.25062916665388,
       "predictors": [
         {
           "kind": "categorical_level",
           "field": "plan",
           "level": "Basic",
-          "coefficient": -24.594055585302755
+          "coefficient": -24.59405558530342
         },
         {
           "kind": "categorical_level",
           "field": "plan",
           "level": "Unlimited",
-          "coefficient": 15.175051254123321
+          "coefficient": 15.17505125412274
         },
         {
           "kind": "categorical_level",
           "field": "plan",
           "level": "Standard",
-          "coefficient": -15.326250525300763
+          "coefficient": -15.326250525301058
         },
         {
           "kind": "set_option",
           "field": "products_held",
           "level": "mobile",
-          "coefficient": 20.24597862579211
+          "coefficient": 20.24597862579215
         },
         {
           "kind": "set_option",
           "field": "products_held",
           "level": "broadband",
-          "coefficient": 32.897215276564964
+          "coefficient": 32.89721527656543
         },
         {
           "kind": "set_option",
           "field": "products_held",
           "level": "tv",
-          "coefficient": 24.16748974923753
+          "coefficient": 24.167489749238182
         },
         {
           "kind": "set_option",
           "field": "products_held",
           "level": "landline",
-          "coefficient": 13.67934442083956
+          "coefficient": 13.679344420839657
         },
         {
           "kind": "set_option",
           "field": "products_held",
           "level": "protection",
-          "coefficient": 11.694737777062269
+          "coefficient": 11.6947377770622
         }
       ],
       "references": [
@@ -3132,8 +3305,8 @@
         }
       ],
       "n_obs": 10000,
-      "r2": 0.9109467445421795,
-      "residual_std": 9.67833453097714
+      "r2": 0.9109467445421875,
+      "residual_std": 9.678334530976771
     },
     {
       "field": "support_contacts",
@@ -3145,18 +3318,18 @@
     },
     {
       "field": "frequent_caller",
-      "intercept": -0.06042789038062154,
+      "intercept": -0.060427890380638914,
       "predictors": [
         {
           "kind": "numeric",
           "field": "support_contacts",
           "level": "",
-          "coefficient": 0.09582494771854899
+          "coefficient": 0.09582494771856642
         }
       ],
       "n_obs": 10000,
-      "r2": 0.34549054532684764,
-      "residual_std": 0.14890048333220116
+      "r2": 0.3454905453268924,
+      "residual_std": 0.1489004833321997
     },
     {
       "field": "autopay",
@@ -3289,37 +3462,37 @@
       {
         "a": "age",
         "b": "autopay",
-        "rho": 0.0010720681611436581,
+        "rho": 0.0010720681611436113,
         "n": 10000
       },
       {
         "a": "age",
         "b": "churned",
-        "rho": 0.012372723601100059,
+        "rho": 0.01237272360110004,
         "n": 10000
       },
       {
         "a": "age",
         "b": "frequent_caller",
-        "rho": 0.0010705559548292432,
+        "rho": 0.0010705559548272068,
         "n": 10000
       },
       {
         "a": "age",
         "b": "monthly_spend",
-        "rho": 0.01228615952642559,
+        "rho": 0.012286159526425687,
         "n": 10000
       },
       {
         "a": "age",
         "b": "support_contacts",
-        "rho": 0.015169783069317455,
+        "rho": 0.01516978306931747,
         "n": 10000
       },
       {
         "a": "age",
         "b": "tenure_months",
-        "rho": -0.00001618431406406377,
+        "rho": -0.000016184314061995085,
         "n": 10000
       },
       {
@@ -3331,13 +3504,13 @@
       {
         "a": "autopay",
         "b": "frequent_caller",
-        "rho": -0.001874911827084632,
+        "rho": -0.0018749118270856887,
         "n": 10000
       },
       {
         "a": "autopay",
         "b": "monthly_spend",
-        "rho": -0.009468539186698792,
+        "rho": -0.00946853918669791,
         "n": 10000
       },
       {
@@ -3349,19 +3522,19 @@
       {
         "a": "autopay",
         "b": "tenure_months",
-        "rho": -0.0000935681783159981,
+        "rho": -0.00009356817831600364,
         "n": 10000
       },
       {
         "a": "churned",
         "b": "frequent_caller",
-        "rho": -0.013480418901922564,
+        "rho": -0.013480418901922257,
         "n": 10000
       },
       {
         "a": "churned",
         "b": "monthly_spend",
-        "rho": 0.005930632824615094,
+        "rho": 0.005930632824616301,
         "n": 10000
       },
       {
@@ -3373,43 +3546,43 @@
       {
         "a": "churned",
         "b": "tenure_months",
-        "rho": -0.0025309909256282376,
+        "rho": -0.0025309909256282237,
         "n": 10000
       },
       {
         "a": "frequent_caller",
         "b": "monthly_spend",
-        "rho": -0.0064619608331358885,
+        "rho": -0.006461960833134597,
         "n": 10000
       },
       {
         "a": "frequent_caller",
         "b": "support_contacts",
-        "rho": 4.379153879220572e-15,
+        "rho": -1.2900939618020214e-13,
         "n": 10000
       },
       {
         "a": "frequent_caller",
         "b": "tenure_months",
-        "rho": 0.004975156301338225,
+        "rho": 0.004975156301337566,
         "n": 10000
       },
       {
         "a": "monthly_spend",
         "b": "support_contacts",
-        "rho": -0.009515500055251999,
+        "rho": -0.009515500055252564,
         "n": 10000
       },
       {
         "a": "monthly_spend",
         "b": "tenure_months",
-        "rho": -0.0007828207878693899,
+        "rho": -0.0007828207878696219,
         "n": 10000
       },
       {
         "a": "support_contacts",
         "b": "tenure_months",
-        "rho": 0.004005916082413702,
+        "rho": 0.004005916082413737,
         "n": 10000
       }
     ]

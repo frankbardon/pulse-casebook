@@ -32,13 +32,12 @@ $PULSE synth from-schema -s synth/spec.json -o twin_rerun.pulse --seed 11 --json
 cmp twin.pulse twin_rerun.pulse && echo "twin.pulse and twin_rerun.pulse are byte-identical"
 
 echo "== 6. business-rule violations"
-$PULSE api compose -r req/03_business_rule_violations.json --json > out/06_violations.json
+$PULSE api process -r req/03_business_rule_violations.json --json > out/06_violations.json
 
-echo "== 7. the agency's analysis on source vs twin"
-$PULSE api compose -r req/04_headline_metrics.json --json > out/07_headline.json
-$PULSE api compose -r req/04b_headline_twin_vs_source.json --json > out/07_headline_overlays.json
+echo "== 7. the agency's analysis on source vs twin (one union request per question)"
+$PULSE api process -r req/04_headline_metrics.json --json > out/07_headline.json
 $PULSE api compose -r req/05_segments_twin_vs_source.json --json > out/07_segments.json
-$PULSE api compose -r req/06_churn_crosstab_twin_vs_source.json --json > out/07_crosstab.json
+$PULSE api process -r req/06_churn_crosstab_twin_vs_source.json --json > out/07_crosstab.json
 $PULSE api compose -r req/07_chisq_tests.json --json > out/07_chisq.json
 $PULSE api compose -r req/08_churn_logistic_model.json --json > out/07_glm.json
 $PULSE api compose -r req/09_correlation_matrix.json --json > out/07_corr.json
@@ -57,6 +56,11 @@ $PULSE synth from-profile -p synth/profile_conditional_only.json --source custom
   -o twin_conditional_only.pulse --rows 40000 --seed 11 --rules synth/rules.json --synthetic-only \
   --emit-spec synth/spec_conditional_only.json --json > out/09_synth_conditional_only.json
 $PULSE api compose -r req/08b_churn_logistic_conditional_only_twin.json --json > out/09_glm_conditional_only.json
+
+echo "== 10. (inside the secure zone) the tagged output: source and twin rows in ONE cohort, split on _synthetic"
+$PULSE synth from-profile -p synth/profile.json --source customers.pulse -o twin_tagged.pulse \
+  --rows 40000 --seed 11 --rules synth/rules.json --json > out/10_synth_tagged.json
+$PULSE api process -r req/13_tagged_zone_check.json --json > out/10_tagged_check.json
 
 # --json reports a refused request inside its envelope; stop on any.
 for f in out/*.json; do
