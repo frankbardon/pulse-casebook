@@ -6,15 +6,15 @@ step is a Pulse CLI call; `jq` only checks the envelopes.
 
 ## From a fresh checkout
 
-The showcase needs Pulse v1.0.0-alpha.35 or later, the release that carries the synth-realism
-work (roadmap U52), plus `capability:union` (roadmap U76) for the source-vs-twin comparisons, which are
-single `union` requests. The casebook `Makefile` still pins alpha.35: the responses in `out/` were
-recorded with a pre-release build of the U76 branch (v1.0.0-alpha.45 plus U76), and the pin moves to
-the released alpha when the showcase is re-recorded on it. From the casebook repo root:
+The showcase needs Pulse `v1.0.0-alpha.46` or later: alpha.35 carries the synth-realism work
+(roadmap U52), and alpha.46 adds `capability:union` (roadmap U76) for the source-vs-twin
+comparisons, which are single `union` requests. The responses in `out/` were recorded on
+alpha.46. The casebook `Makefile` still pins alpha.35 for the other showcases, so build this one's
+tag by name. From the casebook repo root:
 
 ```bash
-# 1. build the CLI at the pinned tag (root Makefile)
-make pulse && cp bin/pulse /tmp/pulse
+# 1. build the CLI at alpha.46 (the root Makefile's pin is older)
+make pulse PULSE_REF=v1.0.0-alpha.46 && cp bin/pulse /tmp/pulse
 
 # 2. work on a scratch copy so nothing is written into the repo
 rm -rf /tmp/pss && cp -r showcase/privacy-safe-sharing /tmp/pss && cd /tmp/pss
@@ -92,7 +92,6 @@ jq -c '.disclosure' synth/fidelity.json
 jq -c '.data.responses[2].data' out/06_violations.json
 ```
 
-The numbers were produced with a pre-release Pulse build of the U76 branch (v1.0.0-alpha.45 plus
-the cohort-union and fidelity-report changes; the pin moves when this is re-recorded on the released alpha). A later build that changes the synth samplers or the profile
+The numbers were produced with Pulse `v1.0.0-alpha.46`. A later build that changes the synth samplers or the profile
 capture may move the synthetic figures; the source figures depend only on
 `data/customers.synth.json` and its seed.

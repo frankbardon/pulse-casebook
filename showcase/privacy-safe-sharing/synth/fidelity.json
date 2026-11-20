@@ -460,6 +460,11 @@
         "value": -0.0003204643765848403,
         "magnitude": "very small",
         "convention": "cohen1988_d"
+      },
+      "shape": {
+        "clock": "utc",
+        "weekday_tvd": 0.065925,
+        "month_tvd": 0.17107499999999998
       }
     },
     {
@@ -492,6 +497,11 @@
         "value": 0.006224651013902449,
         "magnitude": "very small",
         "convention": "cohen1988_d"
+      },
+      "shape": {
+        "clock": "utc",
+        "weekday_tvd": 0.017566819176768847,
+        "month_tvd": 0.028376030168034326
       }
     },
     {

@@ -23,9 +23,8 @@ half its source strength.
 > `disclosure` sections. The casebook's `Makefile` pins alpha.35 (see [REPRODUCE.md](REPRODUCE.md)).
 >
 > **Cohort union.** The twin-vs-source comparisons below are single `union` requests (roadmap U76),
-> which need a Pulse that carries `capability:union`. The responses in `out/` were recorded with a
-> pre-release build of the U76 branch (v1.0.0-alpha.45 plus the union and fidelity-report changes);
-> the pin moves to the released alpha when the casebook is re-recorded on it.
+> which need Pulse `v1.0.0-alpha.46` or later (`capability:union`). The responses in `out/` were
+> recorded on alpha.46.
 
 ---
 
